@@ -1,0 +1,18 @@
+import "matching-logic.mm0";
+
+term defSym: Symbol;
+
+def _ceil (phi: Pattern): Pattern = $ app (sym defSym) phi $;
+notation _ceil (phi: Pattern) = ($|^$:45) phi ($^|$:0);
+def _floor (phi: Pattern): Pattern = $ not (|^ not phi ^|) $;
+notation _floor (phi: Pattern) = ($|_$:45) phi ($_|$:0);
+def _eq (phi1 phi2: Pattern): Pattern = $ |_  phi1 <-> phi2 _| $;
+infixl _eq: $==$ prec 15;
+def _neq (phi1 phi2: Pattern): Pattern = $ not (phi1 == phi2) $;
+infixl _neq: $!=$ prec 15;
+def _subset (phi1 phi2: Pattern): Pattern = $ |_ phi1 -> phi2 _| $;
+infixl _subset: $C$ prec 15;
+def _in {x: EVar} (phi: Pattern x): Pattern x = $ |^ (eVar x) /\ phi ^| $;
+infixl _in: $in$ prec 15;
+
+axiom definedness: $ |^ eVar x ^| $;

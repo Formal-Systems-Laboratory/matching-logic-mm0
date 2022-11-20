@@ -1,0 +1,4 @@
+import "definedness-core.mm1";
+
+do (def (deduction-thm-lemma phi ppsi) (
+  ));
