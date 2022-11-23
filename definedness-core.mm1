@@ -14,5 +14,8 @@ def _subset (phi1 phi2: Pattern): Pattern = $ |_ phi1 -> phi2 _| $;
 infixl _subset: $C$ prec 15;
 def _in {x: EVar} (phi: Pattern x): Pattern x = $ |^ (eVar x) /\ phi ^| $;
 infixl _in: $in$ prec 15;
+def defCtx {.x: EVar}: Pattern = $ exists x (|^ eVar x ^|) $;
+theorem defAppCtx (phi: Pattern): $ _AppCtx defCtx phi (|^ phi ^|) $ = '(! appCtxR x);
+theorem defNestedAppCtx (phi: Pattern): $ _NestedAppCtx defCtx phi (|^ phi ^|) $ = '(nestedAppCtxR (! nestedAppCtxVar x));
 
-axiom definedness: $ |^ eVar x ^| $;
+axiom definedness {x: EVar}: $ |^ eVar x ^| $;

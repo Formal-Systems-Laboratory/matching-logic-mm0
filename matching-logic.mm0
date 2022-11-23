@@ -11,8 +11,8 @@ strict provable sort Substitution;
 strict provable sort ApplicationContext;
 
 -- Standard Matching Logic Pattern constructors
-term eVar: EVar > Pattern;
-term sVar: SVar > Pattern;
+term eVar {x: EVar}: Pattern x;
+term sVar {X: SVar}: Pattern X;
 term sym: Symbol > Pattern;
 term bot: Pattern;
 term imp: Pattern > Pattern > Pattern;
@@ -21,7 +21,7 @@ term exists {x: EVar} (p: Pattern x): Pattern;
 term mu {X: SVar} (p: Pattern X): Pattern;
 
 -- Definitions of common logical connectives
-infixr imp: $->$ prec 19;
+infixr imp: $->$ prec 25;
 def not (phi: Pattern): Pattern = $ phi -> bot $;
 prefix not: $~$ prec 41;
 def top: Pattern = $ ~bot $;
@@ -86,54 +86,64 @@ axiom negative_in_same_mu {X: SVar} (phi: Pattern X): $ _Negative X (mu X phi) $
 -- Definition of substitution as a meta-level relation
 term _ESubst {x: EVar} (phi psi rho: Pattern x): Substitution;
 notation _ESubst {x: EVar} (phi psi rho: Pattern x): Substitution =
-  ($e[$:41) psi ($/$:0) x ($]$:0) phi ($-->$:0) rho;
+  ($e[$:41) psi ($/$:0) x ($]$:0) phi ($==>$:0) rho;
 term _SSubst {X: SVar} (phi psi rho: Pattern X): Substitution;
 notation _SSubst {X: SVar} (phi psi rho: Pattern X): Substitution =
-  ($s[$:41) psi ($/$:0) X ($]$:0) phi ($-->$:0) rho;
+  ($s[$:41) psi ($/$:0) X ($]$:0) phi ($==>$:0) rho;
 
-axiom eSubstitution_in_eVar {x: EVar} {y: EVar} (psi: Pattern x y): $ e[ psi / x ] eVar y --> eVar y $;
-axiom eSubstitution_in_same_eVar {x: EVar} (psi: Pattern x): $ e[ psi / x ] eVar x --> psi $;
-axiom eSubstitution_in_sVar {x: EVar} {X: SVar} (psi: Pattern x X): $ e[ psi / x ] sVar X --> sVar X $;
-axiom eSubstitution_in_sym {x: EVar} (psi: Pattern x) (s: Symbol): $ e[ psi / x ] sym s --> sym s $;
-axiom eSubstitution_in_bot {x: EVar} (psi: Pattern x): $ e[ psi / x ] bot --> bot $;
+axiom eSubstitution_in_eVar {x: EVar} {y: EVar} (psi: Pattern x y): $ e[ psi / x ] eVar y ==> eVar y $;
+axiom eSubstitution_in_same_eVar {x: EVar} (psi: Pattern x): $ e[ psi / x ] eVar x ==> psi $;
+axiom eSubstitution_in_sVar {x: EVar} {X: SVar} (psi: Pattern x X): $ e[ psi / x ] sVar X ==> sVar X $;
+axiom eSubstitution_in_sym {x: EVar} (psi: Pattern x) (s: Symbol): $ e[ psi / x ] sym s ==> sym s $;
+axiom eSubstitution_in_bot {x: EVar} (psi: Pattern x): $ e[ psi / x ] bot ==> bot $;
 axiom eSubstitution_in_imp {x: EVar} (psi phi1 phi2 rho1 rho2: Pattern x):
-  $ e[ psi / x ] phi1 --> rho1 $ >
-  $ e[ psi / x ] phi2 --> rho2 $ >
-  $ e[ psi / x ] (phi1 -> phi2) --> (rho1 -> rho2) $;
+  $ e[ psi / x ] phi1 ==> rho1 $ >
+  $ e[ psi / x ] phi2 ==> rho2 $ >
+  $ e[ psi / x ] (phi1 -> phi2) ==> (rho1 -> rho2) $;
 axiom eSubstitution_in_app {x: EVar} (psi phi1 phi2 rho1 rho2: Pattern x):
-  $ e[ psi / x ] phi1 --> rho1 $ >
-  $ e[ psi / x ] phi2 --> rho2 $ >
-  $ e[ psi / x ] app phi1 phi2 --> app rho1 rho2 $;
+  $ e[ psi / x ] phi1 ==> rho1 $ >
+  $ e[ psi / x ] phi2 ==> rho2 $ >
+  $ e[ psi / x ] app phi1 phi2 ==> app rho1 rho2 $;
 axiom eSubstitution_in_exists {x: EVar} (psi: Pattern x) {y: EVar} (phi rho: Pattern x y):
-  $ e[ psi / x ] phi --> rho $ >
-  $ e[ psi / x ] exists y phi --> exists y rho $;
+  $ e[ psi / x ] phi ==> rho $ >
+  $ e[ psi / x ] exists y phi ==> exists y rho $;
 axiom eSubstitution_in_same_exists {x: EVar} (psi phi: Pattern x):
-  $ e[ psi / x ] exists x phi --> exists x phi $;
+  $ e[ psi / x ] exists x phi ==> exists x phi $;
 axiom eSubstitution_in_mu {x: EVar} (psi: Pattern x) {X: SVar} (phi rho: Pattern x X):
-  $ e[ psi / x ] phi --> rho $ >
-  $ e[ psi / x ] mu X phi --> mu X rho $;
+  $ e[ psi / x ] phi ==> rho $ >
+  $ e[ psi / x ] mu X phi ==> mu X rho $;
 
-axiom sSubstitution_in_eVar {X: SVar} {x: EVar} (psi: Pattern X x): $ s[ psi / X ] eVar x --> eVar x $;
-axiom sSubstitution_in_sVar {X: SVar} {Y: SVar} (psi: Pattern X Y): $ s[ psi / X ] sVar Y --> sVar Y $;
-axiom sSubstitution_in_same_sVar {X: SVar} (psi: Pattern X): $ s[ psi / X ] sVar X --> psi $;
-axiom sSubstitution_in_sym {X: SVar} (psi: Pattern X) (s: Symbol): $ s[ psi / X ] sym s --> sym s $;
-axiom sSubstitution_in_bot {X: SVar} (psi: Pattern X): $ s[ psi / X ] bot --> bot $;
+axiom sSubstitution_in_eVar {X: SVar} {x: EVar} (psi: Pattern X x): $ s[ psi / X ] eVar x ==> eVar x $;
+axiom sSubstitution_in_sVar {X: SVar} {Y: SVar} (psi: Pattern X Y): $ s[ psi / X ] sVar Y ==> sVar Y $;
+axiom sSubstitution_in_same_sVar {X: SVar} (psi: Pattern X): $ s[ psi / X ] sVar X ==> psi $;
+axiom sSubstitution_in_sym {X: SVar} (psi: Pattern X) (s: Symbol): $ s[ psi / X ] sym s ==> sym s $;
+axiom sSubstitution_in_bot {X: SVar} (psi: Pattern X): $ s[ psi / X ] bot ==> bot $;
 axiom sSubstitution_in_imp {X: SVar} (psi phi1 phi2 rho1 rho2: Pattern X):
-  $ s[ psi / X ] phi1 --> rho1 $ >
-  $ s[ psi / X ] phi2 --> rho2 $ >
-  $ s[ psi / X ] (phi1 -> phi2) --> (rho1 -> rho2) $;
+  $ s[ psi / X ] phi1 ==> rho1 $ >
+  $ s[ psi / X ] phi2 ==> rho2 $ >
+  $ s[ psi / X ] (phi1 -> phi2) ==> (rho1 -> rho2) $;
 axiom sSubstitution_in_app {X: SVar} (psi phi1 phi2 rho1 rho2: Pattern X):
-  $ s[ psi / X ] phi1 --> rho1 $ >
-  $ s[ psi / X ] phi2 --> rho2 $ >
-  $ s[ psi / X ] app phi1 phi2 --> app rho1 rho2 $;
+  $ s[ psi / X ] phi1 ==> rho1 $ >
+  $ s[ psi / X ] phi2 ==> rho2 $ >
+  $ s[ psi / X ] app phi1 phi2 ==> app rho1 rho2 $;
 axiom sSubstitution_in_exists {X: SVar} (psi: Pattern X) {x: EVar} (phi rho: Pattern X x):
-  $ s[ psi / X ] phi --> rho $ >
-  $ s[ psi / X ] exists x phi --> exists x rho $;
+  $ s[ psi / X ] phi ==> rho $ >
+  $ s[ psi / X ] exists x phi ==> exists x rho $;
 axiom sSubstitution_in_mu {X: SVar} (psi: Pattern X) {Y: SVar} (phi rho: Pattern X Y):
-  $ s[ psi / X ] phi --> rho $ >
-  $ s[ psi / X ] mu Y phi --> mu Y rho $;
+  $ s[ psi / X ] phi ==> rho $ >
+  $ s[ psi / X ] mu Y phi ==> mu Y rho $;
 axiom sSubstitution_in_same_mu {X: SVar} (psi phi: Pattern X):
-  $ s[ psi / X ] mu X phi --> mu X phi $;
+  $ s[ psi / X ] mu X phi ==> mu X phi $;
+
+-- Necessary axioms (cannot be proved in the general case,
+-- can only be proved for concrete phi)
+-- Note that we can remove these as axioms if we decide to always
+-- have these as assumptions in all theorems proved and resort to
+-- constructing the proof on concrete phi's when using those theorems
+-- axiom eSubstitution_id {x: EVar} (phi: Pattern x):
+--   $ e[ eVar x / x ] phi ==> phi $;
+-- axiom sSubstitution_id {X: SVar} (phi: Pattern X):
+--   $ s[ sVar X / X ] phi ==> phi $;
 
 -- Application Contexts
 term _AppCtx (ctx phi rho: Pattern): ApplicationContext;
@@ -167,7 +177,10 @@ axiom mp (phi1 phi2: Pattern):
   $ phi1 -> phi2 $ > $ phi1 $ > $ phi2 $;
 axiom exists_intro {x y: EVar} (phi: Pattern x y) (rho: Pattern y):
 --  $ wf phi $ >
-  $ e[ eVar y / x ] phi --> rho $ > $ rho $ > $ exists x phi $;
+  $ e[ eVar y / x ] phi ==> rho $ > $ rho -> exists x phi $;
+axiom exists_intro_same_var {x: EVar} (phi: Pattern x):
+--  $ wf phi $ >
+  $ phi -> exists x phi $;
 axiom exists_generalization {x: EVar} (phi1: Pattern x) (phi2: Pattern):
 --  $ wf phi1 $ > $ wf phi2 $ >
   $ phi1 -> phi2 $ > $ (exists x phi1) -> phi2 $;
@@ -194,16 +207,16 @@ axiom framing (ctx phi1 phi2 rho1 rho2: Pattern):
   $ rho1 -> rho2 $;
 axiom set_var_subst {X: SVar} (phi psi rho: Pattern X):
 --  $ wf phi $ > $ wf psi $ > $ wf rho $ >
-  $ s[ psi / X ] phi --> rho $ > $ phi $ > $ rho $;
+  $ s[ psi / X ] phi ==> rho $ > $ phi $ > $ rho $;
 axiom pre_fixpoint {X: SVar} (phi: Pattern X) (rho: Pattern):
 --  $ wf phi $ > $ wf rho $ >
   $ _Positive X phi $ >
-  $ s[ mu X phi / X ] phi --> rho $ >
+  $ s[ mu X phi / X ] phi ==> rho $ >
   $ rho -> (mu X phi) $;
 axiom KT {X: SVar} (phi psi rho: Pattern X):
 --  $ wf phi $ > $ wf psi $ > $ wf rho $ >
   $ _Positive X phi $ >
-  $ s[ psi / X ] phi --> rho $ >
+  $ s[ psi / X ] phi ==> rho $ >
   $ rho -> psi $ >
   $ (mu X phi) -> psi $;
 axiom existence {x: EVar}: $ exists x (eVar x) $;
