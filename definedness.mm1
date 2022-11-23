@@ -1,8 +1,8 @@
 import "definedness-core.mm1";
 import "propositional.mm1";
 
-do (def (deduction-thm-lemma phi ppsi) (
-  ));
+-- do (def (deduction-thm-lemma phi ppsi) (
+--  ));
 
 theorem prop_43_bot (rho: Pattern): $ bot -> rho $ = 'absurdum;
 theorem prop_43_or (ctx phi1 phi2 rho12 rho1 rho2: Pattern)
