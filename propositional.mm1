@@ -668,3 +668,11 @@ theorem em: $ p \/ ~p $ = 'id;
 theorem emr: $ ~p \/ p $ = '(orcom em);
 
 theorem absurdum: $ bot -> phi $ = '(prop_3 idd);
+
+theorem or_imp_xor_and: $ a \/ b -> (~(a <-> b) \/ (a /\ b)) $ =
+  '( eori (! cases b _ (expcom orr )
+                       (expcom (syl orl (com12 (curry (com23 (impd (a2i (a1i absurdr)))))) ))
+          )
+          (! cases a _ (exp orr)
+                       (expcom (syl orl (com12 (curry (com12 (com23 (impd (a2i (a1i absurdr))))))) ))
+          ) );
