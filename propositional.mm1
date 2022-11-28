@@ -685,5 +685,7 @@ theorem or_imp_xor_and: $ a \/ b -> (~(a <-> b) \/ (a /\ b)) $ =
                        (expcom @ syl orl @ com12 @ curry @ com12 @ com23 @ impd @ a2i @ a1i absurdr)
           ) );
 theorem xor_and_imp_or: $ (~(a <-> b) \/ (a /\ b)) -> a \/ b $ =
- '(eori (syl (imp_to_or  (eori (neg_imp_wl orl) (neg_imp_wl orr)))  dne ) (anwl orl))
+ '(eori (syl (imp_to_or (eori (neg_imp_wl orl) (neg_imp_wl orr))) dne)
+        (anwl orl)
+  )
  ;
