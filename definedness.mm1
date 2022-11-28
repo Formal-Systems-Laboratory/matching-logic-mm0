@@ -52,5 +52,5 @@ theorem membership_elim {x: EVar} (phi: Pattern)
 -- theorem membership_var {x y: EVar}:
 --    $ (x in (eVar y)) == (eVar x == eVar y) $ = '(lemma_47 @ iani
 --    (_)
---    (mp (propag_or defAppCtx defAppCtx defAppCtx) (_))
+--    (mp (propag_or defAppCtx defAppCtx defAppCtx) (mp (framing defAppCtx defAppCtx or_imp_xor_and) (mp (prop_43_or defAppCtx defAppCtx defAppCtx) (orl definedness))))
 --    );
