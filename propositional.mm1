@@ -669,10 +669,21 @@ theorem emr: $ ~p \/ p $ = '(orcom em);
 
 theorem absurdum: $ bot -> phi $ = '(prop_3 idd);
 
+theorem imp_to_or(h: $(~a \/ b) -> c$): $(a -> b) -> c$  = '(rsyl con3 (rsyl orcom h)) ;
+
+--- analogs to anl and anr; Would prefer: $~(a -> b) <-> (a /\ ~b)$
+theorem neg_imp_left: $ ~(a -> b) -> a $ = '(con1 absurd);
+theorem neg_imp_right: $~(a -> b) -> ~b $ = '(con1 (rsyl dne (a1d id)));
+theorem neg_imp_wl(h: $ a -> c $): $ ~(a -> b) -> c $ = '(syl h neg_imp_left);
+theorem neg_imp_wr(h: $ ~b -> c $): $ ~(a -> b) -> c $ = '(syl h neg_imp_right);
+
 theorem or_imp_xor_and: $ a \/ b -> (~(a <-> b) \/ (a /\ b)) $ =
-  '( eori (! cases b _ (expcom orr )
+  '( eori (! cases b _ (expcom orr)
                        (expcom (syl orl (com12 (curry (com23 (impd (a2i (a1i absurdr)))))) ))
           )
           (! cases a _ (exp orr)
                        (expcom (syl orl (com12 (curry (com12 (com23 (impd (a2i (a1i absurdr))))))) ))
           ) );
+theorem xor_and_imp_or: $ (~(a <-> b) \/ (a /\ b)) -> a \/ b $ =
+ '(eori (syl (imp_to_or  (eori (neg_imp_wl orl) (neg_imp_wl orr)))  dne ) (anwl orl))
+ ;
