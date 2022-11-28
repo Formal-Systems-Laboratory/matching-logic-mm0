@@ -87,9 +87,12 @@ axiom negative_in_same_mu {X: SVar} (phi: Pattern X): $ _Negative X (mu X phi) $
 term _ESubst {x: EVar} (phi psi rho: Pattern x): Substitution;
 notation _ESubst {x: EVar} (phi psi rho: Pattern x): Substitution =
   ($e[$:41) psi ($/$:0) x ($]$:0) phi ($==>$:0) rho;
+-- "[psi/x] phi ==> rho" means "rho is the result of substituting psi for x in phi.
+
 term _SSubst {X: SVar} (phi psi rho: Pattern X): Substitution;
 notation _SSubst {X: SVar} (phi psi rho: Pattern X): Substitution =
   ($s[$:41) psi ($/$:0) X ($]$:0) phi ($==>$:0) rho;
+-- "[psi/X] phi ==> rho" means "rho is the result of substituting psi for X in phi.
 
 axiom eSubstitution_in_eVar {x: EVar} {y: EVar} (psi: Pattern x y): $ e[ psi / x ] eVar y ==> eVar y $;
 axiom eSubstitution_in_same_eVar {x: EVar} (psi: Pattern x): $ e[ psi / x ] eVar x ==> psi $;
