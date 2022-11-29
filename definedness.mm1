@@ -4,6 +4,14 @@ import "propositional.mm1";
 -- do (def (deduction-thm-lemma phi ppsi) (
 --  ));
 
+def defCtx {.x: EVar}: Pattern = $ exists x (|^ eVar x ^|) $;
+theorem defAppCtx (phi: Pattern): $ _AppCtx defCtx phi (|^ phi ^|) $ = '(! appCtxR x);
+theorem defNestedAppCtx (phi: Pattern): $ _NestedAppCtx defCtx phi (|^ phi ^|) $ = '(nestedAppCtxR (! nestedAppCtxVar x));
+theorem singletonDef {x: EVar} (phi: Pattern x):
+  $ ~(|^ eVar x /\ phi ^| /\ |^ eVar x /\ ~phi ^|) $ = '(singleton defNestedAppCtx defNestedAppCtx);
+theorem framingDef (h: $ phi1 -> phi2 $):
+  $ |^ phi1 ^| -> |^ phi2 ^| $ = '(framing defAppCtx defAppCtx h);
+
 theorem prop_43_bot (rho: Pattern): $ bot -> rho $ = 'absurdum;
 theorem prop_43_or (ctx phi1 phi2 rho12 rho1 rho2: Pattern)
   (h1: $ _AppCtx ctx (phi1 \/ phi2) rho12 $)
@@ -32,25 +40,30 @@ theorem lemma_46
   (p : $ phi $):
   $ ~rhop $ = '(syl (propag_bot ctxb) (framing ctxp ctxb (notnot1 p)));
 
-theorem lemma_47
+theorem eqiv_to_eq
   (h: $ phi <-> psi $):
   $ phi == psi $ = '(lemma_46 defAppCtx defAppCtx h);
 
-theorem eq_intro: $ phi == phi $ = '(lemma_47 biid);
+theorem eq_intro: $ phi == phi $ = '(eqiv_to_eq biid);
 
 theorem membership_intro {x: EVar} (phi: Pattern x)
   (h: $ phi $):
   $ forall x (x in phi) $ =
-  '(univ_gene @ framing defAppCtx defAppCtx (iand id (a1i h)) definedness);
+  '(univ_gene @ framingDef (iand id (a1i h)) definedness);
 
 theorem membership_elim {x: EVar} (phi: Pattern)
   (h: $ forall x (x in phi) $):
   $ phi $ =
   '(dne @ exists_generalization (dne (dne (singleton defNestedAppCtx (! nestedAppCtxVar box)) (var_subst_same_var h))) existence);
 
-
 theorem membership_var {x y: EVar}:
-  $ (x in (eVar y)) == (eVar x == eVar y) $ = '(lemma_47 @ iani
-  (rsyl (iand (dne @ singleton defNestedAppCtx defNestedAppCtx) (imim1i (framing defAppCtx defAppCtx ancom) @ dne @ singleton defNestedAppCtx defNestedAppCtx)) @ rsyl (anri not_distr_or) @ rsyl (con3 @ propag_or defAppCtx defAppCtx defAppCtx) @ con3 @ framing defAppCtx defAppCtx @ anr lemma_51)
-  (propag_or defAppCtx defAppCtx defAppCtx @ framing defAppCtx defAppCtx or_imp_xor_and @ prop_43_or defAppCtx defAppCtx defAppCtx @ orl definedness)
+  $ (x in (eVar y)) == (eVar x == eVar y) $ = '(eqiv_to_eq @ iani
+  (rsyl (iand (dne singletonDef) (imim1i (framingDef ancom) @ dne @ singleton defNestedAppCtx defNestedAppCtx)) @ rsyl (anri not_distr_or) @ rsyl (con3 @ propag_or defAppCtx defAppCtx defAppCtx) @ con3 @ framing defAppCtx defAppCtx @ anr lemma_51)
+  (propag_or defAppCtx defAppCtx defAppCtx @ framingDef or_imp_xor_and @ prop_43_or defAppCtx defAppCtx defAppCtx @ orl definedness)
   );
+
+theorem membership_not {x: EVar}:
+  $ (x in ~phi) == ~(x in phi) $ =
+  '(eqiv_to_eq @ iani
+    (con2 @ dne singletonDef)
+    (propag_or defAppCtx defAppCtx defAppCtx @ framingDef (exp @ iand anl (curry @ com12 dne)) definedness));
