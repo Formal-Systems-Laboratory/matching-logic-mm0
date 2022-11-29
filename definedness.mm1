@@ -49,8 +49,8 @@ theorem membership_elim {x: EVar} (phi: Pattern)
   '(dne @ exists_generalization (dne (dne (singleton defNestedAppCtx (! nestedAppCtxVar box)) (var_subst_same_var h))) existence);
 
 
--- theorem membership_var {x y: EVar}:
---    $ (x in (eVar y)) == (eVar x == eVar y) $ = '(lemma_47 @ iani
---    (_)
---    (mp (propag_or defAppCtx defAppCtx defAppCtx) (mp (framing defAppCtx defAppCtx or_imp_xor_and) (mp (prop_43_or defAppCtx defAppCtx defAppCtx) (orl definedness))))
---    );
+theorem membership_var {x y: EVar}:
+  $ (x in (eVar y)) == (eVar x == eVar y) $ = '(lemma_47 @ iani
+  (rsyl (iand (dne @ singleton defNestedAppCtx defNestedAppCtx) (imim1i (framing defAppCtx defAppCtx ancom) @ dne @ singleton defNestedAppCtx defNestedAppCtx)) @ rsyl (anri not_distr_or) @ rsyl (con3 @ propag_or defAppCtx defAppCtx defAppCtx) @ con3 @ framing defAppCtx defAppCtx @ anr lemma_51)
+  (propag_or defAppCtx defAppCtx defAppCtx @ framing defAppCtx defAppCtx or_imp_xor_and @ prop_43_or defAppCtx defAppCtx defAppCtx @ orl definedness)
+  );

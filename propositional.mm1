@@ -669,7 +669,9 @@ theorem emr: $ ~p \/ p $ = '(orcom em);
 
 theorem absurdum: $ bot -> phi $ = '(prop_3 idd);
 
-theorem imp_to_or(h: $(~a \/ b) -> c$): $(a -> b) -> c$  = '(rsyl con3 (rsyl orcom h)) ;
+theorem imp_to_or (h: $(~a \/ b) -> c$): $(a -> b) -> c$  = '(rsyl con3 (rsyl orcom h)) ;
+
+theorem not_distr_or: $ ~(a \/ b) <-> ~a /\ ~b $ = '(con3b @ oreq2a @ prop_1 notnot);
 
 --- analogs to anl and anr; Would prefer: $~(a -> b) <-> (a /\ ~b)$
 theorem neg_imp_left: $ ~(a -> b) -> a $ = '(con1 absurd);
@@ -679,11 +681,21 @@ theorem neg_imp_wr(h: $ ~b -> c $): $ ~(a -> b) -> c $ = '(syl h neg_imp_right);
 
 theorem or_imp_xor_and: $ a \/ b -> (~(a <-> b) \/ (a /\ b)) $ =
   '( eori (! cases b _ (expcom orr)
-                       (expcom (syl orl (com12 (curry (com23 (impd (a2i (a1i absurdr)))))) ))
+                       @ expcom @ syl orl @ com12 @ curry @ com23 @ impd @ a2i @ a1i absurdr
           )
           (! cases a _ (exp orr)
-                       (expcom (syl orl (com12 (curry (com12 (com23 (impd (a2i (a1i absurdr))))))) ))
+                       @ expcom @ syl orl @ com12 @ curry @ com12 @ com23 @ impd @ a2i @ a1i absurdr
           ) );
 theorem xor_and_imp_or: $ (~(a <-> b) \/ (a /\ b)) -> a \/ b $ =
  '(eori (syl (imp_to_or  (eori (neg_imp_wl orl) (neg_imp_wl orr)))  dne ) (anwl orl))
  ;
+
+theorem lemma_51: $ ((a /\ ~b) \/ (b /\ ~a)) <-> ~(a <-> b) $ = '(iani
+  (eori (con3 @ rsyl anl @ imim2i notnot1)
+        (rsyl ancom @ con3 @ rsyl anr con3))
+  (con1 @ rsyl (anl not_distr_or) @ anim (anr iman) (anr iman)));
+
+theorem framing_eqiv
+  (h1: $ _AppCtx ctx phi1 rho1 $)
+  (h2: $ _AppCtx ctx phi2 rho2 $)
+  (h_eqiv: $ phi1 <-> phi2 $): $ (rho1 <-> rho2) $ = '(iani (framing h1 h2 @ anl h_eqiv) (framing h2 h1 @ anr h_eqiv));
