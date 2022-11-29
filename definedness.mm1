@@ -40,8 +40,7 @@ theorem lemma_46
   (p : $ phi $):
   $ ~rhop $ = '(syl (propag_bot ctxb) (framing ctxp ctxb (notnot1 p)));
 
-theorem eqiv_to_eq
-  (h: $ phi <-> psi $):
+theorem eqiv_to_eq (h: $ phi <-> psi $):
   $ phi == psi $ = '(lemma_46 defAppCtx defAppCtx h);
 
 theorem eq_intro: $ phi == phi $ = '(eqiv_to_eq biid);
@@ -62,8 +61,25 @@ theorem membership_var {x y: EVar}:
   (propag_or defAppCtx defAppCtx defAppCtx @ framingDef or_imp_xor_and @ prop_43_or defAppCtx defAppCtx defAppCtx @ orl definedness)
   );
 
-theorem membership_not {x: EVar}:
+theorem membership_not_lemma {x: EVar} (phi: Pattern x):
+  $ (x in phi) \/ (x in ~phi) $ = '(propag_or defAppCtx defAppCtx defAppCtx @ framingDef (exp @ iand anl @ curry @ com12 dne) definedness);
+
+theorem membership_not {x: EVar} (phi: Pattern x):
   $ (x in ~phi) == ~(x in phi) $ =
+  '(eqiv_to_eq @ iani (con2 @ dne singletonDef) membership_not_lemma);
+
+theorem framing_in {x: EVar} (phi1 phi2: Pattern x)
+  (h: $ phi1 -> phi2 $): $ (x in phi1) -> (x in phi2)$ = '(framingDef @ anim2 h);
+
+theorem membership_and {x: EVar} (phi1 phi2: Pattern x):
+  $ x in (phi1 /\ phi2) == (x in phi1) /\ (x in phi2) $ =
   '(eqiv_to_eq @ iani
-    (con2 @ dne singletonDef)
-    (propag_or defAppCtx defAppCtx defAppCtx @ framingDef (exp @ iand anl (curry @ com12 dne)) definedness));
+    (iand (framingDef @ iand anl anrl) (framingDef @ iand anl anrr))
+    (syl dne @ con2 @ rsyl membership_not_lemma @ rsyl (framing_in @ anl notan) @ rsyl
+      (framingDef @ anl andi)
+      (rsyl (propag_or defAppCtx defAppCtx defAppCtx) @ rsyl (orim (con2 @ dne singletonDef) (con2 @ dne singletonDef)) (anr notan))));
+
+-- theorem membership_exists {x y: EVar} (phi: Pattern x y):
+--   $ (x in (exists y phi)) == (exists y (x in phi)) $ = '(eqiv_to_eq @ iani
+--     (_)
+--     (_));
