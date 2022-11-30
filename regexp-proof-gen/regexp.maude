@@ -22,8 +22,8 @@ fmod ERE is
     vars A B A1 A2 : Letter .
 
     --- Identity and idemoptency of +
-    eq empty + Alpha = Alpha .
-    eq Alpha + Alpha = Alpha .
+    eq [eq-choice-unit] : empty + Alpha = Alpha .
+    eq [eq-choice-idem] : Alpha + Alpha = Alpha .
 
     op hasEWP : RegExp -> Bool .
     eq hasEWP(empty       )  = false .
@@ -35,13 +35,13 @@ fmod ERE is
     eq hasEWP(~ Alpha     )  = not hasEWP(Alpha) .
 
     op der(_, _) : Letter RegExp -> RegExp .
-    eq der(A, empty) = empty .
-    eq der(A, epsilon) = empty .
-    eq der(A, B) = if A == B then epsilon else empty fi .
-    eq der(A, Alpha *) = der(A, Alpha) (Alpha *) .
-    eq der(A, Alpha Beta) = (der(A, Alpha) Beta) + if hasEWP(Alpha) then der(A, Beta) else empty fi .
-    eq der(A, Alpha + Beta) = der(A, Alpha) + der(A, Beta) .
-    eq der(A, ~ Alpha) = ~ der(A, Alpha) .
+    eq [eq-der-empty]   : der(A, empty)        = empty .
+    eq [eq-der-epsilon] : der(A, epsilon)      = empty .
+    eq [eq-der-letter]  : der(A, B)            = if A == B then epsilon else empty fi .
+    eq [eq-der-kleene]  : der(A, Alpha *)      = der(A, Alpha) (Alpha *) .
+    eq [eq-der-concat]  : der(A, Alpha Beta)   = (der(A, Alpha) Beta) + if hasEWP(Alpha) then der(A, Beta) else empty fi .
+    eq [eq-der-choice]  : der(A, Alpha + Beta) = der(A, Alpha) + der(A, Beta) .
+    eq [eq-der-neg]     : der(A, ~ Alpha)      = ~ der(A, Alpha) .
 endfm
 
 --- While, in theory, the AC and idemoptency of + is enough to make
@@ -54,17 +54,17 @@ fmod ERE-SIMPLIFIED is
     vars Beta  Beta1  Beta2  : RegExp .
     vars A B A1 A2 : Letter .
 
-    eq empty Alpha = empty .
-    eq Alpha empty = empty .
+    eq [eq-empty-concat-l] : empty Alpha = empty .
+    eq [eq-empty-concat-r] : Alpha empty = empty .
 
-    eq epsilon Alpha = Alpha .
-    eq Alpha epsilon = Alpha .
+    eq [eq-eps-concat-l] : epsilon Alpha = Alpha .
+    eq [eq-eps-concat-r] : Alpha epsilon = Alpha .
 
-    eq ~ ~ Alpha = Alpha .
-    eq Alpha * * = Alpha .
+    eq [eq-double-neg] : ~ ~ Alpha = Alpha .
+    eq [eq-double-kleene] : Alpha * * = Alpha .
 
-    eq epsilon * = epsilon .
-    eq empty * = epsilon .
+    eq [eq-eps-kleene] : epsilon * = epsilon .
+    eq [eq-empty-kleene] : empty * = epsilon .
 endfm
 
 --- reduce der( a , ( (c *) a ) + (((c c + c)*) b)) .
