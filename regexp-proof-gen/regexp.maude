@@ -72,7 +72,7 @@ endfm
 --- reduce der( c , ( (c *) a ) + (((c c + c)*) b)) .
 --- reduce der( d , ( (c *) a ) + (((c c + c)*) b)) .
 --- reduce hasEWP(( (c *) a ) + (((c c + c)*) b)) .
---- 
+---
 --- reduce der(a, empty *) .
 --- reduce der(a, epsilon *) .
 --- reduce der(a, empty) .
@@ -121,3 +121,98 @@ endm
 --- search [, 1000] < (((c c + c)*) c) <-> (((c c c + c)*) c) > =>* < invalid >  . --- valid
 --- search [, 1000] < (a b)* a <-> a (b a)* > =>* < invalid >  . --- valid
 
+--- Manually performs a search, and returns the search graph as a tree with backlinks.
+
+fmod MY-META-SEARCH-TREE is
+    protecting META-LEVEL .
+
+    sorts NeEdges Edges Node EdgeLabel .
+    subsorts NeEdges < Edges .
+
+    *** Constructors.
+    op none : -> Edges [ctor] .
+    op eqEdge : EdgeLabel Node -> NeEdges [ctor] .
+    op rlEdge : EdgeLabel Node -> NeEdges [ctor] .
+    op _ ; _ : NeEdges NeEdges -> NeEdges [ctor assoc comm id: none] .
+    op _ ; _ : Edges Edges -> Edges [ditto] .
+
+    op apply : Qid Context Substitution -> EdgeLabel [ctor] .
+
+    op node : Term Edges -> Node [ctor] .
+    op backlink : Term -> Node [ctor] .
+
+    vars T : Term .
+    vars TL TL' : TermList .
+    vars R : Qid .
+    vars Result : Result4Tuple .
+
+    op _ in _ : Term TermList -> Bool .
+    eq T in (TL , T , TL') = true .
+    eq T in TL = false [owise] .
+
+    op myMetaSearchTree : Term TermList -> Node .
+   ceq myMetaSearchTree(T, TL) = backlink(T)
+    if     T in TL
+     .
+---   ceq myMetaSearchTree(T, TL) = node(T, eqEdge(Result, TL))
+---    if     (not T in TL)
+---       and Result:ApplictionResult := applyEquation(TL)
+---     .
+   ceq myMetaSearchTree(T, TL) = node(T, applyAllRules(T, (TL, T)))
+    if     (not T in TL)
+---       and (not Result:ApplictionResult := applyEquation(T))
+     .
+
+    op applyAllRules : Term TermList -> Edges .
+    eq applyAllRules(T, TL) =
+        applyRule(T, TL, 'der-a) ;
+        applyRule(T, TL, 'der-b) ;
+        applyRule(T, TL, 'der-c) ;
+        applyRule(T, TL, 'der-d) .
+
+    op myModule : -> Module .
+    eq myModule = upModule('ERE-VALIDITY, false) .
+
+    op applyRule : Term TermList Qid -> Edges .
+   ceq applyRule(T, TL, R) = rlEdge( apply(R, getContext(Result), getSubstitution(Result))
+                                   , myMetaSearchTree(getTerm(Result), (TL, T)))
+    if Result := metaXapply(myModule, T, R, none, 0, unbounded, 0) .
+endfm
+
+mod DERIVATIVE-TREE is
+    extending MY-META-SEARCH-TREE .
+    protecting ERE-VALIDITY .
+
+    op derivativeTree : State  -> Node .
+    eq derivativeTree(S:State) = myDownMetaSearchTree(myMetaSearchTree(upTerm(S:State), empty)) .
+
+    --- For readability, we allow object level trees.
+    vars T : Term .
+    vars Es Es1 Es2 : NeEdges .
+    vars EL : EdgeLabel .
+    vars N : Node .
+    vars TL TL' : TermList .
+    vars R : Qid .
+    vars Subst : Substitution .
+    vars Ctx : Context .
+
+    op downFailed : -> State [ctor] .
+    op enode : State Edges -> Node [ctor] .
+    op ebacklink : State -> Node [ctor] .
+    op apply : Qid -> EdgeLabel [ctor] .
+
+    op myDownMetaSearchTree : Node -> Node .
+    op myDownMetaSearchTree : Edges -> Edges .
+    op myDownMetaSearchTree : Substitution -> Substitution .
+    op myDownMetaSearchTree : Context -> Context .
+    eq myDownMetaSearchTree(backlink(T)) = ebacklink(downTerm(T, downFailed)) .
+    eq myDownMetaSearchTree(node(T, Es)) = enode(downTerm(T, downFailed), myDownMetaSearchTree(Es)) .
+
+    eq myDownMetaSearchTree(Es1 ; Es2) = myDownMetaSearchTree(Es1) ; myDownMetaSearchTree(Es2) .
+    eq myDownMetaSearchTree(rlEdge(apply(R, Ctx, Subst), N:Node)) = rlEdge(apply(R), myDownMetaSearchTree(N)) .
+endm
+
+reduce derivativeTree(< (a b)* a <-> a (b a)* >) .
+reduce derivativeTree(< (a b)* a  -> a (b a)* >) .
+reduce derivativeTree(< (((c c + c)*) b) <-> (((c c c + c)*) b) >) .
+reduce derivativeTree(< (((c c + c)*) b)  -> (((c c c + c)*) b) >) .
