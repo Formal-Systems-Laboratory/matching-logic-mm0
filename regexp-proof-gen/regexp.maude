@@ -1,0 +1,123 @@
+fmod ERE is
+    sort Letter .
+    sort RegExp .
+
+    --- In thoery an alphabet of {0, 1} is enough to encode all words, but we
+    --- will use four letters for convenience.
+    op a : -> Letter [ctor] .
+    op b : -> Letter [ctor] .
+    op c : -> Letter [ctor] .
+    op d : -> Letter [ctor] .
+    subsort Letter < RegExp .
+
+    op empty   :               -> RegExp [ctor] .
+    op epsilon :               -> RegExp [ctor] .
+    op _ _     : RegExp RegExp -> RegExp [ctor prec 2 assoc] .
+    op _ *     : RegExp        -> RegExp [ctor prec 1] .
+    op _ + _   : RegExp RegExp -> RegExp [ctor prec 3 assoc comm] .
+    op ~ _     : RegExp        -> RegExp [ctor prec 1] .
+
+    vars Alpha Alpha1 Alpha2 : RegExp .
+    vars Beta  Beta1  Beta2  : RegExp .
+    vars A B A1 A2 : Letter .
+
+    --- Identity and idemoptency of +
+    eq empty + Alpha = Alpha .
+    eq Alpha + Alpha = Alpha .
+
+    op hasEWP : RegExp -> Bool .
+    eq hasEWP(empty       )  = false .
+    eq hasEWP(epsilon     )  = true  .
+    eq hasEWP(A           )  = false .
+    eq hasEWP(Alpha Beta  )  = hasEWP(Alpha) and hasEWP(Beta) .
+    eq hasEWP(Alpha + Beta)  = hasEWP(Alpha) or  hasEWP(Beta) .
+    eq hasEWP(Alpha *     )  = true .
+    eq hasEWP(~ Alpha     )  = not hasEWP(Alpha) .
+
+    op der(_, _) : Letter RegExp -> RegExp .
+    eq der(A, empty) = empty .
+    eq der(A, epsilon) = empty .
+    eq der(A, B) = if A == B then epsilon else empty fi .
+    eq der(A, Alpha *) = der(A, Alpha) (Alpha *) .
+    eq der(A, Alpha Beta) = (der(A, Alpha) Beta) + if hasEWP(Alpha) then der(A, Beta) else empty fi .
+    eq der(A, Alpha + Beta) = der(A, Alpha) + der(A, Beta) .
+    eq der(A, ~ Alpha) = ~ der(A, Alpha) .
+endfm
+
+--- While, in theory, the AC and idemoptency of + is enough to make
+--- the derivatives based algorithm terminate, it is far from minimal.
+--- We add some additional equations to make things more well behaved.
+fmod ERE-SIMPLIFIED is
+    including ERE .
+
+    vars Alpha Alpha1 Alpha2 : RegExp .
+    vars Beta  Beta1  Beta2  : RegExp .
+    vars A B A1 A2 : Letter .
+
+    eq empty Alpha = empty .
+    eq Alpha empty = empty .
+
+    eq epsilon Alpha = Alpha .
+    eq Alpha epsilon = Alpha .
+
+    eq ~ ~ Alpha = Alpha .
+    eq Alpha * * = Alpha .
+
+    eq epsilon * = epsilon .
+    eq empty * = epsilon .
+endfm
+
+--- reduce der( a , ( (c *) a ) + (((c c + c)*) b)) .
+--- reduce der( b , ( (c *) a ) + (((c c + c)*) b)) .
+--- reduce der( c , ( (c *) a ) + (((c c + c)*) b)) .
+--- reduce der( d , ( (c *) a ) + (((c c + c)*) b)) .
+--- reduce hasEWP(( (c *) a ) + (((c c + c)*) b)) .
+--- 
+--- reduce der(a, empty *) .
+--- reduce der(a, epsilon *) .
+--- reduce der(a, empty) .
+--- reduce der(a, empty * *) .
+--- reduce der(a, epsilon * *) .
+--- reduce der(a, a * *) .
+
+mod ERE-VALIDITY is
+    protecting ERE-SIMPLIFIED .
+
+    vars Alpha Alpha1 Alpha2 : RegExp .
+    vars Beta  Beta1  Beta2  : RegExp .
+    vars A B A1 A2 : Letter .
+
+    --- For convenienct checking of equality.
+    op _ <-> _ : RegExp RegExp -> RegExp .
+    op _ & _ : RegExp RegExp -> RegExp .
+    op _ -> _ : RegExp RegExp -> RegExp .
+    eq Alpha <-> Beta = ( Alpha -> Beta ) & ( Beta -> Alpha ) .
+    eq Alpha -> Beta = (~ Alpha) + Beta .
+    eq Alpha & Beta = ~( ( ~ Alpha ) + ( ~ Beta ) ) .
+
+    sort State .
+    op < _ > : RegExp -> State [ctor] .
+    op < invalid > : -> State [ctor] .
+
+   ceq < Alpha > = < invalid > if not hasEWP(Alpha) .
+    rl [der-a] : < Alpha > => < der(a, Alpha) > .
+    rl [der-b] : < Alpha > => < der(b, Alpha) > .
+    rl [der-c] : < Alpha > => < der(c, Alpha) > .
+    rl [der-d] : < Alpha > => < der(d, Alpha) > .
+endm
+
+--- search ((c)* b) =>* R:RegExp .
+--- show path 3 .
+
+--- reduce der(b,(c)* b) .
+
+--- search < ((c)* b) > =>* < invalid > .
+--- search [, 1000] < (((c c + c)*) b) <-> (((c c c + c)*) b) > =>* < invalid > . --- valid
+--- search [, 1000] < (((c c + c)*) b) <-> (((c c + c)*) b) > =>* < invalid >   . --- valid
+--- search [, 1000] < (((c c + c)*) b) <-> (((c c + c)*) a) > =>* < invalid >   . --- invalid
+--- search [, 1000] < (((c c + c)*) c) -> (((c c + c)*) ) > =>* < invalid > . --- valid
+--- search [, 1000] < (((c c + c)*) c) <-> (((c c + c)*) c) > =>* < invalid > . --- valid
+--- search [, 1000] < (((c c c + c)*) c) <-> (((c c c + c)*) c) > =>* < invalid > . --- valid
+--- search [, 1000] < (((c c + c)*) c) <-> (((c c c + c)*) c) > =>* < invalid >  . --- valid
+--- search [, 1000] < (a b)* a <-> a (b a)* > =>* < invalid >  . --- valid
+
