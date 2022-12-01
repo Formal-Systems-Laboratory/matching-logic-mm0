@@ -88,11 +88,12 @@ mod ERE-VALIDITY is
     vars A B A1 A2 : Letter .
 
     --- For convenienct checking of equality.
-    op _ <-> _ : RegExp RegExp -> RegExp .
+    op _ <--> _ : RegExp RegExp -> RegExp .
     op _ & _ : RegExp RegExp -> RegExp .
-    op _ -> _ : RegExp RegExp -> RegExp .
-    eq Alpha <-> Beta = ( Alpha -> Beta ) & ( Beta -> Alpha ) .
-    eq Alpha -> Beta = (~ Alpha) + Beta .
+    op _ --> _ : RegExp RegExp -> RegExp .
+    --- TODO: We use double dashes to avoid clash with Pattern implication, though we want them to parse to the same thing.
+    eq Alpha <--> Beta = ( Alpha --> Beta ) & ( Beta --> Alpha ) .
+    eq Alpha --> Beta = (~ Alpha) + Beta .
     eq Alpha & Beta = ~( ( ~ Alpha ) + ( ~ Beta ) ) .
 
     sort State .
@@ -113,14 +114,14 @@ endm
 --- reduce der(b,(c)* b) .
 
 --- search < ((c)* b) > =>* < invalid > .
---- search [, 1000] < (((c c + c)*) b) <-> (((c c c + c)*) b) > =>* < invalid > . --- valid
---- search [, 1000] < (((c c + c)*) b) <-> (((c c + c)*) b) > =>* < invalid >   . --- valid
---- search [, 1000] < (((c c + c)*) b) <-> (((c c + c)*) a) > =>* < invalid >   . --- invalid
+--- search [, 1000] < (((c c + c)*) b) <--> (((c c c + c)*) b) > =>* < invalid > . --- valid
+--- search [, 1000] < (((c c + c)*) b) <--> (((c c + c)*) b) > =>* < invalid >   . --- valid
+--- search [, 1000] < (((c c + c)*) b) <--> (((c c + c)*) a) > =>* < invalid >   . --- invalid
 --- search [, 1000] < (((c c + c)*) c) -> (((c c + c)*) ) > =>* < invalid > . --- valid
---- search [, 1000] < (((c c + c)*) c) <-> (((c c + c)*) c) > =>* < invalid > . --- valid
---- search [, 1000] < (((c c c + c)*) c) <-> (((c c c + c)*) c) > =>* < invalid > . --- valid
---- search [, 1000] < (((c c + c)*) c) <-> (((c c c + c)*) c) > =>* < invalid >  . --- valid
---- search [, 1000] < (a b)* a <-> a (b a)* > =>* < invalid >  . --- valid
+--- search [, 1000] < (((c c + c)*) c) <--> (((c c + c)*) c) > =>* < invalid > . --- valid
+--- search [, 1000] < (((c c c + c)*) c) <--> (((c c c + c)*) c) > =>* < invalid > . --- valid
+--- search [, 1000] < (((c c + c)*) c) <--> (((c c c + c)*) c) > =>* < invalid >  . --- valid
+--- search [, 1000] < (a b)* a <--> a (b a)* > =>* < invalid >  . --- valid
 
 --- Manually performs a search, and returns the search graph as a tree with backlinks.
 
@@ -180,9 +181,29 @@ fmod MY-META-SEARCH-TREE is
     if Result := metaXapply(myModule, T, R, none, 0, unbounded, 0) .
 endfm
 
+fmod PATTERN is
+    sorts Symbol SVar EVar Pattern .
+    subsorts Symbol SVar EVar < Pattern .
+
+    *** core
+    ops X Y Z : -> SVar [ctor] .
+    ops x y z : -> EVar [ctor] .
+    op app(_ _) : Pattern Pattern -> Pattern [ctor] .
+    op _ -> _ : Pattern Pattern -> Pattern [ctor] .
+    op mu _ . _ : SVar Pattern -> Pattern [ctor] .
+    op bottom : -> Pattern [ctor] .
+
+    *** sugar
+    op top : -> Pattern [ctor] .
+    op nu _ . _ : SVar Pattern -> Pattern [ctor] .
+    op _ /\ _ : Pattern Pattern -> Pattern [ctor] .
+    op _ \/ _ : Pattern Pattern -> Pattern [ctor] .
+endfm
+
 mod REGEX-PROOF-GENERATOR is
-    including MY-META-SEARCH-TREE .
+    protecting MY-META-SEARCH-TREE .
     protecting ERE-VALIDITY .
+    extending PATTERN .
 
     vars Alpha Alpha1 Alpha2 : RegExp .
     vars Beta  Beta1  Beta2  : RegExp .
@@ -220,6 +241,9 @@ mod REGEX-PROOF-GENERATOR is
     op _ ; _ : NeProofHintEdges NeProofHintEdges -> NeProofHintEdges [ctor assoc comm id: none] .
     op _ ; _ : ProofHintEdges ProofHintEdges -> ProofHintEdges [ditto] .
 
+    vars PH : ProofHint .
+    vars PHE1 PHE2 : NeProofHintEdges .
+
     op mkProofHint : Node -> ProofHint .
     op mkProofHint : Edges -> ProofHintEdges .
     eq mkProofHint(backlink(T)) = backlink(getRegExp(downTerm(T, < error >))) .
@@ -239,11 +263,32 @@ mod REGEX-PROOF-GENERATOR is
     op proofHint : RegExp -> ProofHint .
     eq proofHint(Alpha) = mkProofHint(myMetaSearchTree(upTerm(< Alpha >), empty)) .
 
+    *** Mapping EREs to its Matching Logic signature *************************
+    --- We may consider desugaring the constructors via the notation defined
+    --- in some other module. But I'm not sure it will be necessary.
+
+    --- Useful subsorting / overloading
+    subsort Letter < Symbol .
+    subsort RegExp < Pattern .
+    op epsilon : -> Symbol .
+    op _ _ : Pattern Pattern -> Pattern [prec 2 assoc] . --- concat operator
+
+    --- Generate a fresh set variable for each regexp.
+    op F : RegExp -> Symbol [ctor] .
+
+    *** fp *******************************************************************
+    --- Here, we generate the fixedpoint needed for our proof.
+
+    op fp : ProofHint -> Pattern .
+    op fp : ProofHintEdges -> Pattern .
+    eq fp(backlink(Alpha)) = F(Alpha) .
+    eq fp(node(Alpha, PHE1)) = mu F(Alpha) . ( epsilon /\ fp(PHE1)) .
+    eq fp(edge(A , PH)) = A fp(PH) .
+    eq fp(PHE1 ; PHE2) = fp(PHE1) \/ fp(PHE2) .
 endm
 
-
-reduce proofHint((a b)* a <-> a (b a)*) .
-reduce proofHint((a b)* a  -> a (b a)*) .
-reduce proofHint((((c c + c)*) b) <-> (((c c c + c)*) b)) .
-reduce proofHint((((c c + c)*) b)  -> (((c c c + c)*) b)) .
+reduce fp(proofHint((a b)* a <--> a (b a)*)) .
+reduce fp(proofHint((a b)* a  --> a (b a)*)) .
+reduce fp(proofHint((((c c + c)*) b) <--> (((c c c + c)*) b))) .
+reduce fp(proofHint((((c c + c)*) b)  --> (((c c c + c)*) b))) .
 
