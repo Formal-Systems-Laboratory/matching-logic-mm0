@@ -198,7 +198,7 @@ mod REGEX-PROOF-GENERATOR is
     vars Ctx : Context .
 
 
-    *** Proof hint generation
+    *** Proof hint generation ************************************************
     --- As a first step to producing a metamath proof,
     --- we convert the generated metaSearchTree into a term that will
     --- be a precursor to both the fixedpoint used for proving the equality
@@ -214,10 +214,6 @@ mod REGEX-PROOF-GENERATOR is
     subsort NeProofHintEdges < ProofHintEdges .
     op node : RegExp ProofHintEdges -> ProofHint [ctor] .
     op backlink : RegExp -> ProofHint [ctor] .
-
-    --- Failures go to the kind so we can ignore them on the happy path.
-    op downTermFailed : -> [ProofHint] .
-    op invalid : -> [ProofHint] .
 
     op none : -> ProofHintEdges [ctor] .
     op edge : Letter ProofHint -> NeProofHintEdges [ctor] .
