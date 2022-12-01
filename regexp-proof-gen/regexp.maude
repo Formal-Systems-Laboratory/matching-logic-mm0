@@ -191,12 +191,14 @@ fmod PATTERN is
     op _ -> _ : Pattern Pattern -> Pattern [ctor] .
     op mu _ . _ : SVar Pattern -> Pattern [ctor] .
     op bottom : -> Pattern [ctor] .
+    op exists _ . _ : EVar Pattern -> Pattern [ctor] .
 
     *** sugar
     op top : -> Pattern [ctor] .
-    op nu _ . _ : SVar Pattern -> Pattern [ctor] .
     op _ /\ _ : Pattern Pattern -> Pattern [ctor] .
     op _ \/ _ : Pattern Pattern -> Pattern [ctor] .
+    op nu _ . _ : SVar Pattern -> Pattern [ctor] .
+    op forall _ . _ : EVar Pattern -> Pattern [ctor] .
 endfm
 
 mod REGEX-PROOF-GENERATOR is
