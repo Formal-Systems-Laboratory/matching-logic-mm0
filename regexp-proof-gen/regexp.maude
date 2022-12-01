@@ -274,7 +274,7 @@ mod REGEX-PROOF-GENERATOR is
     op _ _ : Pattern Pattern -> Pattern [prec 2 assoc] . --- concat operator
 
     --- Generate a fresh set variable for each regexp.
-    op F : RegExp -> Symbol [ctor] .
+    op F : RegExp -> SVar [ctor] .
 
     *** fp *******************************************************************
     --- Here, we generate the fixedpoint needed for our proof.
@@ -282,11 +282,12 @@ mod REGEX-PROOF-GENERATOR is
     op fp : ProofHint -> Pattern .
     op fp : ProofHintEdges -> Pattern .
     eq fp(backlink(Alpha)) = F(Alpha) .
-    eq fp(node(Alpha, PHE1)) = mu F(Alpha) . ( epsilon /\ fp(PHE1)) .
+    eq fp(node(Alpha, PHE1)) = mu F(Alpha) . ( epsilon \/ fp(PHE1)) .
     eq fp(edge(A , PH)) = A fp(PH) .
     eq fp(PHE1 ; PHE2) = fp(PHE1) \/ fp(PHE2) .
 endm
 
+reduce fp(proofHint((a + b + c + d)*)) .
 reduce fp(proofHint((a b)* a <--> a (b a)*)) .
 reduce fp(proofHint((a b)* a  --> a (b a)*)) .
 reduce fp(proofHint((((c c + c)*) b) <--> (((c c c + c)*) b))) .
