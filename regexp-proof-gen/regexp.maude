@@ -98,6 +98,7 @@ mod ERE-VALIDITY is
     sort State .
     op < _ > : RegExp -> State [ctor] .
     op < invalid > : -> State [ctor] .
+    op < error > : -> State [ctor] . --- Used for down term errors.
 
    ceq < Alpha > = < invalid > if not hasEWP(Alpha) .
     rl [der-a] : < Alpha > => < der(a, Alpha) > .
@@ -179,14 +180,14 @@ fmod MY-META-SEARCH-TREE is
     if Result := metaXapply(myModule, T, R, none, 0, unbounded, 0) .
 endfm
 
-mod DERIVATIVE-TREE is
-    extending MY-META-SEARCH-TREE .
+mod REGEX-PROOF-GENERATOR is
+    including MY-META-SEARCH-TREE .
     protecting ERE-VALIDITY .
 
-    op derivativeTree : State  -> Node .
-    eq derivativeTree(S:State) = myDownMetaSearchTree(myMetaSearchTree(upTerm(S:State), empty)) .
+    vars Alpha Alpha1 Alpha2 : RegExp .
+    vars Beta  Beta1  Beta2  : RegExp .
+    vars A B A1 A2 : Letter .
 
-    --- For readability, we allow object level trees.
     vars T : Term .
     vars Es Es1 Es2 : NeEdges .
     vars EL : EdgeLabel .
@@ -196,23 +197,57 @@ mod DERIVATIVE-TREE is
     vars Subst : Substitution .
     vars Ctx : Context .
 
-    op downFailed : -> State [ctor] .
-    op enode : State Edges -> Node [ctor] .
-    op ebacklink : State -> Node [ctor] .
-    op apply : Qid -> EdgeLabel [ctor] .
 
-    op myDownMetaSearchTree : Node -> Node .
-    op myDownMetaSearchTree : Edges -> Edges .
-    op myDownMetaSearchTree : Substitution -> Substitution .
-    op myDownMetaSearchTree : Context -> Context .
-    eq myDownMetaSearchTree(backlink(T)) = ebacklink(downTerm(T, downFailed)) .
-    eq myDownMetaSearchTree(node(T, Es)) = enode(downTerm(T, downFailed), myDownMetaSearchTree(Es)) .
+    *** Proof hint generation
+    --- As a first step to producing a metamath proof,
+    --- we convert the generated metaSearchTree into a term that will
+    --- be a precursor to both the fixedpoint used for proving the equality
+    --- as well as for the final metamath proof term.
+    --- This will (eventually) include the edges corresponding
+    --- the various simplification rules as well as those corresponding to
+    --- taking the derivative.
 
-    eq myDownMetaSearchTree(Es1 ; Es2) = myDownMetaSearchTree(Es1) ; myDownMetaSearchTree(Es2) .
-    eq myDownMetaSearchTree(rlEdge(apply(R, Ctx, Subst), N:Node)) = rlEdge(apply(R), myDownMetaSearchTree(N)) .
+    --- Currently we will ignore Contexts and Substitutions,
+    --- but we will eventually need to convert them into metamath proof terms.
+
+    sorts ProofHint NeProofHintEdges ProofHintEdges .
+    subsort NeProofHintEdges < ProofHintEdges .
+    op node : RegExp ProofHintEdges -> ProofHint [ctor] .
+    op backlink : RegExp -> ProofHint [ctor] .
+
+    --- Failures go to the kind so we can ignore them on the happy path.
+    op downTermFailed : -> [ProofHint] .
+    op invalid : -> [ProofHint] .
+
+    op none : -> ProofHintEdges [ctor] .
+    op edge : Letter ProofHint -> NeProofHintEdges [ctor] .
+    op _ ; _ : NeProofHintEdges NeProofHintEdges -> NeProofHintEdges [ctor assoc comm id: none] .
+    op _ ; _ : ProofHintEdges ProofHintEdges -> ProofHintEdges [ditto] .
+
+    op mkProofHint : Node -> ProofHint .
+    op mkProofHint : Edges -> ProofHintEdges .
+    eq mkProofHint(backlink(T)) = backlink(getRegExp(downTerm(T, < error >))) .
+    eq mkProofHint(node(T, Es)) = node(getRegExp(downTerm(T, < error > )), mkProofHint(Es)) .
+    eq mkProofHint(Es1 ; Es2) = mkProofHint(Es1) ; mkProofHint(Es2) .
+    eq mkProofHint(rlEdge(apply(R, Ctx, Subst), N:Node)) = edge(ruleLabelToLetter(R), mkProofHint(N)) .
+
+    op getRegExp : State -> RegExp .
+    eq getRegExp(< Alpha >) = Alpha .
+
+    op ruleLabelToLetter : Qid -> Letter .
+    eq ruleLabelToLetter('der-a) = a .
+    eq ruleLabelToLetter('der-b) = b .
+    eq ruleLabelToLetter('der-c) = c .
+    eq ruleLabelToLetter('der-d) = d .
+
+    op proofHint : RegExp -> ProofHint .
+    eq proofHint(Alpha) = mkProofHint(myMetaSearchTree(upTerm(< Alpha >), empty)) .
+
 endm
 
-reduce derivativeTree(< (a b)* a <-> a (b a)* >) .
-reduce derivativeTree(< (a b)* a  -> a (b a)* >) .
-reduce derivativeTree(< (((c c + c)*) b) <-> (((c c c + c)*) b) >) .
-reduce derivativeTree(< (((c c + c)*) b)  -> (((c c c + c)*) b) >) .
+
+reduce proofHint((a b)* a <-> a (b a)*) .
+reduce proofHint((a b)* a  -> a (b a)*) .
+reduce proofHint((((c c + c)*) b) <-> (((c c c + c)*) b)) .
+reduce proofHint((((c c + c)*) b)  -> (((c c c + c)*) b)) .
+
