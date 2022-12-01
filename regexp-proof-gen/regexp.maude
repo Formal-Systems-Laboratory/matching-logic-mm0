@@ -1,6 +1,6 @@
 fmod ERE is
-    sort Letter .
-    sort RegExp .
+    sorts Letter Epsilon RegExp .
+    subsorts Epsilon Letter < RegExp .
 
     --- In thoery an alphabet of {0, 1} is enough to encode all words, but we
     --- will use four letters for convenience.
@@ -8,10 +8,9 @@ fmod ERE is
     op b : -> Letter [ctor] .
     op c : -> Letter [ctor] .
     op d : -> Letter [ctor] .
-    subsort Letter < RegExp .
 
     op empty   :               -> RegExp [ctor] .
-    op epsilon :               -> RegExp [ctor] .
+    op epsilon :               -> Epsilon [ctor] .
     op _ _     : RegExp RegExp -> RegExp [ctor prec 2 assoc] .
     op _ *     : RegExp        -> RegExp [ctor prec 1] .
     op _ + _   : RegExp RegExp -> RegExp [ctor prec 3 assoc comm] .
@@ -268,9 +267,8 @@ mod REGEX-PROOF-GENERATOR is
     --- in some other module. But I'm not sure it will be necessary.
 
     --- Useful subsorting / overloading
-    subsort Letter < Symbol .
+    subsort Epsilon Letter < Symbol .
     subsort RegExp < Pattern .
-    op epsilon : -> Symbol .
     op _ _ : Pattern Pattern -> Pattern [prec 2 assoc] . --- concat operator
 
     --- Generate a fresh set variable for each regexp.
