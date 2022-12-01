@@ -1,36 +1,71 @@
 import "definedness-core.mm1";
 import "propositional.mm1";
 
--- do (def (deduction-thm-lemma phi ppsi) (
---  ));
+theorem norm_not (phi phi2: Pattern)
+  (h: $ Norm phi phi2 $):
+  $ Norm (~phi) (~phi2) $ =
+  '(norm_imp h norm_id);
+theorem norm_or (phi psi phi2 psi2: Pattern)
+  (h1: $ Norm phi phi2 $)
+  (h2: $ Norm psi psi2 $):
+  $ Norm (phi \/ psi) (phi2 \/ psi2) $ =
+  '(norm_imp (norm_not h1) h2);
+theorem norm_and (phi psi phi2 psi2: Pattern)
+  (h1: $ Norm phi phi2 $)
+  (h2: $ Norm psi psi2 $):
+  $ Norm (phi /\ psi) (phi2 /\ psi2) $ =
+  '(norm_not @ norm_imp h1 (norm_not h2));
 
-def defCtx {.x: EVar}: Pattern = $ exists x (|^ eVar x ^|) $;
-theorem defAppCtx (phi: Pattern): $ _AppCtx defCtx phi (|^ phi ^|) $ = '(! appCtxR x);
-theorem defNestedAppCtx (phi: Pattern): $ _NestedAppCtx defCtx phi (|^ phi ^|) $ = '(nestedAppCtxR (! nestedAppCtxVar x));
+theorem framing_norm {box: SVar} (ctx: Pattern box) (phi1 phi2 rho1 rho2: Pattern)
+  (h1: $ AppCtx (app[ phi1 / box ] ctx) rho1 $)
+  (h2: $ AppCtx (app[ phi2 / box ] ctx) rho2 $)
+  (h3: $ phi1 -> phi2 $):
+  $ rho1 -> rho2 $ = '(norm (norm_imp (norm_ctxApp_red h1) (norm_ctxApp_red h2)) @ framing h3);
+theorem singleton_norm {box1 box2: SVar} {x: EVar}
+  (ctx1: Pattern box1 x) (ctx2: Pattern box2 x)
+  (phi rho1 rho2: Pattern x)
+  (h1: $ AppCtx (app[ (eVar x) /\ phi / box1 ] ctx1) rho1 $)
+  (h2: $ AppCtx (app[ (eVar x) /\ ~phi / box2 ] ctx2) rho2 $):
+  $ ~(rho1 /\ rho2) $ =
+  '(norm (norm_not @ norm_and (norm_ctxApp_red h1) (norm_ctxApp_red h2)) singleton);
+
+--TODO: Fix these
+
+theorem eSubstitution_in_not {x: EVar} (psi phi: Pattern x):
+  $ ESubst (e[ psi / x ] ~phi) (~e[ psi / x ] phi) $ =
+  '(eSubstitution_in_imp eSubstitution_in_bot);
+
+theorem sSubstitution_in_not {X: SVar} (psi phi rho: Pattern X)
+  (h: $ SSubst (s[ psi / X ] phi) rho $):
+  $ SSubst (s[ psi / X ] ~phi) (~rho) $ =
+  '(sSubstitution_in_imp h sSubstitution_in_bot);
+
+def defCtx {box: SVar}: Pattern box = $ (|^ sVar box ^|) $;
+theorem defAppCtx {box: SVar} (phi: Pattern):
+  $ AppCtx (app[ phi / box ] (defCtx box)) (|^ phi ^|) $ =
+  '(appCtxR _);
 theorem singletonDef {x: EVar} (phi: Pattern x):
-  $ ~(|^ eVar x /\ phi ^| /\ |^ eVar x /\ ~phi ^|) $ = '(singleton defNestedAppCtx defNestedAppCtx);
+  $ ~(|^ eVar x /\ phi ^| /\ |^ eVar x /\ ~phi ^|) $ = '(singleton_norm (! defAppCtx box1) (! defAppCtx box2));
 theorem framingDef (h: $ phi1 -> phi2 $):
-  $ |^ phi1 ^| -> |^ phi2 ^| $ = '(framing defAppCtx defAppCtx h);
+  $ |^ phi1 ^| -> |^ phi2 ^| $ = '(framing_norm (! defAppCtx box) defAppCtx h);
 
 theorem prop_43_bot (rho: Pattern): $ bot -> rho $ = 'absurdum;
-theorem prop_43_or (ctx phi1 phi2 rho12 rho1 rho2: Pattern)
-  (h1: $ _AppCtx ctx (phi1 \/ phi2) rho12 $)
-  (h2: $ _AppCtx ctx phi1 rho1 $)
-  (h3: $ _AppCtx ctx phi2 rho2 $):
-  $ (rho1 \/ rho2) -> rho12 $ = '(eori (framing h2 h1 orl) (framing h3 h1 orr));
-theorem prop_43_exists (ctx rho2: Pattern) {x: EVar} (phi rho1: Pattern x)
-  (h1: $ _AppCtx ctx phi rho1 $)
-  (h2: $ _AppCtx ctx (exists x phi) rho2 $):
-  $ (exists x rho1) -> rho2 $ =
-    '(exists_generalization @ framing h1 h2 exists_intro_same_var);
+theorem prop_43_or {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
+  $ (ctxApp box ctx phi1 \/ ctxApp box ctx phi2) -> ctxApp box ctx (phi1 \/ phi2) $ =
+  '(eori (framing orl) (framing orr));
+theorem prop_43_exists {box: SVar} {x: EVar} (ctx: Pattern box) (phi: Pattern x):
+  $ (exists x (ctxApp box ctx phi)) -> (ctxApp box ctx (exists x phi)) $ =
+  '(exists_generalization @ framing exists_intro_same_var);
+
+
+-- TODO: Rewrite the following theorems:
 
 theorem univ_gene {x: EVar} (phi: Pattern x)
   (p: $ phi $):
   $ forall x phi $ = '(exists_generalization @ notnot1 p);
-theorem var_subst {x y: EVar} (phi: Pattern x y) (rho: Pattern y)
-  (subst: $ e[ eVar y / x ] phi ==> rho $):
-  $ (forall x phi) -> rho $ =
-    '(con1 @ exists_intro @ eSubstitution_in_not subst);
+theorem var_subst {x y: EVar} (phi: Pattern x y):
+  $ (forall x phi) -> e[ eVar y / x ] phi $ =
+  '(con1 @ exists_intro @ eSubstitution_in_not);
 theorem var_subst_same_var {x: EVar} (phi: Pattern x):
   $ (forall x phi) -> phi $ = '(con1 exists_intro_same_var);
 

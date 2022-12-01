@@ -333,17 +333,6 @@ do {
     @ refine tgt (foldl ps (verb e) @ fn (acc p2) @ copy-span e '(mp ,acc ,p2)))
 };
 
-
-theorem eSubstitution_in_not {x: EVar} (psi phi rho: Pattern x)
-  (h: $ e[ psi / x ] phi ==> rho $):
-  $ e[ psi / x ] ~phi ==> ~rho $ =
-  '(eSubstitution_in_imp h eSubstitution_in_bot);
-
-theorem sSubstitution_in_not {X: SVar} (psi phi rho: Pattern X)
-  (h: $ s[ psi / X ] phi ==> rho $):
-  $ s[ psi / X ] ~phi ==> ~rho $ =
-  '(sSubstitution_in_imp h sSubstitution_in_bot);
-
 theorem a1i (h: $ b $): $ a -> b $ = '(prop_1 h);
 theorem a2i (h: $ a -> b -> c $): $ (a -> b) -> (a -> c) $ = '(prop_2 h);
 theorem mpd (h1: $ a -> b $) (h2: $ a -> b -> c $): $ a -> c $ = '(prop_2 h2 h1);
@@ -696,8 +685,3 @@ theorem lemma_51: $ ((a /\ ~b) \/ (b /\ ~a)) <-> ~(a <-> b) $ = '(iani
   (eori (con3 @ rsyl anl @ imim2i notnot1)
         (rsyl ancom @ con3 @ rsyl anr con3))
   (con1 @ rsyl (anl not_distr_or) @ anim (anr iman) (anr iman)));
-
-theorem framing_eqiv
-  (h1: $ _AppCtx ctx phi1 rho1 $)
-  (h2: $ _AppCtx ctx phi2 rho2 $)
-  (h_eqiv: $ phi1 <-> phi2 $): $ (rho1 <-> rho2) $ = '(iani (framing h1 h2 @ anl h_eqiv) (framing h2 h1 @ anr h_eqiv));

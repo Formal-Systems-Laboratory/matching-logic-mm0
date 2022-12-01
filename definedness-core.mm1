@@ -13,6 +13,6 @@ infixl _neq: $!=$ prec 15;
 def _subset (phi1 phi2: Pattern): Pattern = $ |_ phi1 -> phi2 _| $;
 infixl _subset: $C_$ prec 15;
 def _in {x: EVar} (phi: Pattern x): Pattern x = $ |^ (eVar x) /\ phi ^| $;
-infixl _in: $in$ prec 15;
+infixl _in: $in$ prec 35;
 
 axiom definedness {x: EVar}: $ |^ eVar x ^| $;
