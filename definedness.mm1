@@ -53,8 +53,8 @@ theorem prop_43_bot (rho: Pattern): $ bot -> rho $ = 'absurdum;
 theorem prop_43_or {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
   $ (app[ phi1 / box ] ctx \/ app[ phi2 / box ] ctx) -> app[ phi1 \/ phi2 / box ] ctx $ =
   '(eori (framing orl) (framing orr));
-theorem prop_43_exists {box: SVar} {x: EVar} (ctx: Pattern box) (phi: Pattern x):
-  $ (exists x (app[ phi1 / box ] ctx)) -> (ctxApp box ctx (exists x phi)) $ =
+theorem prop_43_exists {box: SVar} {x: EVar} (ctx: Pattern box) (phi: Pattern):
+  $ (exists x (app[ phi / box ] ctx)) -> (ctxApp box ctx (exists exists_intro_same_varx phi)) $ =
   '(exists_generalization @ framing exists_intro_same_var);
 
 
