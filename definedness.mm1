@@ -65,20 +65,18 @@ theorem univ_gene {x: EVar} (phi: Pattern x)
   $ forall x phi $ = '(exists_generalization @ notnot1 p);
 theorem var_subst {x y: EVar} (phi: Pattern x y):
   $ (forall x phi) -> e[ eVar y / x ] phi $ =
-  '( _ )
-  --- '(con1 @ exists_intro @ eSubstitution_in_not);
+  '(con1 @ exists_intro @ eSubstitution_in_not);
 theorem var_subst_same_var {x: EVar} (phi: Pattern x):
   $ (forall x phi) -> phi $ = '(con1 exists_intro_same_var);
 
 theorem lemma_46
-  (ctx : Pattern)  (p : $ phi $):
-  $ ~ app[ ~phi / box ] ctx $ = '(syl (propag_bot) (framing (notnot1 p)));
+  (ctxp: $ _AppCtx ctx (~ phi) rhop $)
+  (ctxb: $ _AppCtx ctx bot rhob $)
+  (p : $ phi $):
+  $ ~rhop $ = '(syl (propag_bot ctxb) (framing ctxp ctxb (notnot1 p)));
 
 theorem eqiv_to_eq (h: $ phi <-> psi $):
-  $ phi == psi $ =
-  '(norm { (norm_imp (norm_ctxApp_red (appCtxRx appCtxVar)) norm_id) : $Norm (~ app[ ~ (phi <-> psi) / box ] |^ sVar box ^|) (phi == psi)$ }
-    (lemma_46 h)
-   ) ; --- '(lemma_46 defAppCtx defAppCtx h);
+  $ phi == psi $ = '(lemma_46 defAppCtx defAppCtx h);
 
 theorem eq_intro: $ phi == phi $ = '(eqiv_to_eq biid);
 
