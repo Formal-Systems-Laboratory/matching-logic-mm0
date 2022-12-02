@@ -77,25 +77,25 @@ axiom negative_in_mu {X: SVar} {Y: SVar} (phi: Pattern X Y):
 axiom negative_in_same_mu {X: SVar} (phi: Pattern X): $ _Negative X (mu X phi) $;
 
 -- Definition of substitutions and application contexts as meta-level relations
-term ESubst : Pattern > Pattern > Substitution;
+term Norm : Pattern > Pattern > Substitution;
 term SSubst : Pattern > Pattern > Substitution;
 term AppCtx : Pattern > Pattern > Substitution;
 
-axiom eSubstitution_in_eVar {x: EVar} {y: EVar} (psi: Pattern x y): $ ESubst (e[ psi / x ] eVar y) (eVar y) $;
-axiom eSubstitution_in_same_eVar {x: EVar} (psi: Pattern x): $ ESubst (e[ psi / x ] eVar x) psi $;
-axiom eSubstitution_in_sVar {x: EVar} {X: SVar} (psi: Pattern x X): $ ESubst (e[ psi / x ] sVar X) (sVar X) $;
-axiom eSubstitution_in_sym {x: EVar} (psi: Pattern x) (s: Symbol): $ ESubst (e[ psi / x ] sym s) (sym s) $;
-axiom eSubstitution_in_bot {x: EVar} (psi: Pattern x): $ ESubst (e[ psi / x ] bot) bot $;
+axiom eSubstitution_in_eVar {x: EVar} {y: EVar} (psi: Pattern x y): $ Norm (e[ psi / x ] eVar y) (eVar y) $;
+axiom eSubstitution_in_same_eVar {x: EVar} (psi: Pattern x): $ Norm (e[ psi / x ] eVar x) psi $;
+axiom eSubstitution_in_sVar {x: EVar} {X: SVar} (psi: Pattern x X): $ Norm (e[ psi / x ] sVar X) (sVar X) $;
+axiom eSubstitution_in_sym {x: EVar} (psi: Pattern x) (s: Symbol): $ Norm (e[ psi / x ] sym s) (sym s) $;
+axiom eSubstitution_in_bot {x: EVar} (psi: Pattern x): $ Norm (e[ psi / x ] bot) bot $;
 axiom eSubstitution_in_imp {x: EVar} (psi phi1 phi2: Pattern x):
-  $ ESubst (e[ psi / x ] (phi1 -> phi2)) ((e[ psi / x ] phi1) -> e[ psi / x ] phi2) $;
+  $ Norm (e[ psi / x ] (phi1 -> phi2)) ((e[ psi / x ] phi1) -> e[ psi / x ] phi2) $;
 axiom eSubstitution_in_app {x: EVar} (psi phi1 phi2: Pattern x):
-  $ ESubst (e[ psi / x ] app phi1 phi2) (app (e[ psi / x ] phi1) (e[ psi / x ] phi2)) $;
+  $ Norm (e[ psi / x ] app phi1 phi2) (app (e[ psi / x ] phi1) (e[ psi / x ] phi2)) $;
 axiom eSubstitution_in_exists {x: EVar} (psi: Pattern x) {y: EVar} (phi: Pattern x y):
-  $ ESubst (e[ psi / x ] exists y phi) (exists y (e[ psi / x ] phi)) $;
+  $ Norm (e[ psi / x ] exists y phi) (exists y (e[ psi / x ] phi)) $;
 axiom eSubstitution_in_same_exists {x: EVar} (psi phi: Pattern x):
-  $ ESubst (e[ psi / x ] exists x phi) (exists x phi) $;
+  $ Norm (e[ psi / x ] exists x phi) (exists x phi) $;
 axiom eSubstitution_in_mu {x: EVar} (psi: Pattern x) {X: SVar} (phi: Pattern x X):
-  $ ESubst (e[ psi / x ] mu X phi) (mu X (e[ psi / x ] phi)) $;
+  $ Norm (e[ psi / x ] mu X phi) (mu X (e[ psi / x ] phi)) $;
 -- TODO: propagate substitutions through the substitution application terms as well
 
 axiom sSubstitution_in_eVar {X: SVar} {x: EVar} (psi: Pattern X x): $ SSubst (s[ psi / X ] eVar x) (eVar x) $;
@@ -153,8 +153,6 @@ axiom norm_ctxApp_pt {box: SVar} (ctx ctx2: Pattern box) (phi phi2: Pattern):
   $ Norm phi phi2 $ >
   $ Norm (ctxApp box ctx phi) (ctxApp box ctx2 phi2) $;
 -- red stands for reduction
-axiom norm_evSubst_red (plug rho: Pattern):
-  $ ESubst plug rho $ > $ Norm plug rho $;
 axiom norm_svSubst_red (plug rho: Pattern):
   $ SSubst plug rho $ > $ Norm plug rho $;
 axiom norm_ctxApp_red (plug rho: Pattern):

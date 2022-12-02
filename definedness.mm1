@@ -32,7 +32,7 @@ theorem singleton_norm {box1 box2: SVar} {x: EVar}
 --TODO: Fix these
 
 theorem eSubstitution_in_not {x: EVar} (psi phi: Pattern x):
-  $ ESubst (e[ psi / x ] ~phi) (~e[ psi / x ] phi) $ =
+  $ Norm (e[ psi / x ] ~phi) (~e[ psi / x ] phi) $ =
   '(eSubstitution_in_imp eSubstitution_in_bot);
 
 theorem sSubstitution_in_not {X: SVar} (psi phi rho: Pattern X)
