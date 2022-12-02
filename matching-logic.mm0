@@ -129,11 +129,15 @@ axiom sSubstitution_in_same_mu {X: SVar} (psi phi: Pattern X):
   $ Norm (s[ psi / X ] mu X phi) (mu X phi) $;
 -- TODO: propagate substitutions through the substitution application terms as well
 
-axiom appCtxVar {box: SVar} (phi: Pattern): $ Norm (app[ phi / box ] sVar box) phi $;
-axiom appCtxL {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
-  $ Norm (app[ phi1 / box ] (app ctx phi2)) (app (app[ phi1 / box ] ctx) phi2) $;
-axiom appCtxR {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
-  $ Norm (app[ phi2 / box ] (app phi1 ctx)) (app phi1 (app[ phi2 / box ] ctx)) $;
+axiom appCtxTriv {box: SVar} (phi: Pattern): $ Norm (app[ phi / box ] sVar box) phi $;
+axiom appCtxL {box: SVar} (ctx: Pattern box) (phi1 phi2 plug: Pattern):
+    $ Norm (app[ plug / box ] ctx) phi1$
+  > $ Norm (app[ plug / box ] (app ctx phi2)) (app phi1 phi2)$
+  ;
+axiom appCtxR {box: SVar} (ctx: Pattern box) (phi1 phi2 plug: Pattern):
+    $ Norm (app[ plug / box ] ctx) phi1$
+  > $ Norm (app[ plug / box ] (app phi2 ctx)) (app phi2 phi1)$
+  ;
 
 -- Normalization relation (used for normalizing terms with substitutions in them)
 axiom norm_id (phi: Pattern): $ Norm phi phi $;
