@@ -17,15 +17,15 @@ theorem norm_and (phi psi phi2 psi2: Pattern)
   '(norm_not @ norm_imp h1 (norm_not h2));
 
 theorem framing_norm {box: SVar} (ctx: Pattern box) (phi1 phi2 rho1 rho2: Pattern)
-  (h1: $ AppCtx (app[ phi1 / box ] ctx) rho1 $)
-  (h2: $ AppCtx (app[ phi2 / box ] ctx) rho2 $)
+  (h1: $ Norm (app[ phi1 / box ] ctx) rho1 $)
+  (h2: $ Norm (app[ phi2 / box ] ctx) rho2 $)
   (h3: $ phi1 -> phi2 $):
   $ rho1 -> rho2 $ = '(norm (norm_imp (norm_ctxApp_red h1) (norm_ctxApp_red h2)) @ framing h3);
 theorem singleton_norm {box1 box2: SVar} {x: EVar}
   (ctx1: Pattern box1 x) (ctx2: Pattern box2 x)
   (phi rho1 rho2: Pattern x)
-  (h1: $ AppCtx (app[ (eVar x) /\ phi / box1 ] ctx1) rho1 $)
-  (h2: $ AppCtx (app[ (eVar x) /\ ~phi / box2 ] ctx2) rho2 $):
+  (h1: $ Norm (app[ (eVar x) /\ phi / box1 ] ctx1) rho1 $)
+  (h2: $ Norm (app[ (eVar x) /\ ~phi / box2 ] ctx2) rho2 $):
   $ ~(rho1 /\ rho2) $ =
   '(norm (norm_not @ norm_and (norm_ctxApp_red h1) (norm_ctxApp_red h2)) singleton);
 
@@ -41,13 +41,13 @@ theorem sSubstitution_in_not {X: SVar} (psi phi rho: Pattern X)
   '(sSubstitution_in_imp h sSubstitution_in_bot);
 
 def defCtx {box: SVar}: Pattern box = $ (|^ sVar box ^|) $;
-theorem defAppCtx {box: SVar} (phi: Pattern):
-  $ AppCtx (app[ phi / box ] (defCtx box)) (|^ phi ^|) $ =
+theorem defNorm {box: SVar} (phi: Pattern):
+  $ Norm (app[ phi / box ] (defCtx box)) (|^ phi ^|) $ =
   '(appCtxR _);
 theorem singletonDef {x: EVar} (phi: Pattern x):
-  $ ~(|^ eVar x /\ phi ^| /\ |^ eVar x /\ ~phi ^|) $ = '(singleton_norm (! defAppCtx box1) (! defAppCtx box2));
+  $ ~(|^ eVar x /\ phi ^| /\ |^ eVar x /\ ~phi ^|) $ = '(singleton_norm (! defNorm box1) (! defNorm box2));
 theorem framingDef (h: $ phi1 -> phi2 $):
-  $ |^ phi1 ^| -> |^ phi2 ^| $ = '(framing_norm (! defAppCtx box) defAppCtx h);
+  $ |^ phi1 ^| -> |^ phi2 ^| $ = '(framing_norm (! defNorm box) defNorm h);
 
 theorem prop_43_bot (rho: Pattern): $ bot -> rho $ = 'absurdum;
 theorem prop_43_or {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
@@ -88,16 +88,16 @@ theorem membership_intro {x: EVar} (phi: Pattern x)
 theorem membership_elim {x: EVar} (phi: Pattern)
   (h: $ forall x (x in phi) $):
   $ phi $ =
-  '(dne @ exists_generalization (dne (dne (singleton defNestedAppCtx (! nestedAppCtxVar box)) (var_subst_same_var h))) existence);
+  '(dne @ exists_generalization (dne (dne (singleton defNestedNorm (! nestedAppCtxVar box)) (var_subst_same_var h))) existence);
 
 theorem membership_var {x y: EVar}:
   $ (x in (eVar y)) == (eVar x == eVar y) $ = '(eqiv_to_eq @ iani
-  (rsyl (iand (dne singletonDef) (imim1i (framingDef ancom) @ dne @ singleton defNestedAppCtx defNestedAppCtx)) @ rsyl (anri not_distr_or) @ rsyl (con3 @ propag_or defAppCtx defAppCtx defAppCtx) @ con3 @ framing defAppCtx defAppCtx @ anr lemma_51)
-  (propag_or defAppCtx defAppCtx defAppCtx @ framingDef or_imp_xor_and @ prop_43_or defAppCtx defAppCtx defAppCtx @ orl definedness)
+  (rsyl (iand (dne singletonDef) (imim1i (framingDef ancom) @ dne @ singleton defNestedNorm defNestedNorm)) @ rsyl (anri not_distr_or) @ rsyl (con3 @ propag_or defNorm defNorm defNorm) @ con3 @ framing defNorm defNorm @ anr lemma_51)
+  (propag_or defNorm defNorm defNorm @ framingDef or_imp_xor_and @ prop_43_or defNorm defNorm defNorm @ orl definedness)
   );
 
 theorem membership_not_lemma {x: EVar} (phi: Pattern x):
-  $ (x in phi) \/ (x in ~phi) $ = '(propag_or defAppCtx defAppCtx defAppCtx @ framingDef (exp @ iand anl @ curry @ com12 dne) definedness);
+  $ (x in phi) \/ (x in ~phi) $ = '(propag_or defNorm defNorm defNorm @ framingDef (exp @ iand anl @ curry @ com12 dne) definedness);
 
 theorem membership_not {x: EVar} (phi: Pattern x):
   $ (x in ~phi) == ~(x in phi) $ =
@@ -112,7 +112,7 @@ theorem membership_and {x: EVar} (phi1 phi2: Pattern x):
     (iand (framingDef @ iand anl anrl) (framingDef @ iand anl anrr))
     (syl dne @ con2 @ rsyl membership_not_lemma @ rsyl (framing_in @ anl notan) @ rsyl
       (framingDef @ anl andi)
-      (rsyl (propag_or defAppCtx defAppCtx defAppCtx) @ rsyl (orim (con2 @ dne singletonDef) (con2 @ dne singletonDef)) (anr notan))));
+      (rsyl (propag_or defNorm defNorm defNorm) @ rsyl (orim (con2 @ dne singletonDef) (con2 @ dne singletonDef)) (anr notan))));
 
 -- theorem membership_exists {x y: EVar} (phi: Pattern x y):
 --   $ (x in (exists y phi)) == (exists y (x in phi)) $ = '(eqiv_to_eq @ iani

@@ -78,7 +78,6 @@ axiom negative_in_same_mu {X: SVar} (phi: Pattern X): $ _Negative X (mu X phi) $
 
 -- Definition of substitutions and application contexts as meta-level relations
 term Norm : Pattern > Pattern > Substitution;
-term AppCtx : Pattern > Pattern > Substitution;
 
 axiom eSubstitution_in_eVar {x: EVar} {y: EVar} (psi: Pattern x y): $ Norm (e[ psi / x ] eVar y) (eVar y) $;
 axiom eSubstitution_in_same_eVar {x: EVar} (psi: Pattern x): $ Norm (e[ psi / x ] eVar x) psi $;
@@ -130,11 +129,11 @@ axiom sSubstitution_in_same_mu {X: SVar} (psi phi: Pattern X):
   $ Norm (s[ psi / X ] mu X phi) (mu X phi) $;
 -- TODO: propagate substitutions through the substitution application terms as well
 
-axiom appCtxVar {box: SVar} (phi: Pattern): $ AppCtx (app[ phi / box ] sVar box) phi $;
+axiom appCtxVar {box: SVar} (phi: Pattern): $ Norm (app[ phi / box ] sVar box) phi $;
 axiom appCtxL {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
-  $ AppCtx (app[ phi1 / box ] (app ctx phi2)) (app (app[ phi1 / box ] ctx) phi2) $;
+  $ Norm (app[ phi1 / box ] (app ctx phi2)) (app (app[ phi1 / box ] ctx) phi2) $;
 axiom appCtxR {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
-  $ AppCtx (app[ phi2 / box ] (app phi1 ctx)) (app phi1 (app[ phi2 / box ] ctx)) $;
+  $ Norm (app[ phi2 / box ] (app phi1 ctx)) (app phi1 (app[ phi2 / box ] ctx)) $;
 
 -- Normalization relation (used for normalizing terms with substitutions in them)
 axiom norm_id (phi: Pattern): $ Norm phi phi $;
@@ -165,9 +164,6 @@ axiom norm_ctxApp_pt {box: SVar} (ctx ctx2: Pattern box) (phi phi2: Pattern):
   $ Norm ctx ctx2 $ >
   $ Norm phi phi2 $ >
   $ Norm (ctxApp box ctx phi) (ctxApp box ctx2 phi2) $;
--- red stands for reduction
-axiom norm_ctxApp_red (plug rho: Pattern):
-  $ AppCtx plug rho $ > $ Norm plug rho $;
 
 -- The Proof System of Matching Logic
 axiom norm (phi psi: Pattern):
