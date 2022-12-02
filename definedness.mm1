@@ -36,8 +36,8 @@ theorem eSubstitution_in_not {x: EVar} (psi phi: Pattern x):
   '(eSubstitution_in_imp  norm_id eSubstitution_in_bot);
 
 theorem sSubstitution_in_not {X: SVar} (psi phi rho: Pattern X)
-  (h: $ SSubst (s[ psi / X ] phi) rho $):
-  $ SSubst (s[ psi / X ] ~phi) (~rho) $ =
+  (h: $ Norm (s[ psi / X ] phi) rho $):
+  $ Norm (s[ psi / X ] ~phi) (~rho) $ =
   '(sSubstitution_in_imp h sSubstitution_in_bot);
 
 def defCtx {box: SVar}: Pattern box = $ (|^ sVar box ^|) $;
