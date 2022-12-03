@@ -70,8 +70,8 @@ theorem framing_definedness (h: $ phi1 -> phi2 $):
 --- Lemmas from Technical Report
 --------------------------------
 
+--- prop_43: Propagation through symbol contexts.
 theorem prop_43_bot (rho: Pattern): $ bot -> rho $ = 'absurdum;
-
 theorem prop_43_or {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
   $ (app[ phi1 / box ] ctx \/ app[ phi2 / box ] ctx) -> app[ phi1 \/ phi2 / box ] ctx $ =
   '(eori (framing orl) (framing orr));
@@ -81,11 +81,17 @@ theorem prop_43_or_norm {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern)
   (h12: $ Norm (app[ phi1 \/ phi2 / box ] ctx) rho12 $):
   $ (rho1 \/ rho2) -> rho12 $ =
   '(norm (norm_imp (norm_or h1 h2) h12) prop_43_or);
-
 theorem prop_43_exists {box: SVar} {x: EVar} (ctx: Pattern box) (phi: Pattern x):
   $ (exists x (app[ phi / box ] ctx)) -> (ctxApp box ctx (exists x phi)) $ =
   '(exists_generalization @ framing exists_intro_same_var);
 
+
+--- prop 44
+--- TODO: Generalize to arbitary contexts
+theorem conguence_of_equivalence_appctx (h1: $phi1 <-> phi2$):
+ $app[ phi1 / box ] ctx <-> app[ phi2 / box ] ctx$ =
+ '(iani (framing @ bi1i h1) (framing @ bi2 h1))
+ ;
 
 theorem univ_gene {x: EVar} (phi: Pattern x)
   (p: $ phi $):
@@ -102,28 +108,29 @@ theorem lemma_46
   (ctx : Pattern)  (p : $ phi $):
   $ ~ app[ ~phi / box ] ctx $ = '(syl (propag_bot) (framing (notnot1 p)));
 
+--- lemma 47
 theorem eqiv_to_eq (h: $ phi <-> psi $):
   $ phi == psi $ =
-  '(norm { (norm_imp (appCtxR appCtxTriv) norm_id) : $Norm (~ app[ ~ (phi <-> psi) / box ] |^ sVar box ^|) (phi == psi)$ }
+  '(norm (norm_imp (appCtxR ( ! appCtxTriv box)) norm_id) 
     (lemma_46 h)
    ) ;
 
-theorem eq_intro: $ phi == phi $ = '(eqiv_to_eq biid);
+--- lemma 48
+theorem equality_intro: $ phi == phi $ = '(eqiv_to_eq biid);
 
-theorem membership_intro {x: EVar} (phi: Pattern x)
+--- lemma 49
+theorem memberseq_introhip_intro {x: EVar} (phi: Pattern x)
   (h: $ phi $):
   $ forall x (x in phi) $ =
   '(univ_gene @ framing_definedness (iand id (a1i h)) definedness);
 
-
+--- lemma 50
 theorem membership_elim {x: EVar} (phi: Pattern)
   (h: $ forall x (x in phi) $):
   $ phi $ = '(dne (exists_generalization (dne  (dne (norm (norm_imp (norm_and (appCtxR (! appCtxTriv box)) (! appCtxTriv box)) norm_id) @ singleton) (var_subst_same_var h) ) ) existence))
 ;
 
-
---- -  (rsyl (iand (dne singletonDef) (imim1i (framingDef ancom) @ dne @ singleton defNestedNorm defNestedNorm)) @ rsyl (anri not_distr_or) @ rsyl (con3 @ propag_or defNorm defNorm defNorm) @ con3 @ framing defNorm defNorm @ anr lemma_51)
-
+--- lemma 51
 theorem membership_var {x y: EVar}:
   $ (x in (eVar y)) == (eVar x == eVar y) $ =
   '(eqiv_to_eq @ iani
@@ -137,6 +144,7 @@ theorem membership_not_lemma {x : EVar} (phi: Pattern x):
   $ (x in phi) \/ (x in ~phi) $ =
   '(norm (norm_or (appCtxR appCtxTriv)  (appCtxR appCtxTriv)) @ propag_or (norm_rev (appCtxR ( ! appCtxTriv S) ) @ framing_definedness (exp @ iand anl @ curry @ com12 dne) definedness ) );
 
+--- lemma 52
 theorem membership_not {x: EVar} (phi: Pattern x):
   $ (x in ~phi) == ~(x in phi) $ =
   '(eqiv_to_eq @ iani (con2 @ dne singleton_definedness) membership_not_lemma);
@@ -145,7 +153,7 @@ theorem membership_not {x: EVar} (phi: Pattern x):
 theorem framing_in {x: EVar} (phi1 phi2: Pattern x)
   (h: $ phi1 -> phi2 $): $ (x in phi1) -> (x in phi2)$ = '(framing_definedness @ anim2 h);
 
-
+--- lemma 54
 theorem membership_and {x: EVar} (phi1 phi2: Pattern x):
   $ x in (phi1 /\ phi2) == (x in phi1) /\ (x in phi2) $ =
   '(eqiv_to_eq @ iani
@@ -158,6 +166,7 @@ theorem membership_and {x: EVar} (phi1 phi2: Pattern x):
      )
   );
 
+--- lemma 55
 --- theorem membership_exists {x y: EVar} (phi: Pattern x y):
 ---  $ (x in (exists y phi)) == (exists y (x in phi)) $ = '(eqiv_to_eq @ iani
 ---    (_)
