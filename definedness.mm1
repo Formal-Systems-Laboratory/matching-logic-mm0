@@ -41,6 +41,10 @@ theorem propag_or_norm (ctx: Pattern) (phi1 phi2 rho12 rho2 rho1: Pattern)
   (h1:  $ Norm (app[ phi1 / box ] ctx) rho1 $)
   (h2:  $ Norm (app[ phi2 / box ] ctx) rho2 $):
   $ rho12 -> rho1 \/ rho2 $ = '(norm (norm_imp h12 (norm_or h1 h2)) propag_or);
+theorem propag_exists_norm (ctx: Pattern) (phi1 rho1 rho1e: Pattern)
+  (h1:  $ Norm (app[ phi1 / box ] ctx) rho1 $)
+  (h1e:  $ Norm (app[ exists x phi1 / box ] ctx) rho1e $):
+  $ rho1e -> exists x rho1 $ = '(norm (norm_imp h1e (norm_exists h1)) propag_exists);
 theorem framing_norm {box: SVar} (ctx: Pattern box) (phi1 phi2 rho1 rho2: Pattern)
   (h1: $ Norm (app[ phi1 / box ] ctx) rho1 $)
   (h2: $ Norm (app[ phi2 / box ] ctx) rho2 $)
