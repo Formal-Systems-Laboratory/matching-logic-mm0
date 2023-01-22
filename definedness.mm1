@@ -94,8 +94,8 @@ theorem membership_elim {x: EVar} (phi: Pattern)
 
 theorem membership_var {x y: EVar}:
   $ (x in (eVar y)) == (eVar x == eVar y) $ = '(eqiv_to_eq @ iani
-  (rsyl (iand (dne singletonDef) (imim1i (framingDef ancom) @ dne @ singleton) @ rsyl (anri not_distr_or) @ rsyl (con3 @ propag_or defNorm defNorm defNorm) @ con3 @ framing defNorm defNorm @ anr lemma_51)
-  (propag_or @ framingDef or_imp_xor_and @ prop_43_or defNorm defNorm defNorm @ orl definedness)
+  (rsyl (iand (dne singletonDef) (imim1i (framingDef ancom) @ dne @ norm (norm_not @ norm_and defNorm defNorm) (! singleton box1 box2))) @ rsyl (anri not_distr_or) @ rsyl (con3 @ norm (norm_imp norm_refl @ norm_or defNorm defNorm) propag_or) @ con3 @ norm (norm_imp defNorm norm_refl) (! framing box _ _ _ @ anr lemma_51))
+  (norm (norm_or defNorm defNorm) @ propag_or @ norm (norm_sym (! defNorm box)) @ framingDef or_imp_xor_and @ norm defNorm @ prop_43_or @ norm (norm_sym @ norm_or defNorm (! defNorm box)) @ orl definedness)
   );
 
 theorem membership_not_lemma {x: EVar} (phi: Pattern x):
