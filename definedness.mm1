@@ -1,6 +1,14 @@
 import "definedness-core.mm1";
 import "propositional.mm1";
 
+theorem exists_generalization_strict {x: EVar} (phi1: Pattern x) (phi2: Pattern)
+  (h: $ phi1 -> phi2 $):
+  $ (exists x phi1) -> phi2 $ =
+  '(exists_generalization eFresh_triv h);
+theorem propag_exists_strict {box: SVar} {x: EVar} (ctx: Pattern box) (phi: Pattern x):
+  $ app[ exists x phi / box ] ctx -> exists x (app[ phi / box ] ctx) $ =
+  '(propag_exists eFresh_triv);
+
 theorem norm_not (phi phi2: Pattern)
   (h: $ Norm phi phi2 $):
   $ Norm (~phi) (~phi2) $ =
@@ -53,15 +61,12 @@ theorem prop_43_or {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
   $ (app[ phi1 / box ] ctx \/ app[ phi2 / box ] ctx) -> app[ phi1 \/ phi2 / box ] ctx $ =
   '(eori (framing orl) (framing orr));
 theorem prop_43_exists {box: SVar} {x: EVar} (ctx: Pattern box) (phi: Pattern x):
-  $ (exists x (app[ phi / box ] ctx)) -> (ctxApp box ctx (exists x phi)) $ =
-  '(exists_generalization @ framing exists_intro_same_var);
-
-
--- TODO: Rewrite the following theorems:
+  $ (exists x (app[ phi / box ] ctx)) -> app[ exists x phi / box ] ctx $ =
+  '(exists_generalization (eFresh_in_appCtx eFresh_triv eFresh_in_exists_same_var) (framing exists_intro_same_var));
 
 theorem univ_gene {x: EVar} (phi: Pattern x)
   (p: $ phi $):
-  $ forall x phi $ = '(exists_generalization @ notnot1 p);
+  $ forall x phi $ = '(exists_generalization_strict @ notnot1 p);
 theorem var_subst {x y: EVar} (phi: Pattern x y):
   $ (forall x phi) -> e[ eVar y / x ] phi $ =
   '(con1 @ norm (norm_imp eSubstitution_in_not norm_refl) exists_intro);
@@ -85,16 +90,17 @@ theorem membership_intro {x: EVar} (phi: Pattern x)
 theorem membership_elim {x: EVar} (phi: Pattern)
   (h: $ forall x (x in phi) $):
   $ phi $ =
-  '(dne @ exists_generalization (dne (dne (singleton defNestedNorm (! nestedNormVar box)) (var_subst_same_var h))) existence);
+  '(dne @ exists_generalization_strict (dne @ dne (norm (norm_not @ norm_and (! defNorm box1) (! appCtxVar box2)) singleton) @ var_subst_same_var h) existence);
 
 theorem membership_var {x y: EVar}:
   $ (x in (eVar y)) == (eVar x == eVar y) $ = '(eqiv_to_eq @ iani
-  (rsyl (iand (dne singletonDef) (imim1i (framingDef ancom) @ dne @ singleton defNestedNorm defNestedNorm)) @ rsyl (anri not_distr_or) @ rsyl (con3 @ propag_or defNorm defNorm defNorm) @ con3 @ framing defNorm defNorm @ anr lemma_51)
-  (propag_or defNorm defNorm defNorm @ framingDef or_imp_xor_and @ prop_43_or defNorm defNorm defNorm @ orl definedness)
+  (rsyl (iand (dne singletonDef) (imim1i (framingDef ancom) @ dne @ singleton) @ rsyl (anri not_distr_or) @ rsyl (con3 @ propag_or defNorm defNorm defNorm) @ con3 @ framing defNorm defNorm @ anr lemma_51)
+  (propag_or @ framingDef or_imp_xor_and @ prop_43_or defNorm defNorm defNorm @ orl definedness)
   );
 
 theorem membership_not_lemma {x: EVar} (phi: Pattern x):
-  $ (x in phi) \/ (x in ~phi) $ = '(propag_or defNorm defNorm defNorm @ framingDef (exp @ iand anl @ curry @ com12 dne) definedness);
+  $ (x in phi) \/ (x in ~phi) $ =
+  '(norm (norm_or defNorm defNorm) @ propag_or @ norm (norm_sym (! defNorm box)) @ framingDef (exp @ iand anl @ curry @ com12 dne) definedness);
 
 theorem membership_not {x: EVar} (phi: Pattern x):
   $ (x in ~phi) == ~(x in phi) $ =
@@ -109,7 +115,7 @@ theorem membership_and {x: EVar} (phi1 phi2: Pattern x):
     (iand (framingDef @ iand anl anrl) (framingDef @ iand anl anrr))
     (syl dne @ con2 @ rsyl membership_not_lemma @ rsyl (framing_in @ anl notan) @ rsyl
       (framingDef @ anl andi)
-      (rsyl (propag_or defNorm defNorm defNorm) @ rsyl (orim (con2 @ dne singletonDef) (con2 @ dne singletonDef)) (anr notan))));
+      (rsyl (norm (norm_imp defNorm @ norm_or defNorm defNorm) (! propag_or box)) @ rsyl (orim (con2 @ dne singletonDef) (con2 @ dne singletonDef)) (anr notan))));
 
 -- theorem membership_exists {x y: EVar} (phi: Pattern x y):
 --   $ (x in (exists y phi)) == (exists y (x in phi)) $ = '(eqiv_to_eq @ iani
