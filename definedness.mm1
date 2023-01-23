@@ -99,6 +99,14 @@ theorem prop_43_exists {box: SVar} {x: EVar} (ctx: Pattern box) (phi: Pattern x)
   $ (exists x (app[ phi / box ] ctx)) -> app[ exists x phi / box ] ctx $ =
   '(exists_generalization (eFresh_appCtx eFresh_triv eFresh_exists_same_var) (framing exists_intro_same_var));
 
+--- prop_44
+theorem cong_of_equiv_not (h: $phi1 <-> phi2$): $~phi1 <-> ~phi2$ = '(noteqi h);
+theorem cong_of_equiv_imp_l (h: $phi1 <-> phi2$): $(phi1 -> psi) <-> (phi2 -> psi)$ = '();
+theorem cong_of_equiv_imp_r (h: $phi1 <-> phi2$): $(psi -> phi1) <-> (psi -> phi2)$ = '();
+theorem cong_of_equiv_and_l (h: $phi1 <-> phi2$): $(phi1 /\ psi) <-> (phi2 /\ psi)$ = '();
+theorem cong_of_equiv_and_r (h: $phi1 <-> phi2$): $(psi /\ phi1) <-> (psi /\ phi2)$ = '();
+theorem cong_of_equiv_exists (phi1 phi2: Pattern x)  (h: $phi1 <-> phi2$): $(exists x phi1) <-> (exists x phi2)$ = '();
+
 theorem univ_gene {x: EVar} (phi: Pattern x)
   (p: $ phi $):
   $ forall x phi $ = '(exists_generalization_strict @ notnot1 p);
