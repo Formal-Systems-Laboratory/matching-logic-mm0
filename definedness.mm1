@@ -193,10 +193,12 @@ theorem membership_imp {x: EVar}  (phi1 phi2: Pattern):
   $ x in (phi1 -> phi2) == (x in phi1) -> (x in phi2) $ =
   '(eqiv_to_eq @ iani membership_imp_forward membership_imp_reverse);
 
+theorem membership_exists_reverse {x y: EVar} (phi: Pattern x y):
+  $ ((exists y (x in phi) -> x in (exists y phi))) $
+ = '_;
 -- theorem membership_exists {x y: EVar} (phi: Pattern x y):
---   $ (x in (exists y phi)) == (exists y (x in phi)) $ = '(eqiv_to_eq @ iani
---     (_)
---     (_));
+--   $ (x in (exists y phi)) == (exists y (x in phi)) $
+--  = '(eqiv_to_eq @ iani  _ membership_exists_reverse);
 
 theorem lemma_exists_and {x: EVar} (phi: Pattern):
   $ phi <-> exists x (eVar x /\ phi) $ =
