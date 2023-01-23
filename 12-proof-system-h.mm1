@@ -16,11 +16,11 @@ theorem prop_43_exists {box: SVar} {x: EVar} (ctx: Pattern box) (phi: Pattern x)
 
 --- prop_44
 theorem cong_of_equiv_not (h: $phi1 <-> phi2$): $~phi1 <-> ~phi2$ = '(noteqi h);
-theorem cong_of_equiv_imp_l (h: $phi1 <-> phi2$): $(phi1 -> psi) <-> (phi2 -> psi)$ = '();
-theorem cong_of_equiv_imp_r (h: $phi1 <-> phi2$): $(psi -> phi1) <-> (psi -> phi2)$ = '();
-theorem cong_of_equiv_and_l (h: $phi1 <-> phi2$): $(phi1 /\ psi) <-> (phi2 /\ psi)$ = '();
-theorem cong_of_equiv_and_r (h: $phi1 <-> phi2$): $(psi /\ phi1) <-> (psi /\ phi2)$ = '();
-theorem cong_of_equiv_exists (phi1 phi2: Pattern x)  (h: $phi1 <-> phi2$): $(exists x phi1) <-> (exists x phi2)$ = '();
+theorem cong_of_equiv_imp_l (h: $phi1 <-> phi2$): $(phi1 -> psi) <-> (phi2 -> psi)$;
+theorem cong_of_equiv_imp_r (h: $phi1 <-> phi2$): $(psi -> phi1) <-> (psi -> phi2)$;
+theorem cong_of_equiv_and_l (h: $phi1 <-> phi2$): $(phi1 /\ psi) <-> (phi2 /\ psi)$;
+theorem cong_of_equiv_and_r (h: $phi1 <-> phi2$): $(psi /\ phi1) <-> (psi /\ phi2)$;
+theorem cong_of_equiv_exists (phi1 phi2: Pattern x)  (h: $phi1 <-> phi2$): $(exists x phi1) <-> (exists x phi2)$;
 
 theorem lemma_46 (phi: Pattern) {box: SVar} (ctx: Pattern box)
   (p : $ phi $):
@@ -100,8 +100,7 @@ theorem membership_imp {x: EVar}  (phi1 phi2: Pattern):
   '(eqiv_to_eq @ iani membership_imp_forward membership_imp_reverse);
 
 theorem membership_exists_reverse {x y: EVar} (phi: Pattern x y):
-  $ ((exists y (x in phi) -> x in (exists y phi))) $
- = '_;
+  $ ((exists y (x in phi) -> x in (exists y phi))) $;
 -- theorem membership_exists {x y: EVar} (phi: Pattern x y):
 --   $ (x in (exists y phi)) == (exists y (x in phi)) $
 --  = '(eqiv_to_eq @ iani  _ membership_exists_reverse);
@@ -125,13 +124,13 @@ theorem lemma_56 {box: SVar} (ctx: Pattern box) (phi: Pattern):
     ));
 
 --- lemma 59
-theorem functional_subst {x: EVar} {y: EVar} (phi1: Pattern x y) (phi2: Pattern x):
-  $(forall x phi1) /\ (exists y phi2 == y) -> e[ phi2 / x ] phi1$
-  ;
+--- theorem functional_subst {x: EVar} {y: EVar} (phi1: Pattern x y) (phi2: Pattern x):
+---  $(forall x phi1) /\ (exists y phi2 == eVar y) -> e[ phi2 / x ] phi1$;
 
 --- lemma 60
--- theorem lemma_60_forward {x: EVar}  {box: SVar} (phi1 ctx: Pattern box x):
---   $app[ phi1 /\ (x in phi2) / box ] ctx -> (app[ phi1 / box ] ctx) /\ (x in phi2)$;
+--- theorem lemma_60_forward {x: EVar}  {box: SVar} (phi1 ctx: Pattern box x):
+---  $app[ phi1 /\ (x in phi2) / box ] ctx -> (app[ phi1 / box ] ctx) /\ (x in phi2)$;
+
 theorem lemma_60_reverse {x: EVar} {box: SVar} (phi1 ctx: Pattern box x):
   $(app[ phi1 / box ] ctx) /\ (x in phi2) -> app[ phi1 /\ (x in phi2) / box ] ctx$
   ;
