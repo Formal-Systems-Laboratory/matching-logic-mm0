@@ -145,7 +145,7 @@ theorem lemma_56 {box: SVar} (ctx: Pattern box) (phi: Pattern):
 
 theorem lemma_60_reverse {x: EVar} {box: SVar} (ctx: Pattern box x) (phi1 phi2: Pattern x):
   $ (app[ phi1 / box ] ctx) /\ (x in phi2) -> app[ phi1 /\ (x in phi2) / box ] ctx $
-  = ();
+  ;
 -- theorem lemma_60 {x: EVar} {box: SVar} (phi1 ctx: Pattern box x):
 --   $(app[ phi1 /\ (x in phi2) / box ] ctx) == app[ phi1 / box ] ctx /\ (x in phi2)$
 --   = '(eqiv_to_eq @ iani lemma_60_forward lemma_60_reverse );
@@ -182,7 +182,7 @@ theorem lemma_62_reverse {y: EVar} (phi: Pattern) {.box: SVar} :
                               (norm_trans eSubstitution_in_imp @ norm_imp
                                  eSubstitution_in_same_eVar eSubstitution_triv )   )
             )
-     @ iand ( syl (norm (norm_imp (norm_and defNorm norm_refl) @ defNorm) (! lemma_60_reverse _ _ box) )
+     @ iand ( syl (norm (norm_imp (norm_and defNorm norm_refl) @ defNorm) (! lemma_60_reverse _ box) )
             @ iand (a1i definedness)
                    id
             )
