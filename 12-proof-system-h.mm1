@@ -14,13 +14,24 @@ theorem prop_43_exists {box: SVar} {x: EVar} (ctx: Pattern box) (phi: Pattern x)
   $ (exists x (app[ phi / box ] ctx)) -> app[ exists x phi / box ] ctx $ =
   '(exists_generalization (eFresh_appCtx eFresh_triv eFresh_exists_same_var) (framing exists_intro_same_var));
 
+theorem prop_43_or_def (phi1 phi2: Pattern):
+  $ (|^ phi1 ^| \/ |^ phi2 ^|) -> |^ phi1 \/ phi2 ^| $ =
+  '(eori (framingDef orl) (framingDef orr));
+theorem prop_43_exists_def {x: EVar} (phi: Pattern x):
+  $ (exists x (|^ phi ^|)) -> |^ exists x phi ^| $ =
+  '(exists_generalization (eFresh_app eFresh_triv eFresh_exists_same_var) (framingDef exists_intro_same_var));
+
+
 --- prop_44
 theorem cong_of_equiv_not (h: $phi1 <-> phi2$): $~phi1 <-> ~phi2$ = '(noteqi h);
 theorem cong_of_equiv_imp_l (h: $phi1 <-> phi2$): $(phi1 -> psi) <-> (phi2 -> psi)$;
 theorem cong_of_equiv_imp_r (h: $phi1 <-> phi2$): $(psi -> phi1) <-> (psi -> phi2)$;
 theorem cong_of_equiv_and_l (h: $phi1 <-> phi2$): $(phi1 /\ psi) <-> (phi2 /\ psi)$;
 theorem cong_of_equiv_and_r (h: $phi1 <-> phi2$): $(psi /\ phi1) <-> (psi /\ phi2)$;
-theorem cong_of_equiv_exists (phi1 phi2: Pattern x)  (h: $phi1 <-> phi2$): $(exists x phi1) <-> (exists x phi2)$;
+theorem cong_of_equiv_exists {x: EVar} (phi1 phi2: Pattern x)
+  (h: $ phi1 <-> phi2 $):
+  $ (exists x phi1) <-> (exists x phi2) $ =
+  '(iani (exists_framing @ anl h) (exists_framing @ anr h));
 
 theorem lemma_46 (phi: Pattern) {box: SVar} (ctx: Pattern box)
   (p : $ phi $):
@@ -100,7 +111,8 @@ theorem membership_imp {x: EVar}  (phi1 phi2: Pattern):
   '(eqiv_to_eq @ iani membership_imp_forward membership_imp_reverse);
 
 theorem membership_exists_reverse {x y: EVar} (phi: Pattern x y):
-  $ ((exists y (x in phi) -> x in (exists y phi))) $;
+  $ ((exists y (x in phi) -> x in (exists y phi))) $
+  = '(rsyl prop_43_exists_def @ framingDef and_exists_forwards);
 -- theorem membership_exists {x y: EVar} (phi: Pattern x y):
 --   $ (x in (exists y phi)) == (exists y (x in phi)) $
 --  = '(eqiv_to_eq @ iani  _ membership_exists_reverse);
@@ -131,9 +143,9 @@ theorem lemma_56 {box: SVar} (ctx: Pattern box) (phi: Pattern):
 --- theorem lemma_60_forward {x: EVar}  {box: SVar} (phi1 ctx: Pattern box x):
 ---  $app[ phi1 /\ (x in phi2) / box ] ctx -> (app[ phi1 / box ] ctx) /\ (x in phi2)$;
 
-theorem lemma_60_reverse {x: EVar} {box: SVar} (phi1 ctx: Pattern box x):
-  $(app[ phi1 / box ] ctx) /\ (x in phi2) -> app[ phi1 /\ (x in phi2) / box ] ctx$
-  ;
+theorem lemma_60_reverse {x: EVar} {box: SVar} (ctx: Pattern box x) (phi1 phi2: Pattern x):
+  $ (app[ phi1 / box ] ctx) /\ (x in phi2) -> app[ phi1 /\ (x in phi2) / box ] ctx $
+  = ();
 -- theorem lemma_60 {x: EVar} {box: SVar} (phi1 ctx: Pattern box x):
 --   $(app[ phi1 /\ (x in phi2) / box ] ctx) == app[ phi1 / box ] ctx /\ (x in phi2)$
 --   = '(eqiv_to_eq @ iani lemma_60_forward lemma_60_reverse );
@@ -155,9 +167,9 @@ theorem lemma_62_reverse {y: EVar} (phi: Pattern) {.box: SVar} :
      @ syl (! exists_intro y x)
      @ norm (norm_imp norm_refl @ norm_sym @ norm_trans eSubstitution_in_and
                 @ norm_and (norm_trans eSubstitution_in_app @ norm_app
-                              eSubstitution_in_sym
+                              eSubstitution_triv
                             @ norm_trans eSubstitution_in_and @ norm_and eSubstitution_triv
-                            @ norm_trans eSubstitution_in_app @ norm_app eSubstitution_in_sym
+                            @ norm_trans eSubstitution_in_app @ norm_app eSubstitution_triv
                             @ norm_trans eSubstitution_in_and @ norm_and
                               eSubstitution_in_same_eVar
                               eSubstitution_triv)
@@ -166,9 +178,9 @@ theorem lemma_62_reverse {y: EVar} (phi: Pattern) {.box: SVar} :
                             @ norm_trans eSubstitution_in_not @ norm_not
                             @ norm_trans eSubstitution_in_and @ norm_and
                               (norm_trans eSubstitution_in_imp @ norm_imp
-                                 eSubstitution_in_eVar eSubstitution_in_same_eVar )
+                                 eSubstitution_triv eSubstitution_in_same_eVar )
                               (norm_trans eSubstitution_in_imp @ norm_imp
-                                 eSubstitution_in_same_eVar eSubstitution_in_eVar )   )
+                                 eSubstitution_in_same_eVar eSubstitution_triv )   )
             )
      @ iand ( syl (norm (norm_imp (norm_and defNorm norm_refl) @ defNorm) (! lemma_60_reverse _ _ box) )
             @ iand (a1i definedness)

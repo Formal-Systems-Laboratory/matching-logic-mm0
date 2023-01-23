@@ -121,13 +121,7 @@ axiom eFresh_appCtx {x: EVar} {box: SVar} (ctx psi: Pattern x box):
 -- Definition of substitutions and application contexts as meta-level relations
 term Norm: Pattern > Pattern > Normalization;
 
-axiom eSubstitution_triv {x: EVar} (phi: Pattern) (psi: Pattern x): $ Norm (e[ psi / x ]  phi) (phi) $;
---- I think these get subsumed into the above.
-axiom eSubstitution_in_eVar {x: EVar} {y: EVar} (psi: Pattern x y): $ Norm (e[ psi / x ] eVar y) (eVar y) $;
-axiom eSubstitution_in_sVar {x: EVar} {X: SVar} (psi: Pattern x X): $ Norm (e[ psi / x ] sVar X) (sVar X) $;
-axiom eSubstitution_in_sym {x: EVar} (psi: Pattern x) (s: Symbol): $ Norm (e[ psi / x ] sym s) (sym s) $;
-axiom eSubstitution_in_bot {x: EVar} (psi: Pattern x): $ Norm (e[ psi / x ] bot) bot $;
-
+axiom eSubstitution_triv {x: EVar} (phi: Pattern) (psi: Pattern x): $ Norm (e[ psi / x ]  phi) phi $;
 axiom eSubstitution_in_same_eVar {x: EVar} (psi: Pattern x): $ Norm (e[ psi / x ] eVar x) psi $;
 axiom eSubstitution_in_imp {x: EVar} (psi phi1 phi2: Pattern x):
   $ Norm (e[ psi / x ] (phi1 -> phi2)) ((e[ psi / x ] phi1) -> e[ psi / x ] phi2) $;
@@ -145,19 +139,13 @@ axiom eSubstitution_in_eSubst_same_var {x: EVar} (psi1 psi2 phi: Pattern x):
   $ Norm (e[ psi1 / x ] e[ psi2 / x ] phi) (e[ (e[ psi1 / x ] psi2) / x ] phi) $;
 axiom eSubstitution_in_eSubst {x y: EVar} (psi1 psi2 phi: Pattern x y):
   $ Norm (e[ psi1 / x ] e[ psi2 / y ] phi) (e[ (e[ psi1 / x ] psi2) / y ] e[ psi1 / x ] phi) $;
---- I think the following should be removed, and proved instead? Do we need it yet?
+--- TODO: I think the following should be removed, and proved instead? Do we need it yet?
 axiom eSubstitution_in_sSubst {x: EVar} {X: SVar} (psi1 psi2 phi: Pattern x X):
   $ Norm (e[ psi1 / x ] s[ psi2 / X ] phi) (s[ (e[ psi1 / x ] psi2) / X ] e[ psi1 / x ] phi) $;
 axiom eSubstitution_in_appCtx {x: EVar} {box: SVar} (psi1 psi2 phi: Pattern x box):
   $ Norm (e[ psi1 / x ] app[ psi2 / box ] phi) (app[ (e[ psi1 / x ] psi2) / box ] e[ psi1 / x ] phi) $;
 
-axiom sSubstitution_triv {X: SVar} (phi: Pattern) (psi: Pattern X): $ Norm (s[ psi / X ]  phi) (phi) $;
---- I think these get subsumed into the above.
-axiom sSubstitution_in_eVar {X: SVar} {x: EVar} (psi: Pattern X x): $ Norm (s[ psi / X ] eVar x) (eVar x) $;
-axiom sSubstitution_in_sVar {X: SVar} {Y: SVar} (psi: Pattern X Y): $ Norm (s[ psi / X ] sVar Y) (sVar Y) $;
-axiom sSubstitution_in_sym {X: SVar} (psi: Pattern X) (s: Symbol): $ Norm (s[ psi / X ] sym s) (sym s) $;
-axiom sSubstitution_in_bot {X: SVar} (psi: Pattern X): $ Norm (s[ psi / X ] bot) bot $;
-
+axiom sSubstitution_triv {X: SVar} (phi: Pattern) (psi: Pattern X): $ Norm (s[ psi / X ]  phi) phi $;
 axiom sSubstitution_in_same_sVar {X: SVar} (psi: Pattern X): $ Norm (s[ psi / X ] sVar X) psi $;
 axiom sSubstitution_in_imp {X: SVar} (psi phi1 phi2: Pattern X):
   $ Norm (s[ psi / X ] (phi1 -> phi2)) ((s[ psi / X ] phi1) -> (s[ psi / X ] phi2)) $;

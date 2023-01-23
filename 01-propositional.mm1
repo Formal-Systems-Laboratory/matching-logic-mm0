@@ -94,7 +94,7 @@ do {
 
   --| `(name-all x1 ... xn)` instantiates all metavariables in the current
   --| proof state. It is the same as `named` but it can be used in the middle of a
-  --| proof instead of as a  per around a complete proof.
+  --| proof instead of as a wrapper around a complete proof.
   (def (name-all . ds)
     (def (assign-mvar m x) @ match x ['_] [_ (set! m (dummy! x (mvar-sort m)))])
     (scan (get-mvars) ds assign-mvar))

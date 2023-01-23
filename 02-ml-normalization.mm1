@@ -16,10 +16,10 @@ theorem eFresh_not {x: EVar} (phi: Pattern x)
   '(eFresh_imp h eFresh_triv);
 theorem eSubstitution_in_not {x: EVar} (psi phi: Pattern x):
   $ Norm (e[ psi / x ] ~phi) (~e[ psi / x ] phi) $ =
-  '(norm_trans eSubstitution_in_imp @ norm_imp norm_refl eSubstitution_in_bot);
+  '(norm_trans eSubstitution_in_imp @ norm_imp norm_refl eSubstitution_triv);
 theorem sSubstitution_in_not {X: SVar} (psi phi: Pattern X):
   $ Norm (s[ psi / X ] ~phi) (~(s[ psi / X ] phi)) $ =
-  '(norm_trans sSubstitution_in_imp @ norm_imp norm_refl sSubstitution_in_bot);
+  '(norm_trans sSubstitution_in_imp @ norm_imp norm_refl sSubstitution_triv);
 
 --- or
 theorem norm_or (phi psi phi2 psi2: Pattern)
@@ -71,6 +71,12 @@ theorem or_exists {x: EVar} (phi1: Pattern) (phi2: Pattern x):
       (syl exists_intro_same_var orl)
       (exists_generalization eFresh_exists_same_var @ syl exists_intro_same_var orr))
     (exists_generalization (eFresh_or eFresh_triv eFresh_exists_same_var) @ eori orl @ orrd exists_intro_same_var));
+
+theorem and_exists_forwards {x: EVar} (phi1: Pattern) (phi2: Pattern x):
+  $ (exists x (phi1 /\ phi2)) -> (phi1 /\ exists x phi2) $ =
+  '(iand
+    (rsyl (exists_framing anl) (exists_generalization_strict id))
+    (exists_framing anr));
 
 
 theorem framing_norm {box: SVar} (ctx: Pattern box) (phi1 phi2 rho1 rho2: Pattern)
