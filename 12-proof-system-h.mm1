@@ -176,3 +176,6 @@ theorem lemma_62_reverse {y: EVar} (phi: Pattern) {.box: SVar} :
             )
             (a1i eq_intro)
      );
+
+theorem lemma_62_b_reverse {y: EVar} (phi: Pattern) {.box: SVar} :
+  $ phi -> (exists y (eVar y /\ (y in phi)  ))$;

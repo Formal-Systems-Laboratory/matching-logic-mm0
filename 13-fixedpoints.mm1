@@ -1,3 +1,4 @@
+import "01-propositional.mm1";
 import "12-proof-system-h.mm1";
 
 
@@ -36,6 +37,6 @@ theorem unwrap {box: SVar} (ctx: Pattern box) (phi psi: Pattern) {dummy: EVar}
 theorem wrap {box: SVar} (ctx: Pattern box) (phi psi: Pattern) {dummy: EVar}
   (h: $ (app[ phi / box ] ctx) -> psi $):
   $ phi -> (ctximp_app box ctx psi dummy) $ =
-  '(rsyl _ @ exists_framing @ anim id
+  '(rsyl lemma_62_b_reverse @ exists_framing @ anim id
     (wrap_lemma_1 @ expcom @ rsyl exists_intro_same_var (imim1i (rsyl (exists_framing appCtx_ceil_2) prop_43_exists) (rsyl (framing (rsyl (exists_framing ancom) lemma_62_forward)) h)))
   );
