@@ -82,34 +82,34 @@ term _eFresh: EVar > Pattern > Freshness;
 -- term _sFresh: SVar > Pattern > Freshness;
 
 axiom eFresh_triv {x: EVar} (phi: Pattern): $ _eFresh x phi $;
-axiom eFresh_in_imp {x: EVar} (phi1 phi2: Pattern x):
+axiom eFresh_imp {x: EVar} (phi1 phi2: Pattern x):
   $ _eFresh x phi1 $ >
   $ _eFresh x phi2 $ >
   $ _eFresh x (phi1 -> phi2) $;
-axiom eFresh_in_app {x: EVar} (phi1 phi2: Pattern x):
+axiom eFresh_app {x: EVar} (phi1 phi2: Pattern x):
   $ _eFresh x phi1 $ >
   $ _eFresh x phi2 $ >
   $ _eFresh x (app phi1 phi2) $;
-axiom eFresh_in_exists_same_var {x: EVar} (phi: Pattern x):
+axiom eFresh_exists_same_var {x: EVar} (phi: Pattern x):
   $ _eFresh x (exists x phi) $;
-axiom eFresh_in_exists {x y: EVar} (phi: Pattern x y):
+axiom eFresh_exists {x y: EVar} (phi: Pattern x y):
   $ _eFresh x phi $ >
   $ _eFresh x (exists y phi) $;
-axiom eFresh_in_mu {x: EVar} {X: SVar} (phi: Pattern x X):
+axiom eFresh_mu {x: EVar} {X: SVar} (phi: Pattern x X):
   $ _eFresh x phi $ >
   $ _eFresh x (mu X phi) $;
-axiom eFresh_in_eSubst_same_var {x: EVar} (phi psi: Pattern x):
+axiom eFresh_eSubst_same_var {x: EVar} (phi psi: Pattern x):
   $ _eFresh x psi $ >
   $ _eFresh x (e[ psi / x ] phi) $;
-axiom eFresh_in_eSubst {x y: EVar} (phi psi: Pattern x y):
+axiom eFresh_eSubst {x y: EVar} (phi psi: Pattern x y):
   $ _eFresh x phi $ >
   $ _eFresh x psi $ >
   $ _eFresh x (e[ psi / y ] phi) $;
-axiom eFresh_in_sSubst {x: EVar} {X: SVar} (phi psi: Pattern x X):
+axiom eFresh_sSubst {x: EVar} {X: SVar} (phi psi: Pattern x X):
   $ _eFresh x phi $ >
   $ _eFresh x psi $ >
   $ _eFresh x (s[ psi / X ] phi) $;
-axiom eFresh_in_appCtx {x: EVar} {box: SVar} (ctx psi: Pattern x box):
+axiom eFresh_appCtx {x: EVar} {box: SVar} (ctx psi: Pattern x box):
   $ _eFresh x ctx $ >
   $ _eFresh x psi $ >
   $ _eFresh x (app[ psi / box ] ctx) $;

@@ -94,7 +94,7 @@ do {
 
   --| `(name-all x1 ... xn)` instantiates all metavariables in the current
   --| proof state. It is the same as `named` but it can be used in the middle of a
-  --| proof instead of as a wrapper around a complete proof.
+  --| proof instead of as a  per around a complete proof.
   (def (name-all . ds)
     (def (assign-mvar m x) @ match x ['_] [_ (set! m (dummy! x (mvar-sort m)))])
     (scan (get-mvars) ds assign-mvar))
@@ -662,6 +662,8 @@ theorem imp_to_or (h: $(~a \/ b) -> c$): $(a -> b) -> c$  = '(rsyl con3 (rsyl or
 
 theorem not_distr_or: $ ~(a \/ b) <-> ~a /\ ~b $ = '(con3b @ oreq2a @ prop_1 notnot);
 
+theorem appl: $ (a /\ (a -> b)) -> b $ = '(con1 @ anl com12b @ con3d mpcom);
+
 --- analogs to anl and anr; Would prefer: $~(a -> b) <-> (a /\ ~b)$
 theorem neg_imp_left: $ ~(a -> b) -> a $ = '(con1 absurd);
 theorem neg_imp_right: $~(a -> b) -> ~b $ = '(con1 (rsyl dne (a1d id)));
@@ -678,8 +680,7 @@ theorem or_imp_xor_and: $ a \/ b -> (~(a <-> b) \/ (a /\ b)) $ =
 theorem xor_and_imp_or: $ (~(a <-> b) \/ (a /\ b)) -> a \/ b $ =
  '(eori (syl (imp_to_or (eori (neg_imp_wl orl) (neg_imp_wl orr))) dne)
         (anwl orl)
-  )
- ;
+  );
 
 theorem lemma_51: $ ((a /\ ~b) \/ (b /\ ~a)) <-> ~(a <-> b) $ = '(iani
   (eori (con3 @ rsyl anl @ imim2i notnot1)

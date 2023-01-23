@@ -24,14 +24,43 @@ theorem norm_and (phi psi phi2 psi2: Pattern)
   $ Norm (phi /\ psi) (phi2 /\ psi2) $ =
   '(norm_not @ norm_imp h1 (norm_not h2));
 
+theorem eFresh_not {x: EVar} (phi: Pattern x)
+  (h: $ _eFresh x phi $):
+  $ _eFresh x (~ phi) $ =
+  '(eFresh_imp h eFresh_triv);
+theorem eFresh_or {x: EVar} (phi1 phi2: Pattern x)
+  (h1: $ _eFresh x phi1 $)
+  (h2: $ _eFresh x phi2 $):
+  $ _eFresh x (phi1 \/ phi2) $ =
+  '(eFresh_imp (eFresh_not h1) h2);
+theorem eFresh_and {x: EVar} (phi1 phi2: Pattern x)
+  (h1: $ _eFresh x phi1 $)
+  (h2: $ _eFresh x phi2 $):
+  $ _eFresh x (phi1 /\ phi2) $ =
+  '(eFresh_not @ eFresh_imp h1 @ eFresh_not h2);
+
+theorem exists_framing {x: EVar} (phi1 phi2: Pattern x)
+  (h: $ phi1 -> phi2 $):
+  $ (exists x phi1) -> exists x phi2 $ =
+  '(exists_generalization eFresh_exists_same_var @ syl exists_intro_same_var h);
+
+theorem or_exists {x: EVar} (phi1: Pattern) (phi2: Pattern x):
+  $ (phi1 \/ exists x phi2) <-> exists x (phi1 \/ phi2) $ =
+  '(ibii
+    (eori
+      (syl exists_intro_same_var orl)
+      (exists_generalization eFresh_exists_same_var @ syl exists_intro_same_var orr))
+    (exists_generalization (eFresh_or eFresh_triv eFresh_exists_same_var) @ eori orl @ orrd exists_intro_same_var));
+
+
 theorem framing_norm {box: SVar} (ctx: Pattern box) (phi1 phi2 rho1 rho2: Pattern)
   (h1: $ Norm (app[ phi1 / box ] ctx) rho1 $)
   (h2: $ Norm (app[ phi2 / box ] ctx) rho2 $)
   (h3: $ phi1 -> phi2 $):
   $ rho1 -> rho2 $ = '(norm (norm_imp h1 h2) @ framing h3);
 theorem singleton_norm {box1 box2: SVar} {x: EVar}
-  (ctx1: Pattern box1 x) (ctx2: Pattern box2 x)
-  (phi rho1 rho2: Pattern x)
+  (ctx1 rho1: Pattern box1 x) (ctx2 rho2: Pattern box2 x)
+  (phi: Pattern x)
   (h1: $ Norm (app[ (eVar x) /\ phi / box1 ] ctx1) rho1 $)
   (h2: $ Norm (app[ (eVar x) /\ ~phi / box2 ] ctx2) rho2 $):
   $ ~(rho1 /\ rho2) $ =
@@ -55,6 +84,10 @@ theorem singletonDef {x: EVar} (phi: Pattern x):
 theorem framingDef (h: $ phi1 -> phi2 $):
   $ |^ phi1 ^| -> |^ phi2 ^| $ =
   '(framing_norm (! defNorm box) defNorm h);
+theorem propag_or_def (phi1 phi2: Pattern)
+  (h: $ |^ phi1 \/ phi2 ^| $):
+  $ |^ phi1 ^| \/ |^ phi2 ^| $ =
+  '(norm (norm_or defNorm defNorm) @ propag_or @ norm (norm_sym (! defNorm box)) h);
 
 theorem prop_43_bot (rho: Pattern): $ bot -> rho $ = 'absurdum;
 theorem prop_43_or {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
@@ -62,7 +95,7 @@ theorem prop_43_or {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
   '(eori (framing orl) (framing orr));
 theorem prop_43_exists {box: SVar} {x: EVar} (ctx: Pattern box) (phi: Pattern x):
   $ (exists x (app[ phi / box ] ctx)) -> app[ exists x phi / box ] ctx $ =
-  '(exists_generalization (eFresh_in_appCtx eFresh_triv eFresh_in_exists_same_var) (framing exists_intro_same_var));
+  '(exists_generalization (eFresh_appCtx eFresh_triv eFresh_exists_same_var) (framing exists_intro_same_var));
 
 theorem univ_gene {x: EVar} (phi: Pattern x)
   (p: $ phi $):
@@ -95,19 +128,21 @@ theorem membership_elim {x: EVar} (phi: Pattern)
 theorem membership_var {x y: EVar}:
   $ (x in (eVar y)) == (eVar x == eVar y) $ = '(eqiv_to_eq @ iani
   (rsyl (iand (dne singletonDef) (imim1i (framingDef ancom) @ dne @ norm (norm_not @ norm_and defNorm defNorm) (! singleton box1 box2))) @ rsyl (anri not_distr_or) @ rsyl (con3 @ norm (norm_imp norm_refl @ norm_or defNorm defNorm) propag_or) @ con3 @ norm (norm_imp defNorm norm_refl) (! framing box _ _ _ @ anr lemma_51))
-  (norm (norm_or defNorm defNorm) @ propag_or @ norm (norm_sym (! defNorm box)) @ framingDef or_imp_xor_and @ norm defNorm @ prop_43_or @ norm (norm_sym @ norm_or defNorm (! defNorm box)) @ orl definedness)
+  (propag_or_def @ framingDef or_imp_xor_and @ norm defNorm @ prop_43_or @ norm (norm_sym @ norm_or defNorm (! defNorm box)) @ orl definedness)
   );
 
 theorem membership_not_lemma {x: EVar} (phi: Pattern x):
   $ (x in phi) \/ (x in ~phi) $ =
-  '(norm (norm_or defNorm defNorm) @ propag_or @ norm (norm_sym (! defNorm box)) @ framingDef (exp @ iand anl @ curry @ com12 dne) definedness);
+  '(propag_or_def @ framingDef (exp @ iand anl @ curry @ com12 dne) definedness);
 
 theorem membership_not {x: EVar} (phi: Pattern x):
   $ (x in ~phi) == ~(x in phi) $ =
   '(eqiv_to_eq @ iani (con2 @ dne singletonDef) membership_not_lemma);
 
 theorem framing_in {x: EVar} (phi1 phi2: Pattern x)
-  (h: $ phi1 -> phi2 $): $ (x in phi1) -> (x in phi2)$ = '(framingDef @ anim2 h);
+  (h: $ phi1 -> phi2 $):
+  $ (x in phi1) -> (x in phi2)$ =
+  '(framingDef @ anim2 h);
 
 theorem membership_and {x: EVar} (phi1 phi2: Pattern x):
   $ x in (phi1 /\ phi2) == (x in phi1) /\ (x in phi2) $ =
@@ -121,3 +156,59 @@ theorem membership_and {x: EVar} (phi1 phi2: Pattern x):
 --   $ (x in (exists y phi)) == (exists y (x in phi)) $ = '(eqiv_to_eq @ iani
 --     (_)
 --     (_));
+
+theorem lemma_exists_and {x: EVar} (phi: Pattern):
+  $ phi <-> exists x (eVar x /\ phi) $ =
+  '(ibii
+    (rsyl notnot1 @ anr or_exists @ exists_framing
+      (expcom @ iand appl @ rsyl anl dne)
+      @ anl or_exists @ orr existence)
+    (exists_generalization_strict anr));
+
+theorem lemma_56 {box: SVar} (ctx: Pattern box) (phi: Pattern):
+  $ (app[ phi / box ] ctx) -> |^ phi ^| $ =
+  '(rsyl (rsyl
+    (framing @ anl lemma_exists_and)
+    propag_exists_strict)
+    (exists_generalization_strict @ rsyl
+      (dne @ singleton_norm norm_refl (! defNorm box2))
+      (propag_or_def @ framingDef (anl com12b @ rsyl dne @ imim2i dne) (! definedness x))
+    ));
+
+theorem lemma_62_1 {x: EVar} (phi: Pattern):
+  $ (exists x ((x in phi) /\ eVar x)) -> phi $ =
+  '(exists_generalization_strict @ syl dne @ dne @ con3 (bi1i anass) (singleton_norm (! defNorm box1) (! appCtxVar box2)));
+
+--- contextual implications
+def ctximp_app {box: SVar} (ctx: Pattern box) (phi: Pattern) {dummy: EVar}: Pattern =
+    $ exists dummy (eVar dummy /\ ((app[ eVar dummy / box ] ctx) C_ phi)) $;
+
+theorem wrap_lemma_1 {x: EVar} (phi psi: Pattern x)
+  (h: $ (x in phi) -> psi $):
+  $ (x in phi) -> |_ psi _| $ =
+  '(syl (con3 @ framingDef @ con3 h) @ con2 @ rsyl (framingDef membership_not_lemma)
+  (rsyl (norm (norm_imp
+    (norm_trans appCtxR @ norm_app norm_refl @ norm_trans appCtxR @ norm_app norm_refl appCtxVar)
+    norm_refl) (! lemma_56 box)) (con2 @ dne singletonDef)));
+
+
+-- theorem appCtx_ceil_1:
+--   $ app[ phi /\ |^ psi ^| / box ] ctx -> app[ phi / box ] ctx /\ |^ psi ^| $ =
+--   '(iand (framing anl) (rsyl _ (norm (norm_imp _ norm_refl) lemma_56)));
+theorem appCtx_ceil_2 {box: SVar} (ctx: Pattern box) (phi psi: Pattern):
+  $ app[ phi / box ] ctx /\ |^ psi ^| -> app[ phi /\ |^ psi ^| / box ] ctx $ =
+  '();
+
+--- TODO: review variable binding
+--- TODO: Introduce notation
+--- lemma 91 (Specialized to Application contexts)
+theorem unwrap {box: SVar} (ctx: Pattern box) (phi psi: Pattern) {dummy: EVar}
+  (h: $ phi -> (ctximp_app box ctx psi dummy) $):
+  $ (app[ phi / box ] ctx) -> psi $ =
+  '(_);
+theorem wrap {box: SVar} (ctx: Pattern box) (phi psi: Pattern) {dummy: EVar}
+  (h: $ (app[ phi / box ] ctx) -> psi $):
+  $ phi -> (ctximp_app box ctx psi dummy) $ =
+  '(rsyl _ @ exists_framing @ anim id
+    (wrap_lemma_1 @ expcom @ rsyl exists_intro_same_var (imim1i (rsyl (exists_framing appCtx_ceil_2) prop_43_exists) (rsyl (framing (rsyl (exists_framing ancom) lemma_62_1)) h)))
+  );
