@@ -69,10 +69,12 @@ theorem singleton_norm {box1 box2: SVar} {x: EVar}
 theorem eSubstitution_in_not {x: EVar} (psi phi: Pattern x):
   $ Norm (e[ psi / x ] ~phi) (~e[ psi / x ] phi) $ =
   '(norm_trans eSubstitution_in_imp @ norm_imp norm_refl eSubstitution_in_bot);
-
 theorem sSubstitution_in_not {X: SVar} (psi phi: Pattern X):
   $ Norm (s[ psi / X ] ~phi) (~(s[ psi / X ] phi)) $ =
   '(norm_trans sSubstitution_in_imp @ norm_imp norm_refl sSubstitution_in_bot);
+
+theorem eSubstitution_in_and {x: EVar} (psi phi1 phi2: Pattern x):
+  $ Norm (e[ psi / x ] (phi1 /\ phi2)) ((e[ psi / x ] phi1) /\ e[ psi / x ] phi2) $;
 
 def defCtx {box: SVar}: Pattern box = $ (|^ sVar box ^|) $;
 theorem defNorm {box: SVar} (phi: Pattern):
