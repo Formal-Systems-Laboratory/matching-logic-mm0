@@ -6,6 +6,10 @@ import "11-definedness-normalization.mm1";
 --- Appendix C: Properties of Proof System H
 --------------------------------------------
 
+theorem propag_exists_def {x: EVar} (phi: Pattern x):
+  $ |^ exists x phi ^| -> exists x (|^ phi ^|) $ =
+  '(norm (norm_imp defNorm @ norm_exists defNorm) (! propag_exists_strict box));
+
 theorem prop_43_bot (rho: Pattern): $ bot -> rho $ = 'absurdum;
 theorem prop_43_or {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
   $ (app[ phi1 / box ] ctx \/ app[ phi2 / box ] ctx) -> app[ phi1 \/ phi2 / box ] ctx $ =
@@ -21,17 +25,29 @@ theorem prop_43_exists_def {x: EVar} (phi: Pattern x):
   $ (exists x (|^ phi ^|)) -> |^ exists x phi ^| $ =
   '(exists_generalization (eFresh_app eFresh_triv eFresh_exists_same_var) (framingDef exists_intro_same_var));
 
-
 --- prop_44
-theorem cong_of_equiv_not (h: $phi1 <-> phi2$): $~phi1 <-> ~phi2$ = '(noteqi h);
-theorem cong_of_equiv_imp_l (h: $phi1 <-> phi2$): $(phi1 -> psi) <-> (phi2 -> psi)$;
-theorem cong_of_equiv_imp_r (h: $phi1 <-> phi2$): $(psi -> phi1) <-> (psi -> phi2)$;
-theorem cong_of_equiv_and_l (h: $phi1 <-> phi2$): $(phi1 /\ psi) <-> (phi2 /\ psi)$;
-theorem cong_of_equiv_and_r (h: $phi1 <-> phi2$): $(psi /\ phi1) <-> (psi /\ phi2)$;
+theorem cong_of_equiv_not (h: $phi1 <-> phi2$): $~phi1 <-> ~phi2$ =
+  '(noteqi h);
+theorem cong_of_equiv_imp_l (h: $phi1 <-> phi2$): $(phi2 -> psi) <-> (phi1 -> psi)$ =
+  '(anim imim1 imim1 h);
+theorem cong_of_equiv_imp_r (h: $phi1 <-> phi2$): $(psi -> phi1) <-> (psi -> phi2)$ =
+  '(anim imim2 imim2 h);
+theorem cong_of_equiv_and_l (h: $phi1 <-> phi2$): $(phi1 /\ psi) <-> (phi2 /\ psi)$ =
+  '(anim anim1 anim1 h);
+theorem cong_of_equiv_and_r (h: $phi1 <-> phi2$): $(psi /\ phi1) <-> (psi /\ phi2)$ =
+  '(anim anim2 anim2 h);
 theorem cong_of_equiv_exists {x: EVar} (phi1 phi2: Pattern x)
-  (h: $ phi1 <-> phi2 $):
-  $ (exists x phi1) <-> (exists x phi2) $ =
+  (h: $ phi1 <-> phi2 $): $ (exists x phi1) <-> (exists x phi2) $ =
   '(iani (exists_framing @ anl h) (exists_framing @ anr h));
+
+theorem univ_gene {x: EVar} (phi: Pattern x)
+  (p: $ phi $):
+  $ forall x phi $ = '(exists_generalization_strict @ notnot1 p);
+theorem var_subst {x y: EVar} (phi: Pattern x y):
+  $ (forall x phi) -> e[ eVar y / x ] phi $ =
+  '(con1 @ norm (norm_imp eSubstitution_in_not norm_refl) exists_intro);
+theorem var_subst_same_var {x: EVar} (phi: Pattern x):
+  $ (forall x phi) -> phi $ = '(con1 exists_intro_same_var);
 
 theorem lemma_46 (phi: Pattern) {box: SVar} (ctx: Pattern box)
   (p : $ phi $):
@@ -110,12 +126,15 @@ theorem membership_imp {x: EVar}  (phi1 phi2: Pattern):
   $ x in (phi1 -> phi2) == (x in phi1) -> (x in phi2) $ =
   '(eqiv_to_eq @ iani membership_imp_forward membership_imp_reverse);
 
+theorem membership_exists_forward {x y: EVar} (phi: Pattern x y):
+  $ (x in (exists y phi)) -> exists y (x in phi) $
+  = '(rsyl (framingDef and_exists_reverse) propag_exists_def);
 theorem membership_exists_reverse {x y: EVar} (phi: Pattern x y):
-  $ ((exists y (x in phi) -> x in (exists y phi))) $
+  $ (exists y (x in phi) -> x in (exists y phi)) $
   = '(rsyl prop_43_exists_def @ framingDef and_exists_forwards);
--- theorem membership_exists {x y: EVar} (phi: Pattern x y):
---   $ (x in (exists y phi)) == (exists y (x in phi)) $
---  = '(eqiv_to_eq @ iani  _ membership_exists_reverse);
+theorem membership_exists {x y: EVar} (phi: Pattern x y):
+  $ (x in (exists y phi)) == exists y (x in phi) $
+  = '(eqiv_to_eq @ iani membership_exists_forward membership_exists_reverse);
 
 theorem lemma_exists_and {x: EVar} (phi: Pattern):
   $ phi <-> exists x (eVar x /\ phi) $ =
@@ -155,7 +174,7 @@ theorem lemma_60_reverse {x: EVar} {box: SVar} (ctx: Pattern box x) (phi1 phi2: 
 theorem lemma_62_forward {x: EVar} (phi: Pattern):
   $ (exists x ((x in phi) /\ eVar x)) -> phi $ =
   '(exists_generalization_strict @ syl dne @ dne @ con3 (bi1i anass) (singleton_norm (! defNorm box1) (! appCtxVar box2)));
-theorem lemma_62_reverse {y: EVar} (phi: Pattern) {.box: SVar} :
+theorem lemma_62_reverse {y: EVar} (phi: Pattern) {.box: SVar}:
   $ phi -> (exists y ((y in phi) /\ eVar y))$
   = '( ! membership_elim x _
      @ exists_generalization eFresh_triv
@@ -189,5 +208,6 @@ theorem lemma_62_reverse {y: EVar} (phi: Pattern) {.box: SVar} :
             (a1i eq_intro)
      );
 
-theorem lemma_62_b_reverse {y: EVar} (phi: Pattern) {.box: SVar} :
-  $ phi -> (exists y (eVar y /\ (y in phi)  ))$;
+theorem lemma_62_b_reverse {y: EVar} (phi: Pattern):
+  $ phi -> (exists y (eVar y /\ (y in phi)))$ =
+  '(rsyl lemma_62_reverse @ exists_framing ancom);

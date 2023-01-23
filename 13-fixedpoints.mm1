@@ -1,5 +1,5 @@
 import "01-propositional.mm1";
-import "12-proof-system-h.mm1";
+import "12-proof-system-p.mm1";
 
 
 --- Appendix G: Properties of Proof System H_mu
@@ -25,8 +25,8 @@ theorem wrap_lemma_1 {x: EVar} (phi psi: Pattern x)
 -- theorem appCtx_ceil_1:
 --   $ app[ phi /\ |^ psi ^| / box ] ctx -> app[ phi / box ] ctx /\ |^ psi ^| $ =
 --   '(iand (framing anl) (rsyl _ (norm (norm_imp _ norm_refl) lemma_56)));
-theorem appCtx_ceil_2 {box: SVar} (ctx: Pattern box) (phi psi: Pattern):
-  $ app[ phi / box ] ctx /\ |^ psi ^| -> app[ phi /\ |^ psi ^| / box ] ctx $;
+-- theorem appCtx_ceil_2 {box: SVar} (ctx: Pattern box) (phi psi: Pattern):
+--   $ app[ phi / box ] ctx /\ |^ psi ^| -> app[ phi /\ |^ psi ^| / box ] ctx $;
 
 --- lemma 91 (Specialized to Application contexts)
 --- TODO: review variable binding
@@ -38,5 +38,5 @@ theorem wrap {box: SVar} (ctx: Pattern box) (phi psi: Pattern) {dummy: EVar}
   (h: $ (app[ phi / box ] ctx) -> psi $):
   $ phi -> (ctximp_app box ctx psi dummy) $ =
   '(rsyl lemma_62_b_reverse @ exists_framing @ anim id
-    (wrap_lemma_1 @ expcom @ rsyl exists_intro_same_var (imim1i (rsyl (exists_framing appCtx_ceil_2) prop_43_exists) (rsyl (framing (rsyl (exists_framing ancom) lemma_62_forward)) h)))
+    (wrap_lemma_1 @ expcom @ rsyl exists_intro_same_var (imim1i (rsyl (exists_framing lemma_60_reverse) prop_43_exists) (rsyl (framing (rsyl (exists_framing ancom) lemma_62_forward)) h)))
   );

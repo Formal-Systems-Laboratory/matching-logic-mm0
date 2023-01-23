@@ -10,6 +10,14 @@ theorem norm_not (phi phi2: Pattern)
   (h: $ Norm phi phi2 $):
   $ Norm (~phi) (~phi2) $ =
   '(norm_imp h norm_refl);
+theorem norm_imp_l (phi1 phi2 psi: Pattern)
+  (h: $ Norm phi1 phi2 $):
+  $ Norm (phi1 -> psi) (phi2 -> psi) $ =
+  '(norm_imp h norm_refl);
+theorem norm_imp_r (phi psi1 psi2: Pattern)
+  (h: $ Norm psi1 psi2 $):
+  $ Norm (phi -> psi1) (phi -> psi2) $ =
+  '(norm_imp norm_refl h);
 theorem eFresh_not {x: EVar} (phi: Pattern x)
   (h: $ _eFresh x phi $):
   $ _eFresh x (~ phi) $ =
@@ -45,7 +53,8 @@ theorem eFresh_and {x: EVar} (phi1 phi2: Pattern x)
   $ _eFresh x (phi1 /\ phi2) $ =
   '(eFresh_not @ eFresh_imp h1 @ eFresh_not h2);
 theorem eSubstitution_in_and {x: EVar} (psi phi1 phi2: Pattern x):
-  $ Norm (e[ psi / x ] (phi1 /\ phi2)) ((e[ psi / x ] phi1) /\ e[ psi / x ] phi2) $;
+  $ Norm (e[ psi / x ] (phi1 /\ phi2)) ((e[ psi / x ] phi1) /\ e[ psi / x ] phi2) $ =
+  '(norm_trans eSubstitution_in_not @ norm_not @ norm_trans eSubstitution_in_imp @ norm_imp_r eSubstitution_in_not);
 
 
 --- High level versions of axioms
@@ -72,12 +81,23 @@ theorem or_exists {x: EVar} (phi1: Pattern) (phi2: Pattern x):
       (exists_generalization eFresh_exists_same_var @ syl exists_intro_same_var orr))
     (exists_generalization (eFresh_or eFresh_triv eFresh_exists_same_var) @ eori orl @ orrd exists_intro_same_var));
 
+theorem imp_exists {x: EVar} (phi1: Pattern) (phi2: Pattern x):
+  $ (phi1 -> exists x phi2) <-> exists x (phi1 -> phi2) $ =
+  '(ibii
+    (rsyl (imim1 dne) @ rsyl (anl or_exists) @ exists_framing @ imim1 notnot1)
+    (rsyl (exists_framing @ imim1 dne) @ rsyl (anr or_exists) @ imim1 notnot1));
+
 theorem and_exists_forwards {x: EVar} (phi1: Pattern) (phi2: Pattern x):
   $ (exists x (phi1 /\ phi2)) -> (phi1 /\ exists x phi2) $ =
   '(iand
     (rsyl (exists_framing anl) (exists_generalization_strict id))
     (exists_framing anr));
-
+theorem and_exists_reverse {x: EVar} (phi1: Pattern) (phi2: Pattern x):
+  $ (phi1 /\ exists x phi2) -> (exists x (phi1 /\ phi2)) $ =
+  '(impcom @ imim2 (anr imp_exists) (exists_framing ian2));
+theorem and_exists {x: EVar} (phi1: Pattern) (phi2: Pattern x):
+  $ (exists x (phi1 /\ phi2)) <-> (phi1 /\ exists x phi2) $ =
+  '(ibii and_exists_forwards and_exists_reverse);
 
 theorem framing_norm {box: SVar} (ctx: Pattern box) (phi1 phi2 rho1 rho2: Pattern)
   (h1: $ Norm (app[ phi1 / box ] ctx) rho1 $)
@@ -91,12 +111,3 @@ theorem singleton_norm {box1 box2: SVar} {x: EVar}
   (h2: $ Norm (app[ (eVar x) /\ ~phi / box2 ] ctx2) rho2 $):
   $ ~(rho1 /\ rho2) $ =
   '(norm (norm_not @ norm_and h1 h2) singleton);
-
-theorem univ_gene {x: EVar} (phi: Pattern x)
-  (p: $ phi $):
-  $ forall x phi $ = '(exists_generalization_strict @ notnot1 p);
-theorem var_subst {x y: EVar} (phi: Pattern x y):
-  $ (forall x phi) -> e[ eVar y / x ] phi $ =
-  '(con1 @ norm (norm_imp eSubstitution_in_not norm_refl) exists_intro);
-theorem var_subst_same_var {x: EVar} (phi: Pattern x):
-  $ (forall x phi) -> phi $ = '(con1 exists_intro_same_var);
