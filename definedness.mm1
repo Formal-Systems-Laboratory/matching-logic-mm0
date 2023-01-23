@@ -218,9 +218,60 @@ theorem lemma_56 {box: SVar} (ctx: Pattern box) (phi: Pattern):
       (propag_or_def @ framingDef (anl com12b @ rsyl dne @ imim2i dne) (! definedness x))
     ));
 
-theorem lemma_62_1 {x: EVar} (phi: Pattern):
+--- lemma 59
+theorem functional_subst {x: EVar} {y: EVar} (phi1: Pattern x y) (phi2: Pattern x):
+  $(forall x phi1) /\ (exists y phi2 == y) -> e[ phi2 / x ] phi1$
+  ;
+
+--- lemma 60
+-- theorem lemma_60_forward {x: EVar}  {box: SVar} (phi1 ctx: Pattern box x):
+--   $app[ phi1 /\ (x in phi2) / box ] ctx -> (app[ phi1 / box ] ctx) /\ (x in phi2)$;
+theorem lemma_60_reverse {x: EVar} {box: SVar} (phi1 ctx: Pattern box x):
+  $(app[ phi1 / box ] ctx) /\ (x in phi2) -> app[ phi1 /\ (x in phi2) / box ] ctx$
+  ;
+-- theorem lemma_60 {x: EVar} {box: SVar} (phi1 ctx: Pattern box x):
+--   $(app[ phi1 /\ (x in phi2) / box ] ctx) == app[ phi1 / box ] ctx /\ (x in phi2)$
+--   = '(eqiv_to_eq @ iani lemma_60_forward lemma_60_reverse );
+
+
+--- Lemma 62
+theorem lemma_62_forward {x: EVar} (phi: Pattern):
   $ (exists x ((x in phi) /\ eVar x)) -> phi $ =
   '(exists_generalization_strict @ syl dne @ dne @ con3 (bi1i anass) (singleton_norm (! defNorm box1) (! appCtxVar box2)));
+theorem lemma_62_reverse {y: EVar} (phi: Pattern) {.box: SVar} :
+  $ phi -> (exists y ((y in phi) /\ eVar y))$
+  = '( ! membership_elim x _
+     @ exists_generalization eFresh_triv
+     @ notnot1
+     @ membership_imp_reverse
+     @ syl membership_exists_reverse
+     @ syl (bi2i @ cong_of_equiv_exists membership_and_bi)
+     @ syl (bi2i @ cong_of_equiv_exists @ cong_of_equiv_and_r membership_var_bi)
+     @ syl (! exists_intro y x)
+     @ norm (norm_imp norm_refl @ norm_sym @ norm_trans eSubstitution_in_and
+                @ norm_and (norm_trans eSubstitution_in_app @ norm_app
+                              eSubstitution_in_sym
+                            @ norm_trans eSubstitution_in_and @ norm_and eSubstitution_triv
+                            @ norm_trans eSubstitution_in_app @ norm_app eSubstitution_in_sym
+                            @ norm_trans eSubstitution_in_and @ norm_and
+                              eSubstitution_in_same_eVar
+                              eSubstitution_triv)
+                           ( norm_trans eSubstitution_in_not @ norm_not
+                            @ norm_trans eSubstitution_in_app @ norm_app eSubstitution_triv
+                            @ norm_trans eSubstitution_in_not @ norm_not
+                            @ norm_trans eSubstitution_in_and @ norm_and
+                              (norm_trans eSubstitution_in_imp @ norm_imp
+                                 eSubstitution_in_eVar eSubstitution_in_same_eVar )
+                              (norm_trans eSubstitution_in_imp @ norm_imp
+                                 eSubstitution_in_same_eVar eSubstitution_in_eVar )   )
+            )
+     @ iand ( syl (norm (norm_imp (norm_and defNorm norm_refl) @ defNorm) (! lemma_60_reverse _ _ box) )
+            @ iand (a1i definedness)
+                   id
+            )
+            (a1i eq_intro)
+     );
+
 
 --- contextual implications
 def ctximp_app {box: SVar} (ctx: Pattern box) (phi: Pattern) {dummy: EVar}: Pattern =
@@ -253,5 +304,7 @@ theorem wrap {box: SVar} (ctx: Pattern box) (phi psi: Pattern) {dummy: EVar}
   (h: $ (app[ phi / box ] ctx) -> psi $):
   $ phi -> (ctximp_app box ctx psi dummy) $ =
   '(rsyl _ @ exists_framing @ anim id
-    (wrap_lemma_1 @ expcom @ rsyl exists_intro_same_var (imim1i (rsyl (exists_framing appCtx_ceil_2) prop_43_exists) (rsyl (framing (rsyl (exists_framing ancom) lemma_62_1)) h)))
+    (wrap_lemma_1 @ expcom @ rsyl exists_intro_same_var (imim1i (rsyl (exists_framing appCtx_ceil_2) prop_43_exists) (rsyl (framing (rsyl (exists_framing ancom) lemma_62_forward)) h)))
   );
+
+
