@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+mkdir -p .build/
+mm0-rs join yellow.mm1 .build/combined-yellow.mm1
+mm0-rs compile  .build/combined-yellow.mm1 /dev/null || { echo "===== FAILED"; exit 1 ; }
+echo Passed.
