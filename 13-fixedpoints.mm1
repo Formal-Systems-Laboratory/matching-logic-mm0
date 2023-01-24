@@ -22,14 +22,14 @@ theorem wrap_lemma {x: EVar} (phi psi: Pattern x)
     (norm_trans appCtxR @ norm_app norm_refl @ norm_trans appCtxR @ norm_app norm_refl appCtxVar)
     norm_refl) (! lemma_56 box)) (con2 @ dne singletonDef)));
 
-theorem corollary_57_ceil (phi: Pattern): $ phi -> |^ phi ^| $ =
-  '(norm (norm_imp_l appCtxVar) (! lemma_56 box));
-theorem corollary_57_floor (phi: Pattern): $ |_ phi _| -> phi $ =
-  '(con1 corollary_57_ceil);
+theorem unwrap_lemma_1 {x: EVar} (phi: Pattern):
+  $ (x in |_ phi _|) -> |_ phi _| $
+  ;
 
 theorem unwrap_lemma {x y: EVar} {box: SVar} (ctx: Pattern box) (phi: Pattern):
-  $ (exists x ((y in eVar x) /\ y in |_ app[ eVar x / box ] ctx -> phi _|)) -> |_ (app[ eVar y / box ] ctx) -> phi _| $
-  ;
+  $ ((y in eVar x) /\ y in |_ app[ eVar x / box ] ctx -> phi _|) -> |_ (app[ eVar y / box ] ctx) -> phi _| $ =
+  '(curry @ rsyl membership_var_forward @ syl (imim1i unwrap_lemma_1) @
+  con3d @ norm (norm_imp_r @ norm_imp defNorm defNorm) (! lemma_14 box2 _ _ _ _ @ con3d @ rsyl eq_to_framing imim1));
 
 -- theorem appCtx_ceil_1:
 --   $ app[ phi /\ |^ psi ^| / box ] ctx -> app[ phi / box ] ctx /\ |^ psi ^| $ =
@@ -44,7 +44,7 @@ theorem unwrap {box: SVar} (ctx: Pattern box) (phi psi: Pattern) {dummy: EVar}
   (h: $ phi -> (ctximp_app box ctx psi dummy) $):
   $ (app[ phi / box ] ctx) -> psi $ =
   '(imim1 (syl (rsyl propag_exists_strict @ exists_framing lemma_60_forward) @ framing lemma_62_b_reverse) @ exists_generalization_strict @ impcom (imim2 corollary_57_floor (
-    rsyl (membership_imp_forward @ con1 exists_intro_same_var @ membership_intro h) @ rsyl membership_exists_forward @ rsyl (exists_framing membership_and_forward) (! unwrap_lemma _ y)
+    rsyl (membership_imp_forward @ con1 exists_intro_same_var @ membership_intro h) @ rsyl membership_exists_forward @ rsyl (exists_framing membership_and_forward) @ exists_generalization_strict (! unwrap_lemma _ y)
   )));
 theorem wrap {box: SVar} (ctx: Pattern box) (phi psi: Pattern) {dummy: EVar}
   (h: $ (app[ phi / box ] ctx) -> psi $):
