@@ -56,6 +56,11 @@ mod ERE-THEOREMS is
     rl [eq-choice-unit] : bot   \/ Alpha => Alpha .
     rl [eq-choice-idem] : Alpha \/ Alpha => Alpha .
 
+   --- TODO: add a rule the rearrances disjuncts so that they are sorted.
+   --- Make sure to remove the comm attribute.
+   --- crl [eq-comm] : Alpha \/ Beta => Beta \/ Alpha if Alpha < Beta .
+   --- Following that, add it to the list of equations in applyAnyEquation.
+
     rl [eq-der-bot]     : (derivative A bot)          => bot .
     rl [eq-der-epsilon] : (derivative A epsilon)      => bot .
     rl [eq-der-same-a]  : (derivative A A)            => epsilon .
