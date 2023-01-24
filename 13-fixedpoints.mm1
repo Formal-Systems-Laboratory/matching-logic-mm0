@@ -28,7 +28,7 @@ theorem corollary_57_floor (phi: Pattern): $ |_ phi _| -> phi $ =
   '(con1 corollary_57_ceil);
 
 theorem unwrap_lemma {x y: EVar} {box: SVar} (ctx: Pattern box) (phi: Pattern):
-  $ (y in (exists x (eVar x /\ |_ app[ eVar x / box ] ctx -> phi _|)) -> |_ (app[ eVar y / box ] ctx) -> phi _|) $
+  $ ((exists x ((y in eVar x) /\ y in |_ app[ eVar x / box ] ctx -> phi _|)) -> |_ (app[ eVar y / box ] ctx) -> phi _|) $
   ;
 
 -- theorem appCtx_ceil_1:
@@ -44,7 +44,7 @@ theorem unwrap {box: SVar} (ctx: Pattern box) (phi psi: Pattern) {dummy: EVar}
   (h: $ phi -> (ctximp_app box ctx psi dummy) $):
   $ (app[ phi / box ] ctx) -> psi $ =
   '(imim1 (syl (rsyl propag_exists_strict @ exists_framing lemma_60_forward) @ framing lemma_62_b_reverse) @ exists_generalization_strict @ impcom (imim2 corollary_57_floor (
-    rsyl (membership_imp_forward @ con1 exists_intro_same_var @ membership_intro h) (! unwrap_lemma _ y)
+    rsyl (membership_imp_forward @ con1 exists_intro_same_var @ membership_intro h) @ rsyl membership_exists_forward @ rsyl (exists_framing membership_and_forward) (! unwrap_lemma _ y)
   )));
 theorem wrap {box: SVar} (ctx: Pattern box) (phi psi: Pattern) {dummy: EVar}
   (h: $ (app[ phi / box ] ctx) -> psi $):
