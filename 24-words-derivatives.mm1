@@ -8,15 +8,23 @@ def derivative (l : Pattern) (phi : Pattern) : Pattern
 theorem der_equality:
     $phi == (epsilon /\ phi) \/ (a . (derivative a phi)) \/ (b . (derivative b phi))$;
 
-theorem der_a_emptyset: $(derivative a bot)         == bot$;
-theorem der_a_epsilon:  $(derivative a epsilon)     == bot$;
-theorem der_a_b:        $(derivative a b)           == bot$;
-theorem der_a_concat:
+theorem eq_der_a_emptyset: $(derivative a bot)         == bot$;
+theorem eq_der_a_epsilon:  $(derivative a epsilon)     == bot$;
+theorem eq_der_a_b:        $(derivative a b)           == bot$;
+theorem eq_der_a_concat:
     $(derivative a (phi . psi)) ==    (derivative a phi) . psi
                                    \/ ((epsilon /\ phi) . (derivative a psi))$;
-theorem der_a_choice:
+theorem eq_der_a_choice:
     $(derivative a (phi \/ psi)) == (derivative a phi) \/ (derivative a psi)$;
-theorem der_a_kleene:
+theorem eq_der_a_kleene:
     $(derivative a (kleene X phi)) == (derivative a phi) . (kleene X phi)$;
-theorem der_a_not:
+theorem eq_der_a_not:
     $(derivative a (~ phi)) == ~ (derivative a phi)$;
+
+
+theorem fp_implies_l :
+    (he: $epsilon -> rho$)
+    (ha: $s[rho / X] phi_a -> (derivative a rho)$)
+    (hb: $s[rho / X] phi_b -> (derivative b rho)$)
+    ----------------------------------------------
+    $(mu X epsilon \/ a . phi_a \/ b . phi_b) -> rho$;

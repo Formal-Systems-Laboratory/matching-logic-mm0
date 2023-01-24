@@ -1,136 +1,129 @@
-mod ERE is
-    sorts Letter Epsilon RegExp .
-    subsorts Epsilon Letter < RegExp .
+fmod PATTERN-METAMATH is
+    protecting QID .
+    sorts Symbol SVar EVar Pattern .
+    subsorts Symbol SVar EVar < Pattern .
 
-    --- In thoery an alphabet of {0, 1} is enough to encode all words, but we
-    --- will use four letters for convenience.
-    op a : -> Letter [ctor] .
-    op b : -> Letter [ctor] .
-    op c : -> Letter [ctor] .
-    op d : -> Letter [ctor] .
+    *** core
+    ops sVar _ : Qid -> SVar [ctor] .
+    ops eVar _ : Qid -> EVar [ctor] .
+    op ( app _ _ ) : Pattern Pattern -> Pattern [ctor] .
+    op ( _ -> _ )  : Pattern Pattern -> Pattern [ctor] .
+    op ( mu _ _ )  : Qid     Pattern -> Pattern [ctor] .
+    op bot         : -> Pattern [ctor] .
+    op ( exists _ _ ) : Qid Pattern -> Pattern [ctor] .
 
-    op empty   :               -> RegExp [ctor] .
-    op epsilon :               -> Epsilon [ctor] .
-    op _ _     : RegExp RegExp -> RegExp [ctor prec 2 assoc] .
-    op _ *     : RegExp        -> RegExp [ctor prec 1] .
-    op _ + _   : RegExp RegExp -> RegExp [ctor prec 3 assoc comm] .
-    op ~ _     : RegExp        -> RegExp [ctor prec 1] .
+    op top : -> Pattern [ctor] .
+    op ( _ /\ _ )       : Pattern Pattern -> Pattern [ctor assoc comm] .
+    op ( _ \/ _ )       : Pattern Pattern -> Pattern [ctor assoc comm] .
+    op ( nu _ _ )       : Qid Pattern     -> Pattern [ctor] .
+    op ( forall _ _ )   : Qid Pattern     -> Pattern [ctor] .
+    op (_ <-> _ )       : Pattern Pattern -> Pattern [ctor] .
+    op (~ _ )           : Pattern         -> Pattern [ctor] .
 
-    vars Alpha Alpha1 Alpha2 : RegExp .
-    vars Beta  Beta1  Beta2  : RegExp .
+    *** ERE
+    op epsilon      :                 -> Pattern [ctor] .
+
+    --- TODO: Ideally, we'd want to be parametric over an alphabet.
+    --- However, two letters are enough to encode all words.
+    sort Letter .
+    subsort Letter < Pattern .
+    op a            :                 -> Letter [ctor] .
+    op b            :                 -> Letter [ctor] .
+
+    op _ . _        : Pattern Pattern -> Pattern [ctor] .
+    op _ *          : Pattern         -> Pattern [ctor] .
+
+    op (derivative _ _) : Pattern Pattern -> Pattern [ctor] .
+
+    *** ERE sugar
+    --- NOT FOR INTERNAL USE.
+    vars Alpha Beta : Pattern .
+    op _ + _        : Pattern Pattern -> Pattern .
+    eq Alpha + Beta = Alpha \/ Beta .
+
+    op _ --> _        : Pattern Pattern -> Pattern .
+    eq Alpha --> Beta = (~ Alpha) \/ Beta .
+endfm
+
+mod ERE-THEOREMS is
+    protecting PATTERN-METAMATH .
+
+    vars Alpha Alpha1 Alpha2 : Pattern .
+    vars Beta  Beta1  Beta2  : Pattern .
     vars A B A1 A2 : Letter .
 
-    --- Identity and idemoptency of +
-    rl [eq-choice-unit] : empty + Alpha => Alpha .
-    rl [eq-choice-idem] : Alpha + Alpha => Alpha .
+    --- Identity and idemoptency of \/
+    rl [eq-choice-unit] : bot   \/ Alpha => Alpha .
+    rl [eq-choice-idem] : Alpha \/ Alpha => Alpha .
 
-    op hasEWP : RegExp -> Bool .
-    eq hasEWP(empty       )  = false .
-    eq hasEWP(epsilon     )  = true  .
-    eq hasEWP(A           )  = false .
-    eq hasEWP(Alpha Beta  )  = hasEWP(Alpha) and hasEWP(Beta) .
-    eq hasEWP(Alpha + Beta)  = hasEWP(Alpha) or  hasEWP(Beta) .
-    eq hasEWP(Alpha *     )  = true .
-    eq hasEWP(~ Alpha     )  = not hasEWP(Alpha) .
+    rl [eq-der-bot]     : (derivative A bot)          => bot .
+    rl [eq-der-epsilon] : (derivative A epsilon)      => bot .
+    rl [eq-der-same-a]  : (derivative A A)            => epsilon .
 
-    op der(_, _) : Letter RegExp -> RegExp .
-    rl [eq-der-empty]   : der(A, empty)        => empty .
-    rl [eq-der-epsilon] : der(A, epsilon)      => empty .
-    rl [eq-der-letter]  : der(A, B)            => if A == B then epsilon else empty fi .
-    rl [eq-der-kleene]  : der(A, Alpha *)      => der(A, Alpha) (Alpha *) .
-    rl [eq-der-concat]  : der(A, Alpha Beta)   => (der(A, Alpha) Beta) + if hasEWP(Alpha) then der(A, Beta) else empty fi .
-    rl [eq-der-choice]  : der(A, Alpha + Beta) => der(A, Alpha) + der(A, Beta) .
-    rl [eq-der-neg]     : der(A, ~ Alpha)      => ~ der(A, Alpha) .
-endm
+   --- Note: our meta rewriting doesnt support crl, but equational theorems are applied in order.
+   crl [eq-der-diff-a]  : (derivative A B)            => bot if A =/= B .
 
---- While, in theory, the AC and idemoptency of + is enough to make
---- the derivatives based algorithm terminate, it is far from minimal.
---- We add some additional equations to make things more well behaved.
-mod ERE-SIMPLIFIED is
-    including ERE .
+    rl [eq-der-kleene]  : (derivative A Alpha *)        => (derivative A Alpha) . (Alpha *) .
+    rl [eq-der-concat]  : (derivative A (Alpha . Beta)) => ((derivative A Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative A Beta)) .
+    rl [eq-der-choice]  : (derivative A (Alpha \/ Beta)) => (derivative A Alpha) \/ (derivative A Beta) .
+    rl [eq-der-neg]     : (derivative A ~ Alpha)        => ~ (derivative A Alpha) .
 
-    vars Alpha Alpha1 Alpha2 : RegExp .
-    vars Beta  Beta1  Beta2  : RegExp .
-    vars A B A1 A2 : Letter .
+    rl [eq-ewp-bot]     : epsilon /\ bot          => bot .
+    rl [eq-ewp-epsilon] : epsilon /\ epsilon        => epsilon .
+    rl [eq-ewp-a]       : epsilon /\ a              => bot .
+    rl [eq-ewp-concat]  : epsilon /\ (Alpha . Beta) => (epsilon /\ Alpha) /\ (epsilon /\ Beta) .
+    rl [eq-ewp-choice]  : epsilon /\ (Alpha \/ Beta) => (epsilon /\ Alpha) \/ (epsilon /\ Beta) .
+    rl [eq-ewp-kleene]  : epsilon /\ (Alpha *)      => epsilon .
 
-    rl [eq-empty-concat-l] : empty Alpha => empty .
-    rl [eq-empty-concat-r] : Alpha empty => empty .
+    rl [eq-ewp-not-bot] : epsilon /\ (~ bot)        => epsilon .
+    rl [eq-ewp-not-eps] : epsilon /\ (~ epsilon)    => bot .
+    rl [eq-ewp-not-not] : ~ (~ Alpha)               => Alpha .
+   --- Note: Similarly, our meta rewriting doesnt support owise, but equational theorems are applied in order.
+    rl [eq-ewp-not]     : epsilon /\ (~ Alpha)      => epsilon /\ ~(epsilon /\ Alpha) . --- [owise]
 
-    rl [eq-eps-concat-l] : epsilon Alpha => Alpha .
-    rl [eq-eps-concat-r] : Alpha epsilon => Alpha .
+    ---- Optional simplifications
+    rl [eq-bot-concat-l] : bot . Alpha => bot .
+    rl [eq-bot-concat-r] : Alpha . bot => bot .
+
+    rl [eq-eps-concat-l] : epsilon . Alpha => Alpha .
+    rl [eq-eps-concat-r] : Alpha . epsilon => Alpha .
 
     rl [eq-double-neg] : ~ ~ Alpha => Alpha .
     rl [eq-double-kleene] : Alpha * * => Alpha .
 
     rl [eq-eps-kleene] : epsilon * => epsilon .
-    rl [eq-empty-kleene] : empty * => epsilon .
-endm
+    rl [eq-bot-kleene] : bot * => epsilon .
 
---- reduce der( a , ( (c *) a ) + (((c c + c)*) b)) .
---- reduce der( b , ( (c *) a ) + (((c c + c)*) b)) .
---- reduce der( c , ( (c *) a ) + (((c c + c)*) b)) .
---- reduce der( d , ( (c *) a ) + (((c c + c)*) b)) .
---- reduce hasEWP(( (c *) a ) + (((c c + c)*) b)) .
----
---- reduce der(a, empty *) .
---- reduce der(a, epsilon *) .
---- reduce der(a, empty) .
---- reduce der(a, empty * *) .
---- reduce der(a, epsilon * *) .
---- reduce der(a, a * *) .
 
-mod ERE-VALIDITY is
-    protecting ERE-SIMPLIFIED .
+    *** Rules *********************************
+    *******************************************
 
-    vars Alpha Alpha1 Alpha2 : RegExp .
-    vars Beta  Beta1  Beta2  : RegExp .
-    vars A B A1 A2 : Letter .
-
-    --- For convenienct checking of equality.
-    op _ <--> _ : RegExp RegExp -> RegExp .
-    op _ & _ : RegExp RegExp -> RegExp .
-    op _ --> _ : RegExp RegExp -> RegExp .
-    --- TODO: We use double dashes to avoid clash with Pattern implication, though we want them to parse to the same thing.
-    eq Alpha <--> Beta = ( Alpha --> Beta ) & ( Beta --> Alpha ) .
-    eq Alpha --> Beta = (~ Alpha) + Beta .
-    eq Alpha & Beta = ~( ( ~ Alpha ) + ( ~ Beta ) ) .
+    op hasEWP : Pattern -> Bool .
+    eq hasEWP(bot)  = false .
+    eq hasEWP(epsilon      )  = true  .
+    eq hasEWP(A            )  = false .
+    eq hasEWP(Alpha .  Beta)  = hasEWP(Alpha) and hasEWP(Beta) .
+    eq hasEWP(Alpha /\ Beta)  = hasEWP(Alpha) or  hasEWP(Beta) .
+    eq hasEWP(Alpha *      )  = true .
+    eq hasEWP(~ Alpha      )  = not hasEWP(Alpha) .
 
     sort State .
-    op < _ > : RegExp -> State [ctor] .
+    op < _ > : Pattern -> State [ctor] .
     op < invalid > : -> State [ctor] .
     op < error > : -> State [ctor] . --- Used for down term errors.
 
-   ceq < Alpha > = < invalid > if not hasEWP(Alpha) .
-    rl [der-a] : < Alpha > => < der(a, Alpha) > .
-    rl [der-b] : < Alpha > => < der(b, Alpha) > .
-    rl [der-c] : < Alpha > => < der(c, Alpha) > .
-    rl [der-d] : < Alpha > => < der(d, Alpha) > .
+   ceq < Alpha > = < invalid > if not hasEWP(Alpha) . --- This should never be reached.
+    rl [der-a] : < Alpha > => < (derivative a Alpha) > .
+    rl [der-b] : < Alpha > => < (derivative b Alpha) > .
 endm
 
---- search ((c)* b) =>* R:RegExp .
---- show path 3 .
-
---- reduce der(b,(c)* b) .
-
---- search < ((c)* b) > =>* < invalid > .
---- search [, 1000] < (((c c + c)*) b) <--> (((c c c + c)*) b) > =>* < invalid > . --- valid
---- search [, 1000] < (((c c + c)*) b) <--> (((c c + c)*) b) > =>* < invalid >   . --- valid
---- search [, 1000] < (((c c + c)*) b) <--> (((c c + c)*) a) > =>* < invalid >   . --- invalid
---- search [, 1000] < (((c c + c)*) c) -> (((c c + c)*) ) > =>* < invalid > . --- valid
---- search [, 1000] < (((c c + c)*) c) <--> (((c c + c)*) c) > =>* < invalid > . --- valid
---- search [, 1000] < (((c c c + c)*) c) <--> (((c c c + c)*) c) > =>* < invalid > . --- valid
---- search [, 1000] < (((c c + c)*) c) <--> (((c c c + c)*) c) > =>* < invalid >  . --- valid
---- search [, 1000] < (a b)* a <--> a (b a)* > =>* < invalid >  . --- valid
-
 --- Manually performs a search, and returns the search graph as a tree with backlinks.
-
 fmod MY-META-SEARCH-TREE is
     protecting META-LEVEL .
+    protecting NAT .
 
     sorts Edge NeEdges Edges Node EdgeLabel .
     subsorts Edge < NeEdges < Edges .
-
-    *** Constructors.
     op none : -> Edges [ctor] .
     op eqEdge : EdgeLabel Node -> Edge [ctor] .
     op rlEdge : EdgeLabel Node -> Edge [ctor] .
@@ -141,50 +134,57 @@ fmod MY-META-SEARCH-TREE is
 
     op node : Term Edges -> Node [ctor] .
     op backlink : Term -> Node [ctor] .
+    op depthReached : Term -> Node [ctor] .
 
-    vars T : Term .
-    vars TL TL' : TermList .
-    vars R : Qid .
-    vars Result : Result4Tuple .
-    vars Es : NeEdges .
-    vars Es? : Edges .
+    var N : Nat .
+    vars Es : NeEdges . vars Es? : Edges .
+    vars T : Term . vars TL TL' : TermList .
+    vars R : Qid . vars Result : Result4Tuple .
 
     op _ in _ : Term TermList -> Bool .
     eq T in (TL , T , TL') = true .
     eq T in TL = false [owise] .
 
-    op myMetaSearchTree : Term TermList -> Node .
-   ceq myMetaSearchTree(T, TL) = backlink(T)
-    if     T in TL
-     .
-   ceq myMetaSearchTree(T, TL) = node(T, applyAnyEquation(T, TL))
-    if    (not T in TL)
-       /\ Es := applyAnyEquation(T, TL)
-     .
-   ceq myMetaSearchTree(T, TL) = node(T, applyAllRules(T, (TL, T)))
-    if    (not T in TL)
-       /\ none = applyAnyEquation(T, TL)
-     .
+   --- curr term, previous terms, depth
+    op myMetaSearchTree : Term TermList Nat -> Node .
+   ceq myMetaSearchTree(T, TL, N) = backlink(T)                              if      T in TL .
+   ceq myMetaSearchTree(T, TL, N) = node(T, applyAnyEquation(T, TL, N))      if (not T in TL) /\ Es := applyAnyEquation(T, TL, N) .
+   ceq myMetaSearchTree(T, TL, s(N)) = node(T, applyAllRules(T, (TL, T), N)) if (not T in TL) /\ none = applyAnyEquation(T, TL, N) .
+   ceq myMetaSearchTree(T, TL, 0) = depthReached(T)                          if (not T in TL) /\ none = applyAnyEquation(T, TL, 0) .
 
-    op applyAnyEquation : Term TermList -> Edges .
-    eq applyAnyEquation(T, TL) =
-                applyEq(T, TL, 'eq-der-empty) or-else
-                applyEq(T, TL, 'eq-der-epsilon) or-else
-                applyEq(T, TL, 'eq-der-letter) or-else
-                applyEq(T, TL, 'eq-der-kleene) or-else
-                applyEq(T, TL, 'eq-der-concat) or-else
-                applyEq(T, TL, 'eq-der-choice) or-else
-                applyEq(T, TL, 'eq-der-neg) or-else
-                applyEq(T, TL, 'eq-choice-unit) or-else
-                applyEq(T, TL, 'eq-choice-idem) or-else
-                applyEq(T, TL, 'eq-empty-concat-l) or-else
-                applyEq(T, TL, 'eq-empty-concat-r) or-else
-                applyEq(T, TL, 'eq-eps-concat-l) or-else
-                applyEq(T, TL, 'eq-eps-concat-r) or-else
-                applyEq(T, TL, 'eq-double-neg) or-else
-                applyEq(T, TL, 'eq-double-kleene) or-else
-                applyEq(T, TL, 'eq-eps-kleene) or-else
-                applyEq(T, TL, 'eq-empty-kleene)
+    op applyAnyEquation : Term TermList Nat -> Edges .
+    eq applyAnyEquation(T, TL, N) =
+                applyEq(T, TL, N, 'eq-choice-unit) or-else
+                applyEq(T, TL, N, 'eq-choice-idem) or-else
+
+                applyEq(T, TL, N, 'eq-der-bot) or-else
+                applyEq(T, TL, N, 'eq-der-epsilon) or-else
+                applyEq(T, TL, N, 'eq-der-same-a) or-else
+                applyEq(T, TL, N, 'eq-der-diff-a) or-else
+                applyEq(T, TL, N, 'eq-der-kleene) or-else
+                applyEq(T, TL, N, 'eq-der-concat) or-else
+                applyEq(T, TL, N, 'eq-der-choice) or-else
+                applyEq(T, TL, N, 'eq-der-neg) or-else
+
+                applyEq(T, TL, N, 'eq-ewp-bot) or-else
+                applyEq(T, TL, N, 'eq-ewp-epsilon) or-else
+                applyEq(T, TL, N, 'eq-ewp-a) or-else
+                applyEq(T, TL, N, 'eq-ewp-concat) or-else
+                applyEq(T, TL, N, 'eq-ewp-choice) or-else
+                applyEq(T, TL, N, 'eq-ewp-kleene) or-else
+                applyEq(T, TL, N, 'eq-ewp-not-bot) or-else
+                applyEq(T, TL, N, 'eq-ewp-not-eps) or-else
+                applyEq(T, TL, N, 'eq-ewp-not-not) or-else
+                applyEq(T, TL, N, 'eq-ewp-not) or-else
+
+                applyEq(T, TL, N, 'eq-bot-concat-l) or-else
+                applyEq(T, TL, N, 'eq-bot-concat-r) or-else
+                applyEq(T, TL, N, 'eq-eps-concat-l) or-else
+                applyEq(T, TL, N, 'eq-eps-concat-r) or-else
+                applyEq(T, TL, N, 'eq-double-neg) or-else
+                applyEq(T, TL, N, 'eq-double-kleene) or-else
+                applyEq(T, TL, N, 'eq-eps-kleene) or-else
+                applyEq(T, TL, N, 'eq-bot-kleene)
                 .
 
     --- The strat attribute is needed to get decent preformance.
@@ -194,58 +194,34 @@ fmod MY-META-SEARCH-TREE is
     eq E:Edge or-else Es:Edges = E:Edge .
     eq none or-else Es? = Es? .
 
-    op applyAllRules : Term TermList -> Edges .
-    eq applyAllRules(T, TL) =
-        applyRule(T, TL, 'der-a) ;
-        applyRule(T, TL, 'der-b) ;
-        applyRule(T, TL, 'der-c) ;
-        applyRule(T, TL, 'der-d) .
+    op applyAllRules : Term TermList Nat -> Edges .
+    eq applyAllRules(T, TL, N) =
+        applyRule(T, TL, N, 'der-a) ;
+        applyRule(T, TL, N, 'der-b) .
 
     op myModule : -> Module .
-    eq myModule = upModule('ERE-VALIDITY, false) .
+    eq myModule = upModule('ERE-THEOREMS, false) .
 
-    op applyEq : Term TermList Qid -> Edges .
-   ceq applyEq(T, TL, R) = eqEdge( apply(R, getContext(Result), getSubstitution(Result))
-                                 , myMetaSearchTree(getTerm(Result), TL))
+    op applyEq : Term TermList Nat Qid -> Edges .
+   ceq applyEq(T, TL, N, R) = eqEdge( apply(R, getContext(Result), getSubstitution(Result))
+                                 , myMetaSearchTree(getTerm(Result), TL, N))
     if Result := metaXapply(myModule, T, R, none, 0, unbounded, 0) .
-    eq applyEq(T, TL, R) = none [owise] .
+    eq applyEq(T, TL, N, R) = none [owise] .
 
-
-    op applyRule : Term TermList Qid -> Edges .
-   ceq applyRule(T, TL, R) = rlEdge( apply(R, getContext(Result), getSubstitution(Result))
-                                   , myMetaSearchTree(getTerm(Result), (TL, T)))
+    op applyRule : Term TermList Nat Qid -> Edges .
+   ceq applyRule(T, TL, N, R) = rlEdge( apply(R, getContext(Result), getSubstitution(Result))
+                                      , myMetaSearchTree(getTerm(Result), (TL, T), N))
     if Result := metaXapply(myModule, T, R, none, 0, unbounded, 0) .
-    eq applyRule(T, TL, R) = none [owise] .
-endfm
-
-fmod PATTERN is
-    sorts Symbol SVar EVar Pattern .
-    subsorts Symbol SVar EVar < Pattern .
-
-    *** core
-    ops X Y Z : -> SVar [ctor] .
-    ops x y z : -> EVar [ctor] .
-    op app(_ _) : Pattern Pattern -> Pattern [ctor] .
-    op _ -> _ : Pattern Pattern -> Pattern [ctor] .
-    op mu _ . _ : SVar Pattern -> Pattern [ctor] .
-    op bottom : -> Pattern [ctor] .
-    op exists _ . _ : EVar Pattern -> Pattern [ctor] .
-
-    *** sugar
-    op top : -> Pattern [ctor] .
-    op _ /\ _ : Pattern Pattern -> Pattern [ctor] .
-    op _ \/ _ : Pattern Pattern -> Pattern [ctor] .
-    op nu _ . _ : SVar Pattern -> Pattern [ctor] .
-    op forall _ . _ : EVar Pattern -> Pattern [ctor] .
+    eq applyRule(T, TL, N, R) = none [owise] .
 endfm
 
 mod REGEX-PROOF-GENERATOR is
     protecting MY-META-SEARCH-TREE .
-    protecting ERE-VALIDITY .
-    extending PATTERN .
+    protecting ERE-THEOREMS .
+    extending PATTERN-METAMATH .
 
-    vars Alpha Alpha1 Alpha2 : RegExp .
-    vars Beta  Beta1  Beta2  : RegExp .
+    vars Alpha Alpha1 Alpha2 : Pattern .
+    vars Beta  Beta1  Beta2  : Pattern .
     vars A B A1 A2 : Letter .
 
     vars T : Term .
@@ -272,8 +248,9 @@ mod REGEX-PROOF-GENERATOR is
 
     sorts ProofHint NeProofHintEdges ProofHintEdges .
     subsort NeProofHintEdges < ProofHintEdges .
-    op node : RegExp ProofHintEdges -> ProofHint [ctor] .
-    op backlink : RegExp -> ProofHint [ctor] .
+    op node : Pattern ProofHintEdges -> ProofHint [ctor] .
+    op depthReached : Pattern -> ProofHint [ctor] .
+    op backlink : Pattern -> ProofHint [ctor] .
 
     op none : -> ProofHintEdges [ctor] .
     op transition : Letter ProofHint -> NeProofHintEdges [ctor] .
@@ -288,33 +265,40 @@ mod REGEX-PROOF-GENERATOR is
     op mkProofHint : Edges -> ProofHintEdges .
     eq mkProofHint(backlink(T)) = backlink(getRegExp(downTerm(T, < error >))) .
     eq mkProofHint(node(T, Es)) = node(getRegExp(downTerm(T, < error > )), mkProofHint(Es)) .
+    eq mkProofHint(depthReached(T)) = depthReached(getRegExp(downTerm(T, < error > ))) .
     eq mkProofHint(Es1 ; Es2) = mkProofHint(Es1) ; mkProofHint(Es2) .
     eq mkProofHint(rlEdge(apply(R, Ctx, Subst), N:Node)) = transition(ruleLabelToLetter(R), mkProofHint(N)) .
     eq mkProofHint(eqEdge(apply(R, Ctx, Subst), N:Node)) = simpl(R, mkProofHint(N)) .
 
-    op getRegExp : State -> RegExp .
+    op getRegExp : State -> Pattern .
     eq getRegExp(< Alpha >) = Alpha .
 
     op ruleLabelToLetter : Qid -> Letter .
     eq ruleLabelToLetter('der-a) = a .
     eq ruleLabelToLetter('der-b) = b .
-    eq ruleLabelToLetter('der-c) = c .
-    eq ruleLabelToLetter('der-d) = d .
+---    eq ruleLabelToLetter('der-c) = c .
+---    eq ruleLabelToLetter('der-d) = d .
 
-    op proofHint : RegExp -> ProofHint .
-    eq proofHint(Alpha) = mkProofHint(myMetaSearchTree(upTerm(< Alpha >), empty)) .
+    op proofHint : Pattern -> ProofHint .
+    eq proofHint(Alpha) = mkProofHint(myMetaSearchTree(upTerm(< Alpha >), empty, 10)) .
 
     *** Mapping EREs to its Matching Logic signature *************************
     --- We may consider desugaring the constructors via the notation defined
     --- in some other module. But I'm not sure it will be necessary.
 
-    --- Useful subsorting / overloading
-    subsort Epsilon Letter < Symbol .
-    subsort RegExp < Pattern .
-    op _ _ : Pattern Pattern -> Pattern [prec 2 assoc] . --- concat operator
-
     --- Generate a fresh set variable for each regexp.
-    op F : RegExp -> SVar [ctor] .
+    op F : Pattern -> SVar .
+    eq F(Alpha) = sVar (qid(str(Alpha))) .
+
+    op str : Pattern -> String .
+    eq str(bot) = "z" .
+    eq str(a) = "a" .
+    eq str(b) = "b" .
+    eq str(epsilon) = "e" .
+    eq str(Alpha . Beta) = "C" + str(Alpha) + str(Alpha) + "D" .
+    eq str(Alpha \/ Beta) = "C" + str(Alpha) + "p" + str(Alpha) + "D" .
+    eq str(Alpha *)      = "C" + str(Alpha) + "Dx" .
+    eq str(~ Alpha)      = "nC" + str(Alpha) + "D" .
 
     *** fp *******************************************************************
     --- Here, we generate the fixedpoint needed for our proof.
@@ -323,16 +307,10 @@ mod REGEX-PROOF-GENERATOR is
     op fp : ProofHintEdges -> Pattern .
     eq fp(backlink(Alpha)) = F(Alpha) .
     eq fp(node(Alpha, simpl(R, PH))) = fp(PH) .
-    eq fp(node(Alpha, PHE1)) = mu F(Alpha) . ( epsilon \/ fp(PHE1)) [owise] .
-    eq fp(transition(A , PH)) = A fp(PH) .
+    eq fp(node(Alpha, PHE1)) = mu qid(str(Alpha)) (epsilon \/ fp(PHE1)) [owise] .
+    eq fp(transition(A , PH)) = A . fp(PH) .
     eq fp(PHE1 ; PHE2) = fp(PHE1) \/ fp(PHE2) .
 endm
 
-reduce proofHint((a + b + c + d)*) .
-reduce fp(proofHint((a + b + c + d)*)) .
-reduce fp(proofHint(~ empty)) .
-reduce fp(proofHint((a b)* a <--> a (b a)*)) .
-reduce fp(proofHint((a b)* a  --> a (b a)*)) .
-reduce fp(proofHint((((c c + c)*) b) <--> (((c c c + c)*) b))) .
-reduce fp(proofHint((((c c + c)*) b)  --> (((c c c + c)*) b))) .
-
+reduce proofHint((a . a)* --> ((a * . a) + epsilon)) .
+reduce fp(proofHint((a . a)* --> ((a * . a) + epsilon))) .
