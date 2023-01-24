@@ -1,2 +1,22 @@
 import "22-words-salomaa.mm1";
 import "23-words-fixedpoints.mm1";
+
+def derivative (l : Pattern) (phi : Pattern) : Pattern
+    = $ctximp_app box (l . sVar box) phi dummy $;
+--- = $exists w (eVar w)  /\ (l . eVar w C_ phi)$;
+
+theorem der_equality:
+    $phi == (epsilon /\ phi) \/ (a . (derivative a phi)) \/ (b . (derivative b phi))$;
+
+theorem der_a_emptyset: $(derivative a bot)         == bot$;
+theorem der_a_epsilon:  $(derivative a epsilon)     == bot$;
+theorem der_a_b:        $(derivative a b)           == bot$;
+theorem der_a_concat:
+    $(derivative a (phi . psi)) ==    (derivative a phi) . psi
+                                   \/ ((epsilon /\ phi) . (derivative a psi))$;
+theorem der_a_choice:
+    $(derivative a (phi \/ psi)) == (derivative a phi) \/ (derivative a psi)$;
+theorem der_a_kleene:
+    $(derivative a (kleene X phi)) == (derivative a phi) . (kleene X phi)$;
+theorem der_a_not:
+    $(derivative a (~ phi)) == ~ (derivative a phi)$;
