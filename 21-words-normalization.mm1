@@ -27,10 +27,5 @@ theorem unfold_r_top_word_l {X : SVar} (phi: Pattern) (h: $phi -> epsilon \/ top
 --- Helpers for top_word_r
 --- TODO: Define in terms of kleene_r
 theorem pos_in_top_word_r_pattern {X: SVar}: $_Positive X (epsilon \/ top_letter . sVar X)$;
-theorem kt_top_word_r {X : SVar} (base: $epsilon -> psi$) (rec: $top_letter . psi -> psi$): $top_word_r X -> psi$
-  = '( KT pos_in_top_word_r_pattern
-     @ norm (norm_imp (sSubst_or sSubst_sym @ sSubst_concat sSubst_top_letter sSubst_same_sVar) norm_refl)
-     @ eori base rec
-     );
-theorem unfold_r_top_word_r {X : SVar} (phi: Pattern) (h: $phi -> epsilon \/ top_letter . top_word_r X$) : $phi -> top_word_r X$
-  = '(unfold_r pos_in_top_word_r_pattern (norm_rev (norm_imp norm_refl @ sSubst_or sSubst_sym @ sSubst_concat sSubst_top_letter sSubst_same_sVar) h) );
+theorem kt_top_word_r {X : SVar} (base: $epsilon -> psi$) (rec: $top_letter . psi -> psi$): $top_word_r X -> psi$;
+theorem unfold_r_top_word_r {X : SVar} (phi: Pattern) (h: $phi -> epsilon \/ top_letter . top_word_r X$) : $phi -> top_word_r X$;

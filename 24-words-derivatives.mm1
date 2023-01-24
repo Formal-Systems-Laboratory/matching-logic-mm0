@@ -1,5 +1,2 @@
 import "22-words-salomaa.mm1";
 import "23-words-fixedpoints.mm1";
-
-def derivative (l : Pattern) (phi : Pattern) {w : EVar} : Pattern
- = $exists w . eVar x -> top_ $;
