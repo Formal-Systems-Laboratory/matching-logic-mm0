@@ -28,7 +28,7 @@ theorem corollary_57_floor (phi: Pattern): $ |_ phi _| -> phi $ =
   '(con1 corollary_57_ceil);
 
 theorem unwrap_lemma {x y: EVar} {box: SVar} (ctx: Pattern box) (phi: Pattern):
-  $ ((exists x ((y in eVar x) /\ y in |_ app[ eVar x / box ] ctx -> phi _|)) -> |_ (app[ eVar y / box ] ctx) -> phi _|) $
+  $ (exists x ((y in eVar x) /\ y in |_ app[ eVar x / box ] ctx -> phi _|)) -> |_ (app[ eVar y / box ] ctx) -> phi _| $
   ;
 
 -- theorem appCtx_ceil_1:
