@@ -115,10 +115,10 @@ theorem membership_and {x: EVar} (phi1 phi2: Pattern x):
   $ x in (phi1 /\ phi2) == (x in phi1) /\ (x in phi2) $ =
   '(eqiv_to_eq membership_and_bi);
 
-theorem membership_imp_forward {x: EVar}  (phi1 phi2: Pattern):
+theorem membership_imp_forward {x: EVar} (phi1 phi2: Pattern):
   $ x in (phi1 -> phi2) -> (x in phi1) -> (x in phi2) $ =
   '(exp @ rsyl membership_and_reverse @ framing_in @ impcom @ syl mpcom id );
-theorem membership_imp_reverse {x: EVar}  (phi1 phi2: Pattern):
+theorem membership_imp_reverse {x: EVar} (phi1 phi2: Pattern):
   $((x in phi1) -> (x in phi2))  -> x in (phi1 -> phi2)$ =
   '(imp_to_or @ eori (rsyl membership_not_reverse @ framing_in absurd)
                      (framing_in @ com12 idd ) );
@@ -159,11 +159,12 @@ theorem lemma_56 {box: SVar} (ctx: Pattern box) (phi: Pattern):
 ---  $(forall x phi1) /\ (exists y phi2 == eVar y) -> e[ phi2 / x ] phi1$;
 
 --- lemma 60
---- theorem lemma_60_forward {x: EVar}  {box: SVar} (phi1 ctx: Pattern box x):
----  $app[ phi1 /\ (x in phi2) / box ] ctx -> (app[ phi1 / box ] ctx) /\ (x in phi2)$;
+theorem lemma_60_forward {x: EVar}  {box: SVar} (ctx: Pattern box x) (phi1 phi2: Pattern x):
+  $ (app[ phi1 /\ (x in phi2) / box ] ctx) -> ((app[ phi1 / box ] ctx) /\ (x in phi2)) $
+  ;
 
 theorem lemma_60_reverse {x: EVar} {box: SVar} (ctx: Pattern box x) (phi1 phi2: Pattern x):
-  $ (app[ phi1 / box ] ctx) /\ (x in phi2) -> app[ phi1 /\ (x in phi2) / box ] ctx $
+  $ ((app[ phi1 / box ] ctx) /\ (x in phi2)) -> app[ phi1 /\ (x in phi2) / box ] ctx $
   ;
 -- theorem lemma_60 {x: EVar} {box: SVar} (phi1 ctx: Pattern box x):
 --   $(app[ phi1 /\ (x in phi2) / box ] ctx) == app[ phi1 / box ] ctx /\ (x in phi2)$
