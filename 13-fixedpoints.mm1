@@ -1,6 +1,13 @@
 import "01-propositional.mm1";
 import "12-proof-system-p.mm1";
 
+--- Helpers
+-----------
+
+theorem unfold_r (phi: Pattern) (p: $_Positive X psi$)  (h: $phi -> s[ mu X psi / X ] psi$)
+    : $phi -> mu X psi$
+= '(syl (pre_fixpoint p) h );
+
 
 --- Appendix G: Properties of Proof System H_mu
 -----------------------------------------------
@@ -10,9 +17,10 @@ import "12-proof-system-p.mm1";
 --- Appendix I: Notations and Proofs about Recursive Symbols
 ------------------------------------------------------------
 
+
 --- contextual implications
-def ctximp_app {box: SVar} (ctx: Pattern box) (phi: Pattern) {dummy: EVar}: Pattern =
-    $ exists dummy (eVar dummy /\ ((app[ eVar dummy / box ] ctx) C_ phi)) $;
+def ctximp_app {box: SVar} (ctx: Pattern box) (phi: Pattern) {dummy: EVar}: Pattern
+ = $ exists dummy (eVar dummy /\ ((app[ eVar dummy / box ] ctx) C_ phi)) $;
 
 theorem wrap_lemma {x: EVar} (phi psi: Pattern x)
   (h: $ (x in phi) -> psi $):

@@ -1,0 +1,40 @@
+import "22-words-salomaa.mm1";
+
+--- Main theorems
+theorem inductive_domain_l_implies_r { X : SVar }: $(top_word_l X) -> (top_word_r X)$
+  = '( kt_top_word_l
+       ( unfold_r_top_word_r orl)
+       @ norm ( norm_imp (appCtxL @ appCtxR appCtxTriv) norm_refl)
+              ( wrap @ kt_top_word_r
+                  (unwrap @ norm_rev (norm_imp (appCtxL @ appCtxR appCtxTriv) norm_refl)
+                          @ sylbi epsilon_idem_l @ sylbir epsilon_idem_r
+                          @ unfold_r_top_word_r @ orrd
+                          @ framing_concat_r
+                          @ unfold_r_top_word_r orl)
+                  (unwrap @ norm_rev (norm_imp (appCtxL @ appCtxR appCtxTriv) norm_refl)
+                          @ unfold_r_top_word_r @ orrd
+                          @ sylbir concat_assoc @ framing_concat_r
+                          @ norm (norm_imp (appCtxL @ appCtxR appCtxTriv) norm_refl)
+                          @ rsyl ctximp_in_ctx id
+                  )
+              )
+     );
+
+theorem inductive_domain_r_implies_l { X : SVar }: $(top_word_r X) -> (top_word_l X)$
+  = '( kt_top_word_r
+       ( unfold_r_top_word_l orl)
+       @ norm ( norm_imp (appCtxR appCtxTriv) norm_refl)
+              ( wrap @ kt_top_word_l
+                (unwrap @ norm_rev (norm_imp (appCtxR appCtxTriv) norm_refl)
+                        @ sylbi epsilon_idem_r @ sylbir epsilon_idem_l
+                        @ unfold_r_top_word_l @ orrd
+                        @ framing_concat_l
+                        @ unfold_r_top_word_l orl)
+                (unwrap @ norm_rev (norm_imp (appCtxR appCtxTriv) norm_refl)
+                        @ unfold_r_top_word_l @ orrd
+                        @ sylbi concat_assoc @ framing_concat_l
+                        @ norm (norm_imp (appCtxR appCtxTriv) norm_refl)
+                        @ rsyl ctximp_in_ctx id
+                )
+              )
+     );
