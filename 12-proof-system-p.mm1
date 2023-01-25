@@ -26,16 +26,16 @@ theorem prop_43_exists_def {x: EVar} (phi: Pattern x):
   '(exists_generalization (eFresh_app eFresh_triv eFresh_exists_same_var) (framingDef exists_intro_same_var));
 
 --- prop_44
-theorem cong_of_equiv_not (h: $phi1 <-> phi2$): $~phi1 <-> ~phi2$ =
-  '(noteqi h);
-theorem cong_of_equiv_imp_l (h: $phi1 <-> phi2$): $(phi2 -> psi) <-> (phi1 -> psi)$ =
-  '(anim imim1 imim1 h);
-theorem cong_of_equiv_imp_r (h: $phi1 <-> phi2$): $(psi -> phi1) <-> (psi -> phi2)$ =
-  '(anim imim2 imim2 h);
-theorem cong_of_equiv_and_l (h: $phi1 <-> phi2$): $(phi1 /\ psi) <-> (phi2 /\ psi)$ =
-  '(anim anim1 anim1 h);
-theorem cong_of_equiv_and_r (h: $phi1 <-> phi2$): $(psi /\ phi1) <-> (psi /\ phi2)$ =
-  '(anim anim2 anim2 h);
+theorem cong_of_equiv_not (h: $phi1 <-> phi2$): $~phi1 <-> ~phi2$ = '(noteqi h);
+theorem cong_of_equiv_imp_l (h: $phi1 <-> phi2$): $(phi1 -> psi) <-> (phi2 -> psi)$ = '(anim imim1 imim1 @ ancom h);
+theorem cong_of_equiv_imp_r (h: $phi1 <-> phi2$): $(psi -> phi1) <-> (psi -> phi2)$ = '(anim imim2 imim2 h);
+theorem cong_of_equiv_or_l (h: $phi1 <-> phi2$): $(phi1 \/ psi) <-> (phi2 \/ psi)$;
+theorem cong_of_equiv_or_r (h: $phi1 <-> phi2$): $(psi \/ phi1) <-> (psi \/ phi2)$;
+theorem cong_of_equiv_and_l (h: $phi1 <-> phi2$): $(phi1 /\ psi) <-> (phi2 /\ psi)$ = '(anim anim1 anim1 h);
+theorem cong_of_equiv_and_r (h: $phi1 <-> phi2$): $(psi /\ phi1) <-> (psi /\ phi2)$ = '(anim anim2 anim2 h);
+theorem cong_of_equiv_app_l (h: $phi1 <-> phi2$): $(app phi1 psi) <-> (app phi2 psi)$;
+theorem cong_of_equiv_app_r (h: $phi1 <-> phi2$): $(app psi phi1) <-> (app psi phi2)$;
+
 theorem cong_of_equiv_exists {x: EVar} (phi1 phi2: Pattern x)
   (h: $ phi1 <-> phi2 $): $ (exists x phi1) <-> (exists x phi2) $ =
   '(iani (exists_framing @ anl h) (exists_framing @ anr h));
