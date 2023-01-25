@@ -13,7 +13,7 @@ theorem der_equality:
 
 theorem eq_der_a_emptyset: $(derivative a bot)         <-> bot$;
 theorem eq_der_a_epsilon:  $(derivative a epsilon)     <-> bot$;
-theorem eq_der_a_a:        $(derivative a a)           <-> bot$;
+theorem eq_der_a_a:        $(derivative a a)           <-> epsilon$;
 theorem eq_der_a_b:        $(derivative a b)           <-> bot$;
 theorem eq_der_a_concat:
     $(derivative a (phi . psi)) <->    (derivative a phi) . psi
