@@ -6,19 +6,19 @@ fmod PATTERN-METAMATH is
     *** core
     ops sVar _ : Qid -> SVar [ctor] .
     ops eVar _ : Qid -> EVar [ctor] .
-    op ( app _ _ ) : Pattern Pattern -> Pattern [ctor] .
-    op ( _ -> _ )  : Pattern Pattern -> Pattern [ctor] .
-    op ( mu _ _ )  : Qid     Pattern -> Pattern [ctor] .
+    op app _ _ : Pattern Pattern -> Pattern [ctor] .
+    op _ -> _  : Pattern Pattern -> Pattern [ctor] .
+    op mu _ _  : Qid     Pattern -> Pattern [ctor] .
     op bot         : -> Pattern [ctor] .
-    op ( exists _ _ ) : Qid Pattern -> Pattern [ctor] .
+    op exists _ _ : Qid Pattern -> Pattern [ctor] .
 
     op top : -> Pattern [ctor] .
-    op ( _ /\ _ )       : Pattern Pattern -> Pattern [ctor assoc comm] .
-    op ( _ \/ _ )       : Pattern Pattern -> Pattern [ctor assoc comm] .
-    op ( nu _ _ )       : Qid Pattern     -> Pattern [ctor] .
-    op ( forall _ _ )   : Qid Pattern     -> Pattern [ctor] .
-    op (_ <-> _ )       : Pattern Pattern -> Pattern [ctor] .
-    op (~ _ )           : Pattern         -> Pattern [ctor] .
+    op _ /\ _       : Pattern Pattern -> Pattern [ctor assoc comm] .
+    op _ \/ _       : Pattern Pattern -> Pattern [ctor assoc comm] .
+    op nu _ _       : Qid Pattern     -> Pattern [ctor] .
+    op forall _ _   : Qid Pattern     -> Pattern [ctor] .
+    op _ <-> _       : Pattern Pattern -> Pattern [ctor] .
+    op ~ _           : Pattern         -> Pattern [ctor] .
 
     *** ERE
     op epsilon      :                 -> Pattern [ctor] .
@@ -317,5 +317,6 @@ mod REGEX-PROOF-GENERATOR is
     eq fp(PHE1 ; PHE2) = fp(PHE1) \/ fp(PHE2) .
 endm
 
+set print with parentheses on .
 reduce proofHint((a . a)* --> ((a * . a) + epsilon)) .
 reduce fp(proofHint((a . a)* --> ((a * . a) + epsilon))) .
