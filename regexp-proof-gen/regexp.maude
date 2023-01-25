@@ -3,6 +3,9 @@ fmod PATTERN-METAMATH is
     sorts Symbol SVar EVar Pattern .
     subsorts Symbol SVar EVar < Pattern .
 
+    vars phi phi1 phi2 psi psi1 psi2 : Pattern .
+    vars x y X Y : Qid .
+
     *** core
     ops sVar _ : Qid -> SVar [ctor] .
     ops eVar _ : Qid -> EVar [ctor] .
@@ -19,6 +22,20 @@ fmod PATTERN-METAMATH is
     op forall _ _   : Qid Pattern     -> Pattern [ctor] .
     op _ <-> _       : Pattern Pattern -> Pattern [ctor] .
     op ~ _           : Pattern         -> Pattern [ctor] .
+
+    op (_ < _)          : Pattern Pattern -> Bool .
+    eq bot < (sVar X) = True .
+    eq (sVar X) < (eVar x) = True .
+    eq (eVar x) < (app psi1 psi2) = True .
+    eq (app phi1 phi2) < (psi1 -> psi2) = True .
+    eq (phi1 -> phi2) < (exists x psi) = True .
+    eq (exists x phi) < (mu X psi) = True .
+    ceq (app phi1 psi1) < (app phi2 psi2) = True if phi1 < phi2 .
+    ceq (app phi psi1) < (app phi psi2) = True if psi1 < psi2 .
+    ceq (phi1 -> psi1) < (phi2 -> psi2) = True if phi1 < phi2 .
+    ceq (phi -> psi1) < (phi -> psi2) = True if psi1 < psi2 .
+    ceq (exists x phi1) < (exists x phi2) = True if phi1 < phi2 .
+    ceq (mu X phi1) < (mu X phi2) = True if phi1 < phi2 .
 
     *** ERE
     op epsilon      :                 -> Pattern [ctor] .
@@ -88,10 +105,7 @@ mod ERE-THEOREMS is
     rl [eq-choice-idem] : Alpha \/ Alpha => Alpha .
     rl [eq-choice-assoc] : (Alpha \/ Beta) \/ Gamma  => Alpha \/ (Beta \/ Gamma) .
 
-   --- TODO: add a rule the rearrances disjuncts so that they are sorted.
-   --- Make sure to remove the comm attribute.
-   --- crl [eq-comm] : Alpha \/ Beta => Beta \/ Alpha if Alpha < Beta .
-   --- Following that, add it to the list of equations in applyAnyEquation.
+   crl [eq-choice-comm] : Alpha \/ Beta => Beta \/ Alpha if Alpha < Beta .
 
     ---- Optional simplifications
     rl [eq-bot-concat-l] : bot . Alpha => bot .
@@ -204,11 +218,12 @@ mod PROOF-GEN is
         applyEq(S, SL, NAT, 'eq-ewp-not-kleene) or-else
         applyEq(S, SL, NAT, 'eq-ewp-not-not) or-else
 
+
         applyEq(S, SL, NAT, 'eq-choice-unit-xxx) or-else
         applyEq(S, SL, NAT, 'eq-choice-unit) or-else
         applyEq(S, SL, NAT, 'eq-choice-idem) or-else
         applyEq(S, SL, NAT, 'eq-choice-assoc) or-else
-        --- applyEq(S, SL, NAT, 'eq-comm) or-else
+        applyEq(S, SL, NAT, 'eq-choice-comm) or-else
 
         applyEq(S, SL, NAT, 'eq-bot-concat-l) or-else
         applyEq(S, SL, NAT, 'eq-bot-concat-r) or-else
