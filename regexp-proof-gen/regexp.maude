@@ -40,9 +40,6 @@ fmod PATTERN-METAMATH is
     vars Alpha Beta : Pattern .
     op _ + _        : Pattern Pattern -> Pattern .
     eq Alpha + Beta = Alpha \/ Beta .
-
-    op _ --> _        : Pattern Pattern -> Pattern .
-    eq Alpha --> Beta = (~ Alpha) \/ Beta .
 endfm
 
 mod ERE-THEOREMS is
@@ -71,6 +68,7 @@ mod ERE-THEOREMS is
     rl [eq-der-kleene]  : (derivative A Alpha *)        => (derivative A Alpha) . (Alpha *) .
     rl [eq-der-concat]  : (derivative A (Alpha . Beta)) => ((derivative A Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative A Beta)) .
     rl [eq-der-choice]  : (derivative A (Alpha \/ Beta)) => (derivative A Alpha) \/ (derivative A Beta) .
+    rl [eq-der-imp]     : (derivative A (Alpha -> Beta)) => (derivative A Alpha) -> (derivative A Beta) .
     rl [eq-der-neg]     : (derivative A ~ Alpha)        => ~ (derivative A Alpha) .
 
     rl [eq-ewp-bot]     : epsilon /\ bot          => bot .
@@ -169,6 +167,7 @@ fmod MY-META-SEARCH-TREE is
                 applyEq(T, TL, N, 'eq-der-kleene) or-else
                 applyEq(T, TL, N, 'eq-der-concat) or-else
                 applyEq(T, TL, N, 'eq-der-choice) or-else
+                applyEq(T, TL, N, 'eq-der-imp) or-else
                 applyEq(T, TL, N, 'eq-der-neg) or-else
 
                 applyEq(T, TL, N, 'eq-ewp-bot) or-else
@@ -315,8 +314,19 @@ mod REGEX-PROOF-GENERATOR is
     eq fp(node(Alpha, PHE1)) = mu qid(str(Alpha)) (epsilon \/ fp(PHE1)) [owise] .
     eq fp(transition(A , PH)) = A . fp(PH) .
     eq fp(PHE1 ; PHE2) = fp(PHE1) \/ fp(PHE2) .
+
+    sort MetaMathProof .
+    op apply-equiv _ @ _ : Qid MetaMathProof -> MetaMathProof [ctor] .
+    op main-goal-leaf : -> MetaMathProof [ctor] .
+    op main-goal-interior _ _ _ : MetaMathProof MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
+
+    op proof-main-goal : ProofHint -> MetaMathProof .
+    eq proof-main-goal(node(Alpha, simpl(R, PH))) = (apply-equiv R @ proof-main-goal(PH)) .
+    eq proof-main-goal(node(Alpha, transition(epsilon , PH_E) ; transition(a, PH_A) ; transition(b , PH_B)))
+     = (main-goal-interior proof-main-goal(PH_E) proof-main-goal(PH_A) proof-main-goal(PH_B)) .
 endm
 
 set print with parentheses on .
-reduce proofHint((a . a)* --> ((a * . a) + epsilon)) .
-reduce fp(proofHint((a . a)* --> ((a * . a) + epsilon))) .
+reduce proofHint((a . a)* -> ((a * . a) + epsilon)) .
+reduce fp(proofHint((a . a)* -> ((a * . a) + epsilon))) .
+--- reduce proof-main-goal(proofHint((a . a)* -> ((a * . a) + epsilon))) .
