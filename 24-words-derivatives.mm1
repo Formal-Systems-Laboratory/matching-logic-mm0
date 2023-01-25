@@ -22,9 +22,9 @@ theorem eq_der_a_not:
     $(derivative a (~ phi)) == ~ (derivative a phi)$;
 
 
-theorem fp_implies_l :
+theorem fp_implies_l
     (he: $epsilon -> rho$)
-    (ha: $s[rho / X] phi_a -> (derivative a rho)$)
-    (hb: $s[rho / X] phi_b -> (derivative b rho)$)
-    ----------------------------------------------
+    (ha: $s[ rho / X ] phi_a -> (derivative a rho)$)
+    (hb: $s[ rho / X ] phi_b -> (derivative b rho)$)
+  : ----------------------------------------------
     $(mu X epsilon \/ a . phi_a \/ b . phi_b) -> rho$;
