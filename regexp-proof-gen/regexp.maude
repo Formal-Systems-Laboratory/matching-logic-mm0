@@ -13,8 +13,8 @@ fmod PATTERN-METAMATH is
     op exists _ _ : Qid Pattern -> Pattern [ctor] .
 
     op top : -> Pattern [ctor] .
-    op _ /\ _       : Pattern Pattern -> Pattern [ctor assoc comm] .
-    op _ \/ _       : Pattern Pattern -> Pattern [ctor assoc comm] .
+    op _ /\ _       : Pattern Pattern -> Pattern [ctor] .
+    op _ \/ _       : Pattern Pattern -> Pattern [ctor] .
     op nu _ _       : Qid Pattern     -> Pattern [ctor] .
     op forall _ _   : Qid Pattern     -> Pattern [ctor] .
     op _ <-> _       : Pattern Pattern -> Pattern [ctor] .
@@ -36,10 +36,13 @@ fmod PATTERN-METAMATH is
     op (derivative _ _) : Pattern Pattern -> Pattern [ctor] .
 
     *** ERE sugar
+    vars Alpha Beta Gamma : Pattern .
     --- NOT FOR INTERNAL USE.
-    vars Alpha Beta : Pattern .
     op _ + _        : Pattern Pattern -> Pattern .
     eq Alpha + Beta = Alpha \/ Beta .
+
+    op _ --> _        : Pattern Pattern -> Pattern .
+    eq Alpha --> Beta = (~ Alpha) \/ Beta .
 endfm
 
 mod ERE-THEOREMS is
@@ -47,16 +50,8 @@ mod ERE-THEOREMS is
 
     vars Alpha Alpha1 Alpha2 : Pattern .
     vars Beta  Beta1  Beta2  : Pattern .
+    vars Gamma : Pattern .
     vars A B A1 A2 : Letter .
-
-    --- Identity and idemoptency of \/
-    rl [eq-choice-unit] : bot   \/ Alpha => Alpha .
-    rl [eq-choice-idem] : Alpha \/ Alpha => Alpha .
-
-   --- TODO: add a rule the rearrances disjuncts so that they are sorted.
-   --- Make sure to remove the comm attribute.
-   --- crl [eq-comm] : Alpha \/ Beta => Beta \/ Alpha if Alpha < Beta .
-   --- Following that, add it to the list of equations in applyAnyEquation.
 
     rl [eq-der-bot]     : (derivative A bot)          => bot .
     rl [eq-der-epsilon] : (derivative A epsilon)      => bot .
@@ -68,21 +63,36 @@ mod ERE-THEOREMS is
     rl [eq-der-kleene]  : (derivative A Alpha *)        => (derivative A Alpha) . (Alpha *) .
     rl [eq-der-concat]  : (derivative A (Alpha . Beta)) => ((derivative A Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative A Beta)) .
     rl [eq-der-choice]  : (derivative A (Alpha \/ Beta)) => (derivative A Alpha) \/ (derivative A Beta) .
-    rl [eq-der-imp]     : (derivative A (Alpha -> Beta)) => (derivative A Alpha) -> (derivative A Beta) .
     rl [eq-der-neg]     : (derivative A ~ Alpha)        => ~ (derivative A Alpha) .
 
-    rl [eq-ewp-bot]     : epsilon /\ bot          => bot .
-    rl [eq-ewp-epsilon] : epsilon /\ epsilon        => epsilon .
-    rl [eq-ewp-a]       : epsilon /\ a              => bot .
-    rl [eq-ewp-concat]  : epsilon /\ (Alpha . Beta) => (epsilon /\ Alpha) /\ (epsilon /\ Beta) .
+    rl [eq-ewp-bot]     : epsilon /\ bot             => bot .
+    rl [eq-ewp-epsilon] : epsilon /\ epsilon         => epsilon .
+    rl [eq-ewp-a]       : epsilon /\ a               => bot .
+    rl [eq-ewp-b]       : epsilon /\ b               => bot .
+    rl [eq-ewp-concat]  : epsilon /\ (Alpha . Beta)  => (epsilon /\ Alpha) /\ (epsilon /\ Beta) .
+    rl [eq-ewp-and]     : epsilon /\ (Alpha /\ Beta) => (epsilon /\ Alpha) /\ (epsilon /\ Beta) .
     rl [eq-ewp-choice]  : epsilon /\ (Alpha \/ Beta) => (epsilon /\ Alpha) \/ (epsilon /\ Beta) .
-    rl [eq-ewp-kleene]  : epsilon /\ (Alpha *)      => epsilon .
+    rl [eq-ewp-kleene]  : epsilon /\ (Alpha *)       => epsilon .
 
-    rl [eq-ewp-not-bot] : epsilon /\ (~ bot)        => epsilon .
-    rl [eq-ewp-not-eps] : epsilon /\ (~ epsilon)    => bot .
-    rl [eq-ewp-not-not] : ~ (~ Alpha)               => Alpha .
-   --- Note: Similarly, our meta rewriting doesnt support owise, but equational theorems are applied in order.
-    rl [eq-ewp-not]     : epsilon /\ (~ Alpha)      => epsilon /\ ~(epsilon /\ Alpha) . --- [owise]
+    rl [eq-ewp-not-bot]     : epsilon /\ ~(bot)           => epsilon .
+    rl [eq-ewp-not-eps]     : epsilon /\ ~(epsilon)       => bot .
+    rl [eq-ewp-not-a]       : epsilon /\ ~(a)             => epsilon .
+    rl [eq-ewp-not-b]       : epsilon /\ ~(b)             => epsilon .
+    rl [eq-ewp-not-concat]  : epsilon /\ ~(Alpha . Beta)  => (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta) .
+    rl [eq-ewp-not-and]     : epsilon /\ ~(Alpha /\ Beta) => (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta) .
+    rl [eq-ewp-not-choice]  : epsilon /\ ~(Alpha \/ Beta) => (epsilon /\ ~ Alpha) /\ (epsilon /\ ~ Beta) .
+    rl [eq-ewp-not-kleene]  : epsilon /\ ~(Alpha *)       => bot .
+    rl [eq-ewp-not-not]     : epsilon /\ ~(~ Alpha)        => epsilon /\ Alpha .
+
+    --- Identity and idemoptency of \/
+    rl [eq-choice-unit] : bot   \/ Alpha => Alpha .
+    rl [eq-choice-idem] : Alpha \/ Alpha => Alpha .
+    rl [eq-choice-assoc] : (Alpha \/ Beta) \/ Gamma  => Alpha \/ (Beta \/ Gamma) .
+
+   --- TODO: add a rule the rearrances disjuncts so that they are sorted.
+   --- Make sure to remove the comm attribute.
+   --- crl [eq-comm] : Alpha \/ Beta => Beta \/ Alpha if Alpha < Beta .
+   --- Following that, add it to the list of equations in applyAnyEquation.
 
     ---- Optional simplifications
     rl [eq-bot-concat-l] : bot . Alpha => bot .
@@ -101,23 +111,20 @@ mod ERE-THEOREMS is
     *** Rules *********************************
     *******************************************
 
-    op hasEWP : Pattern -> Bool .
-    eq hasEWP(bot)  = false .
-    eq hasEWP(epsilon      )  = true  .
-    eq hasEWP(A            )  = false .
-    eq hasEWP(Alpha .  Beta)  = hasEWP(Alpha) and hasEWP(Beta) .
-    eq hasEWP(Alpha /\ Beta)  = hasEWP(Alpha) or  hasEWP(Beta) .
-    eq hasEWP(Alpha *      )  = true .
-    eq hasEWP(~ Alpha      )  = not hasEWP(Alpha) .
-
     sort State .
     op < _ > : Pattern -> State [ctor] .
     op < invalid > : -> State [ctor] .
     op < error > : -> State [ctor] . --- Used for down term errors.
 
-   ceq < Alpha > = < invalid > if not hasEWP(Alpha) . --- This should never be reached.
-    rl [der-a] : < Alpha > => < (derivative a Alpha) > .
-    rl [der-b] : < Alpha > => < (derivative b Alpha) > .
+    eq < bot > = < invalid > . --- This should never be reached.
+    rl [der-a]     : < Alpha > => < (derivative a Alpha) > .
+    rl [der-b]     : < Alpha > => < (derivative b Alpha) > .
+    rl [check-ewp] : < Alpha > => check-ewp[ epsilon -> (epsilon /\ Alpha) ] .
+
+    --- We don't want the derivative rules to apply when checking EWS.
+    op check-ewp[ _ ] : Pattern -> State [ctor] .
+    op < id > : -> State [ctor] .
+    eq check-ewp[ epsilon -> epsilon ] = < id > .
 endm
 
 --- Manually performs a search, and returns the search graph as a tree with backlinks.
@@ -157,39 +164,46 @@ fmod MY-META-SEARCH-TREE is
 
     op applyAnyEquation : Term TermList Nat -> Edges .
     eq applyAnyEquation(T, TL, N) =
-                applyEq(T, TL, N, 'eq-choice-unit) or-else
-                applyEq(T, TL, N, 'eq-choice-idem) or-else
+        applyEq(T, TL, N, 'eq-der-bot) or-else
+        applyEq(T, TL, N, 'eq-der-epsilon) or-else
+        applyEq(T, TL, N, 'eq-der-same-a) or-else
+        applyEq(T, TL, N, 'eq-der-diff-a) or-else
+        applyEq(T, TL, N, 'eq-der-kleene) or-else
+        applyEq(T, TL, N, 'eq-der-concat) or-else
+        applyEq(T, TL, N, 'eq-der-choice) or-else
+        applyEq(T, TL, N, 'eq-der-neg) or-else
+        applyEq(T, TL, N, 'eq-ewp-bot) or-else
+        applyEq(T, TL, N, 'eq-ewp-epsilon) or-else
+        applyEq(T, TL, N, 'eq-ewp-a) or-else
+        applyEq(T, TL, N, 'eq-ewp-b) or-else
+        applyEq(T, TL, N, 'eq-ewp-concat) or-else
+        applyEq(T, TL, N, 'eq-ewp-and) or-else
+        applyEq(T, TL, N, 'eq-ewp-choice) or-else
+        applyEq(T, TL, N, 'eq-ewp-kleene) or-else
+        applyEq(T, TL, N, 'eq-ewp-not-bot) or-else
+        applyEq(T, TL, N, 'eq-ewp-not-eps) or-else
+        applyEq(T, TL, N, 'eq-ewp-not-a) or-else
+        applyEq(T, TL, N, 'eq-ewp-not-b) or-else
+        applyEq(T, TL, N, 'eq-ewp-not-concat) or-else
+        applyEq(T, TL, N, 'eq-ewp-not-and) or-else
+        applyEq(T, TL, N, 'eq-ewp-not-choice) or-else
+        applyEq(T, TL, N, 'eq-ewp-not-kleene) or-else
+        applyEq(T, TL, N, 'eq-ewp-not-not) or-else
 
-                applyEq(T, TL, N, 'eq-der-bot) or-else
-                applyEq(T, TL, N, 'eq-der-epsilon) or-else
-                applyEq(T, TL, N, 'eq-der-same-a) or-else
-                applyEq(T, TL, N, 'eq-der-diff-a) or-else
-                applyEq(T, TL, N, 'eq-der-kleene) or-else
-                applyEq(T, TL, N, 'eq-der-concat) or-else
-                applyEq(T, TL, N, 'eq-der-choice) or-else
-                applyEq(T, TL, N, 'eq-der-imp) or-else
-                applyEq(T, TL, N, 'eq-der-neg) or-else
+        applyEq(T, TL, N, 'eq-choice-unit) or-else
+        applyEq(T, TL, N, 'eq-choice-idem) or-else
+        applyEq(T, TL, N, 'eq-choice-assoc) or-else
+        --- applyEq(T, TL, N, 'eq-comm) or-else
 
-                applyEq(T, TL, N, 'eq-ewp-bot) or-else
-                applyEq(T, TL, N, 'eq-ewp-epsilon) or-else
-                applyEq(T, TL, N, 'eq-ewp-a) or-else
-                applyEq(T, TL, N, 'eq-ewp-concat) or-else
-                applyEq(T, TL, N, 'eq-ewp-choice) or-else
-                applyEq(T, TL, N, 'eq-ewp-kleene) or-else
-                applyEq(T, TL, N, 'eq-ewp-not-bot) or-else
-                applyEq(T, TL, N, 'eq-ewp-not-eps) or-else
-                applyEq(T, TL, N, 'eq-ewp-not-not) or-else
-                applyEq(T, TL, N, 'eq-ewp-not) or-else
-
-                applyEq(T, TL, N, 'eq-bot-concat-l) or-else
-                applyEq(T, TL, N, 'eq-bot-concat-r) or-else
-                applyEq(T, TL, N, 'eq-eps-concat-l) or-else
-                applyEq(T, TL, N, 'eq-eps-concat-r) or-else
-                applyEq(T, TL, N, 'eq-double-neg) or-else
-                applyEq(T, TL, N, 'eq-double-kleene) or-else
-                applyEq(T, TL, N, 'eq-eps-kleene) or-else
-                applyEq(T, TL, N, 'eq-bot-kleene)
-                .
+        applyEq(T, TL, N, 'eq-bot-concat-l) or-else
+        applyEq(T, TL, N, 'eq-bot-concat-r) or-else
+        applyEq(T, TL, N, 'eq-eps-concat-l) or-else
+        applyEq(T, TL, N, 'eq-eps-concat-r) or-else
+        applyEq(T, TL, N, 'eq-double-neg) or-else
+        applyEq(T, TL, N, 'eq-double-kleene) or-else
+        applyEq(T, TL, N, 'eq-eps-kleene) or-else
+        applyEq(T, TL, N, 'eq-bot-kleene)
+        .
 
     --- The strat attribute is needed to get decent preformance.
     --- Otherwise, it would compute all possible outward edges and throw all but one away,
@@ -200,6 +214,7 @@ fmod MY-META-SEARCH-TREE is
 
     op applyAllRules : Term TermList Nat -> Edges .
     eq applyAllRules(T, TL, N) =
+        applyRule(T, TL, N, 'check-ewp) ;
         applyRule(T, TL, N, 'der-a) ;
         applyRule(T, TL, N, 'der-b) .
 
@@ -257,12 +272,12 @@ mod REGEX-PROOF-GENERATOR is
     op backlink : Pattern -> ProofHint [ctor] .
 
     op none : -> ProofHintEdges [ctor] .
-    op transition : Letter ProofHint -> NeProofHintEdges [ctor] .
+    op transition : Pattern ProofHint -> NeProofHintEdges [ctor] .
     op simpl : Qid ProofHint -> NeProofHintEdges [ctor] .
     op _ ; _ : NeProofHintEdges NeProofHintEdges -> NeProofHintEdges [ctor assoc comm id: none] .
     op _ ; _ : ProofHintEdges ProofHintEdges -> ProofHintEdges [ditto] .
 
-    vars PH : ProofHint .
+    vars PH PH_E PH_A PH_B : ProofHint .
     vars PHE1 PHE2 : NeProofHintEdges .
 
     op mkProofHint : Node -> ProofHint .
@@ -276,15 +291,16 @@ mod REGEX-PROOF-GENERATOR is
 
     op getRegExp : State -> Pattern .
     eq getRegExp(< Alpha >) = Alpha .
+    eq getRegExp(check-ewp[ Alpha ]) = Alpha .
+    eq getRegExp(< id >) = epsilon -> epsilon .
 
-    op ruleLabelToLetter : Qid -> Letter .
+    op ruleLabelToLetter : Qid -> Pattern .
+    eq ruleLabelToLetter('check-ewp) = epsilon .
     eq ruleLabelToLetter('der-a) = a .
     eq ruleLabelToLetter('der-b) = b .
----    eq ruleLabelToLetter('der-c) = c .
----    eq ruleLabelToLetter('der-d) = d .
 
     op proofHint : Pattern -> ProofHint .
-    eq proofHint(Alpha) = mkProofHint(myMetaSearchTree(upTerm(< Alpha >), empty, 10)) .
+    eq proofHint(Alpha) = mkProofHint(myMetaSearchTree(upTerm(< Alpha >), empty, 3)) .
 
     *** Mapping EREs to its Matching Logic signature *************************
     --- We may consider desugaring the constructors via the notation defined
@@ -301,6 +317,7 @@ mod REGEX-PROOF-GENERATOR is
     eq str(epsilon) = "e" .
     eq str(Alpha . Beta) = "C" + str(Alpha) + str(Alpha) + "D" .
     eq str(Alpha \/ Beta) = "C" + str(Alpha) + "p" + str(Alpha) + "D" .
+    eq str(Alpha -> Beta) = "C" + str(Alpha) + "i" + str(Alpha) + "D" .
     eq str(Alpha *)      = "C" + str(Alpha) + "Dx" .
     eq str(~ Alpha)      = "nC" + str(Alpha) + "D" .
 
@@ -312,21 +329,14 @@ mod REGEX-PROOF-GENERATOR is
     eq fp(backlink(Alpha)) = F(Alpha) .
     eq fp(node(Alpha, simpl(R, PH))) = fp(PH) .
     eq fp(node(Alpha, PHE1)) = mu qid(str(Alpha)) (epsilon \/ fp(PHE1)) [owise] .
-    eq fp(transition(A , PH)) = A . fp(PH) .
+    eq fp(transition(Beta , PH)) = Beta . fp(PH) .
     eq fp(PHE1 ; PHE2) = fp(PHE1) \/ fp(PHE2) .
-
-    sort MetaMathProof .
-    op apply-equiv _ @ _ : Qid MetaMathProof -> MetaMathProof [ctor] .
-    op main-goal-leaf : -> MetaMathProof [ctor] .
-    op main-goal-interior _ _ _ : MetaMathProof MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
-
-    op proof-main-goal : ProofHint -> MetaMathProof .
-    eq proof-main-goal(node(Alpha, simpl(R, PH))) = (apply-equiv R @ proof-main-goal(PH)) .
-    eq proof-main-goal(node(Alpha, transition(epsilon , PH_E) ; transition(a, PH_A) ; transition(b , PH_B)))
-     = (main-goal-interior proof-main-goal(PH_E) proof-main-goal(PH_A) proof-main-goal(PH_B)) .
 endm
 
+--- search in ERE-THEOREMS : ((a . a)* --> ((a * . a) \/ epsilon)) =>* P:Pattern .
+--- show search graph .
+
 set print with parentheses on .
-reduce proofHint((a . a)* -> ((a * . a) + epsilon)) .
-reduce fp(proofHint((a . a)* -> ((a * . a) + epsilon))) .
---- reduce proof-main-goal(proofHint((a . a)* -> ((a * . a) + epsilon))) .
+reduce proofHint((a . a)* --> ((a * . a) \/ epsilon)) .
+--- reduce fp(proofHint((a . a)* --> ((a * . a) \/ epsilon))) .
+--- reduce proof-main-goal(proofHint((a . a)* --> ((a * . a) \/ epsilon))) .
