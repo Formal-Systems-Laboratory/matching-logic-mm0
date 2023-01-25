@@ -114,7 +114,6 @@ mod ERE-THEOREMS is
     sort State .
     op < _ > : Pattern -> State [ctor] .
     op < invalid > : -> State [ctor] .
-    op < error > : -> State [ctor] . --- Used for down term errors.
 
     eq < bot > = < invalid > . --- This should never be reached.
     rl [der-a]     : < Alpha > => < (derivative a Alpha) > .
@@ -141,74 +140,84 @@ mod PROOF-GEN is
     op _ ; _ : NeEdges NeEdges -> NeEdges [ctor assoc comm id: none] .
     op _ ; _ : Edges Edges -> Edges [ditto] .
 
-    op apply : Qid Context Substitution -> EdgeLabel [ctor] .
+    op applResult : Qid Context Substitution -> EdgeLabel [ctor] .
 
-    op node : Term Edges -> Node [ctor] .
-    op backlink : Term -> Node [ctor] .
-    op depthReached : Term -> Node [ctor] .
+    op node : State Edges -> Node [ctor] .
+    op backlink : State -> Node [ctor] .
+    op depthReached : State -> Node [ctor] .
 
     var NAT : Nat .
     vars Es : NeEdges . vars Es? : Edges .
     vars T : Term . vars TL TL' : TermList .
+    vars P : Pattern .
+    vars S : State . vars SL SL' : StateList .
     vars R : Qid . vars Result : Result4Tuple .
     vars Es1 Es2 : NeEdges .
     vars EL : EdgeLabel .
-    vars N : Node .
-    vars Subst : Substitution .
-    vars Ctx : Context .
+    vars N N_EWP N_A N_B : Node .
+    vars Subst Subst1 Subst2 Subst3 : Substitution .
+    vars Ctx Ctx1 Ctx2 Ctx3 : Context .
 
-    op _ in _ : Term TermList -> Bool .
-    eq T in (TL , T , TL') = true .
-    eq T in TL = false [owise] .
+    sorts NeStateList StateList .
+    subsort State < NeStateList < StateList .
+
+    op empty : -> StateList [ctor] .
+    op _,_ : NeStateList StateList -> NeStateList [ctor assoc id: empty gather (e E) prec 121] . --- Same as TermList
+    op _,_ : StateList NeStateList -> NeStateList [ctor ditto] .
+    op _,_ : StateList StateList -> StateList [ctor ditto] .
+
+    op _ in _ : State StateList -> Bool .
+    eq S in (SL , S , SL') = true .
+    eq S in SL = false [owise] .
 
    --- curr term, previous terms, depth
-    op myMetaSearchTree : Term TermList Nat -> Node .
-   ceq myMetaSearchTree(T, TL, NAT) = backlink(T)                              if      T in TL .
-   ceq myMetaSearchTree(T, TL, NAT) = node(T, applyAnyEquation(T, TL, NAT))      if (not T in TL) /\ Es := applyAnyEquation(T, TL, NAT) .
-   ceq myMetaSearchTree(T, TL, s(NAT)) = node(T, applyAllRules(T, (TL, T), NAT)) if (not T in TL) /\ none = applyAnyEquation(T, TL, NAT) .
-   ceq myMetaSearchTree(T, TL, 0) = depthReached(T)                          if (not T in TL) /\ none = applyAnyEquation(T, TL, 0) .
+    op mkProofHint : State StateList Nat -> Node .
+   ceq mkProofHint(S, SL, NAT) = backlink(S)                              if      S in SL .
+   ceq mkProofHint(S, SL, NAT) = node(S, applyAnyEquation(S, SL, NAT))      if (not S in SL) /\ Es := applyAnyEquation(S, SL, NAT) .
+   ceq mkProofHint(S, SL, s(NAT)) = node(S, applyAllRules(S, (SL, S), NAT)) if (not S in SL) /\ none = applyAnyEquation(S, SL, NAT) .
+   ceq mkProofHint(S, SL, 0) = depthReached(S)                          if (not S in SL) /\ none = applyAnyEquation(S, SL, 0) .
 
-    op applyAnyEquation : Term TermList Nat -> Edges .
-    eq applyAnyEquation(T, TL, NAT) =
-        applyEq(T, TL, NAT, 'eq-der-bot) or-else
-        applyEq(T, TL, NAT, 'eq-der-epsilon) or-else
-        applyEq(T, TL, NAT, 'eq-der-same-a) or-else
-        applyEq(T, TL, NAT, 'eq-der-diff-a) or-else
-        applyEq(T, TL, NAT, 'eq-der-kleene) or-else
-        applyEq(T, TL, NAT, 'eq-der-concat) or-else
-        applyEq(T, TL, NAT, 'eq-der-choice) or-else
-        applyEq(T, TL, NAT, 'eq-der-neg) or-else
-        applyEq(T, TL, NAT, 'eq-ewp-bot) or-else
-        applyEq(T, TL, NAT, 'eq-ewp-epsilon) or-else
-        applyEq(T, TL, NAT, 'eq-ewp-a) or-else
-        applyEq(T, TL, NAT, 'eq-ewp-b) or-else
-        applyEq(T, TL, NAT, 'eq-ewp-concat) or-else
-        applyEq(T, TL, NAT, 'eq-ewp-and) or-else
-        applyEq(T, TL, NAT, 'eq-ewp-choice) or-else
-        applyEq(T, TL, NAT, 'eq-ewp-kleene) or-else
-        applyEq(T, TL, NAT, 'eq-ewp-not-bot) or-else
-        applyEq(T, TL, NAT, 'eq-ewp-not-eps) or-else
-        applyEq(T, TL, NAT, 'eq-ewp-not-a) or-else
-        applyEq(T, TL, NAT, 'eq-ewp-not-b) or-else
-        applyEq(T, TL, NAT, 'eq-ewp-not-concat) or-else
-        applyEq(T, TL, NAT, 'eq-ewp-not-and) or-else
-        applyEq(T, TL, NAT, 'eq-ewp-not-choice) or-else
-        applyEq(T, TL, NAT, 'eq-ewp-not-kleene) or-else
-        applyEq(T, TL, NAT, 'eq-ewp-not-not) or-else
+    op applyAnyEquation : State StateList Nat -> Edges .
+    eq applyAnyEquation(S, SL, NAT) =
+        applyEq(S, SL, NAT, 'eq-der-bot) or-else
+        applyEq(S, SL, NAT, 'eq-der-epsilon) or-else
+        applyEq(S, SL, NAT, 'eq-der-same-a) or-else
+        applyEq(S, SL, NAT, 'eq-der-diff-a) or-else
+        applyEq(S, SL, NAT, 'eq-der-kleene) or-else
+        applyEq(S, SL, NAT, 'eq-der-concat) or-else
+        applyEq(S, SL, NAT, 'eq-der-choice) or-else
+        applyEq(S, SL, NAT, 'eq-der-neg) or-else
+        applyEq(S, SL, NAT, 'eq-ewp-bot) or-else
+        applyEq(S, SL, NAT, 'eq-ewp-epsilon) or-else
+        applyEq(S, SL, NAT, 'eq-ewp-a) or-else
+        applyEq(S, SL, NAT, 'eq-ewp-b) or-else
+        applyEq(S, SL, NAT, 'eq-ewp-concat) or-else
+        applyEq(S, SL, NAT, 'eq-ewp-and) or-else
+        applyEq(S, SL, NAT, 'eq-ewp-choice) or-else
+        applyEq(S, SL, NAT, 'eq-ewp-kleene) or-else
+        applyEq(S, SL, NAT, 'eq-ewp-not-bot) or-else
+        applyEq(S, SL, NAT, 'eq-ewp-not-eps) or-else
+        applyEq(S, SL, NAT, 'eq-ewp-not-a) or-else
+        applyEq(S, SL, NAT, 'eq-ewp-not-b) or-else
+        applyEq(S, SL, NAT, 'eq-ewp-not-concat) or-else
+        applyEq(S, SL, NAT, 'eq-ewp-not-and) or-else
+        applyEq(S, SL, NAT, 'eq-ewp-not-choice) or-else
+        applyEq(S, SL, NAT, 'eq-ewp-not-kleene) or-else
+        applyEq(S, SL, NAT, 'eq-ewp-not-not) or-else
 
-        applyEq(T, TL, NAT, 'eq-choice-unit) or-else
-        applyEq(T, TL, NAT, 'eq-choice-idem) or-else
-        applyEq(T, TL, NAT, 'eq-choice-assoc) or-else
-        --- applyEq(T, TL, NAT, 'eq-comm) or-else
+        applyEq(S, SL, NAT, 'eq-choice-unit) or-else
+        applyEq(S, SL, NAT, 'eq-choice-idem) or-else
+        applyEq(S, SL, NAT, 'eq-choice-assoc) or-else
+        --- applyEq(S, SL, NAT, 'eq-comm) or-else
 
-        applyEq(T, TL, NAT, 'eq-bot-concat-l) or-else
-        applyEq(T, TL, NAT, 'eq-bot-concat-r) or-else
-        applyEq(T, TL, NAT, 'eq-eps-concat-l) or-else
-        applyEq(T, TL, NAT, 'eq-eps-concat-r) or-else
-        applyEq(T, TL, NAT, 'eq-double-neg) or-else
-        applyEq(T, TL, NAT, 'eq-double-kleene) or-else
-        applyEq(T, TL, NAT, 'eq-eps-kleene) or-else
-        applyEq(T, TL, NAT, 'eq-bot-kleene)
+        applyEq(S, SL, NAT, 'eq-bot-concat-l) or-else
+        applyEq(S, SL, NAT, 'eq-bot-concat-r) or-else
+        applyEq(S, SL, NAT, 'eq-eps-concat-l) or-else
+        applyEq(S, SL, NAT, 'eq-eps-concat-r) or-else
+        applyEq(S, SL, NAT, 'eq-double-neg) or-else
+        applyEq(S, SL, NAT, 'eq-double-kleene) or-else
+        applyEq(S, SL, NAT, 'eq-eps-kleene) or-else
+        applyEq(S, SL, NAT, 'eq-bot-kleene)
         .
 
     --- The strat attribute is needed to get decent preformance.
@@ -218,26 +227,30 @@ mod PROOF-GEN is
     eq E:Edge or-else Es:Edges = E:Edge .
     eq none or-else Es? = Es? .
 
-    op applyAllRules : Term TermList Nat -> Edges .
-    eq applyAllRules(T, TL, NAT) =
-        applyRule(T, TL, NAT, 'check-ewp) ;
-        applyRule(T, TL, NAT, 'der-a) ;
-        applyRule(T, TL, NAT, 'der-b) .
+    op applyAllRules : State StateList Nat -> Edges .
+    eq applyAllRules(S, SL, NAT) =
+        applyRule(S, SL, NAT, 'check-ewp) ;
+        applyRule(S, SL, NAT, 'der-a) ;
+        applyRule(S, SL, NAT, 'der-b) .
 
     op myModule : -> Module .
     eq myModule = upModule('ERE-THEOREMS, false) .
 
-    op applyEq : Term TermList Nat Qid -> Edges .
-   ceq applyEq(T, TL, NAT, R) = eqEdge( apply(R, getContext(Result), getSubstitution(Result))
-                                 , myMetaSearchTree(getTerm(Result), TL, NAT))
-    if Result := metaXapply(myModule, T, R, none, 0, unbounded, 0) .
-    eq applyEq(T, TL, NAT, R) = none [owise] .
+    op < error > : -> [State] .
 
-    op applyRule : Term TermList Nat Qid -> Edges .
-   ceq applyRule(T, TL, NAT, R) = rlEdge( apply(R, getContext(Result), getSubstitution(Result))
-                                      , myMetaSearchTree(getTerm(Result), (TL, T), NAT))
-    if Result := metaXapply(myModule, T, R, none, 0, unbounded, 0) .
-    eq applyRule(T, TL, NAT, R) = none [owise] .
+    op applyEq : State StateList Nat Qid -> Edges .
+   ceq applyEq(S, SL, NAT, R) = eqEdge( applResult(R, getContext(Result), getSubstitution(Result))
+                                      , mkProofHint(downTerm(getTerm(Result), < error >), SL, NAT)
+                                      )
+    if Result := metaXapply(myModule, upTerm(S), R, none, 0, unbounded, 0) .
+    eq applyEq(S, SL, NAT, R) = none [owise] .
+
+    op applyRule : State StateList Nat Qid -> Edges .
+   ceq applyRule(S, SL, NAT, R) = rlEdge( applResult(R, getContext(Result), getSubstitution(Result))
+                                        , mkProofHint(downTerm(getTerm(Result), < error >), (S, SL), NAT)
+                                        )
+    if Result := metaXapply(myModule, upTerm(S), R, none, 0, unbounded, 0) .
+    eq applyRule(S, SL, NAT, R) = none [owise] .
 
     vars Alpha Alpha1 Alpha2 : Pattern .
     vars Beta  Beta1  Beta2  : Pattern .
@@ -256,30 +269,6 @@ mod PROOF-GEN is
     --- Currently we will ignore Contexts and Substitutions,
     --- but we will eventually need to convert them into metamath proof terms.
 
-    sorts ProofHint NeProofHintEdges ProofHintEdges .
-    subsort NeProofHintEdges < ProofHintEdges .
-    op node : Pattern ProofHintEdges -> ProofHint [ctor] .
-    op depthReached : Pattern -> ProofHint [ctor] .
-    op backlink : Pattern -> ProofHint [ctor] .
-
-    op none : -> ProofHintEdges [ctor] .
-    op transition : Pattern ProofHint -> NeProofHintEdges [ctor] .
-    op simpl : Qid ProofHint -> NeProofHintEdges [ctor] .
-    op _ ; _ : NeProofHintEdges NeProofHintEdges -> NeProofHintEdges [ctor assoc comm id: none] .
-    op _ ; _ : ProofHintEdges ProofHintEdges -> ProofHintEdges [ditto] .
-
-    vars PH PH_E PH_A PH_B : ProofHint .
-    vars PHE1 PHE2 : NeProofHintEdges .
-
-    op mkProofHint : Node -> ProofHint .
-    op mkProofHint : Edges -> ProofHintEdges .
-    eq mkProofHint(backlink(T)) = backlink(getRegExp(downTerm(T, < error >))) .
-    eq mkProofHint(node(T, Es)) = node(getRegExp(downTerm(T, < error > )), mkProofHint(Es)) .
-    eq mkProofHint(depthReached(T)) = depthReached(getRegExp(downTerm(T, < error > ))) .
-    eq mkProofHint(Es1 ; Es2) = mkProofHint(Es1) ; mkProofHint(Es2) .
-    eq mkProofHint(rlEdge(apply(R, Ctx, Subst), N:Node)) = transition(ruleLabelToLetter(R), mkProofHint(N)) .
-    eq mkProofHint(eqEdge(apply(R, Ctx, Subst), N:Node)) = simpl(R, mkProofHint(N)) .
-
     op getRegExp : State -> Pattern .
     eq getRegExp(< Alpha >) = Alpha .
     eq getRegExp(check-ewp[ Alpha ]) = Alpha .
@@ -290,8 +279,8 @@ mod PROOF-GEN is
     eq ruleLabelToLetter('der-a) = a .
     eq ruleLabelToLetter('der-b) = b .
 
-    op proofHint : Pattern -> ProofHint .
-    eq proofHint(Alpha) = mkProofHint(myMetaSearchTree(upTerm(< Alpha >), empty, 3)) .
+    op proofHint : Pattern -> Node .
+    eq proofHint(Alpha) = mkProofHint(< Alpha >, empty, 3) .
 
     *** Mapping EREs to its Matching Logic signature *************************
     --- We may consider desugaring the constructors via the notation defined
@@ -315,19 +304,20 @@ mod PROOF-GEN is
     *** fp *******************************************************************
     --- Here, we generate the fixedpoint needed for our proof.
 
-    op fp : ProofHint -> Pattern .
-    op fp : ProofHintEdges -> Pattern .
-    eq fp(backlink(Alpha)) = F(Alpha) .
-    eq fp(node(Alpha, simpl(R, PH))) = fp(PH) .
-    eq fp(node(Alpha, PHE1)) = mu qid(str(Alpha)) (epsilon \/ fp(PHE1)) [owise] .
-    eq fp(transition(Beta , PH)) = Beta . fp(PH) .
-    eq fp(PHE1 ; PHE2) = fp(PHE1) \/ fp(PHE2) .
+    op fp : Node -> Pattern .
+    eq fp(backlink(< Alpha >)) = F(Alpha) .
+    eq fp(node(< Alpha >, eqEdge(EL, N))) = fp(N) .
+    eq fp(node(< Alpha >, rlEdge(applResult('check-ewp, Ctx1, Subst1), N_EWP) ;
+                          rlEdge(applResult('der-a,     Ctx2, Subst2), N_A) ;
+                          rlEdge(applResult('der-b,     Ctx3, Subst3), N_B)
+         )    )
+     = mu qid(str(Alpha)) (epsilon \/ ((a . fp(N_A)) \/ (b . fp(N_B)))) [owise] .
 endm
 
 --- search in ERE-THEOREMS : ((a . a)* --> ((a * . a) \/ epsilon)) =>* P:Pattern .
 --- show search graph .
 
-set print with parentheses on .
+--- set print with parentheses on .
 --- reduce proofHint((a . a)* --> ((a * . a) \/ epsilon)) .
---- reduce fp(proofHint((a . a)* --> ((a * . a) \/ epsilon))) .
+reduce fp(proofHint((a . a)* --> ((a * . a) \/ epsilon))) .
 --- reduce proof-main-goal(proofHint((a . a)* --> ((a * . a) \/ epsilon))) .
