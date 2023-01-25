@@ -85,6 +85,7 @@ mod ERE-THEOREMS is
     rl [eq-ewp-not-not]     : epsilon /\ ~(~ Alpha)        => epsilon /\ Alpha .
 
     --- Identity and idemoptency of \/
+    rl [eq-choice-unit-xxx] : Alpha \/ bot => Alpha . --- TODO: Remove when we have comm
     rl [eq-choice-unit] : bot   \/ Alpha => Alpha .
     rl [eq-choice-idem] : Alpha \/ Alpha => Alpha .
     rl [eq-choice-assoc] : (Alpha \/ Beta) \/ Gamma  => Alpha \/ (Beta \/ Gamma) .
@@ -155,8 +156,8 @@ mod PROOF-GEN is
     vars Es1 Es2 : NeEdges .
     vars EL : EdgeLabel .
     vars N N_EWP N_A N_B : Node .
-    vars Subst Subst1 Subst2 Subst3 : Substitution .
-    vars Ctx Ctx1 Ctx2 Ctx3 : Context .
+    vars Subst Subst_EWP Subst_A Subst_B : Substitution .
+    vars Ctx CtxEWP Ctx_A Ctx_B : Context .
 
     sorts NeStateList StateList .
     subsort State < NeStateList < StateList .
@@ -205,6 +206,7 @@ mod PROOF-GEN is
         applyEq(S, SL, NAT, 'eq-ewp-not-kleene) or-else
         applyEq(S, SL, NAT, 'eq-ewp-not-not) or-else
 
+        applyEq(S, SL, NAT, 'eq-choice-unit-xxx) or-else
         applyEq(S, SL, NAT, 'eq-choice-unit) or-else
         applyEq(S, SL, NAT, 'eq-choice-idem) or-else
         applyEq(S, SL, NAT, 'eq-choice-assoc) or-else
@@ -307,17 +309,37 @@ mod PROOF-GEN is
     op fp : Node -> Pattern .
     eq fp(backlink(< Alpha >)) = F(Alpha) .
     eq fp(node(< Alpha >, eqEdge(EL, N))) = fp(N) .
-    eq fp(node(< Alpha >, rlEdge(applResult('check-ewp, Ctx1, Subst1), N_EWP) ;
-                          rlEdge(applResult('der-a,     Ctx2, Subst2), N_A) ;
-                          rlEdge(applResult('der-b,     Ctx3, Subst3), N_B)
+    eq fp(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
+                          rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
+                          rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
          )    )
      = mu qid(str(Alpha)) (epsilon \/ ((a . fp(N_A)) \/ (b . fp(N_B)))) [owise] .
+
+    *** main-goal ************************************************************
+    --- Here, we the proof for (fp -> Alpha) .
+
+    sort MetaMathProof .
+    op apply-equiv _ _ : Qid MetaMathProof -> MetaMathProof [ctor] .
+    op main-goal-leaf : -> MetaMathProof [ctor] .
+    op main-goal-interior _ _ _ : MetaMathProof MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
+
+    op proof-main-goal : Node -> MetaMathProof .
+    eq proof-main-goal(backlink(< Alpha >)) = main-goal-leaf .
+    eq proof-main-goal(node(check-ewp[ Alpha ], eqEdge(applResult(R, Ctx, Subst), N))) = (apply-equiv R proof-main-goal(N) ) .
+    eq proof-main-goal(node(< Alpha >, eqEdge(applResult(R, Ctx, Subst), N))) = (apply-equiv R proof-main-goal(N) ) .
+    eq proof-main-goal(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
+                                       rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
+                                       rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
+                      )    )
+     = main-goal-interior proof-main-goal(N_EWP) proof-main-goal(N_A) proof-main-goal(N_A) .
 endm
 
 --- search in ERE-THEOREMS : ((a . a)* --> ((a * . a) \/ epsilon)) =>* P:Pattern .
 --- show search graph .
 
---- set print with parentheses on .
+set print with parentheses on .
+--- search  (epsilon -> (epsilon /\ (( ~ ((a . a) *)) \/ (((a *) . a) \/ epsilon)))) =>! P:Pattern .
+--- show search graph .
 --- reduce proofHint((a . a)* --> ((a * . a) \/ epsilon)) .
 reduce fp(proofHint((a . a)* --> ((a * . a) \/ epsilon))) .
---- reduce proof-main-goal(proofHint((a . a)* --> ((a * . a) \/ epsilon))) .
+reduce proof-main-goal(proofHint((a . a)* --> ((a * . a) \/ epsilon))) .
