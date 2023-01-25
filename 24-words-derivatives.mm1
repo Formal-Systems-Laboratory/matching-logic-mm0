@@ -1,6 +1,9 @@
 import "22-words-salomaa.mm1";
 import "23-words-fixedpoints.mm1";
 
+--- Derivatives
+---------------
+
 def derivative (l : Pattern) (phi : Pattern) : Pattern
     = $ctximp_app box (l . sVar box) phi dummy $;
 --- = $exists w (eVar w)  /\ (l . eVar w C_ phi)$;
@@ -8,23 +11,75 @@ def derivative (l : Pattern) (phi : Pattern) : Pattern
 theorem der_equality:
     $phi == (epsilon /\ phi) \/ (a . (derivative a phi)) \/ (b . (derivative b phi))$;
 
-theorem eq_der_a_emptyset: $(derivative a bot)         == bot$;
-theorem eq_der_a_epsilon:  $(derivative a epsilon)     == bot$;
-theorem eq_der_a_b:        $(derivative a b)           == bot$;
+theorem eq_der_a_emptyset: $(derivative a bot)         <-> bot$;
+theorem eq_der_a_epsilon:  $(derivative a epsilon)     <-> bot$;
+theorem eq_der_a_a:        $(derivative a a)           <-> bot$;
+theorem eq_der_a_b:        $(derivative a b)           <-> bot$;
 theorem eq_der_a_concat:
-    $(derivative a (phi . psi)) ==    (derivative a phi) . psi
+    $(derivative a (phi . psi)) <->    (derivative a phi) . psi
                                    \/ ((epsilon /\ phi) . (derivative a psi))$;
-theorem eq_der_a_choice:
-    $(derivative a (phi \/ psi)) == (derivative a phi) \/ (derivative a psi)$;
+theorem eq_der_a_or:
+    $(derivative a (phi \/ psi)) <-> (derivative a phi) \/ (derivative a psi)$;
 theorem eq_der_a_kleene:
-    $(derivative a (kleene X phi)) == (derivative a phi) . (kleene X phi)$;
+    $(derivative a (kleene X phi)) <-> (derivative a phi) . (kleene X phi)$;
 theorem eq_der_a_not:
-    $(derivative a (~ phi)) == ~ (derivative a phi)$;
+    $(derivative a (~ phi)) <-> ~ (derivative a phi)$;
+theorem eq_der_a_imp:
+    $(derivative a (phi -> psi)) <-> ((derivative a phi) -> (derivative a psi))$;
 
+--- Contextual reasoning
+------------------------
 
-theorem fp_implies_l
+theorem cong_of_equiv_concat_l (h: $phi1 <-> phi2$): $(phi1 . psi) <-> (phi2 . psi)$;
+theorem cong_of_equiv_concat_r (h: $phi1 <-> phi2$): $(psi . phi1) <-> (psi . phi2)$;
+
+--- Reasoning about regular expressions
+---------------------------------------
+
+theorem main_goal_interior {X: SVar}
     (he: $epsilon -> rho$)
     (ha: $s[ rho / X ] phi_a -> (derivative a rho)$)
-    (hb: $s[ rho / X ] phi_b -> (derivative b rho)$)
-  : ----------------------------------------------
-    $(mu X epsilon \/ a . phi_a \/ b . phi_b) -> rho$;
+    (hb: $s[ rho / X ] phi_b -> (derivative b rho)$):
+    ----------------------------------------------
+    $(mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b)))) -> rho$;
+
+--| Apply equivalence left to right
+theorem apply_equiv (eq: $phi <-> psi$) (cont: $rho -> psi$): $rho -> phi$
+  = '(syl (bi2i eq) cont);
+
+def fp_root : Pattern CCCCaDxCaDxDpCCaDxCaDxDDpCCCaDxCaDxDpCCaDxCaDxDDD nCzD
+  = $(mu CCCCaDxCaDxDpCCaDxCaDxDDpCCCaDxCaDxDpCCaDxCaDxDDD (epsilon \/ ((a . (mu
+    CCCCaDxCaDxDpCCaDxCaDxDDpCCCaDxCaDxDpCCaDxCaDxDDD (epsilon \/ ((a . sVar (CCCCaDxCaDxDpCCaDxCaDxDDpCCCaDxCaDxDpCCaDxCaDxDDD)) \/
+    (b . (mu nCzD (epsilon \/ ((a . sVar (nCzD)) \/ (b . sVar (nCzD)))))))))) \/ (b . (mu nCzD (epsilon \/ ((a . sVar (nCzD)) \/ (b
+    . sVar (nCzD)))))))))$;
+
+def label_root : Pattern
+  =  $(kleene X (a . a)) -> (((kleene X a) . a) \/ epsilon)$;
+
+theorem shortcut1:
+    $((derivative a a . a \/ (epsilon /\ a) . derivative a a) . kleene X (a . a) -> derivative a (kleene X a) . a \/ (epsilon /\ kleene X a) . bot \/ bot)
+ <-> (a . kleene X (a . a) -> ((kleene X a) . a \/ epsilon))
+    $;
+
+theorem e_implies_label_root : $epsilon -> label_root$;
+theorem example : $fp_root X Y -> label_root$
+ = '( --- For each interior node of the derivative tree, we apply main_goal_interior 
+     main_goal_interior
+         e_implies_label_root
+         (norm (norm_imp (norm_sym sSubstitution_in_same_mu) norm_refl) --- Push substitutions all the way down
+            ( apply_equiv eq_der_a_imp
+            @ apply_equiv (cong_of_equiv_imp_l eq_der_a_kleene)
+            @ apply_equiv (cong_of_equiv_imp_l @ cong_of_equiv_concat_l @ eq_der_a_concat)
+            @ apply_equiv (cong_of_equiv_imp_r eq_der_a_or)
+            @ apply_equiv (cong_of_equiv_imp_r @ cong_of_equiv_or_l @ eq_der_a_concat)
+            @ apply_equiv (cong_of_equiv_imp_r @ cong_of_equiv_or_r @ eq_der_a_epsilon)
+            @ apply_equiv (cong_of_equiv_imp_r @ cong_of_equiv_or_l @ cong_of_equiv_or_r @ cong_of_equiv_concat_r @ eq_der_a_a)
+            --- and so on...
+            @ apply_equiv shortcut1
+
+            @ main_goal_interior _ _ _
+            )
+         )
+         _
+    );
+
