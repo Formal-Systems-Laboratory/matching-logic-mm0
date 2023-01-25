@@ -315,23 +315,43 @@ mod PROOF-GEN is
          )    )
      = mu qid(str(Alpha)) (epsilon \/ ((a . fp(N_A)) \/ (b . fp(N_B)))) [owise] .
 
+    *** top-implies-fp ************************************************************
+
     *** main-goal ************************************************************
     --- Here, we the proof for (fp -> Alpha) .
 
     sort MetaMathProof .
-    op apply-equiv _ _ : Qid MetaMathProof -> MetaMathProof [ctor] .
+
+    op id : -> MetaMathProof .
+    --- The Qids corresponding to equational rules are all theorems.
+    subsort Qid < MetaMathProof .
+    vars MMP : MetaMathProof .
+
+
+    op apply-subst _ : MetaMathProof -> MetaMathProof [ctor] .
+
+    op lift-equality-to-context _ _ : Context MetaMathProof -> MetaMathProof .
+    op xxxtodo _ : MetaMathProof -> MetaMathProof .
+    eq lift-equality-to-context Ctx MMP = xxxtodo MMP .
+
+    op apply-equiv _ _ : MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
     op main-goal-leaf : -> MetaMathProof [ctor] .
     op main-goal-interior _ _ _ : MetaMathProof MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
 
     op proof-main-goal : Node -> MetaMathProof .
+    eq proof-main-goal(node(< id >, none)) = id .
+    eq proof-main-goal(backlink(< Alpha >)) = main-goal-leaf .
     eq proof-main-goal(backlink(< Alpha >)) = main-goal-leaf .
     eq proof-main-goal(node(check-ewp[ Alpha ], eqEdge(applResult(R, Ctx, Subst), N))) = (apply-equiv R proof-main-goal(N) ) .
-    eq proof-main-goal(node(< Alpha >, eqEdge(applResult(R, Ctx, Subst), N))) = (apply-equiv R proof-main-goal(N) ) .
+    eq proof-main-goal(node(< Alpha >, eqEdge(applResult(R, Ctx, Subst), N))) = (apply-equiv (lift-equality-to-context Ctx R) proof-main-goal(N) ) .
     eq proof-main-goal(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
                                        rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
                                        rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
                       )    )
-     = main-goal-interior proof-main-goal(N_EWP) proof-main-goal(N_A) proof-main-goal(N_A) .
+     = main-goal-interior
+            (apply-subst proof-main-goal(N_EWP)) 
+            (apply-subst proof-main-goal(N_A))
+            (apply-subst proof-main-goal(N_B)) .
 endm
 
 --- search in ERE-THEOREMS : ((a . a)* --> ((a * . a) \/ epsilon)) =>* P:Pattern .
