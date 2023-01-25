@@ -128,7 +128,8 @@ mod ERE-THEOREMS is
 endm
 
 --- Manually performs a search, and returns the search graph as a tree with backlinks.
-fmod MY-META-SEARCH-TREE is
+mod PROOF-GEN is
+    extending ERE-THEOREMS .
     protecting META-LEVEL .
     protecting NAT .
 
@@ -146,10 +147,15 @@ fmod MY-META-SEARCH-TREE is
     op backlink : Term -> Node [ctor] .
     op depthReached : Term -> Node [ctor] .
 
-    var N : Nat .
+    var NAT : Nat .
     vars Es : NeEdges . vars Es? : Edges .
     vars T : Term . vars TL TL' : TermList .
     vars R : Qid . vars Result : Result4Tuple .
+    vars Es1 Es2 : NeEdges .
+    vars EL : EdgeLabel .
+    vars N : Node .
+    vars Subst : Substitution .
+    vars Ctx : Context .
 
     op _ in _ : Term TermList -> Bool .
     eq T in (TL , T , TL') = true .
@@ -157,52 +163,52 @@ fmod MY-META-SEARCH-TREE is
 
    --- curr term, previous terms, depth
     op myMetaSearchTree : Term TermList Nat -> Node .
-   ceq myMetaSearchTree(T, TL, N) = backlink(T)                              if      T in TL .
-   ceq myMetaSearchTree(T, TL, N) = node(T, applyAnyEquation(T, TL, N))      if (not T in TL) /\ Es := applyAnyEquation(T, TL, N) .
-   ceq myMetaSearchTree(T, TL, s(N)) = node(T, applyAllRules(T, (TL, T), N)) if (not T in TL) /\ none = applyAnyEquation(T, TL, N) .
+   ceq myMetaSearchTree(T, TL, NAT) = backlink(T)                              if      T in TL .
+   ceq myMetaSearchTree(T, TL, NAT) = node(T, applyAnyEquation(T, TL, NAT))      if (not T in TL) /\ Es := applyAnyEquation(T, TL, NAT) .
+   ceq myMetaSearchTree(T, TL, s(NAT)) = node(T, applyAllRules(T, (TL, T), NAT)) if (not T in TL) /\ none = applyAnyEquation(T, TL, NAT) .
    ceq myMetaSearchTree(T, TL, 0) = depthReached(T)                          if (not T in TL) /\ none = applyAnyEquation(T, TL, 0) .
 
     op applyAnyEquation : Term TermList Nat -> Edges .
-    eq applyAnyEquation(T, TL, N) =
-        applyEq(T, TL, N, 'eq-der-bot) or-else
-        applyEq(T, TL, N, 'eq-der-epsilon) or-else
-        applyEq(T, TL, N, 'eq-der-same-a) or-else
-        applyEq(T, TL, N, 'eq-der-diff-a) or-else
-        applyEq(T, TL, N, 'eq-der-kleene) or-else
-        applyEq(T, TL, N, 'eq-der-concat) or-else
-        applyEq(T, TL, N, 'eq-der-choice) or-else
-        applyEq(T, TL, N, 'eq-der-neg) or-else
-        applyEq(T, TL, N, 'eq-ewp-bot) or-else
-        applyEq(T, TL, N, 'eq-ewp-epsilon) or-else
-        applyEq(T, TL, N, 'eq-ewp-a) or-else
-        applyEq(T, TL, N, 'eq-ewp-b) or-else
-        applyEq(T, TL, N, 'eq-ewp-concat) or-else
-        applyEq(T, TL, N, 'eq-ewp-and) or-else
-        applyEq(T, TL, N, 'eq-ewp-choice) or-else
-        applyEq(T, TL, N, 'eq-ewp-kleene) or-else
-        applyEq(T, TL, N, 'eq-ewp-not-bot) or-else
-        applyEq(T, TL, N, 'eq-ewp-not-eps) or-else
-        applyEq(T, TL, N, 'eq-ewp-not-a) or-else
-        applyEq(T, TL, N, 'eq-ewp-not-b) or-else
-        applyEq(T, TL, N, 'eq-ewp-not-concat) or-else
-        applyEq(T, TL, N, 'eq-ewp-not-and) or-else
-        applyEq(T, TL, N, 'eq-ewp-not-choice) or-else
-        applyEq(T, TL, N, 'eq-ewp-not-kleene) or-else
-        applyEq(T, TL, N, 'eq-ewp-not-not) or-else
+    eq applyAnyEquation(T, TL, NAT) =
+        applyEq(T, TL, NAT, 'eq-der-bot) or-else
+        applyEq(T, TL, NAT, 'eq-der-epsilon) or-else
+        applyEq(T, TL, NAT, 'eq-der-same-a) or-else
+        applyEq(T, TL, NAT, 'eq-der-diff-a) or-else
+        applyEq(T, TL, NAT, 'eq-der-kleene) or-else
+        applyEq(T, TL, NAT, 'eq-der-concat) or-else
+        applyEq(T, TL, NAT, 'eq-der-choice) or-else
+        applyEq(T, TL, NAT, 'eq-der-neg) or-else
+        applyEq(T, TL, NAT, 'eq-ewp-bot) or-else
+        applyEq(T, TL, NAT, 'eq-ewp-epsilon) or-else
+        applyEq(T, TL, NAT, 'eq-ewp-a) or-else
+        applyEq(T, TL, NAT, 'eq-ewp-b) or-else
+        applyEq(T, TL, NAT, 'eq-ewp-concat) or-else
+        applyEq(T, TL, NAT, 'eq-ewp-and) or-else
+        applyEq(T, TL, NAT, 'eq-ewp-choice) or-else
+        applyEq(T, TL, NAT, 'eq-ewp-kleene) or-else
+        applyEq(T, TL, NAT, 'eq-ewp-not-bot) or-else
+        applyEq(T, TL, NAT, 'eq-ewp-not-eps) or-else
+        applyEq(T, TL, NAT, 'eq-ewp-not-a) or-else
+        applyEq(T, TL, NAT, 'eq-ewp-not-b) or-else
+        applyEq(T, TL, NAT, 'eq-ewp-not-concat) or-else
+        applyEq(T, TL, NAT, 'eq-ewp-not-and) or-else
+        applyEq(T, TL, NAT, 'eq-ewp-not-choice) or-else
+        applyEq(T, TL, NAT, 'eq-ewp-not-kleene) or-else
+        applyEq(T, TL, NAT, 'eq-ewp-not-not) or-else
 
-        applyEq(T, TL, N, 'eq-choice-unit) or-else
-        applyEq(T, TL, N, 'eq-choice-idem) or-else
-        applyEq(T, TL, N, 'eq-choice-assoc) or-else
-        --- applyEq(T, TL, N, 'eq-comm) or-else
+        applyEq(T, TL, NAT, 'eq-choice-unit) or-else
+        applyEq(T, TL, NAT, 'eq-choice-idem) or-else
+        applyEq(T, TL, NAT, 'eq-choice-assoc) or-else
+        --- applyEq(T, TL, NAT, 'eq-comm) or-else
 
-        applyEq(T, TL, N, 'eq-bot-concat-l) or-else
-        applyEq(T, TL, N, 'eq-bot-concat-r) or-else
-        applyEq(T, TL, N, 'eq-eps-concat-l) or-else
-        applyEq(T, TL, N, 'eq-eps-concat-r) or-else
-        applyEq(T, TL, N, 'eq-double-neg) or-else
-        applyEq(T, TL, N, 'eq-double-kleene) or-else
-        applyEq(T, TL, N, 'eq-eps-kleene) or-else
-        applyEq(T, TL, N, 'eq-bot-kleene)
+        applyEq(T, TL, NAT, 'eq-bot-concat-l) or-else
+        applyEq(T, TL, NAT, 'eq-bot-concat-r) or-else
+        applyEq(T, TL, NAT, 'eq-eps-concat-l) or-else
+        applyEq(T, TL, NAT, 'eq-eps-concat-r) or-else
+        applyEq(T, TL, NAT, 'eq-double-neg) or-else
+        applyEq(T, TL, NAT, 'eq-double-kleene) or-else
+        applyEq(T, TL, NAT, 'eq-eps-kleene) or-else
+        applyEq(T, TL, NAT, 'eq-bot-kleene)
         .
 
     --- The strat attribute is needed to get decent preformance.
@@ -213,44 +219,29 @@ fmod MY-META-SEARCH-TREE is
     eq none or-else Es? = Es? .
 
     op applyAllRules : Term TermList Nat -> Edges .
-    eq applyAllRules(T, TL, N) =
-        applyRule(T, TL, N, 'check-ewp) ;
-        applyRule(T, TL, N, 'der-a) ;
-        applyRule(T, TL, N, 'der-b) .
+    eq applyAllRules(T, TL, NAT) =
+        applyRule(T, TL, NAT, 'check-ewp) ;
+        applyRule(T, TL, NAT, 'der-a) ;
+        applyRule(T, TL, NAT, 'der-b) .
 
     op myModule : -> Module .
     eq myModule = upModule('ERE-THEOREMS, false) .
 
     op applyEq : Term TermList Nat Qid -> Edges .
-   ceq applyEq(T, TL, N, R) = eqEdge( apply(R, getContext(Result), getSubstitution(Result))
-                                 , myMetaSearchTree(getTerm(Result), TL, N))
+   ceq applyEq(T, TL, NAT, R) = eqEdge( apply(R, getContext(Result), getSubstitution(Result))
+                                 , myMetaSearchTree(getTerm(Result), TL, NAT))
     if Result := metaXapply(myModule, T, R, none, 0, unbounded, 0) .
-    eq applyEq(T, TL, N, R) = none [owise] .
+    eq applyEq(T, TL, NAT, R) = none [owise] .
 
     op applyRule : Term TermList Nat Qid -> Edges .
-   ceq applyRule(T, TL, N, R) = rlEdge( apply(R, getContext(Result), getSubstitution(Result))
-                                      , myMetaSearchTree(getTerm(Result), (TL, T), N))
+   ceq applyRule(T, TL, NAT, R) = rlEdge( apply(R, getContext(Result), getSubstitution(Result))
+                                      , myMetaSearchTree(getTerm(Result), (TL, T), NAT))
     if Result := metaXapply(myModule, T, R, none, 0, unbounded, 0) .
-    eq applyRule(T, TL, N, R) = none [owise] .
-endfm
-
-mod REGEX-PROOF-GENERATOR is
-    protecting MY-META-SEARCH-TREE .
-    protecting ERE-THEOREMS .
-    extending PATTERN-METAMATH .
+    eq applyRule(T, TL, NAT, R) = none [owise] .
 
     vars Alpha Alpha1 Alpha2 : Pattern .
     vars Beta  Beta1  Beta2  : Pattern .
     vars A B A1 A2 : Letter .
-
-    vars T : Term .
-    vars Es Es1 Es2 : NeEdges .
-    vars EL : EdgeLabel .
-    vars N : Node .
-    vars TL TL' : TermList .
-    vars R : Qid .
-    vars Subst : Substitution .
-    vars Ctx : Context .
 
 
     *** Proof hint generation ************************************************
@@ -337,6 +328,6 @@ endm
 --- show search graph .
 
 set print with parentheses on .
-reduce proofHint((a . a)* --> ((a * . a) \/ epsilon)) .
+--- reduce proofHint((a . a)* --> ((a * . a) \/ epsilon)) .
 --- reduce fp(proofHint((a . a)* --> ((a * . a) \/ epsilon))) .
 --- reduce proof-main-goal(proofHint((a . a)* --> ((a * . a) \/ epsilon))) .
