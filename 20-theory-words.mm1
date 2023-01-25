@@ -28,7 +28,7 @@ def top_word   { X: SVar } : Pattern = $(kleene   X top_letter )$ ;
 
 --- Axioms (e suffix indicates over element vars)
 axiom functional_a      : $exists x (eVar x == a)$;
-axiom functional_b      : $exists x (eVar x == a)$;
+axiom functional_b      : $exists x (eVar x == b)$;
 axiom functional_concat : $(forall w (forall v (exists x (eVar x == eVar w . eVar v ))))$;
 
 axiom no_confusion_ab_e  : $a != b$;
