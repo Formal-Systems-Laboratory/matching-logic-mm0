@@ -54,6 +54,7 @@ fmod PATTERN-METAMATH is
     op toNat : Pattern -> Nat .
     op (_ <=> _) : Pattern Pattern -> Comparison .
 
+    *** ! Changing these values also requires changing the two *-choice-comm-leaf rules
     eq toNat(bot) = 0 .
     eq toNat(epsilon) = 1 .
     eq toNat(a) = 2 .
@@ -126,14 +127,16 @@ mod ERE-THEOREMS is
     rl [eq-or-choice-unit] : bot   \/ Alpha => Alpha .
     rl [eq-or-choice-idem] : Alpha \/ Alpha => Alpha .
     rl [eq-or-choice-assoc] : (Alpha \/ Beta) \/ Gamma  => Alpha \/ (Beta \/ Gamma) .
-   crl [eq-or-choice-comm] : Alpha \/ Beta => Beta \/ Alpha if Alpha <=> Beta = GT .
+   crl [eq-or-choice-comm-node] : Alpha \/ (Beta \/ Gamma) => Beta \/ (Alpha \/ Gamma) if Alpha <=> Beta = GT .
+   crl [eq-or-choice-comm-leaf] : Alpha \/ Beta => Beta \/ Alpha if (Alpha <=> Beta == GT) and (toNat(Beta) =/= 9) .
 
     --- Identity and idemoptency of /\
     rl [eq-and-choice-abs] : bot   /\ Alpha => bot .
     rl [eq-and-choice-unit] : top   /\ Alpha => Alpha .
     rl [eq-and-choice-idem] : Alpha /\ Alpha => Alpha .
     rl [eq-and-choice-assoc] : (Alpha /\ Beta) /\ Gamma  => Alpha /\ (Beta /\ Gamma) .
-   crl [eq-and-choice-comm] : Alpha /\ Beta => Beta /\ Alpha if Alpha <=> Beta = GT .
+   crl [eq-and-choice-comm-node] : Alpha /\ (Beta /\ Gamma) => Beta /\ (Alpha /\ Gamma) if Alpha <=> Beta = GT .
+   crl [eq-and-choice-comm-leaf] : Alpha /\ Beta => Beta /\ Alpha if (Alpha <=> Beta == GT) and (toNat(Beta) =/= 8) .
 
     ---- Optional simplifications
     rl [eq-bot-concat-l] : bot . Alpha => bot .
@@ -251,12 +254,14 @@ mod PROOF-GEN is
         applyEq(S, SL, NAT, 'eq-or-choice-unit) or-else
         applyEq(S, SL, NAT, 'eq-or-choice-idem) or-else
         applyEq(S, SL, NAT, 'eq-or-choice-assoc) or-else
-        applyEq(S, SL, NAT, 'eq-or-choice-comm) or-else
+        applyEq(S, SL, NAT, 'eq-or-choice-comm-node) or-else
+        applyEq(S, SL, NAT, 'eq-or-choice-comm-leaf) or-else
         applyEq(S, SL, NAT, 'eq-and-choice-abs) or-else
         applyEq(S, SL, NAT, 'eq-and-choice-unit) or-else
         applyEq(S, SL, NAT, 'eq-and-choice-idem) or-else
         applyEq(S, SL, NAT, 'eq-and-choice-assoc) or-else
-        applyEq(S, SL, NAT, 'eq-and-choice-comm) or-else
+        applyEq(S, SL, NAT, 'eq-and-choice-comm-node) or-else
+        applyEq(S, SL, NAT, 'eq-and-choice-comm-leaf) or-else
 
         applyEq(S, SL, NAT, 'eq-bot-concat-l) or-else
         applyEq(S, SL, NAT, 'eq-bot-concat-r) or-else
