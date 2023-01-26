@@ -56,8 +56,6 @@ mod ERE-THEOREMS is
     rl [eq-der-bot]     : (derivative A bot)          => bot .
     rl [eq-der-epsilon] : (derivative A epsilon)      => bot .
     rl [eq-der-same-a]  : (derivative A A)            => epsilon .
-
-   --- Note: our meta rewriting doesnt support crl, but equational theorems are applied in order.
    crl [eq-der-diff-a]  : (derivative A B)            => bot if A =/= B .
 
     rl [eq-der-kleene]  : (derivative A Alpha *)        => (derivative A Alpha) . (Alpha *) .
@@ -82,7 +80,7 @@ mod ERE-THEOREMS is
     rl [eq-ewp-not-and]     : epsilon /\ ~(Alpha /\ Beta) => (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta) .
     rl [eq-ewp-not-choice]  : epsilon /\ ~(Alpha \/ Beta) => (epsilon /\ ~ Alpha) /\ (epsilon /\ ~ Beta) .
     rl [eq-ewp-not-kleene]  : epsilon /\ ~(Alpha *)       => bot .
-    rl [eq-ewp-not-not]     : epsilon /\ ~(~ Alpha)        => epsilon /\ Alpha .
+    rl [eq-ewp-not-not]     : epsilon /\ ~(~ Alpha)       => epsilon /\ Alpha .
 
     --- Identity and idemoptency of \/
     rl [eq-choice-unit-xxx] : Alpha \/ bot => Alpha . --- TODO: Remove when we have comm
@@ -341,8 +339,8 @@ mod PROOF-GEN is
     op proof-main-goal : Node -> MetaMathProof .
     eq proof-main-goal(node(< id >, none)) = id .
     eq proof-main-goal(backlink(< Alpha >)) = main-goal-leaf .
-    eq proof-main-goal(backlink(< Alpha >)) = main-goal-leaf .
-    eq proof-main-goal(node(check-ewp[ Alpha ], eqEdge(applResult(R, Ctx, Subst), N))) = (apply-equiv R proof-main-goal(N) ) .
+    eq proof-main-goal(node(check-ewp[ Alpha ],
+                                       eqEdge(applResult(R, Ctx, Subst), N))) = (apply-equiv (lift-equality-to-context Ctx R) proof-main-goal(N) ) .
     eq proof-main-goal(node(< Alpha >, eqEdge(applResult(R, Ctx, Subst), N))) = (apply-equiv (lift-equality-to-context Ctx R) proof-main-goal(N) ) .
     eq proof-main-goal(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
                                        rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
