@@ -7,8 +7,8 @@ fmod PATTERN-METAMATH is
     vars x y X Y : Qid .
 
     *** core
-    ops sVar _ : Qid -> SVar [ctor] .
-    ops eVar _ : Qid -> EVar [ctor] .
+    op sVar _ : Qid -> SVar [ctor] .
+    op eVar _ : Qid -> EVar [ctor] .
     op app _ _ : Pattern Pattern -> Pattern [ctor] .
     op _ -> _  : Pattern Pattern -> Pattern [ctor] .
     op mu _ _  : Qid     Pattern -> Pattern [ctor] .
@@ -22,20 +22,6 @@ fmod PATTERN-METAMATH is
     op forall _ _   : Qid Pattern     -> Pattern [ctor] .
     op _ <-> _       : Pattern Pattern -> Pattern [ctor] .
     op ~ _           : Pattern         -> Pattern [ctor] .
-
-    op (_ < _)          : Pattern Pattern -> Bool .
-    eq bot < (sVar X) = True .
-    eq (sVar X) < (eVar x) = True .
-    eq (eVar x) < (app psi1 psi2) = True .
-    eq (app phi1 phi2) < (psi1 -> psi2) = True .
-    eq (phi1 -> phi2) < (exists x psi) = True .
-    eq (exists x phi) < (mu X psi) = True .
-    ceq (app phi1 psi1) < (app phi2 psi2) = True if phi1 < phi2 .
-    ceq (app phi psi1) < (app phi psi2) = True if psi1 < psi2 .
-    ceq (phi1 -> psi1) < (phi2 -> psi2) = True if phi1 < phi2 .
-    ceq (phi -> psi1) < (phi -> psi2) = True if psi1 < psi2 .
-    ceq (exists x phi1) < (exists x phi2) = True if phi1 < phi2 .
-    ceq (mu X phi1) < (mu X phi2) = True if phi1 < phi2 .
 
     *** ERE
     op epsilon      :                 -> Pattern [ctor] .
@@ -60,6 +46,42 @@ fmod PATTERN-METAMATH is
 
     op _ --> _        : Pattern Pattern -> Pattern .
     eq Alpha --> Beta = (~ Alpha) \/ Beta .
+
+    --- Internal sorting of patterns
+    sort Comparison .
+    ops LT EQ GT : -> Comparison [ctor] .
+
+    op toNat : Pattern -> Nat .
+    op (_ <=> _) : Pattern Pattern -> Comparison .
+
+    eq toNat(bot) = 0 .
+    eq toNat(epsilon) = 1 .
+    eq toNat(a) = 2 .
+    eq toNat(b) = 3 .
+    eq toNat(top) = 4 .
+    eq toNat(phi *) = 5 .
+    eq toNat(~ phi) = 6 .
+    eq toNat(phi1 . phi2) = 7 .
+    eq toNat(phi1 /\ phi2) = 8 .
+    eq toNat(phi1 \/ phi2) = 9 .
+    eq toNat(phi1 -> phi2) = 10 .
+    eq toNat(derivative phi1 phi2) = 11 .
+
+    eq phi <=> phi = EQ .
+    ceq phi <=> psi = LT if toNat(phi) < toNat(psi) .
+    ceq phi <=> psi = GT if toNat(phi) > toNat(psi) .
+    eq (phi *) <=> (psi *) = phi <=> psi .
+    eq (~ phi) <=> (~ psi) = phi <=> psi .
+    ceq (phi1 . phi2) <=> (psi1 . psi2) = phi2 <=> psi2 if phi1 <=> psi1 = EQ .
+    eq (phi1 . phi2) <=> (psi1 . psi2) = phi1 <=> psi1 [owise] .
+    ceq (phi1 /\ phi2) <=> (psi1 /\ psi2) = phi2 <=> psi2 if phi1 <=> psi1 = EQ .
+    eq (phi1 /\ phi2) <=> (psi1 /\ psi2) = phi1 <=> psi1 [owise] .
+    ceq (phi1 \/ phi2) <=> (psi1 \/ psi2) = phi2 <=> psi2 if phi1 <=> psi1 = EQ .
+    eq (phi1 \/ phi2) <=> (psi1 \/ psi2) = phi1 <=> psi1 [owise] .
+    ceq (phi1 -> phi2) <=> (psi1 -> psi2) = phi2 <=> psi2 if phi1 <=> psi1 = EQ .
+    eq (phi1 -> phi2) <=> (psi1 -> psi2) = phi1 <=> psi1 [owise] .
+    ceq (derivative phi1 phi2) <=> (derivative psi1 psi2) = phi2 <=> psi2 if phi1 <=> psi1 = EQ .
+    eq (derivative phi1 phi2) <=> (derivative psi1 psi2) = phi1 <=> psi1 [owise] .
 endfm
 
 mod ERE-THEOREMS is
@@ -100,12 +122,18 @@ mod ERE-THEOREMS is
     rl [eq-ewp-not-not]     : epsilon /\ ~(~ Alpha)       => epsilon /\ Alpha .
 
     --- Identity and idemoptency of \/
-    rl [eq-choice-unit-xxx] : Alpha \/ bot => Alpha . --- TODO: Remove when we have comm
-    rl [eq-choice-unit] : bot   \/ Alpha => Alpha .
-    rl [eq-choice-idem] : Alpha \/ Alpha => Alpha .
-    rl [eq-choice-assoc] : (Alpha \/ Beta) \/ Gamma  => Alpha \/ (Beta \/ Gamma) .
+    rl [eq-or-choice-abs] : top   \/ Alpha => top .
+    rl [eq-or-choice-unit] : bot   \/ Alpha => Alpha .
+    rl [eq-or-choice-idem] : Alpha \/ Alpha => Alpha .
+    rl [eq-or-choice-assoc] : (Alpha \/ Beta) \/ Gamma  => Alpha \/ (Beta \/ Gamma) .
+   crl [eq-or-choice-comm] : Alpha \/ Beta => Beta \/ Alpha if Alpha <=> Beta = GT .
 
-   crl [eq-choice-comm] : Alpha \/ Beta => Beta \/ Alpha if Alpha < Beta .
+    --- Identity and idemoptency of /\
+    rl [eq-and-choice-abs] : bot   /\ Alpha => bot .
+    rl [eq-and-choice-unit] : top   /\ Alpha => Alpha .
+    rl [eq-and-choice-idem] : Alpha /\ Alpha => Alpha .
+    rl [eq-and-choice-assoc] : (Alpha /\ Beta) /\ Gamma  => Alpha /\ (Beta /\ Gamma) .
+   crl [eq-and-choice-comm] : Alpha /\ Beta => Beta /\ Alpha if Alpha <=> Beta = GT .
 
     ---- Optional simplifications
     rl [eq-bot-concat-l] : bot . Alpha => bot .
@@ -219,11 +247,16 @@ mod PROOF-GEN is
         applyEq(S, SL, NAT, 'eq-ewp-not-not) or-else
 
 
-        applyEq(S, SL, NAT, 'eq-choice-unit-xxx) or-else
-        applyEq(S, SL, NAT, 'eq-choice-unit) or-else
-        applyEq(S, SL, NAT, 'eq-choice-idem) or-else
-        applyEq(S, SL, NAT, 'eq-choice-assoc) or-else
-        applyEq(S, SL, NAT, 'eq-choice-comm) or-else
+        applyEq(S, SL, NAT, 'eq-or-choice-abs) or-else
+        applyEq(S, SL, NAT, 'eq-or-choice-unit) or-else
+        applyEq(S, SL, NAT, 'eq-or-choice-idem) or-else
+        applyEq(S, SL, NAT, 'eq-or-choice-assoc) or-else
+        applyEq(S, SL, NAT, 'eq-or-choice-comm) or-else
+        applyEq(S, SL, NAT, 'eq-and-choice-abs) or-else
+        applyEq(S, SL, NAT, 'eq-and-choice-unit) or-else
+        applyEq(S, SL, NAT, 'eq-and-choice-idem) or-else
+        applyEq(S, SL, NAT, 'eq-and-choice-assoc) or-else
+        applyEq(S, SL, NAT, 'eq-and-choice-comm) or-else
 
         applyEq(S, SL, NAT, 'eq-bot-concat-l) or-else
         applyEq(S, SL, NAT, 'eq-bot-concat-r) or-else
