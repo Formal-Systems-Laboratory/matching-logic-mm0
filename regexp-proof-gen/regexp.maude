@@ -93,63 +93,63 @@ mod ERE-THEOREMS is
     vars Gamma : Pattern .
     vars A B A1 A2 : Letter .
 
-    rl [eq-der-bot]     : (derivative A bot)          => bot .
-    rl [eq-der-epsilon] : (derivative A epsilon)      => bot .
-    rl [eq-der-same-a]  : (derivative A A)            => epsilon .
-   crl [eq-der-diff-a]  : (derivative A B)            => bot if A =/= B .
+    rl [regex-eq-der-bot]     : (derivative A bot)          => bot .
+    rl [regex-eq-der-epsilon] : (derivative A epsilon)      => bot .
+    rl [regex-eq-der-same-a]  : (derivative A A)            => epsilon .
+   crl [regex-eq-der-diff-a]  : (derivative A B)            => bot if A =/= B .
 
-    rl [eq-der-kleene]  : (derivative A Alpha *)        => (derivative A Alpha) . (Alpha *) .
-    rl [eq-der-concat]  : (derivative A (Alpha . Beta)) => ((derivative A Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative A Beta)) .
-    rl [eq-der-choice]  : (derivative A (Alpha \/ Beta)) => (derivative A Alpha) \/ (derivative A Beta) .
-    rl [eq-der-neg]     : (derivative A ~ Alpha)        => ~ (derivative A Alpha) .
+    rl [regex-eq-der-kleene]  : (derivative A Alpha *)        => (derivative A Alpha) . (Alpha *) .
+    rl [regex-eq-der-concat]  : (derivative A (Alpha . Beta)) => ((derivative A Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative A Beta)) .
+    rl [regex-eq-der-choice]  : (derivative A (Alpha \/ Beta)) => (derivative A Alpha) \/ (derivative A Beta) .
+    rl [regex-eq-der-neg]     : (derivative A ~ Alpha)        => ~ (derivative A Alpha) .
 
-    rl [eq-ewp-bot]     : epsilon /\ bot             => bot .
-    rl [eq-ewp-epsilon] : epsilon /\ epsilon         => epsilon .
-    rl [eq-ewp-a]       : epsilon /\ a               => bot .
-    rl [eq-ewp-b]       : epsilon /\ b               => bot .
-    rl [eq-ewp-concat]  : epsilon /\ (Alpha . Beta)  => (epsilon /\ Alpha) /\ (epsilon /\ Beta) .
-    rl [eq-ewp-and]     : epsilon /\ (Alpha /\ Beta) => (epsilon /\ Alpha) /\ (epsilon /\ Beta) .
-    rl [eq-ewp-choice]  : epsilon /\ (Alpha \/ Beta) => (epsilon /\ Alpha) \/ (epsilon /\ Beta) .
-    rl [eq-ewp-kleene]  : epsilon /\ (Alpha *)       => epsilon .
+    rl [regex-eq-ewp-bot]     : epsilon /\ bot             => bot .
+    rl [regex-eq-ewp-epsilon] : epsilon /\ epsilon         => epsilon .
+    rl [regex-eq-ewp-a]       : epsilon /\ a               => bot .
+    rl [regex-eq-ewp-b]       : epsilon /\ b               => bot .
+    rl [regex-eq-ewp-concat]  : epsilon /\ (Alpha . Beta)  => (epsilon /\ Alpha) /\ (epsilon /\ Beta) .
+    rl [regex-eq-ewp-and]     : epsilon /\ (Alpha /\ Beta) => (epsilon /\ Alpha) /\ (epsilon /\ Beta) .
+    rl [regex-eq-ewp-choice]  : epsilon /\ (Alpha \/ Beta) => (epsilon /\ Alpha) \/ (epsilon /\ Beta) .
+    rl [regex-eq-ewp-kleene]  : epsilon /\ (Alpha *)       => epsilon .
 
-    rl [eq-ewp-not-bot]     : epsilon /\ ~(bot)           => epsilon .
-    rl [eq-ewp-not-eps]     : epsilon /\ ~(epsilon)       => bot .
-    rl [eq-ewp-not-a]       : epsilon /\ ~(a)             => epsilon .
-    rl [eq-ewp-not-b]       : epsilon /\ ~(b)             => epsilon .
-    rl [eq-ewp-not-concat]  : epsilon /\ ~(Alpha . Beta)  => (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta) .
-    rl [eq-ewp-not-and]     : epsilon /\ ~(Alpha /\ Beta) => (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta) .
-    rl [eq-ewp-not-choice]  : epsilon /\ ~(Alpha \/ Beta) => (epsilon /\ ~ Alpha) /\ (epsilon /\ ~ Beta) .
-    rl [eq-ewp-not-kleene]  : epsilon /\ ~(Alpha *)       => bot .
-    rl [eq-ewp-not-not]     : epsilon /\ ~(~ Alpha)       => epsilon /\ Alpha .
+    rl [regex-eq-ewp-not-bot]     : epsilon /\ ~(bot)           => epsilon .
+    rl [regex-eq-ewp-not-eps]     : epsilon /\ ~(epsilon)       => bot .
+    rl [regex-eq-ewp-not-a]       : epsilon /\ ~(a)             => epsilon .
+    rl [regex-eq-ewp-not-b]       : epsilon /\ ~(b)             => epsilon .
+    rl [regex-eq-ewp-not-concat]  : epsilon /\ ~(Alpha . Beta)  => (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta) .
+    rl [regex-eq-ewp-not-and]     : epsilon /\ ~(Alpha /\ Beta) => (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta) .
+    rl [regex-eq-ewp-not-choice]  : epsilon /\ ~(Alpha \/ Beta) => (epsilon /\ ~ Alpha) /\ (epsilon /\ ~ Beta) .
+    rl [regex-eq-ewp-not-kleene]  : epsilon /\ ~(Alpha *)       => bot .
+    rl [regex-eq-ewp-not-not]     : epsilon /\ ~(~ Alpha)       => epsilon /\ Alpha .
 
     --- Identity and idemoptency of \/
-    rl [eq-or-choice-abs] : top   \/ Alpha => top .
-    rl [eq-or-choice-unit] : bot   \/ Alpha => Alpha .
-    rl [eq-or-choice-idem] : Alpha \/ Alpha => Alpha .
-    rl [eq-or-choice-assoc] : (Alpha \/ Beta) \/ Gamma  => Alpha \/ (Beta \/ Gamma) .
-   crl [eq-or-choice-comm-node] : Alpha \/ (Beta \/ Gamma) => Beta \/ (Alpha \/ Gamma) if Alpha <=> Beta = GT .
-   crl [eq-or-choice-comm-leaf] : Alpha \/ Beta => Beta \/ Alpha if (Alpha <=> Beta == GT) and (toNat(Beta) =/= 9) .
+    rl [regex-eq-or-choice-abs] : top   \/ Alpha => top .
+    rl [regex-eq-or-choice-unit] : bot   \/ Alpha => Alpha .
+    rl [regex-eq-or-choice-idem] : Alpha \/ Alpha => Alpha .
+    rl [regex-eq-or-choice-assoc] : (Alpha \/ Beta) \/ Gamma  => Alpha \/ (Beta \/ Gamma) .
+   crl [regex-eq-or-choice-comm-node] : Alpha \/ (Beta \/ Gamma) => Beta \/ (Alpha \/ Gamma) if Alpha <=> Beta = GT .
+   crl [regex-eq-or-choice-comm-leaf] : Alpha \/ Beta => Beta \/ Alpha if (Alpha <=> Beta == GT) and (toNat(Beta) =/= 9) .
 
     --- Identity and idemoptency of /\
-    rl [eq-and-choice-abs] : bot   /\ Alpha => bot .
-    rl [eq-and-choice-unit] : top   /\ Alpha => Alpha .
-    rl [eq-and-choice-idem] : Alpha /\ Alpha => Alpha .
-    rl [eq-and-choice-assoc] : (Alpha /\ Beta) /\ Gamma  => Alpha /\ (Beta /\ Gamma) .
-   crl [eq-and-choice-comm-node] : Alpha /\ (Beta /\ Gamma) => Beta /\ (Alpha /\ Gamma) if Alpha <=> Beta = GT .
-   crl [eq-and-choice-comm-leaf] : Alpha /\ Beta => Beta /\ Alpha if (Alpha <=> Beta == GT) and (toNat(Beta) =/= 8) .
+    rl [regex-eq-and-choice-abs] : bot   /\ Alpha => bot .
+    rl [regex-eq-and-choice-unit] : top   /\ Alpha => Alpha .
+    rl [regex-eq-and-choice-idem] : Alpha /\ Alpha => Alpha .
+    rl [regex-eq-and-choice-assoc] : (Alpha /\ Beta) /\ Gamma  => Alpha /\ (Beta /\ Gamma) .
+   crl [regex-eq-and-choice-comm-node] : Alpha /\ (Beta /\ Gamma) => Beta /\ (Alpha /\ Gamma) if Alpha <=> Beta = GT .
+   crl [regex-eq-and-choice-comm-leaf] : Alpha /\ Beta => Beta /\ Alpha if (Alpha <=> Beta == GT) and (toNat(Beta) =/= 8) .
 
     ---- Optional simplifications
-    rl [eq-bot-concat-l] : bot . Alpha => bot .
-    rl [eq-bot-concat-r] : Alpha . bot => bot .
+    rl [regex-eq-bot-concat-l] : bot . Alpha => bot .
+    rl [regex-eq-bot-concat-r] : Alpha . bot => bot .
 
-    rl [eq-eps-concat-l] : epsilon . Alpha => Alpha .
-    rl [eq-eps-concat-r] : Alpha . epsilon => Alpha .
+    rl [regex-eq-eps-concat-l] : epsilon . Alpha => Alpha .
+    rl [regex-eq-eps-concat-r] : Alpha . epsilon => Alpha .
 
-    rl [eq-double-neg] : ~ ~ Alpha => Alpha .
-    rl [eq-double-kleene] : Alpha * * => Alpha .
+    rl [regex-eq-double-neg] : ~ ~ Alpha => Alpha .
+    rl [regex-eq-double-kleene] : Alpha * * => Alpha .
 
-    rl [eq-eps-kleene] : epsilon * => epsilon .
-    rl [eq-bot-kleene] : bot * => epsilon .
+    rl [regex-eq-eps-kleene] : epsilon * => epsilon .
+    rl [regex-eq-bot-kleene] : bot * => epsilon .
 
 
     *** Rules *********************************
@@ -223,54 +223,54 @@ mod PROOF-GEN is
 
     op applyAnyEquation : State StateList Nat -> Edges .
     eq applyAnyEquation(S, SL, NAT) =
-        applyEq(S, SL, NAT, 'eq-der-bot) or-else
-        applyEq(S, SL, NAT, 'eq-der-epsilon) or-else
-        applyEq(S, SL, NAT, 'eq-der-same-a) or-else
-        applyEq(S, SL, NAT, 'eq-der-diff-a) or-else
-        applyEq(S, SL, NAT, 'eq-der-kleene) or-else
-        applyEq(S, SL, NAT, 'eq-der-concat) or-else
-        applyEq(S, SL, NAT, 'eq-der-choice) or-else
-        applyEq(S, SL, NAT, 'eq-der-neg) or-else
-        applyEq(S, SL, NAT, 'eq-ewp-bot) or-else
-        applyEq(S, SL, NAT, 'eq-ewp-epsilon) or-else
-        applyEq(S, SL, NAT, 'eq-ewp-a) or-else
-        applyEq(S, SL, NAT, 'eq-ewp-b) or-else
-        applyEq(S, SL, NAT, 'eq-ewp-concat) or-else
-        applyEq(S, SL, NAT, 'eq-ewp-and) or-else
-        applyEq(S, SL, NAT, 'eq-ewp-choice) or-else
-        applyEq(S, SL, NAT, 'eq-ewp-kleene) or-else
-        applyEq(S, SL, NAT, 'eq-ewp-not-bot) or-else
-        applyEq(S, SL, NAT, 'eq-ewp-not-eps) or-else
-        applyEq(S, SL, NAT, 'eq-ewp-not-a) or-else
-        applyEq(S, SL, NAT, 'eq-ewp-not-b) or-else
-        applyEq(S, SL, NAT, 'eq-ewp-not-concat) or-else
-        applyEq(S, SL, NAT, 'eq-ewp-not-and) or-else
-        applyEq(S, SL, NAT, 'eq-ewp-not-choice) or-else
-        applyEq(S, SL, NAT, 'eq-ewp-not-kleene) or-else
-        applyEq(S, SL, NAT, 'eq-ewp-not-not) or-else
+        applyEq(S, SL, NAT, 'regex-eq-der-bot) or-else
+        applyEq(S, SL, NAT, 'regex-eq-der-epsilon) or-else
+        applyEq(S, SL, NAT, 'regex-eq-der-same-a) or-else
+        applyEq(S, SL, NAT, 'regex-eq-der-diff-a) or-else
+        applyEq(S, SL, NAT, 'regex-eq-der-kleene) or-else
+        applyEq(S, SL, NAT, 'regex-eq-der-concat) or-else
+        applyEq(S, SL, NAT, 'regex-eq-der-choice) or-else
+        applyEq(S, SL, NAT, 'regex-eq-der-neg) or-else
+        applyEq(S, SL, NAT, 'regex-eq-ewp-bot) or-else
+        applyEq(S, SL, NAT, 'regex-eq-ewp-epsilon) or-else
+        applyEq(S, SL, NAT, 'regex-eq-ewp-a) or-else
+        applyEq(S, SL, NAT, 'regex-eq-ewp-b) or-else
+        applyEq(S, SL, NAT, 'regex-eq-ewp-concat) or-else
+        applyEq(S, SL, NAT, 'regex-eq-ewp-and) or-else
+        applyEq(S, SL, NAT, 'regex-eq-ewp-choice) or-else
+        applyEq(S, SL, NAT, 'regex-eq-ewp-kleene) or-else
+        applyEq(S, SL, NAT, 'regex-eq-ewp-not-bot) or-else
+        applyEq(S, SL, NAT, 'regex-eq-ewp-not-eps) or-else
+        applyEq(S, SL, NAT, 'regex-eq-ewp-not-a) or-else
+        applyEq(S, SL, NAT, 'regex-eq-ewp-not-b) or-else
+        applyEq(S, SL, NAT, 'regex-eq-ewp-not-concat) or-else
+        applyEq(S, SL, NAT, 'regex-eq-ewp-not-and) or-else
+        applyEq(S, SL, NAT, 'regex-eq-ewp-not-choice) or-else
+        applyEq(S, SL, NAT, 'regex-eq-ewp-not-kleene) or-else
+        applyEq(S, SL, NAT, 'regex-eq-ewp-not-not) or-else
 
 
-        applyEq(S, SL, NAT, 'eq-or-choice-abs) or-else
-        applyEq(S, SL, NAT, 'eq-or-choice-unit) or-else
-        applyEq(S, SL, NAT, 'eq-or-choice-idem) or-else
-        applyEq(S, SL, NAT, 'eq-or-choice-assoc) or-else
-        applyEq(S, SL, NAT, 'eq-or-choice-comm-node) or-else
-        applyEq(S, SL, NAT, 'eq-or-choice-comm-leaf) or-else
-        applyEq(S, SL, NAT, 'eq-and-choice-abs) or-else
-        applyEq(S, SL, NAT, 'eq-and-choice-unit) or-else
-        applyEq(S, SL, NAT, 'eq-and-choice-idem) or-else
-        applyEq(S, SL, NAT, 'eq-and-choice-assoc) or-else
-        applyEq(S, SL, NAT, 'eq-and-choice-comm-node) or-else
-        applyEq(S, SL, NAT, 'eq-and-choice-comm-leaf) or-else
+        applyEq(S, SL, NAT, 'regex-eq-or-choice-abs) or-else
+        applyEq(S, SL, NAT, 'regex-eq-or-choice-unit) or-else
+        applyEq(S, SL, NAT, 'regex-eq-or-choice-idem) or-else
+        applyEq(S, SL, NAT, 'regex-eq-or-choice-assoc) or-else
+        applyEq(S, SL, NAT, 'regex-eq-or-choice-comm-node) or-else
+        applyEq(S, SL, NAT, 'regex-eq-or-choice-comm-leaf) or-else
+        applyEq(S, SL, NAT, 'regex-eq-and-choice-abs) or-else
+        applyEq(S, SL, NAT, 'regex-eq-and-choice-unit) or-else
+        applyEq(S, SL, NAT, 'regex-eq-and-choice-idem) or-else
+        applyEq(S, SL, NAT, 'regex-eq-and-choice-assoc) or-else
+        applyEq(S, SL, NAT, 'regex-eq-and-choice-comm-node) or-else
+        applyEq(S, SL, NAT, 'regex-eq-and-choice-comm-leaf) or-else
 
-        applyEq(S, SL, NAT, 'eq-bot-concat-l) or-else
-        applyEq(S, SL, NAT, 'eq-bot-concat-r) or-else
-        applyEq(S, SL, NAT, 'eq-eps-concat-l) or-else
-        applyEq(S, SL, NAT, 'eq-eps-concat-r) or-else
-        applyEq(S, SL, NAT, 'eq-double-neg) or-else
-        applyEq(S, SL, NAT, 'eq-double-kleene) or-else
-        applyEq(S, SL, NAT, 'eq-eps-kleene) or-else
-        applyEq(S, SL, NAT, 'eq-bot-kleene)
+        applyEq(S, SL, NAT, 'regex-eq-bot-concat-l) or-else
+        applyEq(S, SL, NAT, 'regex-eq-bot-concat-r) or-else
+        applyEq(S, SL, NAT, 'regex-eq-eps-concat-l) or-else
+        applyEq(S, SL, NAT, 'regex-eq-eps-concat-r) or-else
+        applyEq(S, SL, NAT, 'regex-eq-double-neg) or-else
+        applyEq(S, SL, NAT, 'regex-eq-double-kleene) or-else
+        applyEq(S, SL, NAT, 'regex-eq-eps-kleene) or-else
+        applyEq(S, SL, NAT, 'regex-eq-bot-kleene)
         .
 
     --- The strat attribute is needed to get decent preformance.
