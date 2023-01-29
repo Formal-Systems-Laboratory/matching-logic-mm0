@@ -126,16 +126,15 @@ do {
 
   (def (propag_s_subst phi X ctx) @ letrec (
     [(propag_s_subst phi X ctx) @ match ctx
-      [('sVar X) 'sSubstitution_in_same_sVar]
       ['bot      'sSubstitution_triv]
+      ['top      'sSubstitution_triv]
       [('sym S)  'sSubstitution_triv]
       [('eVar x) 'sSubstitution_triv]
-      [('sVar Y) 'sSubstitution_triv]
+      [('sVar Y) (if (== X Y) 'sSubstitution_in_same_sVar 'sSubstitution_triv)]
       [('imp phi1 phi2) '(_sSubst_imp ,(propag_s_subst phi X phi1) ,(propag_s_subst phi X phi2))]
       [('app phi1 phi2) '(_sSubst_app ,(propag_s_subst phi X phi1) ,(propag_s_subst phi X phi2))]
       -- [('exists y psi)  '(norm_trans sSubstitution_in_exists (norm_exists ,(propag_s_subst phi X psi)))]
       [('mu Y psi)      (if (== X Y) 'sSubstitution_in_same_mu '(_sSubst_mu ,(propag_s_subst phi X psi)))]
-     -- [('mu Y psi)      '(norm_trans sSubstitution_in_mu (norm_mu ,(propag_s_subst phi X psi)))]
       [('not psi)       '(_sSubst_not ,(propag_s_subst phi X psi))]
       [('or phi1 phi2)  '(_sSubst_or ,(propag_s_subst phi X phi1) ,(propag_s_subst phi X phi2))]
       [('and phi1 phi2)  '(_sSubst_and ,(propag_s_subst phi X phi1) ,(propag_s_subst phi X phi2))]
@@ -145,7 +144,7 @@ do {
       -- [('e[ phi2 / y] psi) '()]
       -- [('s[ phi2 / X] psi) '()]
       -- [('app[ phi2 / box] psi) '()]
-      -- defs
+      -- equiv forall
     ]
     )
    (propag_s_subst phi X ctx)
