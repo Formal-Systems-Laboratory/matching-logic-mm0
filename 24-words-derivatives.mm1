@@ -47,3 +47,14 @@ theorem main_goal_interior {X: SVar}
 theorem apply_equiv (eq: $phi <-> psi$) (cont: $rho -> psi$): $rho -> phi$
   = '(syl (bi2i eq) cont);
 
+theorem _sSubst_concat {X: SVar} (phi psi1 psi2 rho1 rho2: Pattern X)
+  (h1: $ Norm (s[ phi / X ] psi1) rho1 $)
+  (h2: $ Norm (s[ phi / X ] psi2) rho2 $):
+  $ Norm (s[ phi / X ] (psi1 . psi2)) (rho1 . rho2) $ =
+  '(_sSubst_app (_sSubst_app sSubstitution_triv h1) h2);
+
+
+
+theorem example_10_concat {X: SVar} (phi: Pattern):
+  $ Norm (s[ phi / X ] (concat bot (sVar X))) (concat bot phi) $ =
+  (propag_s_subst 'phi 'X $ (concat bot (sVar X)) $);
