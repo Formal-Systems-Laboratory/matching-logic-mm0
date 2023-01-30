@@ -118,8 +118,8 @@ theorem regex_eq_der_diff_a_wrt_a:
 theorem regex_eq_der_diff_a_wrt_b:
   $ (derivative b a) <-> bot $;
 
-theorem regex_eq_der_kleene_wrt_a: $ (kleene X (derivative a Alpha)) <-> ((derivative a Alpha) . (kleene X Alpha)) $;
-theorem regex_eq_der_kleene_wrt_b: $ (kleene X (derivative b Alpha)) <-> ((derivative b Alpha) . (kleene X Alpha)) $;
+theorem regex_eq_der_kleene_wrt_a: $ (derivative a (kleene X Alpha)) <-> ((derivative a Alpha) . (kleene X Alpha)) $;
+theorem regex_eq_der_kleene_wrt_b: $ (derivative b (kleene X Alpha)) <-> ((derivative b Alpha) . (kleene X Alpha)) $;
 theorem regex_eq_der_concat_wrt_a: $ (derivative a (Alpha . Beta)) <-> ((derivative a Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative a Beta)) $;
 theorem regex_eq_der_concat_wrt_b: $ (derivative b (Alpha . Beta)) <-> ((derivative b Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative b Beta)) $;
 theorem regex_eq_der_choice_wrt_a: $ (derivative a (Alpha \/ Beta)) <-> (derivative a Alpha) \/ (derivative a Beta) $;
