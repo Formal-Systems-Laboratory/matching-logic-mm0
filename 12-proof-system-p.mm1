@@ -229,6 +229,55 @@ theorem lemma_14 {box: SVar} (ctx: Pattern box) (psi phi1 phi2: Pattern)
     (imim2 @ norm (norm_imp_l @ norm_trans appCtxNested @ norm_ctxApp_pt norm_refl defNorm) (! lemma_56 box2))
   );
 
+-- Equality reasoning
+
+theorem eq_to_intro:
+  $ (phi1 == phi2) -> (phi1 -> phi2) $ =
+  '(syl anl corollary_57_floor);
+
+theorem eq_to_appCtx {box: SVar} (ctx: Pattern box) (phi1 phi2 psi1 psi2: Pattern)
+  (h: $ (phi1 == phi2) -> (psi1 -> psi2) $):
+  $ (phi1 == phi2) -> (app[ psi1 / box ] ctx) -> app[ psi2 / box ] ctx $ =
+  '(lemma_14 h);
+
 theorem eq_to_framing {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
   $ (phi1 == phi2) -> ((app[ phi1 / box ] ctx) -> app[ phi2 / box ] ctx) $ =
-  '(lemma_14 @ syl anl corollary_57_floor);
+  '(eq_to_appCtx eq_to_intro);
+
+theorem eq_to_def
+  (h: $ (phi1 == phi2) -> (psi1 -> psi2) $):
+  $ (phi1 == phi2) -> (|^ psi1 ^| -> |^ psi2 ^|) $ =
+  '(norm (norm_imp_r @ norm_imp defNorm defNorm) (! eq_to_appCtx box _ _ _ _ _ h));
+
+theorem eq_to_and
+  (h1: $ (phi1 == phi2) -> (psi1 -> psi2) $)
+  (h2: $ (phi1 == phi2) -> (rho1 -> rho2) $):
+  $ (phi1 == phi2) -> ((psi1 /\ rho1) -> (psi2 /\ rho2)) $ =
+  '(animd h1 h2);
+theorem eq_to_and_l
+  (h: $ (phi1 == phi2) -> (psi1 -> psi2) $):
+  $ (phi1 == phi2) -> ((psi1 /\ rho) -> (psi2 /\ rho)) $ =
+  '(anim1d h);
+theorem eq_to_and_r
+  (h: $ (phi1 == phi2) -> (psi1 -> psi2) $):
+  $ (phi1 == phi2) -> ((rho /\ psi1) -> (rho /\ psi2)) $ =
+  '(anim2d h);
+
+theorem eq_to_imp
+  (h1: $ (phi1 == phi2) -> (psi2 -> psi1) $)
+  (h2: $ (phi1 == phi2) -> (rho1 -> rho2) $):
+  $ (phi1 == phi2) -> ((psi1 -> rho1) -> (psi2 -> rho2)) $ =
+  '(imimd h1 h2);
+theorem eq_to_imp_l
+  (h: $ (phi1 == phi2) -> (psi2 -> psi1) $):
+  $ (phi1 == phi2) -> ((psi1 -> rho) -> (psi2 -> rho)) $ =
+  '(imim1d h);
+theorem eq_to_imp_r
+  (h: $ (phi1 == phi2) -> (psi1 -> psi2) $):
+  $ (phi1 == phi2) -> ((rho -> psi1) -> (rho -> psi2)) $ =
+  '(imim2d h);
+
+theorem eq_to_not
+  (h: $ (phi1 == phi2) -> (psi2 -> psi1) $):
+  $ (phi1 == phi2) -> ((~ psi1) -> (~ psi2)) $ =
+  '(eq_to_imp_l h);
