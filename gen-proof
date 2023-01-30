@@ -5,4 +5,5 @@ set -euo pipefail
 maude -no-wrap regexp-proof-gen/regexp.maude </dev/null \
      | sed -e 's/-/_/g' \
            -e "s/cong_of_equiv '/cong_of_equiv_/g"  \
-           -e "s/'eq_/eq_/g"
+           -e "s/'regex_/regex_/g" \
+           -e "s/apply_subst/,propag_s_subst_auto/g"
