@@ -42,6 +42,9 @@ theorem cong_of_equiv_concat_r (h: $phi1 <-> phi2$): $(psi . phi1) <-> (psi . ph
 --- Reasoning about regular expressions
 ---------------------------------------
 
+theorem main_goal_leaf :
+    $rho -> rho$ = 'id;
+
 theorem main_goal_interior {X: SVar}
     (he: $epsilon -> rho$)
     (ha: $s[ rho / X ] phi_a -> (derivative a rho)$)
