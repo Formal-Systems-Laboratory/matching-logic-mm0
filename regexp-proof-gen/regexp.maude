@@ -378,12 +378,17 @@ mod PROOF-GEN is
     subsort Qid < MetaMathProof .
     vars MMP : MetaMathProof .
 
-    op qid-to-cong-thm : Qid -> Qid .
-    eq qid-to-cong-thm('_->_) = 'imp .
-    eq qid-to-cong-thm('_\/_) = 'or .
-    eq qid-to-cong-thm('_/\_) = 'and .
-    eq qid-to-cong-thm('_._) = 'concat .
-    eq qid-to-cong-thm('~_) = 'not .
+    op cong-thm : Qid -> Qid .
+    eq cong-thm('_->_) = 'imp .
+    eq cong-thm('_\/_) = 'or .
+    eq cong-thm('_/\_) = 'and .
+    eq cong-thm('_._) = 'concat .
+    eq cong-thm('~_) = 'not .
+
+    op eq-thm : Substitution Qid -> Qid .
+    eq eq-thm('A:Letter <- Q ; Subst , R) = qid(string(R) + "-wrt-" + string(getName(Q))) .
+    eq eq-thm(          Subst , R) = R [owise] .
+
 
     op apply-subst _ : MetaMathProof -> MetaMathProof [ctor] .
     op cong-of-equiv _ _ : Qid MetaMathProof -> MetaMathProof [ctor] .
@@ -396,11 +401,11 @@ mod PROOF-GEN is
     eq lift-equality-to-context ('<_>[ Ctx ]) MMP = lift-equality-to-context Ctx MMP .
 
     eq lift-equality-to-context (Q [ Ctx ]) MMP
-     = cong-of-equiv qid-to-cong-thm(Q) (lift-equality-to-context Ctx MMP) .
+     = cong-of-equiv cong-thm(Q) (lift-equality-to-context Ctx MMP) .
     eq lift-equality-to-context (Q [ Ctx , T ] ) MMP
-     = cong-of-equiv qid-to-cong-thm(Q) (lift-equality-to-context Ctx MMP) .
+     = cong-of-equiv qid(string(cong-thm(Q)) + "-l") (lift-equality-to-context Ctx MMP) .
     eq lift-equality-to-context (Q [ T , Ctx ] ) MMP
-     = cong-of-equiv qid-to-cong-thm(Q) (lift-equality-to-context Ctx MMP) .
+     = cong-of-equiv qid(string(cong-thm(Q)) + "-r") (lift-equality-to-context Ctx MMP) .
 
     op apply-equiv _ _ : MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
     op main-goal-leaf : -> MetaMathProof [ctor] .
@@ -409,8 +414,8 @@ mod PROOF-GEN is
     op proof-main-goal : Node -> MetaMathProof .
     eq proof-main-goal(node(< id >, none)) = id .
     eq proof-main-goal(backlink(< Alpha >)) = main-goal-leaf .
-    eq proof-main-goal(node(check-ewp[ Alpha ], eqEdge(applResult(R, Ctx, Subst), N))) = apply-equiv (lift-equality-to-context Ctx R) proof-main-goal(N) .
-    eq proof-main-goal(node(< Alpha >,          eqEdge(applResult(R, Ctx, Subst), N))) = apply-equiv (lift-equality-to-context Ctx R) proof-main-goal(N) .
+    eq proof-main-goal(node(check-ewp[ Alpha ], eqEdge(applResult(R, Ctx, Subst), N))) = apply-equiv (lift-equality-to-context Ctx eq-thm(Subst, R)) proof-main-goal(N) .
+    eq proof-main-goal(node(< Alpha >,          eqEdge(applResult(R, Ctx, Subst), N))) = apply-equiv (lift-equality-to-context Ctx eq-thm(Subst, R)) proof-main-goal(N) .
     eq proof-main-goal(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
                                        rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
                                        rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
