@@ -7,7 +7,7 @@ def fp_root : Pattern CCCCaDxCaDxDpCCaDxCaDxDDpCCCaDxCaDxDpCCaDxCaDxDDD nCzD
     . sVar (nCzD)))))))))$;
 
 def label_root : Pattern
-  =  $(kleene X (a . a)) -> (((kleene X a) . a) \/ epsilon)$;
+  =  $( ~ (kleene X (a . a)) ) \/ (((kleene X a) . a) \/ epsilon)$;
 
 theorem shortcut1:
     $((derivative a a . a \/ (epsilon /\ a) . derivative a a) . kleene X (a . a) -> derivative a (kleene X a) . a \/ (epsilon /\ kleene X a) . bot \/ bot)
