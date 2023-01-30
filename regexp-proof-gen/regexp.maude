@@ -333,7 +333,7 @@ mod PROOF-GEN is
     eq ruleLabelToLetter('der-b) = b .
 
     op proofHint : Pattern -> Node .
-    eq proofHint(Alpha) = mkProofHint(< Alpha >, empty, 3) .
+    eq proofHint(Alpha) = mkProofHint(< Alpha >, empty, 6) .
 
     *** Mapping EREs to its Matching Logic signature *************************
     --- We may consider desugaring the constructors via the notation defined
