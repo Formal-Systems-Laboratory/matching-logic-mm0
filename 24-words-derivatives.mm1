@@ -1,3 +1,9 @@
+import "00-matching-logic.mm0";
+import "01-propositional.mm1";
+import "02-ml-normalization.mm1";
+import "12-proof-system-p.mm1";
+import "13-fixedpoints.mm1";
+import "20-theory-words.mm1";
 import "22-words-salomaa.mm1";
 import "23-words-fixedpoints.mm1";
 
@@ -55,11 +61,68 @@ theorem _sSubst_concat {X: SVar} (phi psi1 psi2 rho1 rho2: Pattern X)
   $ Norm (s[ phi / X ] (psi1 . psi2)) (rho1 . rho2) $ =
   '(_sSubst_app (_sSubst_app sSubstitution_triv h1) h2);
 
+theorem _eSubst_concat {x: EVar} (phi psi1 psi2 rho1 rho2: Pattern x)
+  (h1: $ Norm (e[ phi / x ] psi1) rho1 $)
+  (h2: $ Norm (e[ phi / x ] psi2) rho2 $):
+  $ Norm (e[ phi / x ] (psi1 . psi2)) (rho1 . rho2) $ =
+  '(_eSubst_app (_eSubst_app eSubstitution_triv h1) h2);
+
 
 theorem example_10_concat {X: SVar} (phi: Pattern):
   $ Norm (s[ phi / X ] (concat bot (sVar X))) (concat bot phi) $ =
-  (propag_s_subst 'phi 'X $ (concat bot (sVar X)) $);
+  propag_s_subst_auto;
 
+
+-- theorem regex_eq_der_bot_lemma_1 {x y v w: EVar}:
+--   $ Norm (e[ eVar y / v ] exists x (eVar x == eVar w . eVar v )) (exists x (eVar x == eVar w . eVar y )) $ =
+--   propag_e_subst_auto;
+-- 
+-- 
+-- theorem regex_eq_der_bot_lemma_2 {x y v w: EVar}:
+--   $ (forall v (exists x (eVar x == eVar w . eVar v ))) -> exists x (eVar x == eVar w . eVar y ) $ =
+--   '(norm (norm_imp_r regex_eq_der_bot_lemma_1) var_subst);
+-- 
+-- (norm (,propag_e_subst_auto) @ var_subst @ norm (,propag_e_subst_auto) @ var_subst functional_concat)
+-- norm (norm_def appCtxVar) @
+-- theorem regex_eq_der_bot
+--   (h: $ exists x (eVar x == A) $):
+--   $ (derivative A bot) -> bot $
+--   = '(exists_generalization_strict @ con3 anr @ notnot1 @ framingDef notnot1 @
+--     exists_generalization_strict (com12
+--       (eq_to_def @ norm (norm_imp_r @ norm_imp_r @ norm_sym @ norm_trans appCtxR @ norm_app norm_refl appCtxVar) @ eq_to_app_l @ eq_to_app_r eq_to_intro)
+--       (exists_generalization_strict (com12 (eq_to_def eq_to_intro) definedness) @
+--          norm _ @ var_subst @ norm _ @ var_subst functional_concat)
+--         ) h
+--   );
+
+theorem regex_eq_der_bot_wrt_a:
+  $ (derivative a bot) -> bot $;
+theorem regex_eq_der_bot_wrt_b:
+  $ (derivative b bot) -> bot $;
+
+theorem regex_eq_der_epsilon_wrt_a:
+  $ (derivative a epsilon) -> bot $;
+theorem regex_eq_der_epsilon_wrt_b:
+  $ (derivative b epsilon) -> bot $;
+
+theorem regex_eq_der_same_a_wrt_a:
+  $ (derivative a a) -> epsilon $;
+theorem regex_eq_der_same_a_wrt_b:
+  $ (derivative b b) -> epsilon $;
+
+theorem regex_eq_der_diff_a_wrt_a:
+  $ (derivative a b) -> bot $;
+theorem regex_eq_der_diff_a_wrt_b:
+  $ (derivative b a) -> bot $;
+
+theorem regex_eq_der_kleene_wrt_a: $ (kleene X (derivative a Alpha)) -> ((derivative a Alpha) . (kleene X Alpha)) $;
+theorem regex_eq_der_kleene_wrt_b: $ (kleene X (derivative b Alpha)) -> ((derivative b Alpha) . (kleene X Alpha)) $;
+theorem regex_eq_der_concat_wrt_a: $ (derivative a (Alpha . Beta)) -> ((derivative a Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative a Beta)) $;
+theorem regex_eq_der_concat_wrt_b: $ (derivative b (Alpha . Beta)) -> ((derivative b Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative b Beta)) $;
+theorem regex_eq_der_choice_wrt_a: $ (derivative a (Alpha \/ Beta)) -> (derivative a Alpha) \/ (derivative a Beta) $;
+theorem regex_eq_der_choice_wrt_b: $ (derivative b (Alpha \/ Beta)) -> (derivative b Alpha) \/ (derivative b Beta) $;
+theorem regex_eq_der_neg_wrt_a: $ (derivative a (~ Alpha)) -> ~ (derivative a Alpha) $;
+theorem regex_eq_der_neg_wrt_b: $ (derivative b (~ Alpha)) -> ~ (derivative b Alpha) $;
 
 theorem regex_eq_ewp_bot:
   $ (epsilon /\ bot) -> bot $ = '(notnot1 idd);
@@ -83,3 +146,57 @@ theorem regex_eq_ewp_a:
 
 theorem regex_eq_ewp_b:
   $ epsilon /\ b -> bot $ = '(regex_eq_ewp_ab orr);
+
+theorem regex_eq_ewp_concat:
+  $ epsilon /\ (Alpha . Beta) -> (epsilon /\ Alpha) /\ (epsilon /\ Beta) $; -- TODO
+
+theorem regex_eq_ewp_and:
+  $ epsilon /\ (Alpha /\ Beta) -> (epsilon /\ Alpha) /\ (epsilon /\ Beta) $
+  = '(anl anandi);
+
+theorem regex_eq_ewp_choice:
+  $ epsilon /\ (Alpha \/ Beta) -> (epsilon /\ Alpha) \/ (epsilon /\ Beta) $
+  = '(anl andi);
+
+theorem regex_eq_ewp_kleene:
+  $ epsilon /\ (kleene X Alpha) -> epsilon $
+  = '(anl);
+
+theorem regex_eq_ewp_not_bot: $ (epsilon /\ ~bot) -> epsilon $;
+theorem regex_eq_ewp_not_eps: $ (epsilon /\ ~epsilon) -> bot $;
+theorem regex_eq_ewp_not_a: $ (epsilon /\ ~a) -> epsilon $;
+theorem regex_eq_ewp_not_b: $ (epsilon /\ ~b) -> epsilon $;
+theorem regex_eq_ewp_not_concat: $ (epsilon /\ ~(Alpha . Beta)) -> ((epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta)) $;
+theorem regex_eq_ewp_not_and: $ (epsilon /\ ~(Alpha /\ Beta)) -> ((epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta)) $;
+theorem regex_eq_ewp_not_choice: $ (epsilon /\ ~(Alpha \/ Beta)) -> ((epsilon /\ ~ Alpha) /\ (epsilon /\ ~ Beta)) $;
+theorem regex_eq_ewp_not_kleene: $ (epsilon /\ ~(kleene X Alpha)) -> bot $;
+theorem regex_eq_ewp_not_not: $ (epsilon /\ ~(~ Alpha)) -> (epsilon /\ Alpha) $;
+
+--- Identity and idemoptency of \/
+theorem regex_eq_or_choice_abs: $ top \/ Alpha -> top $;
+theorem regex_eq_or_choice_unit: $ bot \/ Alpha -> Alpha $;
+theorem regex_eq_or_choice_idem: $ Alpha \/ Alpha -> Alpha $;
+theorem regex_eq_or_choice_assoc: $ (Alpha \/ Beta) \/ Gamma -> Alpha \/ (Beta \/ Gamma) $;
+theorem regex_eq_or_choice_comm_node: $ Alpha \/ (Beta \/ Gamma) -> Beta \/ (Alpha \/ Gamma) $;
+theorem regex_eq_or_choice_comm_leaf: $ Alpha \/ Beta -> Beta \/ Alpha $;
+
+--- Identity and idemoptency of /\
+theorem regex_eq_and_choice_abs: $ bot /\ Alpha -> bot $;
+theorem regex_eq_and_choice_unit: $ top /\ Alpha -> Alpha $;
+theorem regex_eq_and_choice_idem: $ Alpha /\ Alpha -> Alpha $;
+theorem regex_eq_and_choice_assoc: $ (Alpha /\ Beta) /\ Gamma -> Alpha /\ (Beta /\ Gamma) $;
+theorem regex_eq_and_choice_comm_node: $ Alpha /\ (Beta /\ Gamma) -> Beta /\ (Alpha /\ Gamma) $;
+theorem regex_eq_and_choice_comm_leaf: $ Alpha /\ Beta -> Beta /\ Alpha $;
+
+---- Optional simplifications
+theorem regex_eq_bot_concat_l: $ bot . Alpha -> bot $;
+theorem regex_eq_bot_concat_r: $ Alpha . bot -> bot $;
+
+theorem regex_eq_eps_concat_l: $ epsilon . Alpha -> Alpha $;
+theorem regex_eq_eps_concat_r: $ Alpha . epsilon -> Alpha $;
+
+theorem regex_eq_double_neg: $ ~ (~ Alpha) -> Alpha $;
+theorem regex_eq_double_kleene: $ (kleene X (kleene Y Alpha)) -> Alpha $;
+
+theorem regex_eq_eps_kleene: $ (kleene X epsilon) -> epsilon $;
+theorem regex_eq_bot_kleene: $ (kleene X bot) -> epsilon $;

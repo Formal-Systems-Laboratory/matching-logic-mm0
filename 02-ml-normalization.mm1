@@ -124,10 +124,35 @@ do {
       -- [('SVar X)  (error "application context is invalid")]
       -- [('imp P1 P2) (error "application context is invalid")]
 
-  (def (propag_s_subst phi X ctx) @ letrec (
+  (def (propag_e_subst_auto refine g) @ match g @ $ Norm (e[ ,phi / ,x_o ] ,ctx_o) ,res $ @ letrec (
+    [(propag_e_subst x ctx) @ match ctx
+      [('bot)      'eSubstitution_triv]
+      [('top)      'eSubstitution_triv]
+      [('sym S)  'eSubstitution_triv]
+      [('sVar X) 'eSubstitution_triv]
+      [('eVar y) (if (== x y) 'eSubstitution_in_same_eVar 'eSubstitution_triv)]
+      [('imp phi1 phi2) '(_eSubst_imp ,(propag_e_subst x phi1) ,(propag_e_subst x phi2))]
+      [('app phi1 phi2) '(_eSubst_app ,(propag_e_subst x phi1) ,(propag_e_subst x phi2))]
+      [('exists y psi)  (if (== x y) 'eSubstitution_in_same_exists '(norm_trans eSubstitution_in_exists (norm_exists ,(propag_e_subst x psi))))]
+      [('forall y psi)  (propag_e_subst x $ not (exists y (not psi)) $)]
+      [('mu Y psi)      '(_eSubst_mu ,(propag_e_subst X psi))]
+      [('not psi)       '(_eSubst_not ,(propag_e_subst x psi))]
+      [('or phi1 phi2)  '(_eSubst_or ,(propag_e_subst x phi1) ,(propag_e_subst x phi2))]
+      [('and phi1 phi2)  '(_eSubst_and ,(propag_e_subst x phi1) ,(propag_e_subst x phi2))]
+      [('concat psi1 psi2) '(_eSubst_concat ,(propag_e_subst x psi1) ,(propag_e_subst x psi2))]
+      [('_eq psi1 psi2) '(propag_e_subst x $ not (_ceil (not (and (imp psi1 psi2) (imp psi2 psi1)))) $)]
+      [_               '(norm_refl)]
+      -- [('e[ phi2 / x] psi) '(norm_trans sSubstitution_in_eSubst_same_var (norm_trans (norm_evSubst_pt norm_id ,(propag_e_subst phi x phi2)) ,(propag_e_subst _ x psi)))]
+      -- [('e[ phi2 / y] psi) '()]
+      -- [('s[ phi2 / x] psi) '()]
+      -- [('app[ phi2 / box] psi) '()]
+      -- equiv forall
+    ]
+    ) @ refine g (propag_e_subst x_o ctx_o))
+  (def (propag_s_subst_auto refine g) @ match g @ $ Norm (s[ ,phi_o / ,X_o ] ,ctx_o) ,res $ @ letrec (
     [(propag_s_subst phi X ctx) @ match ctx
-      ['bot      'sSubstitution_triv]
-      ['top      'sSubstitution_triv]
+      [('bot)      'sSubstitution_triv]
+      [('top)      'sSubstitution_triv]
       [('sym S)  'sSubstitution_triv]
       [('eVar x) 'sSubstitution_triv]
       [('sVar Y) (if (== X Y) 'sSubstitution_in_same_sVar 'sSubstitution_triv)]
@@ -146,9 +171,7 @@ do {
       -- [('app[ phi2 / box] psi) '()]
       -- equiv forall
     ]
-    )
-   (propag_s_subst phi X ctx)
-  )
+    ) @ refine g (propag_s_subst phi_o X_o ctx_o))
 
   (def dbg @ match-fn* [(x) (print x) x]
     [(x y) (display @ string-append (->string x) ": " (->string y)) y])
@@ -189,23 +212,62 @@ theorem _sSubst_and {X: SVar} (phi phi1 phi2 psi1 psi2: Pattern X)
   '(_sSubst_not @ _sSubst_imp h1 (_sSubst_not h2));
 
 
+theorem _eSubst_app {x: EVar} (phi phi1 phi2 psi1 psi2: Pattern x)
+  (h1: $ Norm (e[ phi / x ] phi1) psi1 $)
+  (h2: $ Norm (e[ phi / x ] phi2) psi2 $):
+  $ Norm (e[ phi / x ] (app phi1 phi2)) (app psi1 psi2) $ =
+  '(norm_trans eSubstitution_in_app (norm_app h1 h2));
+
+theorem _eSubst_imp {x: EVar} (phi phi1 phi2 psi1 psi2: Pattern x)
+  (h1: $ Norm (e[ phi / x ] phi1) psi1 $)
+  (h2: $ Norm (e[ phi / x ] phi2) psi2 $):
+  $ Norm (e[ phi / x ] (phi1 -> phi2)) (psi1 -> psi2) $ =
+  '(norm_trans eSubstitution_in_imp (norm_imp h1 h2));
+
+theorem _eSubst_mu {x: EVar} {X: SVar} (psi rho: Pattern x X) (phi: Pattern x)
+  (h : $ Norm (e[ phi / x ] psi) rho $):
+  $ Norm (e[ phi / x ] (mu X psi)) (mu X rho) $
+  = '(norm_trans eSubstitution_in_mu (norm_mu h));
+
+theorem _eSubst_not {x: EVar} (phi psi rho: Pattern x)
+  (h: $ Norm (e[ phi / x ] psi) rho $):
+  $ Norm (e[ phi / x ] (~ psi)) (~ rho) $ =
+  '(_eSubst_imp h eSubstitution_triv);
+
+theorem _eSubst_or {x: EVar} (phi phi1 phi2 psi1 psi2: Pattern x)
+  (h1: $ Norm (e[ phi / x ] phi1) psi1 $)
+  (h2: $ Norm (e[ phi / x ] phi2) psi2 $):
+  $ Norm (e[ phi / x ] (phi1 \/ phi2)) (psi1 \/ psi2) $ =
+  '(_eSubst_imp (_eSubst_not h1) h2);
+
+theorem _eSubst_and {x: EVar} (phi phi1 phi2 psi1 psi2: Pattern x)
+  (h1: $ Norm (e[ phi / x ] phi1) psi1 $)
+  (h2: $ Norm (e[ phi / x ] phi2) psi2 $):
+  $ Norm (e[ phi / x ] (phi1 /\ phi2)) (psi1 /\ psi2) $ =
+  '(_eSubst_not @ _eSubst_imp h1 (_eSubst_not h2));
+
+
+
 theorem example_1 {X: SVar} (phi: Pattern):
   $ Norm (s[ phi / X ] (sVar X)) phi $ =
-  (propag_s_subst 'phi 'X $ sVar X $);
+  propag_s_subst_auto;
+
+theorem example_1_e {x: EVar} (phi: Pattern):
+  $ Norm (e[ phi / x ] (eVar x)) phi $ =
+  propag_e_subst_auto;
 
 theorem example_2 {X: SVar} (phi: Pattern):
   $ Norm (s[ phi / X ] (app bot (sVar X))) (app bot phi) $ =
-  (propag_s_subst 'phi 'X $ (app bot (sVar X)) $);
+  propag_s_subst_auto;
 
 theorem example_3 {X: SVar} (phi psi: Pattern X):
   $ Norm (s[ phi / X ] (imp psi (sVar X))) (imp (s[ phi / X ] psi) phi) $ =
-  -- (propag_s_subst 'phi 'X $ (imp psi (sVar X)) $);
-  '(_sSubst_imp norm_refl sSubstitution_in_same_sVar);
+  propag_s_subst_auto;
 
 theorem example_4 {X Y: SVar} (phi: Pattern):
   $ Norm (s[ phi / X ] (mu Y (sVar X))) (mu Y phi) $ =
-  (propag_s_subst 'phi 'X $ (mu Y (sVar X)) $);
+  propag_s_subst_auto;
 
 theorem example_5 {Y: SVar} (phi: Pattern):
   $ Norm (s[ phi / Y ] (mu Y (sVar Y))) (mu Y (sVar Y)) $ =
-  (propag_s_subst 'phi 'Y $ (mu Y (sVar Y)) $);
+  propag_s_subst_auto;

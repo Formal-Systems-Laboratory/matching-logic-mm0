@@ -13,7 +13,9 @@ theorem defNorm {box: SVar} (phi: Pattern):
 theorem singletonDef {x: EVar} (phi: Pattern x):
   $ ~(|^ eVar x /\ phi ^| /\ |^ eVar x /\ ~phi ^|) $ =
   '(singleton_norm (! defNorm box1) (! defNorm box2));
-
+theorem norm_def (h: $ Norm phi psi $):
+  $ Norm (|^ phi ^|) (|^ psi ^|) $ =
+  '(norm_app norm_refl h);
 
 
 --- High level versions of axioms

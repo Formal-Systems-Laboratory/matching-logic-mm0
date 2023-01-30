@@ -277,7 +277,45 @@ theorem eq_to_imp_r
   $ (phi1 == phi2) -> ((rho -> psi1) -> (rho -> psi2)) $ =
   '(imim2d h);
 
+theorem eq_to_app_l
+  (h: $ (phi1 == phi2) -> (psi1 -> psi2) $):
+  $ (phi1 == phi2) -> ((app psi1 rho) -> (app psi2 rho)) $ =
+  '(norm
+    (norm_imp_r @ norm_imp (norm_trans appCtxL @ norm_app appCtxVar norm_refl) (norm_trans appCtxL @ norm_app appCtxVar norm_refl))
+    (! eq_to_appCtx box _ _ _ _ _ h));
+theorem eq_to_app_r
+  (h: $ (phi1 == phi2) -> (psi1 -> psi2) $):
+  $ (phi1 == phi2) -> ((app rho psi1) -> (app rho psi2)) $ =
+  '(norm
+    (norm_imp_r @ norm_imp (norm_trans appCtxR @ norm_app norm_refl appCtxVar) (norm_trans appCtxR @ norm_app norm_refl appCtxVar))
+    (! eq_to_appCtx box _ _ _ _ _ h));
+
 theorem eq_to_not
   (h: $ (phi1 == phi2) -> (psi2 -> psi1) $):
   $ (phi1 == phi2) -> ((~ psi1) -> (~ psi2)) $ =
   '(eq_to_imp_l h);
+
+theorem eq_to_eqiv
+  (h1: $ (phi1 == phi2) -> (psi1 <-> psi2) $)
+  (h2: $ (phi1 == phi2) -> (rho1 <-> rho2) $):
+  $ (phi1 == phi2) -> ((psi1 <-> rho1) -> (psi2 <-> rho2)) $ =
+  '(eq_to_and (eq_to_imp (bi2d h1) (bi1d h2)) (eq_to_imp (bi2d h2) (bi1d h1)));
+
+theorem eq_to_eq
+  (h1: $ (phi1 == phi2) -> (psi1 == psi2) $)
+  (h2: $ (phi1 == phi2) -> (rho1 == rho2) $):
+  $ (phi1 == phi2) -> ((psi1 == rho1) -> (psi2 == rho2)) $ =
+  '(eq_to_not @ eq_to_def @ eq_to_not @ eq_to_eqiv (syl corollary_57_floor h1) (syl corollary_57_floor h2));
+theorem eq_to_eq_l
+  (h: $ (phi1 == phi2) -> (psi1 == psi2) $):
+  $ (phi1 == phi2) -> ((psi1 == rho) -> (psi2 == rho)) $ =
+  '(eq_to_eq h (a1i eq_intro));
+theorem eq_to_eq_r
+  (h: $ (phi1 == phi2) -> (psi1 == psi2) $):
+  $ (phi1 == phi2) -> ((rho == psi1) -> (rho == psi2)) $ =
+  '(eq_to_eq (a1i eq_intro) h);
+
+-- theorem eq_to_eq_app_l
+--   (h: $ (phi1 == phi2) -> (psi1 == psi2) $):
+--   $ (phi1 == phi2) -> ((app psi1 rho) == (app psi2 rho)) $ =
+--   '(syl eqiv_to_eq @ ibid (eq_to_app_l @ syl eq_to_intro h) (eq_to_app_l @ syl eq_to_intro @ syl eq_sym h));
