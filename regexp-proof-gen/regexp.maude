@@ -351,8 +351,8 @@ mod PROOF-GEN is
     eq str(Alpha . Beta) = "C" + str(Alpha) + str(Beta) + "D" .
     eq str(Alpha \/ Beta) = "C" + str(Alpha) + "p" + str(Beta) + "D" .
     eq str(Alpha -> Beta) = "C" + str(Alpha) + "i" + str(Beta) + "D" .
-    eq str(Alpha *)      = "C" + str(Alpha) + "Dx" .
-    eq str(~ Alpha)      = "nC" + str(Alpha) + "D" .
+    eq str(Alpha *) = "C" + str(Alpha) + "Dx" .
+    eq str(~ Alpha) = "nC" + str(Alpha) + "D" .
 
     *** fp *******************************************************************
     --- Here, we generate the fixedpoint needed for our proof.
