@@ -366,6 +366,22 @@ mod PROOF-GEN is
          )    )
      = mu qid(str(Alpha)) (epsilon \/ ((a . fp(N_A)) \/ (b . fp(N_B)))) [owise] .
 
+
+    *** der-tree *************************************************************
+    --- Simplify proofHint into derivative tree (debugging only).
+
+    op der-tree : Node -> Node .
+    eq der-tree(backlink(< Alpha >)) = backlink(< Alpha >) .
+    eq der-tree(node(< Alpha >, eqEdge(EL, N))) = der-tree(N) .
+    eq der-tree(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
+                                rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
+                                rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
+         )    )
+     = node(< Alpha >, rlEdge(applResult('der-a,     [], none), der-tree(N_A)) ;
+                       rlEdge(applResult('der-b,     [], none), der-tree(N_B))
+           )    [owise] .
+
+
     *** top-implies-fp ************************************************************
 
     *** main-goal ************************************************************
