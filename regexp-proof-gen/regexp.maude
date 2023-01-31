@@ -300,7 +300,7 @@ mod PROOF-GEN is
 
     op applyRule : State StateList Nat Qid -> Edges .
    ceq applyRule(S, SL, NAT, R) = rlEdge( applResult(R, getContext(Result), getSubstitution(Result))
-                                        , mkProofHint(downTerm(getTerm(Result), < error >), (S, SL), NAT)
+                                        , mkProofHint(downTerm(getTerm(Result), < error >), SL, NAT)
                                         )
     if Result := metaXapply(myModule, upTerm(S), R, none, 0, unbounded, 0) .
     eq applyRule(S, SL, NAT, R) = none [owise] .
