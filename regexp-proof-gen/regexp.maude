@@ -348,9 +348,9 @@ mod PROOF-GEN is
     eq str(a) = "a" .
     eq str(b) = "b" .
     eq str(epsilon) = "e" .
-    eq str(Alpha . Beta) = "C" + str(Alpha) + str(Alpha) + "D" .
-    eq str(Alpha \/ Beta) = "C" + str(Alpha) + "p" + str(Alpha) + "D" .
-    eq str(Alpha -> Beta) = "C" + str(Alpha) + "i" + str(Alpha) + "D" .
+    eq str(Alpha . Beta) = "C" + str(Alpha) + str(Beta) + "D" .
+    eq str(Alpha \/ Beta) = "C" + str(Alpha) + "p" + str(Beta) + "D" .
+    eq str(Alpha -> Beta) = "C" + str(Alpha) + "i" + str(Beta) + "D" .
     eq str(Alpha *)      = "C" + str(Alpha) + "Dx" .
     eq str(~ Alpha)      = "nC" + str(Alpha) + "D" .
 
