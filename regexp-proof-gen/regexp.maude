@@ -390,7 +390,10 @@ mod PROOF-GEN is
     eq eq-thm(          Subst , R) = R [owise] .
 
 
-    op apply-subst _ : MetaMathProof -> MetaMathProof [ctor] .
+    op apply-subst _ _ : Pattern MetaMathProof -> MetaMathProof  .
+    eq apply-subst (mu Q Alpha) MMP = apply-subst Q Alpha MMP .
+    op apply-subst _ _  _ : Qid Pattern MetaMathProof -> MetaMathProof [ctor] .
+
     op cong-of-equiv _ _ : Qid MetaMathProof -> MetaMathProof [ctor] .
 
     op lift-equality-to-context _  _ : Context MetaMathProof -> MetaMathProof .
@@ -421,9 +424,11 @@ mod PROOF-GEN is
                                        rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
                       )    )
      = main-goal-interior
-            (apply-subst proof-main-goal(N_EWP)) 
-            (apply-subst proof-main-goal(N_A))
-            (apply-subst proof-main-goal(N_B)) .
+            (apply-subst fp(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ; rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ; rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B) )) proof-main-goal(N_EWP)) 
+            (apply-subst fp(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ; rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ; rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B) )) proof-main-goal(N_A))
+            (apply-subst fp(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ; rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ; rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B) )) proof-main-goal(N_B))
+     .
+
 endm
 
 --- search in ERE-THEOREMS : ((a . a)* --> ((a * . a) \/ epsilon)) =>* P:Pattern .
