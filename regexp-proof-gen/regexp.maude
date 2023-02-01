@@ -405,10 +405,9 @@ mod PROOF-GEN is
     eq eq-thm('A:Letter <- Q ; Subst , R) = qid(string(R) + "-wrt-" + string(getName(Q))) .
     eq eq-thm(          Subst , R) = R [owise] .
 
-
-    op apply-subst _ _ : Pattern MetaMathProof -> MetaMathProof  .
-    eq apply-subst (mu Q Alpha) MMP = apply-subst Q Alpha MMP .
-    op apply-subst _ _  _ : Qid Pattern MetaMathProof -> MetaMathProof [ctor] .
+    sort DollarMarker .
+    op $ : -> DollarMarker .
+    op apply-subst _ _ _ _ _ : Qid DollarMarker Pattern DollarMarker MetaMathProof -> MetaMathProof [ctor] .
 
     op cong-of-equiv _ _ : Qid MetaMathProof -> MetaMathProof [ctor] .
 
@@ -441,10 +440,8 @@ mod PROOF-GEN is
                       )    )
      = main-goal-interior
             proof-main-goal(N_EWP)
-            (apply-subst fp(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ; rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ; rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B) ))
-                         proof-main-goal(N_A))
-            (apply-subst fp(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ; rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ; rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B) ))
-                         proof-main-goal(N_B))
+            (apply-subst qid(str(Alpha)) $ fp(N_A) $ proof-main-goal(N_A))
+            (apply-subst qid(str(Alpha)) $ fp(N_B) $ proof-main-goal(N_B))
      .
 
 endm
@@ -456,5 +453,10 @@ set print with parentheses on .
 --- search  (epsilon -> (epsilon /\ (( ~ ((a . a) *)) \/ (((a *) . a) \/ epsilon)))) =>! P:Pattern .
 --- show search graph .
 --- reduce proofHint((a . a)* --> ((a * . a) \/ epsilon)) .
-reduce fp(proofHint((a . a)* --> ((a * . a) \/ epsilon))) .
-reduce proof-main-goal(proofHint((a . a)* --> ((a * . a) \/ epsilon))) .
+--- reduce fp(proofHint((a . a)* --> ((a * . a) \/ epsilon))) .
+--- reduce proof-main-goal(proofHint((a . a)* --> ((a * . a) \/ epsilon))) .
+
+reduce proofHint(~ bot) .
+reduce der-tree(proofHint(~ bot)) .
+reduce fp(proofHint(~ bot)) .
+reduce proof-main-goal(proofHint(~ bot)) .

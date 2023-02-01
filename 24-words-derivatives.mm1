@@ -45,8 +45,8 @@ theorem cong_of_equiv_concat_r (h: $phi1 <-> phi2$): $(psi . phi1) <-> (psi . ph
 theorem main_goal_leaf :
     $rho -> rho$ = 'id;
 
-theorem main_goal_interior {X: SVar}
-    (he: $epsilon -> rho$)
+theorem main_goal_interior {X: SVar} (phi_a phi_b: Pattern X)
+    (he: $epsilon -> epsilon /\ rho$)
     (ha: $s[ rho / X ] phi_a -> (derivative a rho)$)
     (hb: $s[ rho / X ] phi_b -> (derivative b rho)$):
     ----------------------------------------------
@@ -204,3 +204,20 @@ theorem regex_eq_double_kleene: $ (kleene X (kleene Y Alpha)) <-> Alpha $;
 
 theorem regex_eq_eps_kleene: $ (kleene X epsilon) <-> epsilon $;
 theorem regex_eq_bot_kleene: $ (kleene X bot) <-> epsilon $;
+
+theorem norm_lemma
+  (h1: $ Norm phi psi $)
+  (h2: $ psi -> rho $):
+  $ phi -> rho $ =
+  '(norm (norm_imp_l @ norm_sym h1) h2);
+
+
+
+theorem example_not_bot: $(mu nCzD (epsilon \/ ((a . (sVar nCzD)) \/ (b . (sVar nCzD))))) -> top$ =
+  '(main_goal_interior
+    (apply_equiv regex_eq_ewp_not_bot id)
+    (norm_lemma ,(propag_s_subst 'nCzD $ (sVar nCzD) $)
+      (apply_equiv regex_eq_der_neg_wrt_a (apply_equiv (cong_of_equiv_not regex_eq_der_bot_wrt_a) main_goal_leaf)))
+    (norm_lemma ,(propag_s_subst 'nCzD $ (sVar nCzD) $)
+      (apply_equiv regex_eq_der_neg_wrt_b (apply_equiv (cong_of_equiv_not regex_eq_der_bot_wrt_b) main_goal_leaf)))
+  );
