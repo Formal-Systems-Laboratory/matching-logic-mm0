@@ -7,4 +7,5 @@ maude -no-wrap regexp-proof-gen/regexp.maude </dev/null \
            -e "s/cong_of_equiv '/cong_of_equiv_/g"  \
            -e "s/'regex_/regex_/g" \
            -e "s/Var '/Var /g" \
+           -e "s/mu '/mu /g" \
            -e "s/( *apply_subst \\([^$]*\\)\\$\\([^$]*\\)\\$/(norm_lemma ,(propag_s_subst \\1\\$\\2\\$)/g"
