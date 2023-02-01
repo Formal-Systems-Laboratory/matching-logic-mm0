@@ -162,12 +162,12 @@ mod ERE-THEOREMS is
     eq < bot > = < invalid > . --- This should never be reached.
     rl [der-a]     : < Alpha > => < (derivative a Alpha) > .
     rl [der-b]     : < Alpha > => < (derivative b Alpha) > .
-    rl [check-ewp] : < Alpha > => check-ewp[ epsilon -> (epsilon /\ Alpha) ] .
+    rl [check-ewp] : < Alpha > => check-ewp[ (epsilon /\ Alpha) ] .
 
     --- We don't want the derivative rules to apply when checking EWS.
     op check-ewp[ _ ] : Pattern -> State [ctor] .
     op < id > : -> State [ctor] .
-    eq check-ewp[ epsilon -> epsilon ] = < id > .
+    eq check-ewp[ epsilon ] = < id > .
 endm
 
 --- Manually performs a search, and returns the search graph as a tree with backlinks.
