@@ -151,33 +151,32 @@ do {
 --     ) @ refine g (propag_e_subst x_o ctx_o))
 
   (def (propag_s_subst X ctx) @ match ctx
-    ['bot      'sSubstitution_triv]
-    ['top      'sSubstitution_triv]
-    [('bot)    'sSubstitution_triv]
-    [('top)    'sSubstitution_triv]
-    [('sym S)  'sSubstitution_triv]
-    [('eVar x) 'sSubstitution_triv]
-    [('sVar Y) (if (== X Y) 'sSubstitution_in_same_sVar 'sSubstitution_triv)]
-    [('imp phi1 phi2) '(_sSubst_imp ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
-    [('app phi1 phi2) '(_sSubst_app ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
-    -- [('exists y psi)  '(norm_trans sSubstitution_in_exists (norm_exists ,(propag_s_subst X psi)))]
-    [('mu Y psi)      (if (== X Y) 'sSubstitution_in_same_mu '(_sSubst_mu ,(propag_s_subst X psi)))]
-    [('not psi)       '(_sSubst_not ,(propag_s_subst X psi))]
-    [('or phi1 phi2)  '(_sSubst_or ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
-    [('and phi1 phi2)  '(_sSubst_and ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
-    [('svSubst Y psi1 psi2) (if (== X Y)
-      '(_eSubst_eSubst_same_var ,(propag_s_subst X psi1) ,(propag_s_subst X psi2))
-      (error "not implemented"))]
-    ['epsilon   'sSubstitution_triv]
-    ['a         'sSubstitution_triv]
-    ['b         'sSubstitution_triv]
-    [('epsilon) 'sSubstitution_triv]
-    [('a)       'sSubstitution_triv]
-    [('b)       'sSubstitution_triv]
-    [('concat psi1 psi2) '(_sSubst_concat ,(propag_s_subst X psi1) ,(propag_s_subst X psi2))]
-    [('kleene Y psi) (if (== X Y) 'sSubstitution_in_same_mu '(_sSubst_mu @ _sSubst_or sSubstitution_triv @ _sSubst_concat ,(propag_s_subst X psi) sSubstitution_triv))]
-    [_               '(norm_refl)]
-    -- [('e[ phi2 / x] psi) '(norm_trans sSubstitution_in_eSubst_same_var (norm_trans (norm_evSubst_pt norm_id ,(propag_s_subst x phi2)) ,(propag_s_subst _ x psi)))]
+    [$bot$     'sSubstitution_triv]
+    [$top$     'sSubstitution_triv]
+    [$sym ,S$  'sSubstitution_triv]
+    [$eVar ,x$ 'sSubstitution_triv]
+    [$sVar ,Y$ (if (== X Y) 'sSubstitution_in_same_sVar 'sSubstitution_triv)]
+    [$imp ,phi1 ,phi2$    '(_sSubst_imp             ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
+    [$app ,phi1 ,phi2$    '(_sSubst_app             ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
+    [$exists ,y ,psi$     '(_sSubst_exists          ,(propag_s_subst X psi))]
+    [$mu ,Y ,psi$ (if (== X Y) 
+                          'sSubstitution_in_same_mu 
+                          '(_sSubst_mu              ,(propag_s_subst X psi)))]
+    [$not ,psi$           '(_sSubst_not             ,(propag_s_subst X psi))]
+    [$or ,phi1 ,phi2$     '(_sSubst_or              ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
+    [$and ,phi1 ,phi2$    '(_sSubst_and             ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
+    [$svSubst ,Y ,psi1 ,psi2$ (if (== X Y)
+                          '(_eSubst_eSubst_same_var ,(propag_s_subst X psi1) ,(propag_s_subst X psi2))
+                          (error "not implemented"))]
+
+    [$epsilon$  'sSubstitution_triv]
+    [$a$        'sSubstitution_triv]
+    [$b$        'sSubstitution_triv]
+    [$concat ,psi1 ,psi2$ '(_sSubst_concat          ,(propag_s_subst X psi1) ,(propag_s_subst X psi2))]
+    [$kleene ,Y ,psi$ (if (== X Y)
+                          'sSubstitution_in_same_mu
+                          '(_sSubst_mu @ _sSubst_or sSubstitution_triv @ _sSubst_concat ,(propag_s_subst X psi) sSubstitution_triv))]
+    [_  'norm_refl]
     -- [('e[ phi2 / y] psi) '()]
     -- [('s[ phi2 / X] psi) '()]
     -- [('app[ phi2 / box] psi) '()]
@@ -224,6 +223,11 @@ theorem _sSubst_and {X: SVar} (phi phi1 phi2 psi1 psi2: Pattern X)
   (h2: $ Norm (s[ phi / X ] phi2) psi2 $):
   $ Norm (s[ phi / X ] (phi1 /\ phi2)) (psi1 /\ psi2) $ =
   '(_sSubst_not @ _sSubst_imp h1 (_sSubst_not h2));
+
+theorem _sSubst_exists {X: SVar} {x: EVar} (psi rho: Pattern X x) (phi: Pattern X)
+  (h: $ Norm (s[ phi / X ] psi) rho $):
+  $ Norm (s[ phi / X ] (exists x psi)) (exists x rho) $ =
+  '(norm_trans sSubstitution_in_exists (norm_exists h));
 
 theorem _eSubst_eSubst_same_var {X: SVar} (phi1 phi2 phi3 psi1 psi2: Pattern X)
   (h1: $ Norm (s[ psi1 / X ] phi3) psi2 $)
