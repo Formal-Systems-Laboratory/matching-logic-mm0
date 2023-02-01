@@ -135,32 +135,33 @@ theorem regex_eq_ewp_epsilon:
 
 
 theorem regex_eq_ewp_ab
-  (h: $ letter <-> top_letter $):
-  $ epsilon /\ letter <-> bot $;
---- = '(
----    exists_generalization_strict (com12
----      (eq_to_imp (eq_to_def @ eq_to_and_l eq_to_intro) (eq_to_not @ eq_to_and_l eq_to_intro))
----      (con2 (dne @ singleton_norm (! appCtxVar box1) (! defNorm box2))) -- |^ x /\ ~a ^| <-> ~(x /\ a)
----    ) (exists_framing eq_sym (! functional_epsilon x))
----    (framingDef (con3 @ imim2i @ syl h dne) @ dne no_confusion_ae_e)
----  );
+  (h: $ letter -> top_letter $):
+  $ epsilon /\ letter <-> bot $
+  = '(ibii
+    (exists_generalization_strict
+      (com12
+        (eq_to_imp (eq_to_def @ eq_to_and_l eq_to_intro) (eq_to_not @ eq_to_and_l eq_to_intro))
+        (con2 (dne @ singleton_norm (! appCtxVar box1) (! defNorm box2))) -- |^ x /\ ~a ^| <-> ~(x /\ a)
+      ) (exists_framing eq_sym (! functional_epsilon x))
+      (framingDef (con3 @ imim2i @ syl h dne) @ dne no_confusion_ae_e))
+    absurdum);
 
 theorem regex_eq_ewp_a:
-  $ epsilon /\ a <-> bot $; --- = '(regex_eq_ewp_ab orl);
+  $ epsilon /\ a <-> bot $ = '(regex_eq_ewp_ab orl);
 
 theorem regex_eq_ewp_b:
-  $ epsilon /\ b <-> bot $; --- = '(regex_eq_ewp_ab orr);
+  $ epsilon /\ b <-> bot $ = '(regex_eq_ewp_ab orr);
 
 theorem regex_eq_ewp_concat:
   $ epsilon /\ (Alpha . Beta) <-> (epsilon /\ Alpha) /\ (epsilon /\ Beta) $;
 
 theorem regex_eq_ewp_and:
-  $ epsilon /\ (Alpha /\ Beta) <-> (epsilon /\ Alpha) /\ (epsilon /\ Beta) $;
----  = '(anl anandi);
+  $ epsilon /\ (Alpha /\ Beta) <-> (epsilon /\ Alpha) /\ (epsilon /\ Beta) $
+  = 'anandi;
 
 theorem regex_eq_ewp_choice:
-  $ epsilon /\ (Alpha \/ Beta) <-> (epsilon /\ Alpha) \/ (epsilon /\ Beta) $;
----  = '(anl andi);
+  $ epsilon /\ (Alpha \/ Beta) <-> (epsilon /\ Alpha) \/ (epsilon /\ Beta) $
+  = 'andi;
 
 theorem regex_eq_ewp_kleene:
   $ epsilon /\ (kleene X Alpha) <-> epsilon $;
