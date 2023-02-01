@@ -453,5 +453,7 @@ set print with parentheses on .
 --- search  (epsilon -> (epsilon /\ (( ~ ((a . a) *)) \/ (((a *) . a) \/ epsilon)))) =>! P:Pattern .
 --- show search graph .
 --- reduce proofHint((a . a)* --> ((a * . a) \/ epsilon)) .
-reduce fp(proofHint((a . a)* --> ((a * . a) \/ epsilon))) .
-reduce proof-main-goal(proofHint((a . a)* --> ((a * . a) \/ epsilon))) .
+--- reduce fp(proofHint((a . a)* --> ((a * . a) \/ epsilon))) .
+--- reduce proof-main-goal(proofHint((a . a)* --> ((a * . a) \/ epsilon))) .
+reduce fp(proofHint(a --> a)) .
+reduce proof-main-goal(proofHint(a --> a)) .

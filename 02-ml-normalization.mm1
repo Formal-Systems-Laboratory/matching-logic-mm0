@@ -151,6 +151,8 @@ do {
 --     ) @ refine g (propag_e_subst x_o ctx_o))
 
   (def (propag_s_subst X ctx) @ match ctx
+    ['bot      'sSubstitution_triv]
+    ['top      'sSubstitution_triv]
     [('bot)    'sSubstitution_triv]
     [('top)    'sSubstitution_triv]
     [('sym S)  'sSubstitution_triv]
@@ -166,7 +168,9 @@ do {
     [('svSubst Y psi1 psi2) (if (== X Y)
       '(_eSubst_eSubst_same_var ,(propag_s_subst X psi1) ,(propag_s_subst X psi2))
       (error "not implemented"))]
-
+    ['epsilon   'sSubstitution_triv]
+    ['a         'sSubstitution_triv]
+    ['b         'sSubstitution_triv]
     [('epsilon) 'sSubstitution_triv]
     [('a)       'sSubstitution_triv]
     [('b)       'sSubstitution_triv]
