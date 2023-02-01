@@ -440,9 +440,11 @@ mod PROOF-GEN is
                                        rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
                       )    )
      = main-goal-interior
-            (apply-subst fp(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ; rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ; rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B) )) proof-main-goal(N_EWP)) 
-            (apply-subst fp(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ; rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ; rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B) )) proof-main-goal(N_A))
-            (apply-subst fp(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ; rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ; rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B) )) proof-main-goal(N_B))
+            proof-main-goal(N_EWP)
+            (apply-subst fp(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ; rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ; rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B) ))
+                         proof-main-goal(N_A))
+            (apply-subst fp(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ; rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ; rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B) ))
+                         proof-main-goal(N_B))
      .
 
 endm
