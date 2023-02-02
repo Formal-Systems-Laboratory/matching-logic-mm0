@@ -289,9 +289,9 @@ axiom singleton {box1 box2: SVar} {x: EVar}
 term defSym: Symbol;
 
 def _ceil (phi: Pattern): Pattern = $ app (sym defSym) phi $;
-notation _ceil (phi: Pattern) = ($|^$:45) phi ($^|$:0);
+notation _ceil (phi: Pattern): Pattern = ($|^$:45) phi ($^|$:0);
 def _floor (phi: Pattern): Pattern = $ not (|^ not phi ^|) $;
-notation _floor (phi: Pattern) = ($|_$:45) phi ($_|$:0);
+notation _floor (phi: Pattern): Pattern = ($|_$:45) phi ($_|$:0);
 def _eq (phi1 phi2: Pattern): Pattern = $ |_  phi1 <-> phi2 _| $;
 infixl _eq: $==$ prec 15;
 def _neq (phi1 phi2: Pattern): Pattern = $ not (phi1 == phi2) $;
