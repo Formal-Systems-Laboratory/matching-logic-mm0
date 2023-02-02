@@ -25,7 +25,9 @@ def process_mm(s):
     s = s.replace("'regex_", "regex_")
     s = s.replace("Var '", "Var ")
     s = s.replace("mu '", "mu ")
-    return re.sub(r"\(apply_subst ([^$]*)\$([^$]*)\$", r"(norm_lemma ,(propag_s_subst \g<1>$\g<2>$)", s)
+    s = re.sub(r"\(apply_subst ([^$]*)\$([^$]*)\$", r"(norm_lemma ,(propag_s_subst \g<1>$\g<2>$)", s)
+    s = re.sub(r"([^_])kleene ", r"\g<1>kleene _ ", s)
+    return s
 
 var_counter = 0
 generated_vars = ""
@@ -64,7 +66,7 @@ with tempfile.TemporaryDirectory() as tmp_dir:
     maude_output = maude_result.stdout.decode()
     # print(maude_output)
     maude_output = maude_output.split("\n==========================================")
-    mm_regex = maude_output[1].split("result Pattern: ",1)[1].replace("kleene ", "kleene _ ")
+    mm_regex = process_mm(maude_output[1].split("result Pattern: ",1)[1])
     # print(mm_regex)
     mm_fp = process_mm(maude_output[2].split("result Pattern: ",1)[1])
     # print(mm_fp)
