@@ -45,7 +45,7 @@ fmod PATTERN-METAMATH is
     vars Alpha Beta Gamma : Pattern .
     --- NOT FOR INTERNAL USE.
     op top : -> Pattern .
-    eq top = not bot .
+    eq top = ~ bot .
 
     op _ + _        : Pattern Pattern -> Pattern .
     eq Alpha + Beta = Alpha \/ Beta .
@@ -150,7 +150,7 @@ mod ERE-THEOREMS is
     rl [regex_eq_ewp_not_not]     : epsilon /\ ~(~ Alpha)       => epsilon /\ Alpha .
 
     --- Identity and idemoptency of \/
-    rl [regex_eq_or_choice_abs] : (not bot)   \/ Alpha => (not bot) .
+    rl [regex_eq_or_choice_abs] : (~ bot)   \/ Alpha => (~ bot) .
     rl [regex_eq_or_choice_unit] : bot   \/ Alpha => Alpha .
     rl [regex_eq_or_choice_idem] : Alpha \/ Alpha => Alpha .
     rl [regex_eq_or_choice_assoc] : (Alpha \/ Beta) \/ Gamma  => Alpha \/ (Beta \/ Gamma) .
@@ -159,7 +159,7 @@ mod ERE-THEOREMS is
 
     --- Identity and idemoptency of /\
     rl [regex_eq_and_choice_abs] : bot   /\ Alpha => bot .
-    rl [regex_eq_and_choice_unit] : (not bot)   /\ Alpha => Alpha .
+    rl [regex_eq_and_choice_unit] : (~ bot)   /\ Alpha => Alpha .
     rl [regex_eq_and_choice_idem] : Alpha /\ Alpha => Alpha .
     rl [regex_eq_and_choice_assoc] : (Alpha /\ Beta) /\ Gamma  => Alpha /\ (Beta /\ Gamma) .
    crl [regex_eq_and_choice_comm_node] : Alpha /\ (Beta /\ Gamma) => Beta /\ (Alpha /\ Gamma) if Alpha <=> Beta = GT .
@@ -427,6 +427,7 @@ mod PROOF-GEN is
     eq cong-thm('_/\_) = 'and .
     eq cong-thm('_._) = 'concat .
     eq cong-thm('~_) = 'not .
+    eq cong-thm('_*) = 'kleene .
 
     op eq-thm : Substitution Qid -> Qid .
     eq eq-thm('A:Letter <- Q ; Subst , R) = qid(string(R) + "-wrt-" + string(getName(Q))) .

@@ -38,6 +38,7 @@ theorem eq_der_a_imp:
 
 theorem cong_of_equiv_concat_l (h: $phi1 <-> phi2$): $(phi1 . psi) <-> (phi2 . psi)$;
 theorem cong_of_equiv_concat_r (h: $phi1 <-> phi2$): $(psi . phi1) <-> (psi . phi2)$;
+theorem cong_of_equiv_kleene (h: $phi1 <-> phi2$): $(kleene _ phi1) <-> (kleene _ phi2)$;
 
 --- Reasoning about regular expressions
 ---------------------------------------
