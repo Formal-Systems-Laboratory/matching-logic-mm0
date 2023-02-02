@@ -2,12 +2,12 @@ import tempfile, shutil, os, sys, subprocess, re, argparse
 
 maude_src = "regexp-proof-gen/regexp.maude"
 tmp_maude_file = "regex.maude"
-maude_cmd = "maude -no-wrap {} </dev/null"
+maude_cmd = "maude -no-banner -no-wrap -interactive {}"
 maude_appendix = """
-
 reduce in PATTERN-METAMATH-TRANSLATE : {0} .
 reduce in PROOF-GEN : fp(proofHint({0})) .
 reduce in PROOF-GEN : proof-main-goal(proofHint({0})) .
+q .
 """
 
 mm_theorem_base = "\n\n\npub theorem fp_to_regex{}: ${} -> {}$ = \n  '{};\n"
@@ -58,20 +58,18 @@ args = parser.parse_args()
 regex = args.regex
 
 with tempfile.TemporaryDirectory() as tmp_dir:
-    maude_file_name = os.path.join(tmp_dir, tmp_maude_file)
-    shutil.copyfile(maude_src, maude_file_name)
-    with open(maude_file_name, "a") as maude_file:
-        maude_file.write(maude_appendix.format(regex))
-    maude_result = subprocess.run(maude_cmd.format(maude_file_name), shell=True, stdout=subprocess.PIPE)
-    maude_output = maude_result.stdout.decode()
-    # print(maude_output)
-    maude_output = maude_output.split("\n==========================================")
-    mm_regex = process_mm(maude_output[1].split("result Pattern: ",1)[1])
-    # print(mm_regex)
-    mm_fp = process_mm(maude_output[2].split("result Pattern: ",1)[1])
-    # print(mm_fp)
-    mm_proof = process_mm(maude_output[3].split("result MetaMathProof: ",1)[1].split("\nMaude> Bye.",1)[0])
-    # print(mm_proof)
+
+    with subprocess.Popen(maude_cmd.format(maude_src), shell=True,
+                          stdin=subprocess.PIPE,
+                          stdout=subprocess.PIPE,
+                          stderr=subprocess.PIPE) as maude_proc:
+        (maude_output, _) = maude_proc.communicate(bytes(maude_appendix.format(regex), 'utf-8'))
+        all_outputs = re.findall(r"result (?:Pattern|MetaMathProof): ([^\n]*)\n", process_mm(str(maude_output, 'utf8')))
+    
+    # print(all_outputs)
+    mm_regex = all_outputs[0]
+    mm_fp = all_outputs[1]
+    mm_proof = all_outputs[2]
 
     raw_svars = re.findall(r"(?:sVar|mu) ([^ )]*)", mm_fp)
     svars = " ".join(set(raw_svars)) + " "
