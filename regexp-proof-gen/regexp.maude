@@ -31,7 +31,7 @@ fmod PATTERN-METAMATH-CORE is
     op a            :                 -> Letter [ctor] .
     op b            :                 -> Letter [ctor] .
 
-    op _ . _        : Pattern Pattern -> Pattern [ctor] .
+    op _ . _        : Pattern Pattern -> Pattern [ctor prec 28 gather (& e)] .
 
     op (derivative _ _) : Pattern Pattern -> Pattern [ctor] .
 endfm
@@ -39,7 +39,7 @@ endfm
 fmod PATTERN-METAMATH is
     including PATTERN-METAMATH-CORE .
 
-    op _ *          : Pattern         -> Pattern [ctor] .
+    op _ *          : Pattern         -> Pattern [ctor prec 29] .
 
     *** ERE sugar
     vars Alpha Beta Gamma : Pattern .
@@ -47,13 +47,13 @@ fmod PATTERN-METAMATH is
     op top : -> Pattern .
     eq top = ~ bot .
 
-    op _ + _        : Pattern Pattern -> Pattern .
+    op _ + _        : Pattern Pattern -> Pattern [prec 30 gather (& e)] .
     eq Alpha + Beta = Alpha \/ Beta .
 
-    op _ ->> _        : Pattern Pattern -> Pattern .
+    op _ ->> _        : Pattern Pattern -> Pattern [prec 31 gather (e &)] .
     eq Alpha ->> Beta = (~ Alpha) \/ Beta .
 
-    op _ <<->> _       : Pattern Pattern -> Pattern .
+    op _ <<->> _       : Pattern Pattern -> Pattern [prec 32 gather (& e)] .
     eq Alpha <<->> Beta = (Alpha ->> Beta) /\ (Beta ->> Alpha) .
 
     --- Internal sorting of patterns
