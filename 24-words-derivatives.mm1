@@ -10,7 +10,7 @@ import "23-words-fixedpoints.mm1";
 --- Derivatives
 ---------------
 
-def derivative (l : Pattern) (phi : Pattern) : Pattern
+def derivative {box: SVar} {dummy: EVar} (l: Pattern) (phi: Pattern) : Pattern
     = $ctximp_app box (l . sVar box) phi dummy $;
 --- = $exists w (eVar w)  /\ (l . eVar w C_ phi)$;
 

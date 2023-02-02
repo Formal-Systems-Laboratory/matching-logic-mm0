@@ -32,16 +32,16 @@ notation ctxApp {box: SVar} (ctx: Pattern box) (psi: Pattern): Pattern =
   ($app[$:41) psi ($/$:0) box ($]$:0) ctx;
 
 -- Definitions of common logical connectives
-infixr imp: $->$ prec 25;
+infixr imp: $->$ prec 24;
 def not (phi: Pattern): Pattern = $ phi -> bot $;
 prefix not: $~$ prec 41;
 def top: Pattern = $ ~bot $;
 def or (phi1 phi2: Pattern): Pattern = $ ~phi1 -> phi2 $;
-infixl or: $\/$ prec 30;
+infixl or: $\/$ prec 29;
 def and (phi1 phi2: Pattern): Pattern = $ ~(phi1 -> ~phi2) $;
-infixl and: $/\$ prec 34;
+infixl and: $/\$ prec 33;
 def equiv (phi1 phi2: Pattern): Pattern = $ (phi1 -> phi2) /\ (phi2 -> phi1) $;
-infixl equiv: $<->$ prec 20;
+infixl equiv: $<->$ prec 19;
 def forall {x: EVar} (phi: Pattern x): Pattern = $ ~(exists x (~phi)) $;
 def nu {X: SVar} (phi: Pattern X): Pattern = $ ~(mu X (~phi)) $;
 

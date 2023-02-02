@@ -51,16 +51,16 @@ notation ctxApp {box: SVar} (ctx: Pattern box) (psi: Pattern): Pattern =
   ($app[$:41) psi ($/$:0) box ($]$:0) ctx;
 
 -- Definitions of common logical connectives
-infixr imp: $->$ prec 25;
+infixr imp: $->$ prec 24;
 def not (phi: Pattern): Pattern = $ phi -> bot $;
 prefix not: $~$ prec 41;
 def top: Pattern = $ ~bot $;
 def or (phi1 phi2: Pattern): Pattern = $ ~phi1 -> phi2 $;
-infixl or: $\/$ prec 30;
+infixl or: $\/$ prec 29;
 def and (phi1 phi2: Pattern): Pattern = $ ~(phi1 -> ~phi2) $;
-infixl and: $/\$ prec 34;
+infixl and: $/\$ prec 33;
 def equiv (phi1 phi2: Pattern): Pattern = $ (phi1 -> phi2) /\ (phi2 -> phi1) $;
-infixl equiv: $<->$ prec 20;
+infixl equiv: $<->$ prec 19;
 def forall {x: EVar} (phi: Pattern x): Pattern = $ ~(exists x (~phi)) $;
 def nu {X: SVar} (phi: Pattern X): Pattern = $ ~(mu X (~phi)) $;
 
@@ -315,13 +315,13 @@ def ctximp_app {box: SVar} (ctx: Pattern box) (phi: Pattern) {dummy: EVar}: Patt
 -- 20-theory-words.mm1 --
 -------------------------
 def nnimp (phi1 phi2: Pattern): Pattern = $ ~phi1 \/ phi2 $;
-infixr nnimp: $->>$ prec 25;
+infixr nnimp: $->>$ prec 24;
 
 def nneqiv (phi1 phi2: Pattern): Pattern = $ (phi1 ->> phi2) /\ (phi2 ->> phi1) $;
 infixr nneqiv: $<<->>$ prec 20;
 
 def replus (phi1 phi2: Pattern): Pattern = $ phi1 \/ phi2 $;
-infixl replus: $+$ prec 30;
+infixl replus: $+$ prec 29;
 
 term a_symbol : Symbol ;
 def a : Pattern = $sym a_symbol$ ;
@@ -335,19 +335,19 @@ def epsilon : Pattern = $sym epsilon_symbol$ ;
 
 term concat_symbol : Symbol ;
 def concat (phi psi: Pattern) : Pattern = $(app (app (sym concat_symbol) phi) psi)$;
-infixl concat: $.$ prec 40;
+infixl concat: $.$ prec 39;
 
-def kleene_l { X: SVar } (alpha: Pattern) : Pattern = $mu X (epsilon \/ sVar X . alpha)$;
-def kleene_r { X: SVar } (alpha: Pattern) : Pattern = $mu X (epsilon \/ alpha . sVar X)$;
-def kleene   { X: SVar } (alpha: Pattern) : Pattern = $(kleene_r X alpha)$;
+def kleene_l {X: SVar} (alpha: Pattern) : Pattern = $mu X (epsilon \/ sVar X . alpha)$;
+def kleene_r {X: SVar} (alpha: Pattern) : Pattern = $mu X (epsilon \/ alpha . sVar X)$;
+def kleene   {X: SVar} (alpha: Pattern) : Pattern = $(kleene_r X alpha)$;
 
 --- We assume that the alphabet has only two letters.
 --- This, however, captures the full expressivity.
 def top_letter : Pattern = $a \/ b$;
 
-def top_word_l { X: SVar } : Pattern = $(kleene_l X top_letter )$ ;
-def top_word_r { X: SVar } : Pattern = $(kleene_r X top_letter )$ ;
-def top_word   { X: SVar } : Pattern = $(kleene   X top_letter )$ ;
+def top_word_l {X: SVar} : Pattern = $(kleene_l X top_letter )$ ;
+def top_word_r {X: SVar} : Pattern = $(kleene_r X top_letter )$ ;
+def top_word   {X: SVar} : Pattern = $(kleene   X top_letter )$ ;
 
 --- Axioms (e suffix indicates over element vars)
 axiom functional_epsilon {x: EVar} : $exists x (eVar x == epsilon)$;
@@ -365,5 +365,5 @@ axiom assoc_concat_e     {u v w: EVar} : $forall u (forall v (forall w  (eVar u 
 axiom identity_left_e    {u: EVar} : $forall u (eVar u) . epsilon == epsilon$;
 axiom identity_right_e   {u: EVar} : $forall u epsilon . (eVar u) == epsilon$;
 
-def derivative {box: SVar} {dummy: EVar} (l : Pattern) (phi : Pattern) : Pattern
+def derivative {box: SVar} {dummy: EVar} (l: Pattern) (phi: Pattern) : Pattern
     = $ ctximp_app box (l . sVar box) phi dummy $;

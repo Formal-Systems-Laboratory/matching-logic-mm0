@@ -10,7 +10,7 @@ reduce in PROOF-GEN : fp(proofHint({0})) .
 reduce in PROOF-GEN : proof-main-goal(proofHint({0})) .
 """
 
-mm_theorem_base = "\n\n\npub theorem fp_to_regex: ${} -> {}$ = \n  '{};\n"
+mm_theorem_base = "\n\n\npub theorem fp_to_regex{}: ${} -> {}$ = \n  '{};\n"
 mm0_theorem_base = "\n\n\ntheorem fp_to_regex{}: ${} -> {}$;\n"
 mm_yellow = "yellow.mm1"
 mm0_combined = "combined.mm0"
@@ -66,8 +66,19 @@ with tempfile.TemporaryDirectory() as tmp_dir:
     # print(mm_fp)
     mm_proof = process_mm(maude_output[3].split("result MetaMathProof: ",1)[1].split("\nMaude> Bye.",1)[0])
     # print(mm_proof)
-    mm_theorem = mm_theorem_base.format(mm_fp, mm_regex, mm_proof)
+
+    raw_svars = re.findall(r"(?:sVar|mu) ([^ )]*)", mm_fp)
+    svars = " ".join(set(raw_svars)) + " "
+
+    mm_regex = re.sub("_", newVar, mm_regex)
+    svars = svars + generated_vars
+    if svars.strip():
+        svars = " {" + svars + ": SVar} "
+
+    mm_theorem = mm_theorem_base.format(svars, mm_fp, mm_regex, mm_proof)
     # print(mm_theorem)
+    mm0_theorem = mm0_theorem_base.format(svars, mm_fp, mm_regex)
+    # print(mm0_theorem)
 
     ### Generate MMB file ###
     mm_file_name = os.path.join(tmp_dir, tmp_mm_file)
@@ -79,18 +90,6 @@ with tempfile.TemporaryDirectory() as tmp_dir:
     subprocess.run(mm_compile_cmd.format(mm_file_name, args.mmb_dest), shell=True)
 
     ### Generate MM0 file ###
-    raw_svars = re.findall(r"(?:sVar|mu) ([^ )]*)", mm_fp)
-    svars = " ".join(set(raw_svars)) + " "
-
-    mm0_regex = re.sub("_", newVar, mm_regex)
-    svars = svars + generated_vars
-    if svars.strip():
-        svars = " {" + svars + ": SVar} "
-
-    mm0_theorem = mm0_theorem_base.format(svars, mm_fp, mm0_regex)
-    # print(mm0_theorem)
-
-    # Actually generate the file
     mm0_file_name = os.path.join(tmp_dir, tmp_mm0_file)
     shutil.copyfile(mm0_combined, mm0_file_name)
     with open(mm0_file_name, "a") as mm0_file:
