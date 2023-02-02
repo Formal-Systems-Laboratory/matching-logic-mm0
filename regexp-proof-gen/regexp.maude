@@ -15,7 +15,6 @@ fmod PATTERN-METAMATH-CORE is
     op bot         : -> Pattern [ctor] .
     op exists _ _ : Qid Pattern -> Pattern [ctor] .
 
-    op top : -> Pattern [ctor] .
     op _ /\ _       : Pattern Pattern -> Pattern [ctor] .
     op _ \/ _       : Pattern Pattern -> Pattern [ctor] .
     op nu _ _       : Qid Pattern     -> Pattern [ctor] .
@@ -45,6 +44,9 @@ fmod PATTERN-METAMATH is
     *** ERE sugar
     vars Alpha Beta Gamma : Pattern .
     --- NOT FOR INTERNAL USE.
+    op top : -> Pattern .
+    eq top = not bot .
+
     op _ + _        : Pattern Pattern -> Pattern .
     eq Alpha + Beta = Alpha \/ Beta .
 
@@ -100,10 +102,11 @@ fmod PATTERN-METAMATH-TRANSLATE is
 
     vars Alpha Beta Gamma : Pattern .
 
+    op top          : -> Pattern [ctor] .
     op kleene _     : Pattern -> Pattern [ctor] .
     op _ + _        : Pattern Pattern -> Pattern [ctor] .
-    op _ ->> _        : Pattern Pattern -> Pattern [ctor] .
-    op _ <<->> _       : Pattern Pattern -> Pattern [ctor] .
+    op _ ->> _      : Pattern Pattern -> Pattern [ctor] .
+    op _ <<->> _    : Pattern Pattern -> Pattern [ctor] .
 
     op _ *          : Pattern -> Pattern .
     eq Alpha * = kleene Alpha .
@@ -147,7 +150,7 @@ mod ERE-THEOREMS is
     rl [regex_eq_ewp_not_not]     : epsilon /\ ~(~ Alpha)       => epsilon /\ Alpha .
 
     --- Identity and idemoptency of \/
-    rl [regex_eq_or_choice_abs] : top   \/ Alpha => top .
+    rl [regex_eq_or_choice_abs] : (not bot)   \/ Alpha => (not bot) .
     rl [regex_eq_or_choice_unit] : bot   \/ Alpha => Alpha .
     rl [regex_eq_or_choice_idem] : Alpha \/ Alpha => Alpha .
     rl [regex_eq_or_choice_assoc] : (Alpha \/ Beta) \/ Gamma  => Alpha \/ (Beta \/ Gamma) .
@@ -156,7 +159,7 @@ mod ERE-THEOREMS is
 
     --- Identity and idemoptency of /\
     rl [regex_eq_and_choice_abs] : bot   /\ Alpha => bot .
-    rl [regex_eq_and_choice_unit] : top   /\ Alpha => Alpha .
+    rl [regex_eq_and_choice_unit] : (not bot)   /\ Alpha => Alpha .
     rl [regex_eq_and_choice_idem] : Alpha /\ Alpha => Alpha .
     rl [regex_eq_and_choice_assoc] : (Alpha /\ Beta) /\ Gamma  => Alpha /\ (Beta /\ Gamma) .
    crl [regex_eq_and_choice_comm_node] : Alpha /\ (Beta /\ Gamma) => Beta /\ (Alpha /\ Gamma) if Alpha <=> Beta = GT .

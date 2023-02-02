@@ -47,6 +47,10 @@ parser.add_argument('--mm0', dest='mm0_dest', action='store',
                     default="/dev/null",
                     help='file path for storing the generated mm0 spec file',
                     required = False)
+parser.add_argument('--mm1', dest='mm1_dest', action='store',
+                    default="/dev/null",
+                    help='file path for storing the generated mm1 source',
+                    required = False)
 args = parser.parse_args()
 
 regex = args.regex
@@ -85,8 +89,7 @@ with tempfile.TemporaryDirectory() as tmp_dir:
     subprocess.run(mm_join_cmd.format(mm_yellow, mm_file_name), shell=True)
     with open(mm_file_name, "a") as mm_file:
         mm_file.write(mm_theorem)
-    # For debugging only:
-    # shutil.copyfile(mm_file_name, "re.mm1")
+    shutil.copyfile(mm_file_name, args.mm1_dest)
     subprocess.run(mm_compile_cmd.format(mm_file_name, args.mmb_dest), shell=True)
 
     ### Generate MM0 file ###
