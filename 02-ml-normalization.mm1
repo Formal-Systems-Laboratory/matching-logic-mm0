@@ -176,6 +176,7 @@ do {
     [$kleene ,Y ,psi$ (if (== X Y)
                           'sSubstitution_in_same_mu
                           '(_sSubst_mu @ _sSubst_or sSubstitution_triv @ _sSubst_concat ,(propag_s_subst X psi) sSubstitution_triv))]
+    [$nnimp ,phi1 ,phi2$  '(_sSubst_nnimp           ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
     [_  'norm_refl]
     -- [('e[ phi2 / y] psi) '()]
     -- [('s[ phi2 / X] psi) '()]

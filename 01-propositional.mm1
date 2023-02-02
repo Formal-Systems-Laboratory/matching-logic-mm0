@@ -658,6 +658,7 @@ theorem emr: $ ~p \/ p $ = '(orcom em);
 
 theorem ian2: $ a -> b -> b /\ a $ = '(exp ancom);
 theorem absurdum: $ bot -> phi $ = '(prop_3 idd);
+theorem taut: $ top $ = 'absurdum;
 
 theorem imp_to_or (h: $(~a \/ b) -> c$): $(a -> b) -> c$  = '(rsyl con3 (rsyl orcom h)) ;
 

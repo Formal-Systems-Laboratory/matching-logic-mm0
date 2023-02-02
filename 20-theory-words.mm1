@@ -1,5 +1,14 @@
 import "10-theory-definedness.mm1";
 
+def nnimp (phi1 phi2: Pattern): Pattern = $ ~phi1 \/ phi2 $;
+infixr nnimp: $->>$ prec 25;
+
+def nneqiv (phi1 phi2: Pattern): Pattern = $ (phi1 ->> phi2) /\ (phi2 ->> phi1) $;
+infixr nneqiv: $<<->>$ prec 20;
+
+def replus (phi1 phi2: Pattern): Pattern = $ phi1 \/ phi2 $;
+infixl replus: $+$ prec 30;
+
 term a_symbol : Symbol ;
 def a = $sym a_symbol$ ;
 term b_symbol : Symbol ;

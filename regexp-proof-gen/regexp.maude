@@ -1,4 +1,4 @@
-fmod PATTERN-METAMATH is
+fmod PATTERN-METAMATH-CORE is
     protecting QID .
     sorts Symbol SVar EVar Pattern .
     subsorts Symbol SVar EVar < Pattern .
@@ -20,7 +20,6 @@ fmod PATTERN-METAMATH is
     op _ \/ _       : Pattern Pattern -> Pattern [ctor] .
     op nu _ _       : Qid Pattern     -> Pattern [ctor] .
     op forall _ _   : Qid Pattern     -> Pattern [ctor] .
-    op _ <-> _       : Pattern Pattern -> Pattern [ctor] .
     op ~ _           : Pattern         -> Pattern [ctor] .
 
     *** ERE
@@ -34,9 +33,14 @@ fmod PATTERN-METAMATH is
     op b            :                 -> Letter [ctor] .
 
     op _ . _        : Pattern Pattern -> Pattern [ctor] .
-    op _ *          : Pattern         -> Pattern [ctor] .
 
     op (derivative _ _) : Pattern Pattern -> Pattern [ctor] .
+endfm
+
+fmod PATTERN-METAMATH is
+    including PATTERN-METAMATH-CORE .
+
+    op _ *          : Pattern         -> Pattern [ctor] .
 
     *** ERE sugar
     vars Alpha Beta Gamma : Pattern .
@@ -44,8 +48,11 @@ fmod PATTERN-METAMATH is
     op _ + _        : Pattern Pattern -> Pattern .
     eq Alpha + Beta = Alpha \/ Beta .
 
-    op _ --> _        : Pattern Pattern -> Pattern .
-    eq Alpha --> Beta = (~ Alpha) \/ Beta .
+    op _ ->> _        : Pattern Pattern -> Pattern .
+    eq Alpha ->> Beta = (~ Alpha) \/ Beta .
+
+    op _ <<->> _       : Pattern Pattern -> Pattern .
+    eq Alpha <<->> Beta = (Alpha ->> Beta) /\ (Beta ->> Alpha) .
 
     --- Internal sorting of patterns
     sort Comparison .
@@ -53,6 +60,9 @@ fmod PATTERN-METAMATH is
 
     op toNat : Pattern -> Nat .
     op (_ <=> _) : Pattern Pattern -> Comparison .
+
+    vars phi phi1 phi2 psi psi1 psi2 : Pattern .
+    vars x y X Y : Qid .
 
     *** ! Changing these values also requires changing the two *-choice-comm-leaf rules
     eq toNat(bot) = 0 .
@@ -83,6 +93,20 @@ fmod PATTERN-METAMATH is
     eq (phi1 -> phi2) <=> (psi1 -> psi2) = phi1 <=> psi1 [owise] .
     ceq (derivative phi1 phi2) <=> (derivative psi1 psi2) = phi2 <=> psi2 if phi1 <=> psi1 = EQ .
     eq (derivative phi1 phi2) <=> (derivative psi1 psi2) = phi1 <=> psi1 [owise] .
+endfm
+
+fmod PATTERN-METAMATH-TRANSLATE is
+    including PATTERN-METAMATH-CORE .
+
+    vars Alpha Beta Gamma : Pattern .
+
+    op kleene _     : Pattern -> Pattern [ctor] .
+    op _ + _        : Pattern Pattern -> Pattern [ctor] .
+    op _ ->> _        : Pattern Pattern -> Pattern [ctor] .
+    op _ <<->> _       : Pattern Pattern -> Pattern [ctor] .
+
+    op _ *          : Pattern -> Pattern .
+    eq Alpha * = kleene Alpha .
 endfm
 
 mod ERE-THEOREMS is
@@ -446,14 +470,12 @@ mod PROOF-GEN is
 
 endm
 
---- search in ERE-THEOREMS : ((a . a)* --> ((a * . a) \/ epsilon)) =>* P:Pattern .
+--- search in ERE-THEOREMS : ((a . a)* ->> ((a * . a) \/ epsilon)) =>* P:Pattern .
 --- show search graph .
 
 set print with parentheses on .
 --- search  (epsilon -> (epsilon /\ (( ~ ((a . a) *)) \/ (((a *) . a) \/ epsilon)))) =>! P:Pattern .
 --- show search graph .
---- reduce proofHint((a . a)* --> ((a * . a) \/ epsilon)) .
---- reduce fp(proofHint((a . a)* --> ((a * . a) \/ epsilon))) .
---- reduce proof-main-goal(proofHint((a . a)* --> ((a * . a) \/ epsilon))) .
-reduce fp(proofHint(a --> a)) .
-reduce proof-main-goal(proofHint(a --> a)) .
+--- reduce proofHint((a . a)* ->> ((a * . a) \/ epsilon)) .
+--- reduce fp(proofHint((a . a)* ->> ((a * . a) \/ epsilon))) .
+--- reduce proof-main-goal(proofHint((a . a)* ->> ((a * . a) \/ epsilon))) .
