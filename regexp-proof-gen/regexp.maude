@@ -39,7 +39,7 @@ endfm
 fmod PATTERN-METAMATH is
     including PATTERN-METAMATH-CORE .
 
-    op _ *          : Pattern         -> Pattern [ctor prec 29] .
+    op _ *          : Pattern         -> Pattern [ctor prec 25] .
 
     *** ERE sugar
     vars Alpha Beta Gamma : Pattern .
@@ -111,7 +111,7 @@ fmod PATTERN-METAMATH-TRANSLATE is
     op _ ->> _      : Pattern Pattern -> Pattern [ctor prec 31] .
     op _ <<->> _    : Pattern Pattern -> Pattern [ctor prec 32] .
 
-    op _ *          : Pattern -> Pattern [prec 29] .
+    op _ *          : Pattern -> Pattern [prec 25] .
     eq Alpha * = kleene Xk Alpha .
 endfm
 
