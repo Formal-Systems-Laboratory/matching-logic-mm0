@@ -23,9 +23,9 @@ term concat_symbol : Symbol ;
 def concat (phi psi: Pattern) : Pattern = $(app (app (sym concat_symbol) phi) psi)$;
 infixl concat: $.$ prec 39;
 
-def kleene_l {X: SVar} (alpha: Pattern) : Pattern = $mu X (epsilon \/ sVar X . alpha)$;
-def kleene_r {X: SVar} (alpha: Pattern) : Pattern = $mu X (epsilon \/ alpha . sVar X)$;
-def kleene   {X: SVar} (alpha: Pattern) : Pattern = $(kleene_r X alpha)$;
+def kleene_l {X: SVar} (alpha: Pattern X) : Pattern = $mu X (epsilon \/ sVar X . alpha)$;
+def kleene_r {X: SVar} (alpha: Pattern X) : Pattern = $mu X (epsilon \/ alpha . sVar X)$;
+def kleene   {X: SVar} (alpha: Pattern X) : Pattern = $(kleene_r X alpha)$;
 
 --- We assume that the alphabet has only two letters.
 --- This, however, captures the full expressivity.

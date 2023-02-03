@@ -26,7 +26,7 @@ theorem eq_der_a_concat:
                                    \/ ((epsilon /\ phi) . (derivative a psi))$;
 theorem eq_der_a_or:
     $(derivative a (phi \/ psi)) <-> (derivative a phi) \/ (derivative a psi)$;
-theorem eq_der_a_kleene:
+theorem eq_der_a_kleene {X: SVar} (phi: Pattern X):
     $(derivative a (kleene X phi)) <-> (derivative a phi) . (kleene X phi)$;
 theorem eq_der_a_not:
     $(derivative a (~ phi)) <-> ~ (derivative a phi)$;
@@ -38,7 +38,7 @@ theorem eq_der_a_imp:
 
 theorem cong_of_equiv_concat_l (h: $phi1 <-> phi2$): $(phi1 . psi) <-> (phi2 . psi)$;
 theorem cong_of_equiv_concat_r (h: $phi1 <-> phi2$): $(psi . phi1) <-> (psi . phi2)$;
-theorem cong_of_equiv_kleene (h: $phi1 <-> phi2$): $(kleene X phi1) <-> (kleene X phi2)$;
+theorem cong_of_equiv_kleene {X: SVar} (phi1 phi2: Pattern X) (h: $phi1 <-> phi2$): $(kleene X phi1) <-> (kleene X phi2)$;
 
 --- Reasoning about regular expressions
 ---------------------------------------
@@ -125,8 +125,8 @@ theorem regex_eq_der_diff_a_wrt_a:
 theorem regex_eq_der_diff_a_wrt_b:
   $ (derivative b a) <-> bot $;
 
-theorem regex_eq_der_kleene_wrt_a: $ (derivative a (kleene X Alpha)) <-> ((derivative a Alpha) . (kleene X Alpha)) $;
-theorem regex_eq_der_kleene_wrt_b: $ (derivative b (kleene X Alpha)) <-> ((derivative b Alpha) . (kleene X Alpha)) $;
+theorem regex_eq_der_kleene_wrt_a {X: SVar} (Alpha: Pattern X): $ (derivative a (kleene X Alpha)) <-> ((derivative a Alpha) . (kleene X Alpha)) $;
+theorem regex_eq_der_kleene_wrt_b {X: SVar} (Alpha: Pattern X): $ (derivative b (kleene X Alpha)) <-> ((derivative b Alpha) . (kleene X Alpha)) $;
 theorem regex_eq_der_concat_wrt_a: $ (derivative a (Alpha . Beta)) <-> ((derivative a Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative a Beta)) $;
 theorem regex_eq_der_concat_wrt_b: $ (derivative b (Alpha . Beta)) <-> ((derivative b Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative b Beta)) $;
 theorem regex_eq_der_choice_wrt_a: $ (derivative a (Alpha \/ Beta)) <-> (derivative a Alpha) \/ (derivative a Beta) $;
@@ -170,7 +170,7 @@ theorem regex_eq_ewp_choice:
   $ epsilon /\ (Alpha \/ Beta) <-> (epsilon /\ Alpha) \/ (epsilon /\ Beta) $
   = 'andi;
 
-theorem regex_eq_ewp_kleene:
+theorem regex_eq_ewp_kleene {X: SVar} (Alpha: Pattern X):
   $ epsilon /\ (kleene X Alpha) <-> epsilon $;
 ---  = '(anl);
 
@@ -181,7 +181,7 @@ theorem regex_eq_ewp_not_b: $ (epsilon /\ ~b) <-> epsilon $;
 theorem regex_eq_ewp_not_concat: $ (epsilon /\ ~(Alpha . Beta)) <-> ((epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta)) $;
 theorem regex_eq_ewp_not_and: $ (epsilon /\ ~(Alpha /\ Beta)) <-> ((epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta)) $;
 theorem regex_eq_ewp_not_choice: $ (epsilon /\ ~(Alpha \/ Beta)) <-> ((epsilon /\ ~ Alpha) /\ (epsilon /\ ~ Beta)) $;
-theorem regex_eq_ewp_not_kleene: $ (epsilon /\ ~(kleene X Alpha)) <-> bot $;
+theorem regex_eq_ewp_not_kleene {X: SVar} (Alpha: Pattern X): $ (epsilon /\ ~(kleene X Alpha)) <-> bot $;
 theorem regex_eq_ewp_not_not: $ (epsilon /\ ~(~ Alpha)) <-> (epsilon /\ Alpha) $;
 
 --- Identity and idemoptency of \/
@@ -208,7 +208,7 @@ theorem regex_eq_eps_concat_l: $ epsilon . Alpha <-> Alpha $;
 theorem regex_eq_eps_concat_r: $ Alpha . epsilon <-> Alpha $;
 
 theorem regex_eq_double_neg: $ ~ (~ Alpha) <-> Alpha $;
-theorem regex_eq_double_kleene: $ (kleene X (kleene Y Alpha)) <-> Alpha $;
+theorem regex_eq_double_kleene {X: SVar} (Alpha: Pattern X): $ (kleene X (kleene X Alpha)) <-> (kleene X Alpha) $;
 
 theorem regex_eq_eps_kleene: $ (kleene X epsilon) <-> epsilon $;
 theorem regex_eq_bot_kleene: $ (kleene X bot) <-> epsilon $;
