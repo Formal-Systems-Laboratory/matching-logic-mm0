@@ -54,7 +54,7 @@ with tempfile.TemporaryDirectory() as tmp_dir:
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE) as maude_proc:
         (maude_output, _) = maude_proc.communicate(bytes(maude_appendix.format(regex), 'utf-8'))
-        all_outputs = re.findall(r"result (?:Pattern|MetaMathProof): ([^\n]*)\n", process_mm(str(maude_output, 'utf8')))
+        all_outputs = re.findall(r"result \[?(?:Pattern|MetaMathProof)\]?: ([^\n]*)\n", process_mm(str(maude_output, 'utf8')))
     
     # print(all_outputs)
     mm_regex = all_outputs[0]

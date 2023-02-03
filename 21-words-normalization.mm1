@@ -2,30 +2,49 @@ import "11-definedness-normalization.mm1";
 import "20-theory-words.mm1";
 import "13-fixedpoints.mm1";
 
+theorem norm_lemma
+  (h1: $ Norm phi psi $)
+  (h2: $ psi -> rho $):
+  $ phi -> rho $ =
+  '(norm (norm_imp_l @ norm_sym h1) h2);
+
 --- Helpers for concat
 theorem pos_in_concat {X: SVar} (phi1 phi2: Pattern X)
   (h1: $ _Positive X phi1 $) (h2: $ _Positive X phi2 $): $ _Positive X (phi1 . phi2) $
   = '(positive_in_app  (positive_in_app positive_in_sym h1) h2);
 theorem sSubst_concat {X: SVar} (psi rho1 rho2 phi1 phi2: Pattern X)
   (h1: $ Norm (s[ psi  / X ] phi1) rho1 $)
-  (h2: $ Norm (s[ psi  / X ] phi2) rho2 $): $ Norm (s[ psi  / X ] (phi1 . phi2))  (rho1 . rho2) $;
-theorem framing_concat_l(h: $psi -> phi$):   $psi . gamma -> phi . gamma$;
-theorem framing_concat_r {.box: SVar} (h: $psi -> gamma$): $phi . psi -> phi . gamma$;
+  (h2: $ Norm (s[ psi  / X ] phi2) rho2 $):
+  $ Norm (s[ psi  / X ] (phi1 . phi2))  (rho1 . rho2) $ =
+  '(_sSubst_app (_sSubst_app sSubstitution_triv h1) h2);
+theorem framing_concat_l (h: $phi -> psi$): $phi . rho -> psi . rho$ =
+  '(app_framing_l @ app_framing_r h);
+theorem framing_concat_r (h: $phi -> psi$): $rho . phi -> rho . psi$ =
+  '(app_framing_r h);
 
 --- Helpers for top_letter
 theorem pos_in_top_letter {X: SVar}:
- $ _Positive X top_letter $;
+  $ _Positive X top_letter $ =
+  '(positive_in_or positive_in_sym positive_in_sym);
 theorem sSubst_top_letter {X: SVar} (psi: Pattern X):
- $ Norm (s[ psi  / X ] (top_letter))  (top_letter) $;
+ $ Norm (s[ psi  / X ] (top_letter))  (top_letter) $ = 'sSubstitution_triv;
 
 --- Helpers for top_word_l
 --- TODO: Define in terms of kleene_l
-theorem pos_in_top_word_l_pattern {X: SVar}: $_Positive X (epsilon \/ sVar X . top_letter)$;
-theorem kt_top_word_l {X : SVar} (base: $epsilon -> psi$) (rec: $psi . top_letter -> psi$): $top_word_l X -> psi$;
-theorem unfold_r_top_word_l {X : SVar} (phi: Pattern) (h: $phi -> epsilon \/ top_word_l X . top_letter$) : $phi -> top_word_l X$;
+theorem pos_in_top_word_l_pattern {X: SVar}: $_Positive X (epsilon \/ sVar X . top_letter)$ =
+  '(positive_in_or positive_in_sym @
+    positive_in_app (positive_in_app positive_in_sym positive_in_same_sVar) pos_in_top_letter);
+theorem kt_top_word_l {X : SVar} (base: $epsilon -> psi$) (rec: $psi . top_letter -> psi$): $top_word_l X -> psi$ =
+  '(KT pos_in_top_word_l_pattern @ norm_lemma ,(propag_s_subst 'X $epsilon \/ sVar X . top_letter$) @ eori base rec);
+theorem unfold_r_top_word_l {X : SVar} (phi: Pattern) (h: $phi -> epsilon \/ top_word_l X . top_letter$) : $phi -> top_word_l X$ =
+  '(rsyl h @ norm (norm_imp_l ,(propag_s_subst 'X $epsilon \/ sVar X . top_letter$)) @ pre_fixpoint pos_in_top_word_l_pattern);
 
 --- Helpers for top_word_r
 --- TODO: Define in terms of kleene_r
-theorem pos_in_top_word_r_pattern {X: SVar}: $_Positive X (epsilon \/ top_letter . sVar X)$;
-theorem kt_top_word_r {X : SVar} (base: $epsilon -> psi$) (rec: $top_letter . psi -> psi$): $top_word_r X -> psi$;
-theorem unfold_r_top_word_r {X : SVar} (phi: Pattern) (h: $phi -> epsilon \/ top_letter . top_word_r X$) : $phi -> top_word_r X$;
+theorem pos_in_top_word_r_pattern {X: SVar}: $_Positive X (epsilon \/ top_letter . sVar X)$ =
+  '(positive_in_or positive_in_sym @
+    positive_in_app (positive_in_app positive_in_sym pos_in_top_letter) positive_in_same_sVar);
+theorem kt_top_word_r {X : SVar} (base: $epsilon -> psi$) (rec: $top_letter . psi -> psi$): $top_word_r X -> psi$ =
+  '(KT pos_in_top_word_r_pattern @ norm_lemma ,(propag_s_subst 'X $epsilon \/ top_letter . sVar X$) @ eori base rec);
+theorem unfold_r_top_word_r {X : SVar} (phi: Pattern) (h: $phi -> epsilon \/ top_letter . top_word_r X$) : $phi -> top_word_r X$ =
+  '(rsyl h @ norm (norm_imp_l ,(propag_s_subst 'X $epsilon \/ top_letter . sVar X$)) @ pre_fixpoint pos_in_top_word_r_pattern);

@@ -2,6 +2,15 @@ import "01-propositional.mm1";
 import "10-theory-definedness.mm1";
 import "11-definedness-normalization.mm1";
 
+theorem negative_in_not {X: SVar} (phi: Pattern X)
+  (h: $ _Positive X phi $): $ _Negative X (~ phi) $ =
+  '(negative_in_imp h negative_in_bot);
+theorem positive_in_or {X: SVar} (phi1 phi2: Pattern X)
+  (h1: $ _Positive X phi1 $)
+  (h2: $ _Positive X phi2 $):
+  $ _Positive X (phi1 \/ phi2) $ =
+  '(positive_in_imp (negative_in_not h1) h2);
+
 
 --- Appendix C: Properties of Proof System H
 --------------------------------------------
@@ -25,17 +34,32 @@ theorem prop_43_exists_def {x: EVar} (phi: Pattern x):
   $ (exists x (|^ phi ^|)) -> |^ exists x phi ^| $ =
   '(exists_generalization (eFresh_app eFresh_triv eFresh_exists_same_var) (framingDef exists_intro_same_var));
 
+theorem appCtxLVar {box: SVar} (phi1 phi2: Pattern):
+  $ Norm (app[ phi1 / box ] (app (sVar box) phi2)) (app phi1 phi2) $ =
+  '(norm_trans appCtxL @ norm_app appCtxVar norm_refl);
+theorem appCtxRVar {box: SVar} (phi1 phi2: Pattern):
+  $ Norm (app[ phi2 / box ] (app phi1 (sVar box))) (app phi1 phi2) $ =
+  '(norm_trans appCtxR @ norm_app norm_refl appCtxVar);
+
+theorem app_framing_l (h: $phi1 -> phi2$): $(app phi1 psi) -> (app phi2 psi)$ =
+  '(norm (norm_imp appCtxLVar appCtxLVar) (! framing box _ _ _ h));
+theorem app_framing_r (h: $phi1 -> phi2$): $(app psi phi1) -> (app psi phi2)$ =
+  '(norm (norm_imp appCtxRVar appCtxRVar) (! framing box _ _ _ h));
+
 --- prop_44
 theorem cong_of_equiv_not (h: $phi1 <-> phi2$): $~phi1 <-> ~phi2$ = '(noteqi h);
 theorem cong_of_equiv_imp_l (h: $phi1 <-> phi2$): $(phi1 -> psi) <-> (phi2 -> psi)$ = '(anim imim1 imim1 @ ancom h);
 theorem cong_of_equiv_imp_r (h: $phi1 <-> phi2$): $(psi -> phi1) <-> (psi -> phi2)$ = '(anim imim2 imim2 h);
-theorem cong_of_equiv_or_l (h: $phi1 <-> phi2$): $(phi1 \/ psi) <-> (phi2 \/ psi)$;
-theorem cong_of_equiv_or_r (h: $phi1 <-> phi2$): $(psi \/ phi1) <-> (psi \/ phi2)$;
+theorem cong_of_equiv_or_l (h: $phi1 <-> phi2$): $(phi1 \/ psi) <-> (phi2 \/ psi)$ = '(cong_of_equiv_imp_l @ cong_of_equiv_not h);
+theorem cong_of_equiv_or_r (h: $phi1 <-> phi2$): $(psi \/ phi1) <-> (psi \/ phi2)$ = '(cong_of_equiv_imp_r h);
 theorem cong_of_equiv_and_l (h: $phi1 <-> phi2$): $(phi1 /\ psi) <-> (phi2 /\ psi)$ = '(anim anim1 anim1 h);
 theorem cong_of_equiv_and_r (h: $phi1 <-> phi2$): $(psi /\ phi1) <-> (psi /\ phi2)$ = '(anim anim2 anim2 h);
-theorem cong_of_equiv_app_l (h: $phi1 <-> phi2$): $(app phi1 psi) <-> (app phi2 psi)$;
-theorem cong_of_equiv_app_r (h: $phi1 <-> phi2$): $(app psi phi1) <-> (app psi phi2)$;
-
+theorem cong_of_equiv_app_l (h: $phi1 <-> phi2$): $(app phi1 psi) <-> (app phi2 psi)$ = '(ibii
+  (app_framing_l @ anl h)
+  (app_framing_l @ anr h));
+theorem cong_of_equiv_app_r (h: $phi1 <-> phi2$): $(app psi phi1) <-> (app psi phi2)$ = '(ibii
+  (app_framing_r @ anl h)
+  (app_framing_r @ anr h));
 theorem cong_of_equiv_exists {x: EVar} (phi1 phi2: Pattern x)
   (h: $ phi1 <-> phi2 $): $ (exists x phi1) <-> (exists x phi2) $ =
   '(iani (exists_framing @ anl h) (exists_framing @ anr h));

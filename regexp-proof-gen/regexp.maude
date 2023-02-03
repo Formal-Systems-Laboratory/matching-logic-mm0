@@ -131,6 +131,7 @@ mod ERE-THEOREMS is
     rl [regex_eq_der_kleene]  : (derivative A Alpha *)         => (derivative A Alpha) . (Alpha *) .
     rl [regex_eq_der_concat]  : (derivative A (Alpha . Beta))  => ((derivative A Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative A Beta)) .
     rl [regex_eq_der_choice]  : (derivative A (Alpha \/ Beta)) => (derivative A Alpha) \/ (derivative A Beta) .
+    rl [regex_eq_der_conj]    : (derivative A (Alpha /\ Beta)) => (derivative A Alpha) /\ (derivative A Beta) .
     rl [regex_eq_der_neg]     : (derivative A ~ Alpha)         => ~ (derivative A Alpha) .
 
     rl [regex_eq_ewp_bot]     : epsilon /\ bot             => bot .
@@ -260,6 +261,7 @@ mod PROOF-GEN is
         applyEq(S, SL, NAT, 'regex_eq_der_kleene) or-else
         applyEq(S, SL, NAT, 'regex_eq_der_concat) or-else
         applyEq(S, SL, NAT, 'regex_eq_der_choice) or-else
+        applyEq(S, SL, NAT, 'regex_eq_der_conj) or-else
         applyEq(S, SL, NAT, 'regex_eq_der_neg) or-else
         applyEq(S, SL, NAT, 'regex_eq_ewp_bot) or-else
         applyEq(S, SL, NAT, 'regex_eq_ewp_epsilon) or-else
@@ -380,6 +382,7 @@ mod PROOF-GEN is
     eq str(epsilon) = "e" .
     eq str(Alpha . Beta) = "C" + str(Alpha) + str(Beta) + "D" .
     eq str(Alpha \/ Beta) = "C" + str(Alpha) + "p" + str(Beta) + "D" .
+    eq str(Alpha /\ Beta) = "C" + str(Alpha) + "q" + str(Beta) + "D" .
     eq str(Alpha -> Beta) = "C" + str(Alpha) + "i" + str(Beta) + "D" .
     eq str(Alpha *) = "C" + str(Alpha) + "Dx" .
     eq str(~ Alpha) = "nC" + str(Alpha) + "D" .

@@ -57,6 +57,12 @@ theorem eSubstitution_in_and {x: EVar} (psi phi1 phi2: Pattern x):
   '(norm_trans eSubstitution_in_not @ norm_not @ norm_trans eSubstitution_in_imp @ norm_imp_r eSubstitution_in_not);
 
 
+theorem norm_eqiv (phi psi phi2 psi2: Pattern)
+  (h1: $ Norm phi phi2 $)
+  (h2: $ Norm psi psi2 $):
+  $ Norm (phi <-> psi) (phi2 <-> psi2) $ =
+  '(norm_and (norm_imp h1 h2) (norm_imp h2 h1));
+
 --- High level versions of axioms
 ---------------------------------
 
@@ -169,13 +175,15 @@ do {
                           '(_eSubst_eSubst_same_var ,(propag_s_subst X psi1) ,(propag_s_subst X psi2))
                           (error "not implemented"))]
 
-    [$epsilon$  'sSubstitution_triv]
-    [$a$        'sSubstitution_triv]
-    [$b$        'sSubstitution_triv]
-    [$concat ,psi1 ,psi2$ '(_sSubst_concat          ,(propag_s_subst X psi1) ,(propag_s_subst X psi2))]
+    [$epsilon$    'sSubstitution_triv]
+    [$top_letter$ 'sSubstitution_triv]
+    [$a$          'sSubstitution_triv]
+    [$b$          'sSubstitution_triv]
+    [$concat ,psi1 ,psi2$ '(sSubst_concat          ,(propag_s_subst X psi1) ,(propag_s_subst X psi2))]
+    [$top_word ,Y$    (if (== X Y) 'sSubstitution_in_same_mu 'sSubstitution_triv)]
     [$kleene ,Y ,psi$ (if (== X Y)
                           'sSubstitution_in_same_mu
-                          '(_sSubst_mu @ _sSubst_or sSubstitution_triv @ _sSubst_concat ,(propag_s_subst X psi) sSubstitution_triv))]
+                          '(_sSubst_mu @ _sSubst_or sSubstitution_triv @ sSubst_concat ,(propag_s_subst X psi) sSubstitution_triv))]
     [$nnimp ,phi1 ,phi2$  '(_sSubst_nnimp           ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
     [_  'norm_refl]
     -- [('e[ phi2 / y] psi) '()]
