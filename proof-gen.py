@@ -21,23 +21,13 @@ tmp_mm_file = "regex.mm1"
 
 def process_mm(s):
     s = s.replace("-", "_")
+    s = s.replace("_>>", "->>")
     s = s.replace("cong_of_equiv '", "cong_of_equiv_")
     s = s.replace("'regex_", "regex_")
     s = s.replace("Var '", "Var ")
     s = s.replace("mu '", "mu ")
     s = re.sub(r"\(apply_subst ([^$]*)\$([^$]*)\$", r"(norm_lemma ,(propag_s_subst \g<1>$\g<2>$)", s)
-    s = re.sub(r"([^_])kleene ", r"\g<1>kleene _ ", s)
     return s
-
-var_counter = 0
-generated_vars = ""
-def newVar(_):
-    global var_counter
-    global generated_vars
-    var_counter = var_counter + 1
-    var = "X" + str(var_counter)
-    generated_vars = generated_vars + var + " "
-    return var
 
 parser = argparse.ArgumentParser()
 parser.add_argument('regex', help="the regular expression to be checked for validity")
@@ -72,12 +62,12 @@ with tempfile.TemporaryDirectory() as tmp_dir:
     mm_proof = all_outputs[2]
 
     raw_svars = re.findall(r"(?:sVar|mu) ([^ )]*)", mm_fp)
-    svars = " ".join(set(raw_svars)) + " "
+    svars = " ".join(set(raw_svars))
 
-    mm_regex = re.sub("_", newVar, mm_regex)
-    svars = svars + generated_vars
+    if " Xk " in mm_regex:
+        svars = svars + " Xk"
     if svars.strip():
-        svars = " {" + svars + ": SVar} "
+        svars = " {{{}: SVar}} ".format(svars)
 
     mm_theorem = mm_theorem_base.format(svars, mm_fp, mm_regex, mm_proof)
     # print(mm_theorem)
@@ -98,5 +88,3 @@ with tempfile.TemporaryDirectory() as tmp_dir:
     with open(mm0_file_name, "a") as mm0_file:
         mm0_file.write(mm0_theorem)
     shutil.copyfile(mm0_file_name, args.mm0_dest)
-
-    

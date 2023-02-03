@@ -102,14 +102,17 @@ fmod PATTERN-METAMATH-TRANSLATE is
 
     vars Alpha Beta Gamma : Pattern .
 
+    sort KleeneVar .
+    op Xk : -> KleeneVar .
+
     op top          : -> Pattern [ctor] .
-    op kleene _     : Pattern -> Pattern [ctor] .
+    op kleene _ _   : KleeneVar Pattern -> Pattern [ctor] .
     op _ + _        : Pattern Pattern -> Pattern [ctor] .
     op _ ->> _      : Pattern Pattern -> Pattern [ctor] .
     op _ <<->> _    : Pattern Pattern -> Pattern [ctor] .
 
     op _ *          : Pattern -> Pattern .
-    eq Alpha * = kleene Alpha .
+    eq Alpha * = kleene Xk Alpha .
 endfm
 
 mod ERE-THEOREMS is
