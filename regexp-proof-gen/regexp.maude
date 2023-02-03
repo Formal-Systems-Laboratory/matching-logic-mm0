@@ -31,7 +31,7 @@ fmod PATTERN-METAMATH-CORE is
     op a            :                 -> Letter [ctor] .
     op b            :                 -> Letter [ctor] .
 
-    op _ . _        : Pattern Pattern -> Pattern [ctor prec 28 gather (& e)] .
+    op _ . _        : Pattern Pattern -> Pattern [ctor prec 28] .
 
     op (derivative _ _) : Pattern Pattern -> Pattern [ctor] .
 endfm
@@ -47,13 +47,13 @@ fmod PATTERN-METAMATH is
     op top : -> Pattern .
     eq top = ~ bot .
 
-    op _ + _        : Pattern Pattern -> Pattern [prec 30 gather (& e)] .
+    op _ + _        : Pattern Pattern -> Pattern [prec 30] .
     eq Alpha + Beta = Alpha \/ Beta .
 
-    op _ ->> _        : Pattern Pattern -> Pattern [prec 31 gather (e &)] .
+    op _ ->> _        : Pattern Pattern -> Pattern [prec 31] .
     eq Alpha ->> Beta = (~ Alpha) \/ Beta .
 
-    op _ <<->> _       : Pattern Pattern -> Pattern [prec 32 gather (& e)] .
+    op _ <<->> _       : Pattern Pattern -> Pattern [prec 32] .
     eq Alpha <<->> Beta = (Alpha ->> Beta) /\ (Beta ->> Alpha) .
 
     --- Internal sorting of patterns
@@ -107,11 +107,11 @@ fmod PATTERN-METAMATH-TRANSLATE is
 
     op top          : -> Pattern [ctor] .
     op kleene _ _   : KleeneVar Pattern -> Pattern [ctor] .
-    op _ + _        : Pattern Pattern -> Pattern [ctor] .
-    op _ ->> _      : Pattern Pattern -> Pattern [ctor] .
-    op _ <<->> _    : Pattern Pattern -> Pattern [ctor] .
+    op _ + _        : Pattern Pattern -> Pattern [ctor prec 30] .
+    op _ ->> _      : Pattern Pattern -> Pattern [ctor prec 31] .
+    op _ <<->> _    : Pattern Pattern -> Pattern [ctor prec 32] .
 
-    op _ *          : Pattern -> Pattern .
+    op _ *          : Pattern -> Pattern [prec 29] .
     eq Alpha * = kleene Xk Alpha .
 endfm
 
