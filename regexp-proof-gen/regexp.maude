@@ -472,7 +472,6 @@ mod PROOF-GEN is
             (apply-subst qid(str(Alpha)) $ fp(N_A) $ proof-main-goal(N_A))
             (apply-subst qid(str(Alpha)) $ fp(N_B) $ proof-main-goal(N_B))
      .
-
 endm
 
 --- search in ERE-THEOREMS : ((a . a)* ->> ((a * . a) \/ epsilon)) =>* P:Pattern .

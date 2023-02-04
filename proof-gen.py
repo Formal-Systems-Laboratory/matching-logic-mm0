@@ -11,12 +11,6 @@ reduce in PROOF-GEN : proof-main-goal(proofHint({0})) .
 q .
 """
 
-mm_theorem_base = "\n\n\npub theorem fp_to_regex{}: ${} -> {}$ = \n  '{};\n"
-mm_yellow = "yellow.mm1"
-mm_join_cmd = "mm0-rs join {} {}"
-mm_compile_cmd = "mm0-rs compile {} {}"
-tmp_mm_file = "regex.mm1"
-
 def process_mm(s):
     s = s.replace("-", "_")
     s = s.replace("_>>", "->>")
@@ -54,5 +48,5 @@ with tempfile.TemporaryDirectory() as tmp_dir:
         svars = " {{{}: SVar}} ".format(svars)
 
     print('import "../24-words-derivatives.mm1";')
-    print(mm_theorem_base.format(svars, mm_fp, mm_regex, mm_proof))
+    print("pub theorem fp_to_regex{}: ${} -> {}$ = \n  '{};".format(svars, mm_fp, mm_regex, mm_proof))
 
