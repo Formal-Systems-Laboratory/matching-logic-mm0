@@ -343,16 +343,6 @@ mod PROOF-GEN is
 
 
     *** Proof hint generation ************************************************
-    --- As a first step to producing a metamath proof,
-    --- we convert the generated metaSearchTree into a term that will
-    --- be a precursor to both the fixedpoint used for proving the equality
-    --- as well as for the final metamath proof term.
-    --- This will (eventually) include the edges corresponding
-    --- the various simpl rules as well as those corresponding to
-    --- taking the derivative.
-
-    --- Currently we will ignore Contexts and Substitutions,
-    --- but we will eventually need to convert them into metamath proof terms.
 
     op getRegExp : State -> Pattern .
     eq getRegExp(< Alpha >) = Alpha .
