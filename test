@@ -1,6 +1,33 @@
 #!/usr/bin/env bash
 set -euo pipefail
-mkdir -p .build/
-mm0-rs join yellow.mm1 .build/combined-yellow.mm1
-mm0-rs compile  .build/combined-yellow.mm1 /dev/null || { echo "===== FAILED"; exit 1 ; }
+
+test_dir=.build
+
+mkdir -p "$test_dir"
+run_test() {
+    test_name="$1"; shift
+    regexp="$1"; shift
+
+    test_basename="$test_dir/$test_name"
+    echo "Testing: $test_name"
+    ./proof-gen.py "$regexp" \
+        --mmb "$test_basename.mmb" \
+        --mm0 "$test_basename.mm0" \
+        --mm1 "$test_basename.mm1" \
+        > /dev/null
+}
+
+should_fail() {
+    ! run_test "$@" 2>/dev/null
+}
+
+should_fail 'fail-a-star'      '(a)*'
+run_test    'a-or-b-star'      '(a + b)*'
+run_test    'kleene-star-star' '(a *) * ->> (a *)'
+run_test    'alternate-top'    '(a * . b) * + ((b * . a) *)'
+run_test    'even-or-odd' \
+    '((a . a) + (a . b) + (b . a) + (b . b)) * + ((a + b) . (((a . a) + (a . b) + (b . a) + (b . b)) *))'
+run_test    'no-contains-a-or-no-only-b' \
+    '(~ (top . a . top)) + ~ (b *)'
+
 echo Passed.
