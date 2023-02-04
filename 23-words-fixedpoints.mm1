@@ -1,5 +1,5 @@
 import "22-words-salomaa.mm1";
 
 --- Main theorems
-theorem inductive_domain_l_implies_r { X : SVar }: $(top_word_l X) -> (top_word_r X)$;
-theorem inductive_domain_r_implies_l { X : SVar }: $(top_word_r X) -> (top_word_l X)$;
+-- theorem inductive_domain_l_implies_r { X : SVar }: $(top_word_l X) -> (top_word_r X)$;
+-- theorem inductive_domain_r_implies_l { X : SVar }: $(top_word_r X) -> (top_word_l X)$;

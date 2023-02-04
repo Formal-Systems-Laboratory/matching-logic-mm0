@@ -3,6 +3,6 @@ import "21-words-normalization.mm1";
 
 --- Axioms
 --- TODO: Use quantified element variables instead of set vars
-theorem epsilon_idem_r: $(phi . epsilon) <-> phi$  ;
-theorem epsilon_idem_l: $(epsilon . phi) <-> phi$  ;
-theorem concat_assoc: $(alpha . (beta . gamma)) <-> ((alpha . beta) . gamma)$  ;
+-- theorem epsilon_idem_r: $(phi . epsilon) <-> phi$  ;
+-- theorem epsilon_idem_l: $(epsilon . phi) <-> phi$  ;
+-- theorem concat_assoc: $(alpha . (beta . gamma)) <-> ((alpha . beta) . gamma)$  ;

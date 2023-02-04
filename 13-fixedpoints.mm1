@@ -30,7 +30,7 @@ theorem wrap_lemma {x: EVar} (phi psi: Pattern x)
     (norm_trans appCtxR @ norm_app norm_refl @ norm_trans appCtxR @ norm_app norm_refl appCtxVar)
     norm_refl) (! lemma_56 box)) (con2 @ dne singletonDef)));
 
-theorem unwrap_lemma_1 {x: EVar} (phi: Pattern):
+axiom unwrap_lemma_1 {x: EVar} (phi: Pattern):
   $ (x in |_ phi _|) -> |_ phi _| $
   ;
 

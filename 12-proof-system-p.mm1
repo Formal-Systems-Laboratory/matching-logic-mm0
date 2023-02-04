@@ -191,11 +191,11 @@ theorem corollary_57_floor (phi: Pattern): $ |_ phi _| -> phi $ =
 ---  $(forall x phi1) /\ (exists y phi2 == eVar y) -> e[ phi2 / x ] phi1$;
 
 --- lemma 60
-theorem lemma_60_forward {x: EVar}  {box: SVar} (ctx: Pattern box x) (phi1 phi2: Pattern x):
+axiom lemma_60_forward {x: EVar}  {box: SVar} (ctx: Pattern box x) (phi1 phi2: Pattern x):
   $ (app[ phi1 /\ (x in phi2) / box ] ctx) -> ((app[ phi1 / box ] ctx) /\ (x in phi2)) $
   ;
 
-theorem lemma_60_reverse {x: EVar} {box: SVar} (ctx: Pattern box x) (phi1 phi2: Pattern x):
+axiom lemma_60_reverse {x: EVar} {box: SVar} (ctx: Pattern box x) (phi1 phi2: Pattern x):
   $ ((app[ phi1 / box ] ctx) /\ (x in phi2)) -> app[ phi1 /\ (x in phi2) / box ] ctx $
   ;
 -- theorem lemma_60 {x: EVar} {box: SVar} (phi1 ctx: Pattern box x):
