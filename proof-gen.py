@@ -78,11 +78,11 @@ with tempfile.TemporaryDirectory() as tmp_dir:
 
     ### Generate MMB file ###
     mm_file_name = os.path.join(tmp_dir, tmp_mm_file)
-    subprocess.run(mm_join_cmd.format(mm_yellow, mm_file_name), shell=True)
+    subprocess.run(mm_join_cmd.format(mm_yellow, mm_file_name), shell=True, check=True)
     with open(mm_file_name, "a") as mm_file:
         mm_file.write(mm_theorem)
     shutil.copyfile(mm_file_name, args.mm1_dest)
-    subprocess.run(mm_compile_cmd.format(mm_file_name, args.mmb_dest), shell=True)
+    subprocess.run(mm_compile_cmd.format(mm_file_name, args.mmb_dest), shell=True, check=True)
 
     ### Generate MM0 file ###
     mm0_file_name = os.path.join(tmp_dir, tmp_mm0_file)
