@@ -5,6 +5,20 @@ test_dir=.build
 
 mkdir -p "$test_dir"
 
+### Helpers #######################
+
+warn_unproved() {
+    echo "===== Warning: the following are unproved:"
+    for f in $(ls *.mm1); do
+        [[ ! "$f" == *theory* ]] || continue
+        sed -n \
+            -e 's/--.*//' "$f" \
+            -e 's/^ *axiom *\([a-zA-Z0-9_]*\).*/\1/p' "$f" \
+            | tr '\n' ' '
+    done
+    echo
+}
+
 test_mm() {
     file_name="$1"; shift
     test_name="$(basename $file_name)"
@@ -39,6 +53,10 @@ green=(00-matching-logic.mm0
        20-theory-words.mm1
       )
 
+
+### Main #######################
+
+warn_unproved
 for f in "${green[@]}"; do
     test_mm $f;
 done
