@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import tempfile, shutil, os, sys, subprocess, re, argparse
 
 maude_src = "regexp-proof-gen/regexp.maude"
