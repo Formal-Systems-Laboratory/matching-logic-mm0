@@ -4,7 +4,17 @@ set -euo pipefail
 test_dir=.build
 
 mkdir -p "$test_dir"
-run_test() {
+
+test_mm() {
+    file_name="$1"; shift
+    test_name="$(basename $file_name)"
+    test_basename="$test_dir/$test_name"
+    echo "Checking: $test_name."
+    mm0-rs join "$file_name" "$test_basename".combined.mm1
+    mm0-rs compile -q --warn-as-error "$test_basename".combined.mm1 "$test_basename".combined.mmb
+}
+
+test_regex() {
     test_name="$1"; shift
     regexp="$1"; shift
 
@@ -18,16 +28,28 @@ run_test() {
 }
 
 should_fail() {
-    ! run_test "$@" 2>/dev/null
+    ! test_regex "$@" 2>/dev/null
 }
 
+green=(00-matching-logic.mm0
+       01-propositional.mm1
+       02-ml-normalization.mm1
+       10-theory-definedness.mm1
+       11-definedness-normalization.mm1
+       20-theory-words.mm1
+      )
+
+for f in "${green[@]}"; do
+    test_mm $f;
+done
+
 should_fail 'fail-a-star'      '(a)*'
-run_test    'a-or-b-star'      '(a + b)*'
-run_test    'kleene-star-star' '(a *) * ->> (a *)'
-run_test    'alternate-top'    '(a * . b) * + ((b * . a) *)'
-run_test    'even-or-odd' \
+test_regex  'a-or-b-star'      '(a + b)*'
+test_regex  'kleene-star-star' '(a *) * ->> (a *)'
+test_regex  'alternate-top'    '(a * . b) * + ((b * . a) *)'
+test_regex  'even-or-odd' \
     '((a . a) + (a . b) + (b . a) + (b . b)) * + ((a + b) . (((a . a) + (a . b) + (b . a) + (b . b)) *))'
-run_test    'no-contains-a-or-no-only-b' \
+test_regex  'no-contains-a-or-no-only-b' \
     '(~ (top . a . top)) + ~ (b *)'
 
 echo Passed.
