@@ -5,6 +5,13 @@ test_dir=.build
 
 ### Helpers #######################
 
+function error_handler(){
+    local last_status_code=$1;
+    local error_line_number=$2;
+    echo 1>&2 "====== Error: exited with status $last_status_code at line $error_line_number";
+}
+trap  'error_handler $? $LINENO' ERR
+
 warn_unproved() {
     echo "===== Warning: the following are unproved:"
     for f in $(ls *.mm1); do
