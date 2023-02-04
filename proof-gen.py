@@ -50,14 +50,13 @@ args = parser.parse_args()
 regex = args.regex
 
 with tempfile.TemporaryDirectory() as tmp_dir:
-
     with subprocess.Popen(maude_cmd.format(maude_src), shell=True,
                           stdin=subprocess.PIPE,
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE) as maude_proc:
         (maude_output, _) = maude_proc.communicate(bytes(maude_appendix.format(regex), 'utf-8'))
         all_outputs = re.findall(r"result \[?(?:Pattern|MetaMathProof)\]?: ([^\n]*)\n", process_mm(str(maude_output, 'utf8')))
-    
+
     # print(all_outputs)
     mm_regex = all_outputs[0]
     mm_fp = all_outputs[1]
@@ -72,9 +71,6 @@ with tempfile.TemporaryDirectory() as tmp_dir:
         svars = " {{{}: SVar}} ".format(svars)
 
     mm_theorem = mm_theorem_base.format(svars, mm_fp, mm_regex, mm_proof)
-    # print(mm_theorem)
-    mm0_theorem = mm0_theorem_base.format(svars, mm_fp, mm_regex)
-    # print(mm0_theorem)
 
     ### Generate MMB file ###
     mm_file_name = os.path.join(tmp_dir, tmp_mm_file)
@@ -84,9 +80,3 @@ with tempfile.TemporaryDirectory() as tmp_dir:
     shutil.copyfile(mm_file_name, args.mm1_dest)
     subprocess.run(mm_compile_cmd.format(mm_file_name, args.mmb_dest), shell=True, check=True)
 
-    ### Generate MM0 file ###
-    mm0_file_name = os.path.join(tmp_dir, tmp_mm0_file)
-    shutil.copyfile(mm0_combined, mm0_file_name)
-    with open(mm0_file_name, "a") as mm0_file:
-        mm0_file.write(mm0_theorem)
-    shutil.copyfile(mm0_file_name, args.mm0_dest)
