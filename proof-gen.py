@@ -3,7 +3,6 @@
 import tempfile, shutil, os, sys, subprocess, re, argparse
 
 maude_src = "regexp-proof-gen/regexp.maude"
-tmp_maude_file = "regex.maude"
 maude_cmd = "maude -no-banner -no-wrap -interactive {}"
 maude_appendix = """
 reduce in PATTERN-METAMATH-TRANSLATE : {0} .
@@ -13,10 +12,7 @@ q .
 """
 
 mm_theorem_base = "\n\n\npub theorem fp_to_regex{}: ${} -> {}$ = \n  '{};\n"
-mm0_theorem_base = "\n\n\ntheorem fp_to_regex{}: ${} -> {}$;\n"
 mm_yellow = "yellow.mm1"
-mm0_combined = "combined.mm0"
-tmp_mm0_file = "regex.mm0"
 mm_join_cmd = "mm0-rs join {} {}"
 mm_compile_cmd = "mm0-rs compile {} {}"
 tmp_mm_file = "regex.mm1"
