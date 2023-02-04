@@ -405,10 +405,7 @@ mod PROOF-GEN is
            )    [owise] .
 
 
-    *** top-implies-fp ************************************************************
-
-    *** main-goal ************************************************************
-    --- Here, we the proof for (fp -> Alpha) .
+    *** Metamath proofs ******************************************************
 
     sort MetaMathProof .
 
@@ -416,6 +413,8 @@ mod PROOF-GEN is
     --- The Qids corresponding to equational rules are all theorems.
     subsort Qid < MetaMathProof .
     vars MMP : MetaMathProof .
+
+    *** Contextual reasoning with equalities *********************************
 
     op cong-thm : Qid -> Qid .
     eq cong-thm('_->_) = 'imp .
@@ -450,6 +449,12 @@ mod PROOF-GEN is
      = cong-of-equiv qid(string(cong-thm(Q)) + "-r") (lift-equality-to-context Ctx MMP) .
 
     op apply-equiv _ _ : MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
+
+    *** top-implies-fp *******************************************************
+
+    *** main-goal ************************************************************
+    --- Here, we the proof for (fp -> Alpha) .
+
     op main-goal-leaf : -> MetaMathProof [ctor] .
     op main-goal-interior _ _ _ : MetaMathProof MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
 
