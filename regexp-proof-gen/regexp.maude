@@ -226,7 +226,7 @@ mod PROOF-GEN is
     vars T : Term . vars TL TL' : TermList .
     vars P : Pattern .
     vars S : State . vars SL SL' : StateList .
-    vars R Q : Qid . vars Result : Result4Tuple .
+    vars X Y Z R Q : Qid . vars Result : Result4Tuple .
     vars Es1 Es2 : NeEdges .
     vars EL : EdgeLabel .
     vars N N_EWP N_A N_B : Node .
@@ -339,6 +339,7 @@ mod PROOF-GEN is
 
     vars Alpha Alpha1 Alpha2 : Pattern .
     vars Beta  Beta1  Beta2  : Pattern .
+    vars Phi   Phi1   Phi2   : Pattern .
     vars A B A1 A2 : Letter .
 
 
