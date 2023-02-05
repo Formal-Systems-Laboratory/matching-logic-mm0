@@ -37,7 +37,7 @@ with tempfile.TemporaryDirectory() as tmp_dir:
     # print(all_outputs)
     mm_regex = all_outputs[0]
     mm_fp = all_outputs[1]
-    mm_proof = all_outputs[2]
+    mm_fp_implies_regex = all_outputs[2]
 
     raw_svars = re.findall(r"(?:sVar|mu) ([^ )]*)", mm_fp)
     svars = " ".join(set(raw_svars))
@@ -48,5 +48,5 @@ with tempfile.TemporaryDirectory() as tmp_dir:
         svars = " {{{}: SVar}} ".format(svars)
 
     print('import "../24-words-derivatives.mm1";')
-    print("pub theorem fp_to_regex{}: ${} -> {}$ = \n  '{};".format(svars, mm_fp, mm_regex, mm_proof))
+    print("pub theorem fp_to_regex{}: ${} -> {}$ = \n  '{};".format(svars, mm_fp, mm_regex, mm_fp_implies_regex))
 
