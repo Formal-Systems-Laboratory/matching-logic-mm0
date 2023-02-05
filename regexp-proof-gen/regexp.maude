@@ -428,9 +428,7 @@ mod PROOF-GEN is
     eq eq-thm('A:Letter <- Q ; Subst , R) = qid(string(R) + "-wrt-" + string(getName(Q))) .
     eq eq-thm(          Subst , R) = R [owise] .
 
-    sort DollarMarker .
-    op $ : -> DollarMarker .
-    op apply-subst _ _ _ _ _ : Qid DollarMarker Pattern DollarMarker MetaMathProof -> MetaMathProof [ctor] .
+    op apply-subst _ $ _ $ _ : Qid Pattern MetaMathProof -> MetaMathProof [ctor] .
 
     op cong-of-equiv _ _ : Qid MetaMathProof -> MetaMathProof [ctor] .
 
