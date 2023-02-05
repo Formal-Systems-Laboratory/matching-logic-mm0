@@ -19,7 +19,7 @@ def process_mm(s):
     s = s.replace("Var '", "Var ")
     s = s.replace("mu '", "mu ")
     s = s.replace("(propag_s_subst", ",(propag_s_subst ")
-    s = s.replace("\)", ")")
+    s = s.replace("'_", "_")
     return s
 
 parser = argparse.ArgumentParser()
