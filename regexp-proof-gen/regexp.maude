@@ -430,6 +430,7 @@ mod PROOF-GEN is
     eq eq-thm(          Subst , R) = R [owise] .
 
     op norm-lemma _ _ : MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
+    op norm-lemma-r _ _ : MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
     op propag-s-subst _ $ _ $ : Qid Pattern -> MetaMathProof [ctor] .
     op unquote : MetaMathProof -> MetaMathProof [ctor] .
 
