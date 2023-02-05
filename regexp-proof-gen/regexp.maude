@@ -452,6 +452,32 @@ mod PROOF-GEN is
 
     op apply-equiv _ _ : MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
 
+    *** pos ******************************************************************
+    op positivity : Qid Pattern -> MetaMathProof .
+    eq positivity(X, sVar X) = positive-in-same-sVar .
+    eq positivity(X, mu X Phi) = positive-in-same-mu .
+   ceq positivity(X, mu Y Phi) = ( positive-in-mu positivity(X, Phi) )  if X =/= Y .
+    eq positivity(X, Phi1 \/ Phi2) = positive-in-or positivity(X, Phi1) positivity(X, Phi2) .
+    eq positivity(X, epsilon) = positive-in-sym .
+    eq positivity(X, a) = positive-in-sym .
+    eq positivity(X, b) = positive-in-sym .
+    eq positivity(X, Phi1 . Phi2) = positive-in-concat positivity(X, Phi1) positivity(X, Phi2) .
+
+
+    op positive-in-same-sVar : -> MetaMathProof .
+    op positive-in-sym : -> MetaMathProof .
+    op positive-in-mu _ : MetaMathProof -> MetaMathProof .
+    op positive-in-same-mu : MetaMathProof .
+    op positive-in-or _ _ : MetaMathProof MetaMathProof  -> MetaMathProof .
+    op positive-in-concat _ _ : MetaMathProof MetaMathProof  -> MetaMathProof .
+
+
+    *** unfold ***************************************************************
+    op unfold-r : Pattern MetaMathProof -> MetaMathProof .
+    eq unfold-r(mu X Phi, MMP) = (unfold-r positivity(X, Phi) MMP) .
+
+    op unfold-r _ _ : MetaMathProof MetaMathProof -> MetaMathProof .
+
     *** top-implies-fp *******************************************************
 
     *** main-goal ************************************************************
