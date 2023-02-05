@@ -52,6 +52,7 @@ green=(00-matching-logic.mm0
        10-theory-definedness.mm1
        11-definedness-normalization.mm1
        20-theory-words.mm1
+       21-words-normalization.mm1
        24-words-derivatives.mm1
       )
 
