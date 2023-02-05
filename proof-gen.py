@@ -18,7 +18,8 @@ def process_mm(s):
     s = s.replace("'regex_", "regex_")
     s = s.replace("Var '", "Var ")
     s = s.replace("mu '", "mu ")
-    s = re.sub(r"\(apply_subst ([^$]*)\$([^$]*)\$", r"(norm_lemma ,(propag_s_subst \g<1>$\g<2>$)", s)
+    s = s.replace("(propag_s_subst", ",(propag_s_subst ")
+    s = s.replace("\)", ")")
     return s
 
 parser = argparse.ArgumentParser()

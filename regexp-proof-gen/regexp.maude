@@ -428,7 +428,9 @@ mod PROOF-GEN is
     eq eq-thm('A:Letter <- Q ; Subst , R) = qid(string(R) + "-wrt-" + string(getName(Q))) .
     eq eq-thm(          Subst , R) = R [owise] .
 
-    op apply-subst _ $ _ $ _ : Qid Pattern MetaMathProof -> MetaMathProof [ctor] .
+    op norm-lemma _ _ : MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
+    op propag-s-subst _ $ _ $ : Qid Pattern -> MetaMathProof [ctor] .
+    op unquote : MetaMathProof -> MetaMathProof [ctor] .
 
     op cong-of-equiv _ _ : Qid MetaMathProof -> MetaMathProof [ctor] .
 
@@ -467,8 +469,8 @@ mod PROOF-GEN is
                       )    )
      = main-goal-interior
             proof-main-goal(N_EWP)
-            (apply-subst qid(str(Alpha)) $ fp(N_A) $ proof-main-goal(N_A))
-            (apply-subst qid(str(Alpha)) $ fp(N_B) $ proof-main-goal(N_B))
+            (norm-lemma (propag-s-subst qid(str(Alpha)) $ fp(N_A) $)  proof-main-goal(N_A))
+            (norm-lemma (propag-s-subst qid(str(Alpha)) $ fp(N_B) $)  proof-main-goal(N_B))
      .
 endm
 
