@@ -67,6 +67,7 @@ done
 should_fail 'fail-a-star'      '(a)*'
 test_regex  'a-or-b-star'      '(a + b)*'
 test_regex  'kleene-star-star' '(a *) * ->> (a *)'
+test_regex  'example-in-paper' '(a . a)* ->> ((a * . a) + epsilon) '
 test_regex  'alternate-top'    '(a * . b) * + ((b * . a) *)'
 test_regex  'even-or-odd' \
     '((a . a) + (a . b) + (b . a) + (b . b)) * + ((a + b) . (((a . a) + (a . b) + (b . a) + (b . b)) *))'
