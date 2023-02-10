@@ -114,7 +114,7 @@ axiom eFresh_appCtx {x: EVar} {box: SVar} (ctx psi: Pattern x box):
 -- Definition of substitutions and application contexts as meta-level relations
 term Norm: Pattern > Pattern > Normalization;
 
-axiom eSubstitution_triv {x: EVar} (phi: Pattern) (psi: Pattern x): $ Norm (e[ psi / x ]  phi) phi $;
+axiom eSubstitution_triv {x: EVar} (phi: Pattern) (psi: Pattern x): $ Norm (e[ psi / x ] phi) phi $;
 axiom eSubstitution_in_same_eVar {x: EVar} (psi: Pattern x): $ Norm (e[ psi / x ] eVar x) psi $;
 axiom eSubstitution_in_imp {x: EVar} (psi phi1 phi2: Pattern x):
   $ Norm (e[ psi / x ] (phi1 -> phi2)) ((e[ psi / x ] phi1) -> e[ psi / x ] phi2) $;

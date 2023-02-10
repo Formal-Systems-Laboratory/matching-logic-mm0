@@ -68,7 +68,7 @@ theorem app_framing_l (h: $phi1 -> phi2$): $(app phi1 psi) -> (app phi2 psi)$ =
 theorem app_framing_r (h: $phi1 -> phi2$): $(app psi phi1) -> (app psi phi2)$ =
   '(norm (norm_imp appCtxRVar appCtxRVar) (! framing box _ _ _ h));
 
-theorem sSubst_ctx_framing{ X: SVar} (phi phi1 phi2: Pattern X)
+theorem sSubst_ctx_framing{X: SVar} (phi phi1 phi2: Pattern X)
   (h: $ phi1 -> phi2 $): $ (s[ phi / X ] phi1) -> (s[ phi / X ] phi2) $ =
   '(norm sSubstitution_in_imp @ set_var_subst h);
 theorem mu_framing {X: SVar} (phi1 phi2: Pattern X)
@@ -83,19 +83,42 @@ theorem mu_framing_strict {X: SVar} (phi1 phi2: Pattern)
   '(mu_framing positive_triv positive_triv h);
 
 --- prop_44
-theorem cong_of_equiv_not (h: $phi1 <-> phi2$): $~phi1 <-> ~phi2$ = '(noteqi h);
-theorem cong_of_equiv_imp_l (h: $phi1 <-> phi2$): $(phi1 -> psi) <-> (phi2 -> psi)$ = '(anim imim1 imim1 @ ancom h);
-theorem cong_of_equiv_imp_r (h: $phi1 <-> phi2$): $(psi -> phi1) <-> (psi -> phi2)$ = '(anim imim2 imim2 h);
-theorem cong_of_equiv_or_l (h: $phi1 <-> phi2$): $(phi1 \/ psi) <-> (phi2 \/ psi)$ = '(cong_of_equiv_imp_l @ cong_of_equiv_not h);
-theorem cong_of_equiv_or_r (h: $phi1 <-> phi2$): $(psi \/ phi1) <-> (psi \/ phi2)$ = '(cong_of_equiv_imp_r h);
-theorem cong_of_equiv_and_l (h: $phi1 <-> phi2$): $(phi1 /\ psi) <-> (phi2 /\ psi)$ = '(anim anim1 anim1 h);
-theorem cong_of_equiv_and_r (h: $phi1 <-> phi2$): $(psi /\ phi1) <-> (psi /\ phi2)$ = '(anim anim2 anim2 h);
+theorem imp_cong_of_equiv_not: $(phi1 <-> phi2) -> (~phi1 <-> ~phi2)$ = 'noteq;
+theorem imp_cong_of_equiv_imp_l: $(phi1 <-> phi2) -> ((phi1 -> psi) <-> (phi2 -> psi))$ = '(rsyl ancom @ anim imim1 imim1);
+theorem imp_cong_of_equiv_imp_r: $(phi1 <-> phi2) -> ((psi -> phi1) <-> (psi -> phi2))$ = '(anim imim2 imim2);
+theorem imp_cong_of_equiv_imp: $(phi1 <-> phi2) -> (psi1 <-> psi2) -> ((phi1 -> psi1) <-> (phi2 -> psi2))$ = '(syl5 imp_cong_of_equiv_imp_r @ syl bitr imp_cong_of_equiv_imp_l);
+theorem imp_cong_of_equiv_or_l: $(phi1 <-> phi2) -> ((phi1 \/ psi) <-> (phi2 \/ psi))$ = 'oreq1d;
+theorem imp_cong_of_equiv_or_r: $(phi1 <-> phi2) -> ((psi \/ phi1) <-> (psi \/ phi2))$ = 'oreq2d;
+theorem imp_cong_of_equiv_or: $(phi1 <-> phi2) -> (psi1 <-> psi2) -> ((phi1 \/ psi1) <-> (phi2 \/ psi2))$ = 'oreq;
+theorem imp_cong_of_equiv_and: $(phi1 <-> phi2) -> (psi1 <-> psi2) -> ((phi1 /\ psi1) <-> (phi2 /\ psi2))$ = 'aneq;
+theorem imp_cong_of_equiv_and_l: $(phi1 <-> phi2) -> ((phi1 /\ psi) <-> (phi2 /\ psi))$ = '(com12 aneq biid);
+theorem imp_cong_of_equiv_and_r: $(phi1 <-> phi2) -> ((psi /\ phi1) <-> (psi /\ phi2))$ = '(aneq biid);
+theorem imp_cong_of_equiv_equiv: $(phi1 <-> phi2) -> (psi1 <-> psi2) -> ((phi1 <-> psi1) <-> (phi2 <-> psi2))$ = 'bieq;
+theorem imp_cong_of_equiv_equiv_l: $(phi1 <-> phi2) -> ((phi1 <-> psi) <-> (phi2 <-> psi))$ = 'bieq1;
+theorem imp_cong_of_equiv_equiv_r: $(phi1 <-> phi2) -> ((psi <-> phi1) <-> (psi <-> phi2))$ = 'bieq2;
+
+-- The following exist for optimization reasons
+theorem cong_of_equiv_not (h: $phi1 <-> phi2$): $~phi1 <-> ~phi2$ = '(imp_cong_of_equiv_not h);
+theorem cong_of_equiv_imp_l (h: $phi1 <-> phi2$): $(phi1 -> psi) <-> (phi2 -> psi)$ = '(imp_cong_of_equiv_imp_l h);
+theorem cong_of_equiv_imp_r (h: $phi1 <-> phi2$): $(psi -> phi1) <-> (psi -> phi2)$ = '(imp_cong_of_equiv_imp_r h);
+theorem cong_of_equiv_imp (h1: $phi1 <-> phi2$) (h2: $psi1 <-> psi2$): $(phi1 -> psi1) <-> (phi2 -> psi2)$ = '(imp_cong_of_equiv_imp h1 h2);
+theorem cong_of_equiv_or_l (h: $phi1 <-> phi2$): $(phi1 \/ psi) <-> (phi2 \/ psi)$ = '(imp_cong_of_equiv_or_l h);
+theorem cong_of_equiv_or_r (h: $phi1 <-> phi2$): $(psi \/ phi1) <-> (psi \/ phi2)$ = '(imp_cong_of_equiv_or_r h);
+theorem cong_of_equiv_or (h1: $phi1 <-> phi2$) (h2: $psi1 <-> psi2$): $(phi1 \/ psi1) <-> (phi2 \/ psi2)$ = '(imp_cong_of_equiv_or h1 h2);
+theorem cong_of_equiv_nnimp (h1: $phi1 <-> phi2$) (h2: $psi1 <-> psi2$): $(~phi1 \/ psi1) <-> (~phi2 \/ psi2)$ =
+  '(cong_of_equiv_or (cong_of_equiv_not h1) h2);
+theorem cong_of_equiv_and_l (h: $phi1 <-> phi2$): $(phi1 /\ psi) <-> (phi2 /\ psi)$ = '(imp_cong_of_equiv_and_l h);
+theorem cong_of_equiv_and_r (h: $phi1 <-> phi2$): $(psi /\ phi1) <-> (psi /\ phi2)$ = '(imp_cong_of_equiv_and_r h);
+theorem cong_of_equiv_and (h1: $phi1 <-> phi2$) (h2: $psi1 <-> psi2$): $(phi1 /\ psi1) <-> (phi2 /\ psi2)$ = '(imp_cong_of_equiv_and h1 h2);
+theorem cong_of_equiv_equiv (h1: $phi1 <-> phi2$) (h2: $psi1 <-> psi2$): $(phi1 <-> psi1) <-> (phi2 <-> psi2)$ = '(imp_cong_of_equiv_equiv h1 h2);
 theorem cong_of_equiv_app_l (h: $phi1 <-> phi2$): $(app phi1 psi) <-> (app phi2 psi)$ = '(ibii
   (app_framing_l @ anl h)
   (app_framing_l @ anr h));
 theorem cong_of_equiv_app_r (h: $phi1 <-> phi2$): $(app psi phi1) <-> (app psi phi2)$ = '(ibii
   (app_framing_r @ anl h)
   (app_framing_r @ anr h));
+theorem cong_of_equiv_app (h1: $phi1 <-> phi2$) (h2: $psi1 <-> psi2$): $(app phi1 psi1) <-> (app phi2 psi2)$ =
+  '(bitr (cong_of_equiv_app_l h1) (cong_of_equiv_app_r h2));
 theorem cong_of_equiv_exists {x: EVar} (phi1 phi2: Pattern x)
   (h: $ phi1 <-> phi2 $): $ (exists x phi1) <-> (exists x phi2) $ =
   '(iani (exists_framing @ anl h) (exists_framing @ anr h));
@@ -121,6 +144,13 @@ theorem cong_of_equiv_def (h: $ phi1 <-> phi2 $):
 theorem cong_of_equiv_mem {x: EVar} (phi1 phi2: Pattern x)
   (h: $ phi1 <-> phi2 $):
   $ (x in phi1) <-> (x in phi2) $ = '(cong_of_equiv_def @ cong_of_equiv_and_r h);
+theorem cong_of_equiv_eq (h1: $phi1 <-> phi2$) (h2: $psi1 <-> psi2$): $(phi1 == psi1) <-> (phi2 == psi2)$ =
+  '(cong_of_equiv_not @ cong_of_equiv_def @ cong_of_equiv_not @ cong_of_equiv_equiv h1 h2);
+
+do {
+  (def (cong_eq_lift pf to_eq) '(equiv_to_eq @ ,pf (corollary_57_floor ,to_eq)))
+  (def (cong_eq_lift2 pf to_eq1 to_eq2) '(equiv_to_eq @ ,pf (corollary_57_floor ,to_eq1) (corollary_57_floor ,to_eq2)))
+};
 
 theorem univ_gene {x: EVar} (phi: Pattern x)
   (p: $ phi $):
@@ -135,18 +165,28 @@ theorem lemma_46 (phi: Pattern) {box: SVar} (ctx: Pattern box)
   (p : $ phi $):
   $ ~ (app[ (~ phi) / box ] ctx) $ = '(syl propag_bot @ framing @ notnot1 p);
 
-theorem eqiv_to_eq (h: $ phi <-> psi $):
+theorem equiv_to_eq (h: $ phi <-> psi $):
   $ phi == psi $ = '(norm (norm_not @ ! defNorm box) @ lemma_46 h);
 
-theorem eq_intro: $ phi == phi $ = '(eqiv_to_eq biid);
+theorem eq_refl: $ phi == phi $ = '(equiv_to_eq biid);
 
 theorem eq_sym: $ (phi1 == phi2) -> (phi2 == phi1) $ =
   '(con3 @ framing_def @ con3 bicom);
 
+theorem taut_equiv_top (h: $ phi $): $ phi <-> top $ =
+  '(ibii imp_top @ a1i h);
+theorem taut_is_top (h: $ phi $): $ phi == top $ =
+  '(equiv_to_eq @ taut_equiv_top h);
+
+theorem membership_intro_implicit {x: EVar} (phi: Pattern x)
+  (h: $ phi $):
+  $ x in phi $ =
+  '(framing_def (iand id (a1i h)) definedness);
+
 theorem membership_intro {x: EVar} (phi: Pattern x)
   (h: $ phi $):
   $ forall x (x in phi) $ =
-  '(univ_gene @ framing_def (iand id (a1i h)) definedness);
+  '(univ_gene @ membership_intro_implicit h);
 
 theorem membership_elim {x: EVar} (phi: Pattern)
   (h: $ forall x (x in phi) $):
@@ -167,16 +207,21 @@ theorem membership_var_bi {x y: EVar}:
  = '(iani membership_var_forward  membership_var_reverse);
 theorem membership_var {x y: EVar}:
   $ (x in (eVar y)) == (eVar x == eVar y) $
- = '(eqiv_to_eq membership_var_bi);
+ = '(equiv_to_eq membership_var_bi);
+
+theorem membership_same_var: $ x in eVar x $ = '(framing_def (iand id id) definedness);
 
 theorem membership_not_forward {x: EVar} (phi: Pattern x):
   $(x in ~phi) -> ~(x in phi) $ = '(con2 @ dne singletonDef);
 theorem membership_not_reverse {x: EVar} (phi: Pattern x):
   $~(x in phi) -> (x in ~phi) $ =
   '(propag_or_def @ framing_def (exp @ iand anl @ curry @ com12 dne) definedness);
+theorem membership_not_bi {x: EVar} (phi: Pattern x):
+  $ (x in ~phi) <-> ~(x in phi) $ =
+  '(iani membership_not_forward membership_not_reverse);
 theorem membership_not {x: EVar} (phi: Pattern x):
   $ (x in ~phi) == ~(x in phi) $ =
-  '(eqiv_to_eq @ iani membership_not_forward membership_not_reverse);
+  '(equiv_to_eq membership_not_bi);
 
 theorem framing_in {x: EVar} (phi1 phi2: Pattern x)
   (h: $ phi1 -> phi2 $):
@@ -198,34 +243,54 @@ theorem membership_and_bi {x: EVar} (phi1 phi2: Pattern x):
   = '(iani membership_and_forward membership_and_reverse);
 theorem membership_and {x: EVar} (phi1 phi2: Pattern x):
   $ x in (phi1 /\ phi2) == (x in phi1) /\ (x in phi2) $ =
-  '(eqiv_to_eq membership_and_bi);
+  '(equiv_to_eq membership_and_bi);
 
-theorem membership_imp_forward {x: EVar} (phi1 phi2: Pattern):
+theorem membership_imp_forward {x: EVar} (phi1 phi2: Pattern x):
   $ x in (phi1 -> phi2) -> (x in phi1) -> (x in phi2) $ =
   '(exp @ rsyl membership_and_reverse @ framing_in @ impcom @ syl mpcom id );
-theorem membership_imp_reverse {x: EVar} (phi1 phi2: Pattern):
+theorem membership_imp_reverse {x: EVar} (phi1 phi2: Pattern x):
   $((x in phi1) -> (x in phi2))  -> x in (phi1 -> phi2)$ =
   '(imp_to_or @ eori (rsyl membership_not_reverse @ framing_in absurd)
                      (framing_in @ com12 idd ) );
-theorem membership_imp {x: EVar}  (phi1 phi2: Pattern):
+theorem membership_imp_bi {x: EVar} (phi1 phi2: Pattern x):
+  $ x in (phi1 -> phi2) <-> (x in phi1) -> (x in phi2) $ =
+  '(iani membership_imp_forward membership_imp_reverse);
+theorem membership_imp {x: EVar} (phi1 phi2: Pattern x):
   $ x in (phi1 -> phi2) == (x in phi1) -> (x in phi2) $ =
-  '(eqiv_to_eq @ iani membership_imp_forward membership_imp_reverse);
+  '(equiv_to_eq membership_imp_bi);
+
+theorem membership_or_bi {x: EVar} (phi1 phi2: Pattern x):
+  $ x in (phi1 \/ phi2) <-> (x in phi1) \/ (x in phi2) $
+  = '(bitr membership_imp_bi @ cong_of_equiv_imp_l membership_not_bi);
+theorem membership_or {x: EVar} (phi1 phi2: Pattern x):
+  $ x in (phi1 \/ phi2) == (x in phi1) \/ (x in phi2) $
+  = '(equiv_to_eq membership_or_bi);
 
 theorem membership_exists_forward {x y: EVar} (phi: Pattern x y):
   $ (x in (exists y phi)) -> exists y (x in phi) $
-  = '(rsyl (framing_def and_exists_reverse) propag_exists_def);
+  = '(rsyl (framing_def and_exists_strict_reverse) propag_exists_def);
 theorem membership_exists_reverse {x y: EVar} (phi: Pattern x y):
   $ (exists y (x in phi) -> x in (exists y phi)) $
-  = '(rsyl prop_43_exists_def @ framing_def and_exists_forwards);
+  = '(rsyl prop_43_exists_def @ framing_def and_exists_strict_forwards);
+theorem membership_exists_bi {x y: EVar} (phi: Pattern x y):
+  $ (x in (exists y phi)) <-> exists y (x in phi) $
+  = '(iani membership_exists_forward membership_exists_reverse);
 theorem membership_exists {x y: EVar} (phi: Pattern x y):
   $ (x in (exists y phi)) == exists y (x in phi) $
-  = '(eqiv_to_eq @ iani membership_exists_forward membership_exists_reverse);
+  = '(equiv_to_eq membership_exists_bi);
+
+theorem membership_equiv_bi {x: EVar} (phi1 phi2: Pattern x):
+  $ x in (phi1 <-> phi2) <-> ((x in phi1) <-> (x in phi2)) $
+  = '(bitr membership_and_bi @ cong_of_equiv_and membership_imp_bi membership_imp_bi);
+theorem membership_equiv {x: EVar} (phi1 phi2: Pattern x):
+  $ x in (phi1 <-> phi2) == ((x in phi1) <-> (x in phi2)) $
+  = '(equiv_to_eq membership_equiv_bi);
 
 theorem lemma_exists_and: $ phi <-> exists x (eVar x /\ phi) $ =
   '(ibii
-    (rsyl notnot1 @ anr or_exists @ exists_framing
+    (rsyl notnot1 @ anr or_exists_strict @ exists_framing
       (expcom @ iand appl @ rsyl anl dne)
-      @ anl or_exists @ orr existence)
+      @ anl or_exists_strict @ orr existence)
     (exists_generalization_strict anr));
 
 theorem lemma_ceil_exists_membership:
@@ -248,9 +313,11 @@ theorem corollary_57_ceil (phi: Pattern): $ phi -> |^ phi ^| $ =
 theorem corollary_57_floor (phi: Pattern): $ |_ phi _| -> phi $ =
   '(con1 corollary_57_ceil);
 
---- lemma 59
---- theorem functional_subst {x: EVar} {y: EVar} (phi1: Pattern x y) (phi2: Pattern x):
----  $(forall x phi1) /\ (exists y phi2 == eVar y) -> e[ phi2 / x ] phi1$;
+theorem not_ceil_floor_bi: $ ~ |^ phi ^| <-> |_ ~ phi _| $ = '(con3b @ cong_of_equiv_def notnot);
+theorem def_idem: $ |^ (|^ phi ^|) ^| <-> |^ phi ^| $ =
+  '(ibii (norm (norm_imp_l defNorm2) (! lemma_56 box _ _)) @ framing_def corollary_57_ceil);
+theorem floor_idem: $ |_ (|_ phi _|) _| <-> |_ phi _| $ =
+  '(bitr (bicom not_ceil_floor_bi) @ con3b def_idem);
 
 --- lemma 60
 theorem lemma_60_forward {x: EVar} {box: SVar} (ctx: Pattern box x) (phi1 phi2: Pattern x):
@@ -309,7 +376,7 @@ theorem lemma_62_reverse {y: EVar} (phi: Pattern) {.box: SVar}:
             @ iand (a1i definedness)
                    id
             )
-            (a1i eq_intro)
+            (a1i eq_refl)
      );
 
 theorem lemma_62_b_forward:
@@ -331,12 +398,20 @@ theorem lemma_14 {box: SVar} (ctx: Pattern box) (psi phi1 phi2: Pattern)
 
 -- Equality reasoning
 
+theorem eq_trans (h1: $ phi1 == phi2 $) (h2: $ phi2 == phi3 $):
+  $ phi1 == phi3 $ =
+  '(equiv_to_eq @ bitr (corollary_57_floor h1) (corollary_57_floor h2));
+
 theorem eq_to_intro:
   $ (phi1 == phi2) -> (phi1 -> phi2) $ =
   '(syl anl corollary_57_floor);
 theorem eq_to_intro_rev:
   $ (phi1 == phi2) -> (phi2 -> phi1) $ =
   '(syl anr corollary_57_floor);
+
+theorem eq_to_taut (h: $ phi $): $ (phi1 == phi2) -> phi $ = '(a1i h);
+theorem eq_to_id: $ (phi1 == phi2) -> (phi -> phi) $ = '(eq_to_taut id);
+theorem eq_to_id_bi: $ (phi1 == phi2) -> (phi <-> phi) $ = '(eq_to_taut biid);
 
 theorem eq_to_appCtx {box: SVar} (ctx: Pattern box) (phi1 phi2 psi1 psi2: Pattern)
   (h: $ (phi1 == phi2) -> (psi1 -> psi2) $):
@@ -380,6 +455,25 @@ theorem eq_to_imp_r
   $ (phi1 == phi2) -> ((rho -> psi1) -> (rho -> psi2)) $ =
   '(imim2d h);
 
+theorem eq_to_not
+  (h: $ (phi1 == phi2) -> (psi2 -> psi1) $):
+  $ (phi1 == phi2) -> ((~ psi1) -> (~ psi2)) $ =
+  '(eq_to_imp_l h);
+
+theorem eq_to_or
+  (h1: $ (phi1 == phi2) -> (psi1 -> psi2) $)
+  (h2: $ (phi1 == phi2) -> (rho1 -> rho2) $):
+  $ (phi1 == phi2) -> ((psi1 \/ rho1) -> (psi2 \/ rho2)) $ =
+  '(orimd h1 h2);
+theorem eq_to_or_l
+  (h: $ (phi1 == phi2) -> (psi1 -> psi2) $):
+  $ (phi1 == phi2) -> ((psi1 \/ rho) -> (psi2 \/ rho)) $ =
+  '(orim1d h);
+theorem eq_to_or_r
+  (h: $ (phi1 == phi2) -> (psi1 -> psi2) $):
+  $ (phi1 == phi2) -> ((rho \/ psi1) -> (rho \/ psi2)) $ =
+  '(orim2d h);
+
 theorem eq_to_app_l
   (h: $ (phi1 == phi2) -> (psi1 -> psi2) $):
   $ (phi1 == phi2) -> ((app psi1 rho) -> (app psi2 rho)) $ =
@@ -392,40 +486,147 @@ theorem eq_to_app_r
   '(norm
     (norm_imp_r @ norm_imp (norm_trans appCtxR @ norm_app norm_refl appCtxVar) (norm_trans appCtxR @ norm_app norm_refl appCtxVar))
     (! eq_to_appCtx box _ _ _ _ _ h));
+theorem eq_to_app
+  (h1: $ (phi1 == phi2) -> (psi1 -> psi2) $)
+  (h2: $ (phi1 == phi2) -> (rho1 -> rho2) $):
+  $ (phi1 == phi2) -> ((app psi1 rho1) -> (app psi2 rho2)) $ =
+  '(syld (eq_to_app_l h1) (eq_to_app_r h2));
 
-theorem eq_to_not
-  (h: $ (phi1 == phi2) -> (psi2 -> psi1) $):
-  $ (phi1 == phi2) -> ((~ psi1) -> (~ psi2)) $ =
-  '(eq_to_imp_l h);
+theorem eq_to_exists {x: EVar} (phi1 phi2: Pattern) (psi1 psi2: Pattern x)
+  (h: $ (phi1 == phi2) -> (psi1 -> psi2) $):
+  $ (phi1 == phi2) -> ((exists x psi1) -> (exists x psi2)) $ =
+  '(exp @ rsyl and_exists_strict_reverse @ exists_framing @ curry h);
 
-theorem eq_to_eqiv
+do {
+  (def (bi_lift pf to_equiv) '(iand (,pf @ syl anl ,to_equiv) (,pf @ syl anr ,to_equiv)))
+  (def (bi_lift2 pf to_equiv1 to_equiv2) '(iand (,pf (syl anl ,to_equiv1) (syl anl ,to_equiv2)) (,pf (syl anr ,to_equiv1) (syl anr ,to_equiv2))))
+  (def (eq_lift pf to_eq) '(rsyl (bi2 floor_idem) @ framing_floor @ ,pf (syl corollary_57_floor ,to_eq)))
+  (def (eq_lift2 pf to_eq1 to_eq2) '(rsyl (bi2 floor_idem) @ framing_floor @ ,pf (syl corollary_57_floor ,to_eq1) (syl corollary_57_floor ,to_eq2)))
+};
+
+theorem eq_to_intro_bi:
+  $ (phi1 == phi2) -> (phi1 <-> phi2) $ =
+  'corollary_57_floor;
+theorem eq_to_intro_rev_bi:
+  $ (phi1 == phi2) -> (phi2 <-> phi1) $ =
+  '(syl bicom corollary_57_floor);
+
+theorem eq_to_appCtx_bi {box: SVar} (ctx: Pattern box) (phi1 phi2 psi1 psi2: Pattern)
+  (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
+  $ (phi1 == phi2) -> ((app[ psi1 / box ] ctx) <-> app[ psi2 / box ] ctx) $ = (bi_lift 'eq_to_appCtx 'h);
+
+theorem eq_to_framing_bi {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
+  $ (phi1 == phi2) -> ((app[ phi1 / box ] ctx) <-> app[ phi2 / box ] ctx) $ = '(eq_to_appCtx_bi eq_to_intro_bi);
+
+theorem eq_to_def_bi
+  (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
+  $ (phi1 == phi2) -> (|^ psi1 ^| <-> |^ psi2 ^|) $ = (bi_lift 'eq_to_def 'h);
+
+theorem eq_to_and_bi
   (h1: $ (phi1 == phi2) -> (psi1 <-> psi2) $)
   (h2: $ (phi1 == phi2) -> (rho1 <-> rho2) $):
-  $ (phi1 == phi2) -> ((psi1 <-> rho1) -> (psi2 <-> rho2)) $ =
-  '(eq_to_and (eq_to_imp (bi2d h1) (bi1d h2)) (eq_to_imp (bi2d h2) (bi1d h1)));
+  $ (phi1 == phi2) -> ((psi1 /\ rho1) <-> (psi2 /\ rho2)) $ = (bi_lift2 'eq_to_and 'h1 'h2);
+theorem eq_to_and_l_bi
+  (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
+  $ (phi1 == phi2) -> ((psi1 /\ rho) <-> (psi2 /\ rho)) $ = (bi_lift 'eq_to_and_l 'h);
+theorem eq_to_and_r_bi
+  (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
+  $ (phi1 == phi2) -> ((rho /\ psi1) <-> (rho /\ psi2)) $ = (bi_lift 'eq_to_and_r 'h);
 
-theorem eq_to_eq
-  (h1: $ (phi1 == phi2) -> (psi1 == psi2) $)
-  (h2: $ (phi1 == phi2) -> (rho1 == rho2) $):
-  $ (phi1 == phi2) -> ((psi1 == rho1) -> (psi2 == rho2)) $ =
-  '(eq_to_not @ eq_to_def @ eq_to_not @ eq_to_eqiv (syl corollary_57_floor h1) (syl corollary_57_floor h2));
-theorem eq_to_eq_l
-  (h: $ (phi1 == phi2) -> (psi1 == psi2) $):
-  $ (phi1 == phi2) -> ((psi1 == rho) -> (psi2 == rho)) $ =
-  '(eq_to_eq h (a1i eq_intro));
-theorem eq_to_eq_r
-  (h: $ (phi1 == phi2) -> (psi1 == psi2) $):
-  $ (phi1 == phi2) -> ((rho == psi1) -> (rho == psi2)) $ =
-  '(eq_to_eq (a1i eq_intro) h);
+theorem eq_to_imp_bi
+  (h1: $ (phi1 == phi2) -> (psi1 <-> psi2) $)
+  (h2: $ (phi1 == phi2) -> (rho1 <-> rho2) $):
+  $ (phi1 == phi2) -> ((psi1 -> rho1) <-> (psi2 -> rho2)) $ = '(sylc imp_cong_of_equiv_imp h1 h2);
+theorem eq_to_imp_l_bi
+  (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
+  $ (phi1 == phi2) -> ((psi1 -> rho) <-> (psi2 -> rho)) $ = '(syl imp_cong_of_equiv_imp_l h);
+theorem eq_to_imp_r_bi
+  (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
+  $ (phi1 == phi2) -> ((rho -> psi1) <-> (rho -> psi2)) $ = (bi_lift 'eq_to_imp_r 'h);
 
-theorem eqtr (h1: $ phi1 == phi2 $) (h2: $ phi2 == phi3 $):
-  $ phi1 == phi3 $ =
-  '(eqiv_to_eq @ bitr (corollary_57_floor h1) (corollary_57_floor h2));
+theorem eq_to_not_bi
+  (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
+  $ (phi1 == phi2) -> ((~ psi1) <-> (~ psi2)) $ = '(eq_to_imp_l_bi h);
+
+theorem eq_to_floor_bi
+  (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
+  $ (phi1 == phi2) -> (|_ psi1 _| <-> |_ psi2 _|) $ = '(eq_to_not_bi @ eq_to_def_bi @ eq_to_not_bi h);
+
+theorem eq_to_or_bi
+  (h1: $ (phi1 == phi2) -> (psi1 <-> psi2) $)
+  (h2: $ (phi1 == phi2) -> (rho1 <-> rho2) $):
+  $ (phi1 == phi2) -> ((psi1 \/ rho1) <-> (psi2 \/ rho2)) $ = (bi_lift2 'eq_to_or 'h1 'h2);
+theorem eq_to_or_l_bi
+  (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
+  $ (phi1 == phi2) -> ((psi1 \/ rho) <-> (psi2 \/ rho)) $ = (bi_lift 'eq_to_or_l 'h);
+theorem eq_to_or_r_bi
+  (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
+  $ (phi1 == phi2) -> ((rho \/ psi1) <-> (rho \/ psi2)) $ = (bi_lift 'eq_to_or_r 'h);
+
+theorem eq_to_app_l_bi
+  (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
+  $ (phi1 == phi2) -> ((app psi1 rho) <-> (app psi2 rho)) $ = (bi_lift 'eq_to_app_l 'h);
+theorem eq_to_app_r_bi
+  (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
+  $ (phi1 == phi2) -> ((app rho psi1) <-> (app rho psi2)) $ = (bi_lift 'eq_to_app_r 'h);
+theorem eq_to_app_bi
+  (h1: $ (phi1 == phi2) -> (psi1 <-> psi2) $)
+  (h2: $ (phi1 == phi2) -> (rho1 <-> rho2) $):
+  $ (phi1 == phi2) -> ((app psi1 rho1) <-> (app psi2 rho2)) $ = (bi_lift2 'eq_to_app 'h1 'h2);
+
+theorem eq_to_equiv_bi
+  (h1: $ (phi1 == phi2) -> (psi1 <-> psi2) $)
+  (h2: $ (phi1 == phi2) -> (rho1 <-> rho2) $):
+  $ (phi1 == phi2) -> ((psi1 <-> rho1) <-> (psi2 <-> rho2)) $ = '(sylc bieq h1 h2);
+theorem eq_to_equiv_l_bi
+  (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
+  $ (phi1 == phi2) -> ((psi1 <-> rho) <-> (psi2 <-> rho)) $ = '(eq_to_equiv_bi h eq_to_id_bi);
+theorem eq_to_equiv_r_bi
+  (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
+  $ (phi1 == phi2) -> ((rho <-> psi1) <-> (rho <-> psi2)) $ = '(eq_to_equiv_bi eq_to_id_bi h);
+
+theorem eq_to_eq_bi
+  (h1: $ (phi1 == phi2) -> (psi1 <-> psi2) $)
+  (h2: $ (phi1 == phi2) -> (rho1 <-> rho2) $):
+  $ (phi1 == phi2) -> ((psi1 == rho1) <-> (psi2 == rho2)) $ =
+  '(eq_to_not_bi @ eq_to_def_bi @ eq_to_not_bi @ eq_to_equiv_bi h1 h2);
+theorem eq_to_eq_l_bi
+  (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
+  $ (phi1 == phi2) -> ((psi1 == rho) <-> (psi2 == rho)) $ = '(eq_to_eq_bi h eq_to_id_bi);
+theorem eq_to_eq_r_bi
+  (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
+  $ (phi1 == phi2) -> ((rho == psi1) <-> (rho == psi2)) $ = '(eq_to_eq_bi eq_to_id_bi h);
+
+theorem eq_to_exists_bi {x: EVar} (phi1 phi2: Pattern) (psi1 psi2: Pattern x)
+  (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
+  $ (phi1 == phi2) -> ((exists x psi1) <-> (exists x psi2)) $ = (bi_lift 'eq_to_exists 'h);
+theorem eq_to_forall_bi {x: EVar} (phi1 phi2: Pattern) (psi1 psi2: Pattern x)
+  (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
+  $ (phi1 == phi2) -> ((forall x psi1) <-> (forall x psi2)) $ =
+  '(eq_to_not_bi @ eq_to_exists_bi @ eq_to_not_bi h);
+
+theorem eq_to_mem_bi
+  (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
+  $ (phi1 == phi2) -> ((x in psi1) <-> (x in psi2)) $ =
+  '(eq_to_def_bi @ eq_to_and_bi eq_to_id_bi h);
+
+theorem eq_to_gen_mem_bi
+  (h1: $ (phi1 == phi2) -> (psi1 <-> psi2) $)
+  (h2: $ (phi1 == phi2) -> (rho1 <-> rho2) $):
+  $ (phi1 == phi2) -> ((|^ psi1 /\ rho1 ^|) <-> (|^ psi2 /\ rho2 ^|)) $ =
+  '(eq_to_def_bi @ eq_to_and_bi h1 h2);
+
+theorem eq_to_subset_bi
+  (h1: $ (phi1 == phi2) -> (psi1 <-> psi2) $)
+  (h2: $ (phi1 == phi2) -> (rho1 <-> rho2) $):
+  $ (phi1 == phi2) -> ((psi1 C_ rho1) <-> (psi2 C_ rho2)) $ =
+  '(eq_to_not_bi @ eq_to_def_bi @ eq_to_not_bi @ eq_to_imp_bi h1 h2);
+
 
 -- theorem eq_to_eq_app_l
 --   (h: $ (phi1 == phi2) -> (psi1 == psi2) $):
 --   $ (phi1 == phi2) -> ((app psi1 rho) == (app psi2 rho)) $ =
---   '(syl eqiv_to_eq @ ibid (eq_to_app_l @ syl eq_to_intro h) (eq_to_app_l @ syl eq_to_intro @ syl eq_sym h));
+--   '(syl equiv_to_eq @ ibid (eq_to_app_l @ syl eq_to_intro h) (eq_to_app_l @ syl eq_to_intro @ syl eq_sym h));
 
 theorem ceil_mem_imp_mem {x: EVar} (phi: Pattern x):
   $ |^ x in phi ^| -> x in phi $ =
@@ -438,21 +639,169 @@ theorem mem_imp_floor_mem {x: EVar} (phi: Pattern x):
 theorem lemma_in_in_forward {x y: EVar} (phi: Pattern x y):
   $ (x in (y in phi)) -> y in phi $ =
   '(syl ceil_mem_imp_mem @ framing_def anr);
+theorem lemma_in_in_forward_same_var {x: EVar} (phi: Pattern x):
+  $ (x in (x in phi)) -> x in phi $ =
+  '(syl ceil_mem_imp_mem @ framing_def anr);
 theorem lemma_in_in_reverse {x y: EVar} (phi: Pattern x y):
   $ (y in phi) -> x in (y in phi) $ =
+  '(rsyl mem_imp_floor_mem @ propag_or_def @
+    framing_def lemma_in_in_reverse_helper @ prop_43_or_def @ orr definedness);
+theorem lemma_in_in_reverse_same_var {x: EVar} (phi: Pattern x):
+  $ (x in phi) -> x in (x in phi) $ =
   '(rsyl mem_imp_floor_mem @ propag_or_def @
     framing_def lemma_in_in_reverse_helper @ prop_43_or_def @ orr definedness);
 
 theorem lemma_in_in {x y: EVar} (phi: Pattern x y):
   $ (x in (y in phi)) <-> y in phi $ =
   '(ibii lemma_in_in_forward lemma_in_in_reverse);
+theorem lemma_in_in_same_var {x: EVar} (phi: Pattern x):
+  $ (x in (x in phi)) <-> x in phi $ =
+  '(ibii lemma_in_in_forward_same_var lemma_in_in_reverse_same_var);
 
 theorem membership_sym {x y: EVar} {box: SVar} (ctx: Pattern box x) (phi: Pattern x):
   $ (x in app[ phi / box ] ctx) == exists y ((y in phi) /\ (x in app[ eVar y / box ] ctx)) $ =
-  '(eqiv_to_eq @
+  '(equiv_to_eq @
     bitr (cong_of_equiv_mem @ cong_of_equiv_appCtx @ bicom lemma_62) @
     bitr (cong_of_equiv_mem exists_appCtx) @
     bitr (cong_of_equiv_mem @ cong_of_equiv_exists lemma_60_b) @
     bitr (corollary_57_floor membership_exists) @
     bitr (cong_of_equiv_exists membership_and_bi)
          (cong_of_equiv_exists @ cong_of_equiv_and_l lemma_in_in));
+
+--- lemma 59
+-- theorem functional_subst {x: EVar} {y: EVar} (phi1: Pattern x y) (phi2: Pattern x):
+--   $ (forall x phi1) /\ (exists y phi2 == eVar y) -> e[ phi2 / x ] phi1 $ =
+--   '();
+
+theorem membership_forall_bi {x y: EVar} (phi: Pattern x y):
+  $ (x in (forall y phi)) <-> forall y (x in phi) $
+  = '(bitr membership_not_bi @ cong_of_equiv_not @ bitr membership_exists_bi @ cong_of_equiv_exists membership_not_bi);
+theorem membership_forall {x y: EVar} (phi: Pattern x y):
+  $ (x in (forall y phi)) == forall y (x in phi) $
+  = '(equiv_to_eq membership_forall_bi);
+
+
+theorem floor_imp_mem {x: EVar} (phi: Pattern x): $ |_ phi _| -> x in phi $ =
+  '(propag_or_def @ framing_def (imim1i dne) @ framing_def ian definedness);
+
+theorem mem_floor_forward {x: EVar} (phi: Pattern x):
+  $ (x in |_ phi _|) -> |_ phi _| $ =
+  '(con2 @ syl (rsyl notnot1 @ con3 membership_not_forward) @
+    syl (norm (norm_imp_r @ norm_mem defNorm) @ eq_to_intro_rev membership_sym) @
+    rsyl (anl lemma_ceil_exists_membership) @ exists_framing @ iand id @ a1i @
+    framing_def (iand id (a1i @ norm (norm_sym (! defNorm box)) (! definedness y))) definedness);
+theorem mem_floor_reverse {x: EVar} (phi: Pattern x):
+  $ |_ phi _| -> (x in |_ phi _|) $ =
+  '(syl floor_imp_mem @ anr floor_idem);
+theorem mem_floor {x: EVar} (phi: Pattern x):
+  $ (x in |_ phi _|) <-> |_ phi _| $ =
+  '(ibii mem_floor_forward mem_floor_reverse);
+theorem mem_def_forward {x: EVar} (phi: Pattern x):
+  $ (x in |^ phi ^|) -> |^ phi ^| $ =
+  '(syl (framing_def dne) @ rsyl (con2 @ rsyl membership_not_forward @ con3 @ framing_in @ framing_def notnot1) @ con1 mem_floor_reverse);
+theorem mem_def_reverse {x: EVar} (phi: Pattern x):
+  $ |^ phi ^| -> (x in |^ phi ^|) $ =
+  '(rsyl (rsyl (framing_def notnot1) @ con2 mem_floor_forward) @ rsyl (con3 membership_not_reverse) @ rsyl dne @ framing_in @ framing_def dne);
+theorem mem_def {x: EVar} (phi: Pattern x):
+  $ (x in |^ phi ^|) <-> |^ phi ^| $ =
+  '(ibii mem_def_forward mem_def_reverse);
+
+do {
+  (def (cong_of_equiv_eVar_propag x equiv_pf ctx) @ match ctx
+    [$eVar ,y$ (if (== x y) equiv_pf 'biid)]
+    [$exists ,y ,psi$ (if (== x y) 'biid '(cong_of_equiv_exists ,(cong_of_equiv_eVar_propag x equiv_pf psi)))]
+    [$imp ,phi1 ,phi2$   '(cong_of_equiv_imp     ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
+    [$app ,phi1 ,phi2$   '(cong_of_equiv_app     ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
+    -- [$mu ,Y ,psi$        '(cong_of_equiv_mu      ,(cong_of_equiv_eVar_propag x equiv_pf psi))]
+    [$not ,psi$          '(cong_of_equiv_not     ,(cong_of_equiv_eVar_propag x equiv_pf psi))]
+    [$or ,phi1 ,phi2$    '(cong_of_equiv_or      ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
+    [$and ,phi1 ,phi2$   '(cong_of_equiv_and     ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
+    [$_ceil ,psi$        '(cong_of_equiv_def     ,(cong_of_equiv_eVar_propag x equiv_pf psi))]
+    [$equiv ,phi1 ,phi2$ '(cong_of_equiv_equiv   ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
+    [$_eq ,phi1 ,phi2$   '(cong_of_equiv_eq      ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
+    -- forall and _floor not yet implemented
+
+    [$nnimp ,phi1 ,phi2$  '(cong_of_equiv_nnimp  ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag X equiv_pf phi2))]
+    [$concat ,phi1 ,phi2$ '(cong_of_equiv_concat ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
+    -- Kleene star not supported
+    -- [$kleene ,Y ,psi$     '(cong_of_equiv_kleene ,(cong_of_equiv_eVar_propag x equiv_pf psi))]
+    [_ 'biid]
+  )
+
+  (def (functional_subst_helper x ctx) @ match ctx
+    [$eVar ,y$ (if (== x y) 'eq_to_intro_bi 'eq_to_id_bi)]
+    [$exists ,y ,psi$ (if (== x y) 'eq_to_id_bi '(eq_to_exists_bi ,(functional_subst_helper x psi)))]
+    [$forall ,y ,psi$ (if (== x y) 'eq_to_id_bi '(eq_to_forall_bi ,(functional_subst_helper x psi)))]
+    [$_in ,y ,psi$ (if (== x y) '(eq_to_gen_mem_bi eq_to_intro_bi ,(functional_subst_helper x psi)) '(eq_to_mem_bi ,(functional_subst_helper x psi)))]
+    [$imp ,phi1 ,phi2$     '(eq_to_imp_bi    ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
+    [$app ,phi1 ,phi2$     '(eq_to_app_bi    ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
+    [$not ,psi$            '(eq_to_not_bi    ,(functional_subst_helper x psi))]
+    [$or ,phi1 ,phi2$      '(eq_to_or_bi     ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
+    [$and ,phi1 ,phi2$     '(eq_to_and_bi    ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
+    [$_ceil ,psi$          '(eq_to_def_bi    ,(functional_subst_helper x psi))]
+    [$_floor ,psi$         '(eq_to_floor_bi  ,(functional_subst_helper x psi))]
+    [$_subset ,phi1 ,phi2$ '(eq_to_subset_bi ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
+    [$equiv ,phi1 ,phi2$   '(eq_to_equiv_bi  ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
+    [$_eq ,phi1 ,phi2$     '(eq_to_eq_bi     ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
+
+    [$nnimp ,phi1 ,phi2$   '(eq_to_nnimp_bi  ,(functional_subst_helper x phi1) ,(functional_subst_helper X phi2))]
+    [$concat ,phi1 ,phi2$  '(eq_to_concat_bi ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
+
+    [_ 'eq_to_id_bi]
+  )
+
+  (def (functional_subst x y phi1 forall_x_phi1 func_phi2) '(
+    exists_generalization_strict (mp (com12 @ syl anl ,(functional_subst_helper x phi1)) (norm ,(propag_e_subst x phi1) (! var_subst ,x ,y ,phi1 ,forall_x_phi1))) ,func_phi2
+  ))
+
+  (def (functional_subst_implicit x phi1 phi1_pf func_phi2) '(
+    exists_generalization_strict (mp (com12 @ syl anl ,(functional_subst_helper x phi1)) ,phi1_pf) ,func_phi2
+  ))
+
+  (def (propag_mem x ctx) @ match ctx
+    -- special case for top and bottom?
+    [$eVar ,y$ (if (== x y) '(taut_equiv_top membership_same_var) 'membership_var_bi)]
+    [$exists ,y ,psi$ (if (== x y) 'biid '(bitr membership_exists_bi @ cong_of_equiv_exists ,(propag_mem x psi)))]
+    [$forall ,y ,psi$ (if (== x y) 'biid '(bitr membership_forall_bi @ cong_of_equiv_forall ,(propag_mem x psi)))]
+    [$_in ,y ,psi$ (if (== x y) 'lemma_in_in_same_var 'lemma_in_in)]
+    [$imp ,phi1 ,phi2$     '(bitr membership_imp_bi @ cong_of_equiv_imp ,(propag_mem x phi1) ,(propag_mem x phi2))]
+    [$not ,psi$            '(bitr membership_not_bi @ cong_of_equiv_not ,(propag_mem x psi))]
+    [$or ,phi1 ,phi2$      '(bitr membership_or_bi  @ cong_of_equiv_or  ,(propag_mem x phi1) ,(propag_mem x phi2))]
+    [$and ,phi1 ,phi2$     '(bitr membership_and_bi @ cong_of_equiv_and ,(propag_mem x phi1) ,(propag_mem x phi2))]
+    -- [$app ,phi1 ,phi2$     '(membership_app    ,(propag_mem x phi1) ,(propag_mem x phi2))]
+    [$_ceil ,psi$          'mem_def]
+    [$_floor ,psi$         'mem_floor]
+    [$_subset ,phi1 ,phi2$ 'mem_floor]
+    [$equiv ,phi1 ,phi2$   '(bitr membership_equiv_bi @ cong_of_equiv_equiv ,(propag_mem x phi1) ,(propag_mem x phi2))]
+    [$_eq ,phi1 ,phi2$     'mem_floor]
+
+    -- [$nnimp ,phi1 ,phi2$   '(membership_nnimp  ,(propag_mem x phi1) ,(propag_mem X phi2))]
+    -- [$concat ,phi1 ,phi2$  '(membership_concat ,(propag_mem x phi1) ,(propag_mem x phi2))]
+  
+    [_ 'biid]
+  )
+};
+
+theorem functional_subst_test_1 {x y: EVar} (phi: Pattern)
+  (h1: $ forall x (|^ eVar x ^|) $)
+  (h2: $ exists y (eVar y == phi) $):
+  $ |^ phi ^| $ =
+  (functional_subst 'x 'y $|^ eVar x ^|$ 'h1 'h2);
+
+theorem functional_subst_implicit_test_1 {x: EVar} (phi: Pattern)
+  (h1: $ (~ eVar x) $)
+  (h2: $ exists x (eVar x == phi) $):
+  $ (~ phi) $ =
+  (functional_subst_implicit 'x $(~ eVar x)$ 'h1 'h2);
+
+theorem propag_mem_test_01 {x: EVar}:
+  $ (x in ~ top) <-> (~ (x in top)) $ =
+  (propag_mem 'x $~ top$);
+
+theorem propag_mem_test_02 {x y: EVar}:
+  $ (x in (~ (eVar x /\ eVar y))) <-> (~ (top /\ (eVar x == eVar y))) $ =
+  (propag_mem 'x $~ (eVar x /\ eVar y)$);
+
+theorem propag_mem_test_11 {x y: EVar} (phi: Pattern x):
+  $ (x in (~ ((phi /\ (eVar y \/ (exists y (phi /\ y in phi)) \/ |^ phi ^|)) <-> eVar x))) <-> (~ ((x in phi /\ ((eVar x == eVar y) \/ (exists y ((x in phi) /\ y in phi)) \/ |^ phi ^|)) <-> top)) $ =
+  (propag_mem 'x $~ ((phi /\ (eVar y \/ (exists y (phi /\ y in phi)) \/ |^ phi ^|)) <-> eVar x)$);

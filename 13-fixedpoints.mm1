@@ -30,16 +30,9 @@ theorem wrap_lemma {x: EVar} (phi psi: Pattern x)
     (norm_trans appCtxR @ norm_app norm_refl @ norm_trans appCtxR @ norm_app norm_refl appCtxVar)
     norm_refl) (! lemma_56 box)) (con2 @ dne singletonDef)));
 
-theorem unwrap_lemma_1 {x: EVar} (phi: Pattern):
-  $ (x in |_ phi _|) -> |_ phi _| $ =
-  '(con2 @ syl (rsyl notnot1 @ con3 membership_not_forward) @
-    syl (norm (norm_imp_r @ norm_mem defNorm) @ eq_to_intro_rev membership_sym) @
-    rsyl (anl lemma_ceil_exists_membership) @ exists_framing @ iand id @ a1i @
-    framing_def (iand id (a1i @ norm (norm_sym (! defNorm box)) (! definedness y))) definedness);
-
 theorem unwrap_lemma {x y: EVar} {box: SVar} (ctx: Pattern box) (phi: Pattern):
   $ ((y in eVar x) /\ y in |_ app[ eVar x / box ] ctx -> phi _|) -> |_ (app[ eVar y / box ] ctx) -> phi _| $ =
-  '(curry @ rsyl membership_var_forward @ syl (imim1i unwrap_lemma_1) @
+  '(curry @ rsyl membership_var_forward @ syl (imim1i mem_floor_forward) @
   con3d @ norm (norm_imp_r @ norm_imp defNorm defNorm) (! lemma_14 box2 _ _ _ _ @ con3d @ rsyl eq_to_framing imim1));
 
 -- theorem appCtx_ceil_1:
