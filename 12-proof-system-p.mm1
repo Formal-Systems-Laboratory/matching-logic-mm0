@@ -20,6 +20,11 @@ theorem _eSubst_floor {x: EVar} (phi psi rho: Pattern x)
   (h: $ Norm (e[ phi / x ] psi) rho $):
   $ Norm (e[ phi / x ] (|_ psi _|)) (|_ rho _|) $ =
   '(_eSubst_not @ _eSubst_ceil @ _eSubst_not h);
+theorem _eSubst_subset {x: EVar} (phi phi1 phi2 psi1 psi2: Pattern x)
+  (h1: $ Norm (e[ phi / x ] phi1) psi1 $)
+  (h2: $ Norm (e[ phi / x ] phi2) psi2 $):
+  $ Norm (e[ phi / x ] (phi1 C_ phi2)) (psi1 C_ psi2) $ =
+  '(_eSubst_floor @ _eSubst_imp h1 h2);
 theorem _eSubst_eq {x: EVar} (phi phi1 phi2 psi1 psi2: Pattern x)
   (h1: $ Norm (e[ phi / x ] phi1) psi1 $)
   (h2: $ Norm (e[ phi / x ] phi2) psi2 $):
@@ -141,6 +146,13 @@ theorem cong_of_equiv_def (h: $ phi1 <-> phi2 $):
   $ |^ phi1 ^| <-> |^ phi2 ^| $ = '(ibii
     (framing_def @ anl h)
     (framing_def @ anr h));
+theorem cong_of_equiv_floor (h: $ phi1 <-> phi2 $):
+  $ |_ phi1 _| <-> |_ phi2 _| $ =
+  '(cong_of_equiv_not @ cong_of_equiv_def @ cong_of_equiv_not h);
+theorem cong_of_equiv_subset (h1: $phi1 <-> phi2$) (h2: $psi1 <-> psi2$):
+  $ (phi1 C_ psi1) <-> (phi2 C_ psi2) $ =
+  '(cong_of_equiv_floor @ cong_of_equiv_imp h1 h2);
+
 theorem cong_of_equiv_mem {x: EVar} (phi1 phi2: Pattern x)
   (h: $ phi1 <-> phi2 $):
   $ (x in phi1) <-> (x in phi2) $ = '(cong_of_equiv_def @ cong_of_equiv_and_r h);
@@ -192,6 +204,11 @@ theorem membership_elim {x: EVar} (phi: Pattern)
   (h: $ forall x (x in phi) $):
   $ phi $ =
   '(dne @ exists_generalization_strict (dne @ dne (norm (norm_not @ norm_and (! defNorm box1) (! appCtxVar box2)) singleton) @ var_subst_same_var h) existence);
+
+theorem membership_elim_implicit {x: EVar} (phi: Pattern)
+  (h: $ x in phi $):
+  $ phi $ =
+  '(membership_elim @ univ_gene h);
 
 theorem membership_var_forward {x y: EVar}: $ (x in (eVar y)) -> (eVar x == eVar y) $
  = '( rsyl (iand (dne singletonDef) (imim1i (framing_def ancom) @ dne @ norm (norm_not @ norm_and defNorm defNorm) (! singleton box1 box2)))
@@ -285,6 +302,14 @@ theorem membership_equiv_bi {x: EVar} (phi1 phi2: Pattern x):
 theorem membership_equiv {x: EVar} (phi1 phi2: Pattern x):
   $ x in (phi1 <-> phi2) == ((x in phi1) <-> (x in phi2)) $
   = '(equiv_to_eq membership_equiv_bi);
+
+
+theorem eVar_in_subset {x: EVar} (phi: Pattern x):
+  $ (x in phi) <-> (eVar x C_ phi) $ =
+  '(con2b @ bitr (cong_of_equiv_def @ cong_of_equiv_not @ cong_of_equiv_imp_r notnot) membership_not_bi);
+theorem eVar_in_subset_rev {x: EVar} (phi: Pattern x):
+  $ (eVar x C_ phi) <-> (x in phi) $ =
+  '(bicom eVar_in_subset);
 
 theorem lemma_exists_and: $ phi <-> exists x (eVar x /\ phi) $ =
   '(ibii
@@ -710,19 +735,21 @@ do {
   (def (cong_of_equiv_eVar_propag x equiv_pf ctx) @ match ctx
     [$eVar ,y$ (if (== x y) equiv_pf 'biid)]
     [$exists ,y ,psi$ (if (== x y) 'biid '(cong_of_equiv_exists ,(cong_of_equiv_eVar_propag x equiv_pf psi)))]
-    [$imp ,phi1 ,phi2$   '(cong_of_equiv_imp     ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
-    [$app ,phi1 ,phi2$   '(cong_of_equiv_app     ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
+    [$imp ,phi1 ,phi2$     '(cong_of_equiv_imp    ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
+    [$app ,phi1 ,phi2$     '(cong_of_equiv_app    ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
     -- [$mu ,Y ,psi$        '(cong_of_equiv_mu      ,(cong_of_equiv_eVar_propag x equiv_pf psi))]
-    [$not ,psi$          '(cong_of_equiv_not     ,(cong_of_equiv_eVar_propag x equiv_pf psi))]
-    [$or ,phi1 ,phi2$    '(cong_of_equiv_or      ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
-    [$and ,phi1 ,phi2$   '(cong_of_equiv_and     ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
-    [$_ceil ,psi$        '(cong_of_equiv_def     ,(cong_of_equiv_eVar_propag x equiv_pf psi))]
-    [$equiv ,phi1 ,phi2$ '(cong_of_equiv_equiv   ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
-    [$_eq ,phi1 ,phi2$   '(cong_of_equiv_eq      ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
+    [$not ,psi$            '(cong_of_equiv_not    ,(cong_of_equiv_eVar_propag x equiv_pf psi))]
+    [$or ,phi1 ,phi2$      '(cong_of_equiv_or     ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
+    [$and ,phi1 ,phi2$     '(cong_of_equiv_and    ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
+    [$_ceil ,psi$          '(cong_of_equiv_def    ,(cong_of_equiv_eVar_propag x equiv_pf psi))]
+    [$_floor ,psi$         '(cong_of_equiv_floor  ,(cong_of_equiv_eVar_propag x equiv_pf psi))]
+    [$_subset ,phi1 ,phi2$ '(cong_of_equiv_subset ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
+    [$equiv ,phi1 ,phi2$   '(cong_of_equiv_equiv  ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
+    [$_eq ,phi1 ,phi2$     '(cong_of_equiv_eq     ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
     -- forall and _floor not yet implemented
 
-    [$nnimp ,phi1 ,phi2$  '(cong_of_equiv_nnimp  ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag X equiv_pf phi2))]
-    [$concat ,phi1 ,phi2$ '(cong_of_equiv_concat ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
+    [$nnimp ,phi1 ,phi2$   '(cong_of_equiv_nnimp  ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag X equiv_pf phi2))]
+    [$concat ,phi1 ,phi2$  '(cong_of_equiv_concat ,(cong_of_equiv_eVar_propag x equiv_pf phi1) ,(cong_of_equiv_eVar_propag x equiv_pf phi2))]
     -- Kleene star not supported
     -- [$kleene ,Y ,psi$     '(cong_of_equiv_kleene ,(cong_of_equiv_eVar_propag x equiv_pf psi))]
     [_ 'biid]
@@ -764,15 +791,15 @@ do {
     [$exists ,y ,psi$ (if (== x y) 'biid '(bitr membership_exists_bi @ cong_of_equiv_exists ,(propag_mem x psi)))]
     [$forall ,y ,psi$ (if (== x y) 'biid '(bitr membership_forall_bi @ cong_of_equiv_forall ,(propag_mem x psi)))]
     [$_in ,y ,psi$ (if (== x y) 'lemma_in_in_same_var 'lemma_in_in)]
-    [$imp ,phi1 ,phi2$     '(bitr membership_imp_bi @ cong_of_equiv_imp ,(propag_mem x phi1) ,(propag_mem x phi2))]
-    [$not ,psi$            '(bitr membership_not_bi @ cong_of_equiv_not ,(propag_mem x psi))]
-    [$or ,phi1 ,phi2$      '(bitr membership_or_bi  @ cong_of_equiv_or  ,(propag_mem x phi1) ,(propag_mem x phi2))]
-    [$and ,phi1 ,phi2$     '(bitr membership_and_bi @ cong_of_equiv_and ,(propag_mem x phi1) ,(propag_mem x phi2))]
+    [$not ,psi$            '(bitr membership_not_bi   @ cong_of_equiv_not   ,(propag_mem x psi))]
+    [$imp ,phi1 ,phi2$     '(bitr membership_imp_bi   @ cong_of_equiv_imp   ,(propag_mem x phi1) ,(propag_mem x phi2))]
+    [$or ,phi1 ,phi2$      '(bitr membership_or_bi    @ cong_of_equiv_or    ,(propag_mem x phi1) ,(propag_mem x phi2))]
+    [$and ,phi1 ,phi2$     '(bitr membership_and_bi   @ cong_of_equiv_and   ,(propag_mem x phi1) ,(propag_mem x phi2))]
+    [$equiv ,phi1 ,phi2$   '(bitr membership_equiv_bi @ cong_of_equiv_equiv ,(propag_mem x phi1) ,(propag_mem x phi2))]
     -- [$app ,phi1 ,phi2$     '(membership_app    ,(propag_mem x phi1) ,(propag_mem x phi2))]
     [$_ceil ,psi$          'mem_def]
     [$_floor ,psi$         'mem_floor]
     [$_subset ,phi1 ,phi2$ 'mem_floor]
-    [$equiv ,phi1 ,phi2$   '(bitr membership_equiv_bi @ cong_of_equiv_equiv ,(propag_mem x phi1) ,(propag_mem x phi2))]
     [$_eq ,phi1 ,phi2$     'mem_floor]
 
     -- [$nnimp ,phi1 ,phi2$   '(membership_nnimp  ,(propag_mem x phi1) ,(propag_mem X phi2))]

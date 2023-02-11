@@ -163,24 +163,25 @@ theorem singleton_norm {box1 box2: SVar} {x: EVar}
 
 -- propagation of eSubst
 do {
-  (def (propag_e_subst_adv x ctx wo_x) @ match ctx
+  (def (propag_e_subst_adv x ctx wo_x) @ if (not (== (lookup wo_x ctx) #undef)) 'eSubstitution_triv @ match ctx
     [$bot$     'eSubstitution_triv]
     [$top$     'eSubstitution_triv]
     [$sym ,S$  'eSubstitution_triv]
     [$sVar ,X$ 'eSubstitution_triv]
     [$eVar ,y$ (if (== x y) 'eSubstitution_in_same_eVar 'eSubstitution_triv)]
-    [$imp ,phi1 ,phi2$    '(_eSubst_imp             ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
-    [$app ,phi1 ,phi2$    '(_eSubst_app             ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
+    [$imp ,phi1 ,phi2$     '(_eSubst_imp             ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
+    [$app ,phi1 ,phi2$     '(_eSubst_app             ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
     [$exists ,y ,psi$ (if (== x y) 'eSubstitution_in_same_exists '(_eSubst_exists ,(propag_e_subst_adv x psi wo_x)))]
     [$forall ,y ,psi$ (if (== x y) '(_eSubst_not eSubstitution_in_same_exists) '(_eSubst_not (_eSubst_exists (_eSubst_not ,(propag_e_subst_adv x psi wo_x)))))]
-    [$mu ,Y ,psi$         '(_eSubst_mu              ,(propag_e_subst_adv x psi wo_x))]
-    [$not ,psi$           '(_eSubst_not             ,(propag_e_subst_adv x psi wo_x))]
-    [$or ,phi1 ,phi2$     '(_eSubst_or              ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
-    [$and ,phi1 ,phi2$    '(_eSubst_and             ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
-    [$_ceil  ,phi$        '(_eSubst_ceil            ,(propag_e_subst_adv x phi wo_x))]
-    [$_floor ,phi$        '(_eSubst_floor           ,(propag_e_subst_adv x phi wo_x))]
-    [$equiv ,phi1 ,phi2$  '(_eSubst_equiv           ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
-    [$_eq ,phi1 ,phi2$    '(_eSubst_eq              ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
+    [$mu ,Y ,psi$          '(_eSubst_mu              ,(propag_e_subst_adv x psi wo_x))]
+    [$not ,psi$            '(_eSubst_not             ,(propag_e_subst_adv x psi wo_x))]
+    [$or ,phi1 ,phi2$      '(_eSubst_or              ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
+    [$and ,phi1 ,phi2$     '(_eSubst_and             ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
+    [$_ceil  ,phi$         '(_eSubst_ceil            ,(propag_e_subst_adv x phi wo_x))]
+    [$_floor ,phi$         '(_eSubst_floor           ,(propag_e_subst_adv x phi wo_x))]
+    [$_subset ,phi1 ,phi2$ '(_eSubst_subset          ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
+    [$equiv ,phi1 ,phi2$   '(_eSubst_equiv           ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
+    [$_eq ,phi1 ,phi2$     '(_eSubst_eq              ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
 
     [$epsilon$     'eSubstitution_triv]
     [$top_letter$  'eSubstitution_triv]
@@ -190,7 +191,7 @@ do {
     [$top_word ,Y$ 'eSubstitution_triv]
     [$kleene ,Y ,psi$ '(_eSubst_mu @ _eSubst_or eSubstitution_triv @ sSubst_concat ,(propag_e_subst_adv x psi wo_x) eSubstitution_triv)]
     [$nnimp ,phi1 ,phi2$  '(_eSubst_nnimp           ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
-    [psi        (if (== (lookup wo_x psi) #undef) 'norm_refl 'eSubstitution_triv)]
+    [_             'norm_refl]
     -- [('e[ phi2 / y] psi) '()]
     -- [('s[ phi2 / X] psi) '()]
     -- [('app[ phi2 / box] psi) '()]
@@ -228,7 +229,7 @@ do {
                           'sSubstitution_in_same_mu
                           '(_sSubst_mu @ _sSubst_or sSubstitution_triv @ sSubst_concat ,(propag_s_subst X psi) sSubstitution_triv))]
     [$nnimp ,phi1 ,phi2$  '(_sSubst_nnimp           ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
-    [_  'norm_refl]
+    [_            'norm_refl]
     -- [('e[ phi2 / y] psi) '()]
     -- [('s[ phi2 / X] psi) '()]
     -- [('app[ phi2 / box] psi) '()]
@@ -361,3 +362,7 @@ theorem example_5 {Y: SVar} (phi: Pattern):
 theorem example_6 {X: SVar} (phi psi: Pattern X):
   $ Norm (~ (s[ phi / X ] (imp psi (sVar X)))) (~ (imp (s[ phi / X ] psi) phi)) $ =
   '(norm_not ,(propag_s_subst 'X $ (imp psi (sVar X)) $ ));
+
+theorem eVar_example_6 {x: EVar} (phi psi: Pattern x):
+  $ Norm (~ (e[ phi / x ] (imp psi (~ (eVar x))))) (~ (imp (e[ phi / x ] psi) (~ phi))) $ =
+  '(norm_not ,(propag_e_subst 'x $ (imp psi (~ (eVar x))) $ ));
