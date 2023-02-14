@@ -487,10 +487,9 @@ mod PROOF-GEN is
     op positive-in-same-sVar : -> MetaMathProof .
     op positive-in-sym : -> MetaMathProof .
     op positive-in-mu _ : MetaMathProof -> MetaMathProof .
-    op positive-in-same-mu : MetaMathProof .
+    op positive-in-same-mu : -> MetaMathProof .
     op positive-in-or _ _ : MetaMathProof MetaMathProof  -> MetaMathProof .
     op positive-in-concat _ _ : MetaMathProof MetaMathProof  -> MetaMathProof .
-
 
     *** unfold ***************************************************************
     op unfold-r : Pattern MetaMathProof -> MetaMathProof .
