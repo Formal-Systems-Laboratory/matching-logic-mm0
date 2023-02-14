@@ -429,10 +429,6 @@ mod PROOF-GEN is
     eq eq-thm('A:Letter <- Q ; Subst , R) = qid(string(R) + "-wrt-" + string(getName(Q))) .
     eq eq-thm(          Subst , R) = R [owise] .
 
-    op norm-lemma _ _ : MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
-    op norm-lemma-r _ _ : MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
-    op propag-s-subst _ $ _ $ : Qid Pattern -> MetaMathProof [ctor] .
-    op unquote : MetaMathProof -> MetaMathProof [ctor] .
 
     op cong-of-equiv _ _ : Qid MetaMathProof -> MetaMathProof [ctor] .
 
@@ -451,6 +447,30 @@ mod PROOF-GEN is
      = cong-of-equiv qid(string(cong-thm(Q)) + "-r") (lift-equality-to-context Ctx MMP) .
 
     op apply-equiv _ _ : MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
+
+    *** push-s-subst *********************************************************
+
+    op propag-sSubst : Qid Pattern -> MetaMathProof .
+    eq propag-sSubst(X, bot) = 'sSubstitution-triv .
+    eq propag-sSubst(X, top) = 'sSubstitution-triv .
+    eq propag-sSubst(X, eVar X) = 'sSubstitution-triv .
+    eq propag-sSubst(X, sVar X) = 'sSubstitution-in-same-sVar .
+   ceq propag-sSubst(X, sVar Y) = 'sSubstitution-triv if X =/= Y .
+    eq propag-sSubst(X, mu X Phi) = 'sSubstitution-in-same-mu .
+   ceq propag-sSubst(X, mu Y Phi) = -sSubst-mu propag-sSubst(X, Phi) if X =/= Y .
+    eq propag-sSubst(X, Phi1 \/ Phi2) = -sSubst-or propag-sSubst(X, Phi1) propag-sSubst(X, Phi2) .
+
+    eq propag-sSubst(X, Phi1 . Phi2) = sSubst-concat propag-sSubst(X, Phi1) propag-sSubst(X, Phi2) .
+    eq propag-sSubst(X, a) = 'sSubstitution-triv .
+    eq propag-sSubst(X, b) = 'sSubstitution-triv .
+    eq propag-sSubst(X, epsilon) = 'sSubstitution-triv .
+
+    op -sSubst-mu _ : MetaMathProof -> MetaMathProof [ctor] .
+    op -sSubst-or _ _ : MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
+    op sSubst-concat _ _ : MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
+
+    op norm-lemma _ _ : MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
+    op norm-lemma-r _ _ : MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
 
     *** pos ******************************************************************
     op positivity : Qid Pattern -> MetaMathProof .
@@ -497,8 +517,8 @@ mod PROOF-GEN is
                       )    )
      = main-goal-interior
             proof-main-goal(N_EWP)
-            (norm-lemma (propag-s-subst qid(str(Alpha)) $ fp(N_A) $)  proof-main-goal(N_A))
-            (norm-lemma (propag-s-subst qid(str(Alpha)) $ fp(N_B) $)  proof-main-goal(N_B))
+            (norm-lemma propag-sSubst(qid(str(Alpha)), fp(N_A))  proof-main-goal(N_A))
+            (norm-lemma propag-sSubst(qid(str(Alpha)), fp(N_B))  proof-main-goal(N_B))
      .
 endm
 

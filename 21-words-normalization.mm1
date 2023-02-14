@@ -15,7 +15,7 @@ theorem norm_lemma_r
   '(norm (norm_imp_r @ norm_sym h1) h2);
 
 --- Helpers for concat
-theorem pos_in_concat {X: SVar} (phi1 phi2: Pattern X)
+theorem positive_in_concat {X: SVar} (phi1 phi2: Pattern X)
   (h1: $ _Positive X phi1 $) (h2: $ _Positive X phi2 $): $ _Positive X (phi1 . phi2) $
   = '(positive_in_app (positive_in_app positive_triv h1) h2);
 theorem sSubst_concat {X: SVar} (psi rho1 rho2 phi1 phi2: Pattern X)

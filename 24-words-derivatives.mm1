@@ -151,7 +151,7 @@ theorem main_goal_interior_TODO {X: SVar} (phi_a phi_b: Pattern X)
     ----------------------------------------------
     $(mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b)))) -> rho$ =
     '(KT
-      (positive_in_or positive_triv @ positive_in_or (pos_in_concat positive_triv posa) (pos_in_concat positive_triv posb)) @
+      (positive_in_or positive_triv @ positive_in_or (positive_in_concat positive_triv posa) (positive_in_concat positive_triv posb)) @
       apply_equiv (corollary_57_floor der_equality) (norm
         (norm_imp_l @ norm_sym @ _sSubst_or sSubstitution_triv @ _sSubst_or (sSubst_concat_r norm_refl) (sSubst_concat_r norm_refl))
         (orim he @ orim (framing_concat_r ha) (framing_concat_r hb))
@@ -397,5 +397,5 @@ axiom regex_eq_double_kleene {X: SVar} (Alpha: Pattern X): $ (kleene X (kleene X
 
 axiom regex_eq_eps_kleene: $ (kleene X epsilon) <-> epsilon $;
 theorem regex_eq_bot_kleene: $ (kleene X bot) <-> epsilon $ = '(ibii
-  (rsyl (mu_framing (positive_in_or positive_triv @ pos_in_concat positive_triv positive_in_same_sVar) positive_triv (rsyl (orim2 @ norm (norm_imp_l appCtxLRVar) (! propag_bot box)) dne)) (KT positive_triv @ norm (norm_sym @ norm_imp_l sSubstitution_triv) id))
+  (rsyl (mu_framing (positive_in_or positive_triv @ positive_in_concat positive_triv positive_in_same_sVar) positive_triv (rsyl (orim2 @ norm (norm_imp_l appCtxLRVar) (! propag_bot box)) dne)) (KT positive_triv @ norm (norm_sym @ norm_imp_l sSubstitution_triv) id))
   (epsilon_kleene_TODO positive_triv));
