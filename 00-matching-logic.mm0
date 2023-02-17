@@ -234,8 +234,6 @@ axiom exists_generalization {x: EVar} (phi1 phi2: Pattern x):
   $ _eFresh x phi2 $ >
   $ phi1 -> phi2 $ >
   $ (exists x phi1) -> phi2 $;
-axiom propag_bot {box: SVar} (ctx: Pattern box):
-  $ (app[ bot / box ] ctx) -> bot $;
 axiom propag_or {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
   $ (app[ phi1 \/ phi2 / box ] ctx) -> (app[ phi1 / box ] ctx \/ app[ phi2 / box ] ctx) $;
 axiom propag_exists {box: SVar} {x: EVar} (ctx: Pattern box x) (phi: Pattern x):
@@ -257,3 +255,6 @@ axiom existence {x: EVar}: $ exists x (eVar x) $;
 axiom singleton {box1 box2: SVar} {x: EVar}
   (ctx1: Pattern box1 x) (ctx2: Pattern box2 x) (phi: Pattern x):
   $ ~(app[ (eVar x) /\ phi / box1 ] ctx1 /\ app[ (eVar x) /\ ~phi / box2 ] ctx2) $;
+axiom singleton_same_var {box: SVar} {x: EVar}
+  (ctx1 ctx2: Pattern box x) (phi: Pattern x):
+  $ ~(app[ (eVar x) /\ phi / box ] ctx1 /\ app[ (eVar x) /\ ~phi / box ] ctx2) $;

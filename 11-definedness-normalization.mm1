@@ -38,6 +38,11 @@ theorem framing_floor (h: $ phi1 -> phi2 $):
   $ |_ phi1 _| -> |_ phi2 _| $ =
   '(con3 @ framing_def @ con3 h);
 
+
+theorem propag_bot {box: SVar} (ctx: Pattern box):
+  $ (app[ bot / box ] ctx) -> bot $ =
+  '(syl (! singleton_same_var _ x _ _ (eVar x)) @ iand (framing absurdum) (framing absurdum));
+
 theorem propag_or_def (phi1 phi2: Pattern)
   (h: $ |^ phi1 \/ phi2 ^| $):
   $ |^ phi1 ^| \/ |^ phi2 ^| $ =
