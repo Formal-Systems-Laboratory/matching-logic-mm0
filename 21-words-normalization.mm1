@@ -48,7 +48,7 @@ theorem sSubst_top_letter {X: SVar} (psi: Pattern X):
 theorem pos_in_top_word_l_pattern {X: SVar}: $_Positive X (epsilon \/ sVar X . top_letter)$ =
   '(positive_in_or positive_triv @
     positive_in_app (positive_in_app positive_triv positive_in_same_sVar) pos_in_top_letter);
-theorem kt_top_word_l {X : SVar} (base: $epsilon -> psi$) (rec: $psi . top_letter -> psi$): $top_word_l X -> psi$ =
+theorem kt_top_word_l {X: SVar} (psi: Pattern X) (base: $epsilon -> psi$) (rec: $psi . top_letter -> psi$): $top_word_l X -> psi$ =
   '(KT pos_in_top_word_l_pattern @ norm_lemma ,(propag_s_subst 'X $epsilon \/ sVar X . top_letter$) @ eori base rec);
 theorem unfold_r_top_word_l {X : SVar} (phi: Pattern) (h: $phi -> epsilon \/ top_word_l X . top_letter$) : $phi -> top_word_l X$ =
   '(rsyl h @ norm (norm_imp_l ,(propag_s_subst 'X $epsilon \/ sVar X . top_letter$)) @ pre_fixpoint pos_in_top_word_l_pattern);
@@ -58,7 +58,7 @@ theorem unfold_r_top_word_l {X : SVar} (phi: Pattern) (h: $phi -> epsilon \/ top
 theorem pos_in_top_word_r_pattern {X: SVar}: $_Positive X (epsilon \/ top_letter . sVar X)$ =
   '(positive_in_or positive_triv @
     positive_in_app (positive_in_app positive_triv pos_in_top_letter) positive_in_same_sVar);
-theorem kt_top_word_r {X : SVar} (base: $epsilon -> psi$) (rec: $top_letter . psi -> psi$): $top_word_r X -> psi$ =
+theorem kt_top_word_r {X: SVar} (psi: Pattern X) (base: $epsilon -> psi$) (rec: $top_letter . psi -> psi$): $top_word_r X -> psi$ =
   '(KT pos_in_top_word_r_pattern @ norm_lemma ,(propag_s_subst 'X $epsilon \/ top_letter . sVar X$) @ eori base rec);
 theorem unfold_r_top_word_r {X : SVar} (phi: Pattern) (h: $phi -> epsilon \/ top_letter . top_word_r X$) : $phi -> top_word_r X$ =
   '(rsyl h @ norm (norm_imp_l ,(propag_s_subst 'X $epsilon \/ top_letter . sVar X$)) @ pre_fixpoint pos_in_top_word_r_pattern);
