@@ -10,20 +10,38 @@ def defCtx {box: SVar}: Pattern box = $ (|^ sVar box ^|) $;
 theorem defNorm {box: SVar} (phi: Pattern):
   $ Norm (app[ phi / box ] (defCtx box)) (|^ phi ^|) $ =
   '(norm_trans appCtxR @ norm_app norm_refl appCtxVar);
+theorem defNorm2 {box: SVar} (phi: Pattern):
+  $ Norm (app[ phi / box ] (|^ defCtx box ^|)) (|^ (|^ phi ^|) ^|) $ =
+  '(norm_trans appCtxR @ norm_app norm_refl defNorm);
 theorem singletonDef {x: EVar} (phi: Pattern x):
   $ ~(|^ eVar x /\ phi ^| /\ |^ eVar x /\ ~phi ^|) $ =
   '(singleton_norm (! defNorm box1) (! defNorm box2));
 theorem norm_def (h: $ Norm phi psi $):
   $ Norm (|^ phi ^|) (|^ psi ^|) $ =
   '(norm_app norm_refl h);
+theorem norm_floor (h: $ Norm phi psi $):
+  $ Norm (|_ phi _|) (|_ psi _|) $ =
+  '(norm_not @ norm_def @ norm_not h);
+theorem norm_mem {x: EVar} (phi1 phi2: Pattern x)
+  (h: $ Norm phi1 phi2 $):
+  $ Norm (x in phi1) (x in phi2) $ =
+  '(norm_def @ norm_and norm_refl h);
 
 
 --- High level versions of axioms
 ---------------------------------
 
-theorem framingDef (h: $ phi1 -> phi2 $):
+theorem framing_def (h: $ phi1 -> phi2 $):
   $ |^ phi1 ^| -> |^ phi2 ^| $ =
   '(framing_norm (! defNorm box) defNorm h);
+theorem framing_floor (h: $ phi1 -> phi2 $):
+  $ |_ phi1 _| -> |_ phi2 _| $ =
+  '(con3 @ framing_def @ con3 h);
+
+
+theorem propag_bot {box: SVar} (ctx: Pattern box):
+  $ (app[ bot / box ] ctx) -> bot $ =
+  '(syl (! singleton_same_var _ x _ _ (eVar x)) @ iand (framing absurdum) (framing absurdum));
 
 theorem propag_or_def (phi1 phi2: Pattern)
   (h: $ |^ phi1 \/ phi2 ^| $):

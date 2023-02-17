@@ -619,14 +619,17 @@ theorem orim1d (h: $ a -> b -> c $): $ a -> b \/ d -> c \/ d $ = '(orimd h idd);
 theorem orim2d (h: $ a -> c -> d $): $ a -> b \/ c -> b \/ d $ = '(orimd idd h);
 theorem orim1: $ (a -> b) -> a \/ c -> b \/ c $ = '(orim1d id);
 theorem orim2: $ (b -> c) -> a \/ b -> a \/ c $ = '(orim2d id);
--- theorem oreq1i (h: $ a <-> b $): $ a \/ c <-> b \/ c $ = '(oreq1d id h);
--- theorem oreq2i (h: $ b <-> c $): $ a \/ b <-> a \/ c $ = '(oreq2d id h);
+theorem oreq1d: $ (a <-> b) -> (a \/ c <-> b \/ c) $ = '(anim orim1 orim1);
+theorem oreq2d: $ (a <-> b) -> (c \/ a <-> c \/ b) $ = '(anim orim2 orim2);
+theorem oreq1i (h: $ a <-> b $): $ a \/ c <-> b \/ c $ = '(oreq1d h);
+theorem oreq2i (h: $ b <-> c $): $ a \/ b <-> a \/ c $ = '(oreq2d h);
 theorem orim: $ (a -> b) -> (c -> d) -> a \/ c -> b \/ d $ = '(exp @ syld (anwl orim1) (anwr orim2));
--- theorem oreqi (h1: $ a <-> b $) (h2: $ c <-> d $): $ a \/ c <-> b \/ d $ = '(bitr (oreq1i h1) (oreq2i h2));
+theorem oreq: $ (a <-> b) -> (c <-> d) -> (a \/ c <-> b \/ d) $ = '(syl5 oreq2d @ syl bitr oreq1d);
+theorem oreqi (h1: $ a <-> b $) (h2: $ c <-> d $): $ a \/ c <-> b \/ d $ = '(bitr (oreq1i h1) (oreq2i h2));
 theorem orcom: $ a \/ b -> b \/ a $ = 'con1;
 theorem orcomb: $ a \/ b <-> b \/ a $ = '(ibii orcom orcom);
 theorem or12: $ a \/ (b \/ c) <-> b \/ (a \/ c) $ = '(bitr3 impexp @ bitr (imeq1i ancomb) impexp);
--- theorem orass: $ a \/ b \/ c <-> a \/ (b \/ c) $ = '(bitr orcomb @ bitr or12 (oreq2 orcomb));
+theorem orass: $ a \/ b \/ c <-> a \/ (b \/ c) $ = '(bitr orcomb @ bitr or12 @ imeq2i orcomb);
 -- theorem or4: $ (a \/ b) \/ (c \/ d) <-> (a \/ c) \/ (b \/ d) $ = '(bitr4 orass @ bitr4 orass @ oreq2 or12);
 theorem oridm: $ a \/ a <-> a $ = '(ibii (eor id id) orl);
 theorem notan2: $ ~(a /\ b) <-> a -> ~b $ = '(bicom notnot);
@@ -659,10 +662,21 @@ theorem emr: $ ~p \/ p $ = '(orcom em);
 theorem ian2: $ a -> b -> b /\ a $ = '(exp ancom);
 theorem absurdum: $ bot -> phi $ = '(prop_3 idd);
 theorem taut: $ top $ = 'absurdum;
+theorem imp_top: $ phi -> top $ = '(a1i taut);
+theorem top_or: $ top \/ phi $ = '(syl absurdum dne);
+theorem bot_or: $ (bot \/ a) -> a $ = '(mpcom taut);
+theorem top_and: $ phi -> top /\ phi $ = '(com12 bot_or);
 
 theorem imp_to_or (h: $(~a \/ b) -> c$): $(a -> b) -> c$  = '(rsyl con3 (rsyl orcom h)) ;
 
 theorem not_distr_or: $ ~(a \/ b) <-> ~a /\ ~b $ = '(con3b @ oreq2a @ prop_1 notnot);
+theorem and_distr: $ a /\ (b /\ c) <-> (a /\ b) /\ (a /\ c) $ =
+  '(ibii
+    (   rsyl (anim1 @ anr anidm)
+      @ rsyl (anl anass)
+      @ rsyl (anim2 @ anl anlass)
+             (anr anass))
+    (rsyl (rsyl (anl anass) anr) (anl anlass)));
 
 theorem appl: $ (a /\ (a -> b)) -> b $ = '(con1 @ anl com12b @ con3d mpcom);
 
@@ -688,3 +702,12 @@ theorem lemma_51: $ ((a /\ ~b) \/ (b /\ ~a)) <-> ~(a <-> b) $ = '(iani
   (eori (con3 @ rsyl anl @ imim2i notnot1)
         (rsyl ancom @ con3 @ rsyl anr con3))
   (con1 @ rsyl (anl not_distr_or) @ anim (anr iman) (anr iman)));
+
+theorem lemma_in_in_reverse_helper: $ (~a \/ b) -> (~a \/ (b /\ a)) $ =
+  '(syl (orim2 @ anim2 dne) @ syl anr bian1a);
+
+theorem lemma_60_helper_1: $ a -> (a /\ ~b) \/ (a /\ b) $ =
+  '(syl (anl andi) @ iand id @ a1i emr);
+
+theorem lemma_60_helper_2: $ a -> ~b \/ (a /\ b) $ =
+  '(syl (imim1i dne) ian);
