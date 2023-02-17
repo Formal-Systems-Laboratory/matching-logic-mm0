@@ -43,7 +43,7 @@ theorem prop_43_bot (rho: Pattern): $ bot -> rho $ = 'absurdum;
 theorem prop_43_or {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
   $ (app[ phi1 / box ] ctx \/ app[ phi2 / box ] ctx) -> app[ phi1 \/ phi2 / box ] ctx $ =
   '(eori (framing orl) (framing orr));
-theorem prop_43_exists {box: SVar} {x: EVar} (ctx: Pattern box) (phi: Pattern x):
+theorem prop_43_exists {box: SVar} {x: EVar} (ctx: Pattern box) (phi: Pattern box x):
   $ (exists x (app[ phi / box ] ctx)) -> app[ exists x phi / box ] ctx $ =
   '(exists_generalization (eFresh_appCtx eFresh_triv eFresh_exists_same_var) (framing exists_intro_same_var));
 
@@ -352,7 +352,7 @@ theorem lemma_60_forward {x: EVar} {box: SVar} (ctx: Pattern box x) (phi1 phi2: 
         norm_imp (norm_trans appCtxNested @ norm_ctxApp_pt norm_refl (! defNorm box1)) @ norm_not (! defNorm box2)
       ) @ dne singleton) @ propag_or_def @ framing_def lemma_60_helper_1 definedness);
 
-theorem lemma_60_reverse {x: EVar} {box: SVar} (ctx: Pattern box x) (phi1 phi2: Pattern x):
+theorem lemma_60_reverse {x: EVar} {box: SVar} (ctx phi2: Pattern box x) (phi1: Pattern x):
   $ ((app[ phi1 / box ] ctx) /\ (x in phi2)) -> app[ phi1 /\ (x in phi2) / box ] ctx $ =
   '(rsyl (anim2 @
       syl (con3 @ framing @ membership_not_reverse) @

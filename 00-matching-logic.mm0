@@ -167,7 +167,7 @@ axiom appCtxL {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
 axiom appCtxR {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
   $ Norm (app[ phi2 / box ] (app phi1 ctx)) (app phi1 (app[ phi2 / box ] ctx)) $;
 -- TODO: Do we need to propagate app[] through the other substitution constructs?
-axiom appCtxNested {box1 box2: SVar} (ctx1: Pattern box1) (ctx2: Pattern box2) (phi: Pattern):
+axiom appCtxNested {box1 box2: SVar} (ctx1 phi: Pattern box1) (ctx2: Pattern box2):
   $ Norm (app[ phi / box2 ] app[ ctx2 / box1 ] ctx1) (app[ app[ phi / box2 ] ctx2 / box1 ] ctx1) $;
 
 axiom norm_refl (phi: Pattern): $ Norm phi phi $;
@@ -201,7 +201,7 @@ axiom norm_svSubst_pt {X: SVar} (ctx ctx2 phi phi2: Pattern X):
   $ Norm ctx ctx2 $ >
   $ Norm phi phi2 $ >
   $ Norm (svSubst X ctx phi) (svSubst X ctx2 phi2) $;
-axiom norm_ctxApp_pt {box: SVar} (ctx ctx2: Pattern box) (phi phi2: Pattern):
+axiom norm_ctxApp_pt {box: SVar} (ctx ctx2 phi phi2: Pattern box):
   $ Norm ctx ctx2 $ >
   $ Norm phi phi2 $ >
   $ Norm (ctxApp box ctx phi) (ctxApp box ctx2 phi2) $;
@@ -234,12 +234,12 @@ axiom exists_generalization {x: EVar} (phi1 phi2: Pattern x):
   $ _eFresh x phi2 $ >
   $ phi1 -> phi2 $ >
   $ (exists x phi1) -> phi2 $;
-axiom propag_or {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
+axiom propag_or {box: SVar} (ctx phi1 phi2: Pattern box):
   $ (app[ phi1 \/ phi2 / box ] ctx) -> (app[ phi1 / box ] ctx \/ app[ phi2 / box ] ctx) $;
-axiom propag_exists {box: SVar} {x: EVar} (ctx: Pattern box x) (phi: Pattern x):
+axiom propag_exists {box: SVar} {x: EVar} (ctx phi: Pattern box x):
   $ _eFresh x ctx $ >
   $ (app[ exists x phi / box ] ctx) -> exists x (app[ phi / box ] ctx) $;
-axiom framing {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
+axiom framing {box: SVar} (ctx phi1 phi2: Pattern box):
   $ phi1 -> phi2 $ >
   $ (app[ phi1 / box ] ctx) -> app[ phi2 / box ] ctx $;
 axiom set_var_subst {X: SVar} (phi psi: Pattern X):
