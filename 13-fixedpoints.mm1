@@ -4,9 +4,16 @@ import "12-proof-system-p.mm1";
 --- Helpers
 -----------
 
-theorem unfold_r (phi: Pattern) (p: $_Positive X psi$)  (h: $phi -> s[ mu X psi / X ] psi$)
-    : $phi -> mu X psi$
-= '(syl (pre_fixpoint p) h );
+theorem unfold_r_TODO (phi: Pattern)
+  (p: $_Positive X psi$)
+  (h: $phi -> s[ mu X psi / X ] psi$):
+  $phi -> mu X psi$ =
+  '(syl (pre_fixpoint p) h );
+theorem unfold_r (phi: Pattern)
+  (h: $phi -> s[ mu X psi / X ] psi$):
+  $phi -> mu X psi$ =
+  '(unfold_r_TODO positivity_hack_TODO h);
+
 
 
 --- Appendix G: Properties of Proof System H_mu

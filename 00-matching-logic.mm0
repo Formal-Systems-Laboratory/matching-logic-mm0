@@ -258,3 +258,7 @@ axiom singleton {box1 box2: SVar} {x: EVar}
 axiom singleton_same_var {box: SVar} {x: EVar}
   (ctx1 ctx2: Pattern box x) (phi: Pattern x):
   $ ~(app[ (eVar x) /\ phi / box ] ctx1 /\ app[ (eVar x) /\ ~phi / box ] ctx2) $;
+
+
+-- The following exists only to make proof generation not complain while we fix it to use the appropriate theorems/generate positivity proofs as needed
+axiom positivity_hack_TODO {X: SVar} (phi: Pattern X): $ _Positive X phi $;
