@@ -8,13 +8,18 @@ run_in_maude() {
     echo "$@" | maude -no-banner -no-wrap "$script_dir"/proof-gen.maude
 }
 
-run_in_maude 'reduce in MATCHING-LOGIC-SEXPR : desugar([ nu X phi ]) .'
-run_in_maude 'reduce in METAMATH-ZERO : prelude .' \
-    | sed -e 's/colon/:/g' \
+maude_output_cleanup() {
+      sed -e 's/colon/:/g' \
           -e 's/space/ /g' \
+          -e 's/underscore/_/g' \
           -e 's/no-binders//g' \
           -e "s/'//g" \
+          -e "s/quote/'/g" \
           -e "s/\[/\(/g" \
-          -e "s/\]/\)/g" \
-          #
+          -e "s/\]/\)/g"
+}
+
+run_in_maude 'reduce in MATCHING-LOGIC-SEXPR : desugar([ nu X phi ]) .'
+run_in_maude 'reduce in METAMATH-ZERO : prelude .' \
+    | maude_output_cleanup
 echo Passed.

@@ -10,6 +10,7 @@ fmod MATCHING-LOGIC-SEXPR is
     op [ sym  _ ] : Qid -> Pattern [ctor] .
     op   bot   : -> Pattern [ctor] .
     op [ imp _ _ ] : Pattern Pattern -> Pattern [ctor] .
+    op [ app _ _ ] : Pattern Pattern -> Pattern [ctor] .
     op [ exists _ _ ] : EVar Pattern -> Pattern [ctor] .
     op [ mu _ _ ] : SVar Pattern -> Pattern [ctor] .
 
@@ -68,8 +69,11 @@ fmod METAMATH-ZERO is
     protecting META-LEVEL .
     protecting INT .
 
+   --- MetaMathZero Syntax
+   -----------------------
+
     including QID .
-    sort MM0Decl MM0BinderList MM0Type MM0Formula .
+    sort MM0Decl MM0BinderList MM0Type MM0Formula MM0Proof .
     op none : -> MM0Decl .
     op _ _ : MM0Decl MM0Decl -> MM0Decl [assoc format(d n d)] .
 
@@ -81,32 +85,63 @@ fmod METAMATH-ZERO is
     ops EVar SVar Pattern : -> MM0Type . 
     op import _ ; : String -> MM0Decl .
     op def _ space _ colon _  = _ ; : Qid MM0BinderList MM0Type MM0Formula -> MM0Decl .
+    op theorem _ space _ colon _  = quote _ ; : Qid MM0BinderList MM0Formula MM0Proof -> MM0Decl .
+
+    subsort Qid < MM0Proof .
+    op underscore : -> MM0Proof [ctor] .
+    op [ _ space _ ]      : Qid MM0ProofList -> MM0Proof [ctor] . 
+
+    sort MM0ProofList .
+    subsort MM0Proof < MM0ProofList .
+    op id : -> MM0ProofList [ctor] .
+    op _ _ : MM0ProofList MM0ProofList -> MM0ProofList [ctor assoc id: nil prec 25] .
+    eq [ Q space id ] = Q .
 
     subsort Pattern < MM0Formula .
     op $ _ $ : Pattern -> MM0Formula [ctor] .
 
+   --- Matching Logic MM0 Prelude
+   ------------------------------
+
     op prelude : -> MM0Decl .
     eq prelude
      = import "./00-matching-logic.mm0" ;
-       defs-for-notation(top)
-       defs-for-notation([not PHI]) 
-       defs-for-notation([or PHI1 PHI2]) 
-       defs-for-notation([and PHI1 PHI2]) 
-       defs-for-notation([forall Mx PHI2]) 
-       defs-for-notation([nu MX PHI2]) 
+       prelude-for-notation(top)
+       theorems-for-notation([not PHI]) 
+       theorems-for-notation([or PHI1 PHI2]) 
+       theorems-for-notation([and PHI1 PHI2]) 
+       prelude-for-notation([forall Mx PHI2]) 
+       prelude-for-notation([nu MX PHI2]) 
      .
+
+    op prelude-for-notation : Notation -> MM0Decl .
+    eq prelude-for-notation(N) = defs-for-notation(N) theorems-for-notation(N) .
+
+   -----------------------------------------
+
     vars T : Term .
     vars Args Ts : TermList .
     vars Q : Qid .
     vars C : Constant .
+
+    vars Phi Phi1 Phi2 : Pattern .
     vars N : Notation .
+
+   --- Generating MM0 defs for each notation
+   -----------------------------------------
+
+    op defs-for-notation : Notation -> MM0Decl . 
+    op defs-for-notation : Term -> MM0Decl . 
+    eq defs-for-notation(N)
+     = def notation-name(N) space notation-binders(N) colon Pattern = $ desugar(N) $ ; .
 
     op notation-name : Notation -> Qid .
     op notation-name : Term -> Qid .
     eq notation-name(N) = notation-name(upTerm(N)) .
     eq notation-name(C) = getName(C) .
     --- This assumes all notation is in sexpr format.
-    eq notation-name(Q[Args]) = qid(substr(string(Q), 2, find(string(Q), "_", 0) - 2) ) .
+    --- TODO: Why multiple parses?
+    eq notation-name(Q[Args]) = qid(substr(string(Q), 2, find(string(Q), "_", 2) - 2)) .
 
     op notation-binders      : Notation -> MM0BinderList .
     op notation-binders      : Term -> MM0BinderList .
@@ -123,9 +158,36 @@ fmod METAMATH-ZERO is
     if getType(T) == 'MetaEVar
      .
 
-    op defs-for-notation : Notation -> MM0Decl . 
-    op defs-for-notation : Term -> MM0Decl . 
-    eq defs-for-notation(N)
-     = def notation-name(N) space notation-binders(N) colon Pattern = $ desugar(N) $ ; .
+   --- Generating MM0 theorems for each notation
+   ---------------------------------------------
 
+    op theorems-for-notation : Notation -> MM0Decl . 
+    op theorems-for-notation : Term -> MM0Decl . 
+    eq theorems-for-notation(N)
+     = theorem-pos-in(N) . 
+
+    op theorem-name : Qid Notation -> Qid .
+    eq theorem-name(Q, N) = qid(string(Q) +  string(notation-name(N))) .
+
+   --- Generating Proof: Positivity
+    op theorem-pos-in : Notation -> MM0Decl .
+    eq theorem-pos-in(N)
+     = theorem theorem-name('pos_in_, N) space
+               theorem-pos-in-binders(desugar(N)) colon
+               $ underscorePositive MX N $
+             = quote theorem-pos-in-proof(desugar(N)) ; .
+
+    op theorem-pos-in-binders : Pattern -> MM0BinderList .
+
+    op theorem-pos-in-proof : Pattern -> MM0Proof .
+    eq theorem-pos-in-proof([imp Phi1 Phi2])
+     = [ 'positive_in_imp space theorem-neg-in-proof(Phi1) theorem-pos-in-proof(Phi2) ] .
+    eq theorem-pos-in-proof([app Phi1 Phi2])
+     = [ 'positive_in_app space theorem-pos-in-proof(Phi1) theorem-pos-in-proof(Phi2) ] .
+
+    eq theorem-pos-in-proof(N) = [ theorem-name('pos_in_, N) space underscore ] . 
+
+    op $ underscorePositive _ _ $ : SVar Pattern -> MM0Formula .
+
+    op theorem-neg-in-proof : Pattern -> MM0Proof .
 endfm
