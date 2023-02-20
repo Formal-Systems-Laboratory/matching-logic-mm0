@@ -516,10 +516,9 @@ mod PROOF-GEN is
     *** unfold-r ***************************************************************
     op unfold-r : Pattern MetaMathProof -> MetaMathProof .
     eq unfold-r(mu X Phi, MMP)
-     = (unfold-r positivity(X, Phi) (norm-lemma-r propag-sSubst(X, Phi) MMP)) .
-    eq unfold-r(sVar X, MMP) = ( unfold-r '- '- ) .
+     = (unfold-r (norm-lemma-r propag-sSubst(X, Phi) MMP)) .
 
-    op unfold-r _ _ : MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
+    op unfold-r _ : MetaMathProof -> MetaMathProof [ctor] .
 
     *** top-implies-fp *******************************************************
 
