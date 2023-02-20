@@ -1,0 +1,125 @@
+fmod MATCHING-LOGIC-SEXPR is
+    including QID .
+
+    --- Core Matching Logic Syntax
+    ------------------------------
+
+    sort Pattern EVar SVar .
+    op eVar _ : EVar -> Pattern [ctor] .
+    op sVar _ : SVar -> Pattern [ctor] .
+    op sym  _ : Qid -> Pattern [ctor] .
+    op bot : -> Pattern [ctor] .
+    op imp _ _ : Pattern Pattern -> Pattern [ctor] .
+    op exists _ _ : EVar Pattern -> Pattern [ctor] .
+    op mu _ _ : SVar Pattern -> Pattern [ctor] .
+
+    --- metavars
+    ------------
+
+    sort MetaVar .
+    subsort MetaVar < Pattern .
+    ops PHI PHI1 PHI2 : -> MetaVar .
+    ops PSI PSI1 PSI2 : -> MetaVar .
+
+    sort MetaSVar MetaEVar .
+    subsort MetaSVar < SVar .
+    subsort MetaEVar < EVar .
+    ops MX MY : -> MetaSVar .
+    ops Mx My : -> MetaEVar .
+
+    --- Notation
+    ------------
+
+    --- The Notation sort subsorts Pattern, and provides the desugar operator .
+    --- This operator peforms one step of desugaring.
+
+    sort Notation .
+    subsort Notation < Pattern .
+    op desugar : Notation -> Pattern .
+
+    --- Standard matching logic sugar
+    ---------------------------------
+
+    vars phi psi : Pattern .
+    vars X Y : SVar .
+    vars x y : EVar .
+
+    op not _ : Pattern -> Notation [ctor] .
+    eq desugar(not phi) = (imp phi bot) .
+
+    op top : -> Notation [ctor] .
+    eq desugar(top) = (not bot) .
+
+    op or _ _ : Pattern Pattern -> Notation [ctor] .
+    eq desugar(or phi psi) = (imp (not phi) psi) .
+
+    op and _ _ : Pattern Pattern -> Notation [ctor] .
+    eq desugar(and phi psi) = (imp (not phi) psi) .
+
+    op forall _ _ : EVar Pattern -> Notation [ctor] .
+    eq desugar(forall x psi) = (not (exists x psi) ) .
+
+    op nu _ _ : SVar Pattern -> Notation [ctor] .
+    eq desugar(nu X psi) = (not (mu X (not psi) ) ) .
+endfm
+
+fmod METAMATH-ZERO is
+    protecting MATCHING-LOGIC-SEXPR .
+    protecting META-LEVEL .
+
+    including QID .
+    sort MM0Decl MM0BinderList MM0Type MM0Formula .
+    op none : -> MM0Decl .
+    op _ _ : MM0Decl MM0Decl -> MM0Decl [assoc format(d n d)] .
+
+    op no-binders : -> MM0BinderList .
+    op { _ colon _ } : Qid MM0Type -> MM0BinderList .
+    op br( _ colon _ ) : Qid MM0Type -> MM0BinderList .
+    op _ _ : MM0BinderList MM0BinderList -> MM0BinderList [assoc] .
+
+    op Pattern : -> MM0Type . 
+    op imports _ : String -> MM0Decl .
+    op def _ [ _ ] colon _  = _ ; : Qid MM0BinderList MM0Type MM0Formula -> MM0Decl .
+
+    op $ _ $ : Pattern -> MM0Formula [ctor] .
+ 
+
+
+    subsort Pattern < MM0Formula .
+
+
+    op prelude : -> MM0Decl .
+    eq prelude
+     = theorems-for-notation(top)
+       theorems-for-notation(not PHI) 
+       theorems-for-notation(or PHI1 PHI2) 
+       theorems-for-notation(and PHI1 PHI2) 
+       theorems-for-notation(forall Mx PHI2) 
+       theorems-for-notation(mu MX PHI2) 
+     .
+    vars T : Term .
+    vars Args Ts : TermList .
+    vars Q : Qid .
+    vars C : Constant .
+    vars N : Notation .
+
+    op notation-name : Notation -> Qid .
+    op notation-name : Term -> Qid .
+    eq notation-name(N) = notation-name(upTerm(N)) .
+    eq notation-name(C) = getName(C) .
+    eq notation-name(Q[Args]) =  Q . --- TODO: Parse out underscores?
+
+    op notation-binders      : Notation -> MM0BinderList .
+    op notation-binders      : Term -> MM0BinderList .
+    op notation-binders-args : TermList -> MM0BinderList .
+    eq notation-binders(N) = notation-binders(upTerm(N)) .
+    eq notation-binders(C) = no-binders .
+    eq notation-binders(Q[Args]) = notation-binders-args(Args) . --- TODO: Parse out underscores?
+    eq notation-binders-args(empty) = no-binders .
+    eq notation-binders-args((T , Ts)) = br( getName(T) colon Pattern ) notation-binders-args(Ts) .
+
+    op theorems-for-notation : Notation -> MM0Decl . 
+    op theorems-for-notation : Term -> MM0Decl . 
+    eq theorems-for-notation(N)
+     = def notation-name(N) notation-binders(N) colon Pattern = $ desugar(N) $ ; .
+endfm

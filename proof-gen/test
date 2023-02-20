@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+script_dir=$(dirname $0)
+
+run_in_maude() {
+    echo "$@" | maude -no-banner -no-wrap "$script_dir"/proof-gen.maude
+}
+
+run_in_maude 'reduce in MATCHING-LOGIC-SEXPR : desugar (nu X phi) .'
+run_in_maude 'reduce in METAMATH-ZERO : prelude .' \
+    | sed -e 's/colon/:/g' \
+          -e 's/no-binders//g' \
+          -e 's/br//g' \
+          -e "s/'//g" \
+          -e "s/\[/\(/g" \
+          -e "s/\]/\)/g" \
+          #
+echo Passed.
