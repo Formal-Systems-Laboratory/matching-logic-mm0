@@ -6,6 +6,7 @@ fmod PATTERN-METAMATH-CORE is
     *** Core ***************************************
     op sVar _ : Qid -> SVar [ctor] .
     op eVar _ : Qid -> EVar [ctor] .
+    op sym  _ : Qid -> Symbol [ctor] .
     op app _ _ : Pattern Pattern -> Pattern [ctor] .
     op _ -> _  : Pattern Pattern -> Pattern [ctor] .
     op mu _ _  : Qid     Pattern -> Pattern [ctor] .
@@ -37,7 +38,6 @@ fmod PATTERN-METAMATH-CORE is
     *** Meta variables *************************
     vars phi phi1 phi2 psi psi1 psi2 : Pattern .
     vars x y X Y : Qid .
-
 
     *** Helpers ***************************************************
     op substitute [ _ / _ ] in _ : Pattern Qid Pattern -> Pattern .
