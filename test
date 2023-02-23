@@ -46,22 +46,11 @@ should_fail() {
     ! test_regex "$@" 2>/dev/null >/dev/null
 }
 
-green=(00-matching-logic.mm0
-       01-propositional.mm1
-       02-ml-normalization.mm1
-       10-theory-definedness.mm1
-       11-definedness-normalization.mm1
-       20-theory-words.mm1
-       21-words-normalization.mm1
-       24-words-derivatives.mm1
-      )
-
-
 ### Main #######################
 
 mkdir -p "$test_dir"
 warn_unproved
-for f in "${green[@]}"; do
+for f in $(ls *.mm0 *.mm1 | sort); do
     test_mm $f;
 done
 should_fail 'fail-a-star'      '(a)*'

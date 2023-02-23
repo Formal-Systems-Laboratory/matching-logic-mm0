@@ -1,9 +1,0 @@
-import "20-theory-words.mm1";
-import "21-words-normalization.mm1";
-
---- Axioms
---- TODO: Use quantified element variables instead of set vars
--- TODO: Do we even need these?
--- theorem epsilon_idem_r: $(phi . epsilon) <-> phi$  ;
--- theorem epsilon_idem_l: $(epsilon . phi) <-> phi$  ;
--- theorem concat_assoc: $(alpha . (beta . gamma)) <-> ((alpha . beta) . gamma)$  ;
