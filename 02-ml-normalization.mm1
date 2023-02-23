@@ -365,3 +365,19 @@ theorem example_6 {X: SVar} (phi psi: Pattern X):
 theorem eVar_example_6 {x: EVar} (phi psi: Pattern x):
   $ Norm (~ (e[ phi / x ] (imp psi (~ (eVar x))))) (~ (imp (e[ phi / x ] psi) (~ phi))) $ =
   '(norm_not ,(propag_e_subst 'x $ (imp psi (~ (eVar x))) $ ));
+
+--- Helpers ---------------------------------------------------------
+---------------------------------------------------------------------
+
+theorem norm_lemma
+  (h1: $ Norm phi psi $)
+  (h2: $ psi -> rho $):
+  $ phi -> rho $ =
+  '(norm (norm_imp_l @ norm_sym h1) h2);
+
+theorem norm_lemma_r
+  (h1: $ Norm rho psi $)
+  (h2: $ phi -> psi $):
+  $ phi -> rho $ =
+  '(norm (norm_imp_r @ norm_sym h1) h2);
+
