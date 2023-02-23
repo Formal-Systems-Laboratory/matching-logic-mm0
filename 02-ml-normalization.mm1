@@ -152,8 +152,7 @@ theorem framing_norm {box: SVar} (ctx: Pattern box) (phi1 phi2 rho1 rho2: Patter
   (h3: $ phi1 -> phi2 $):
   $ rho1 -> rho2 $ = '(norm (norm_imp h1 h2) @ framing h3);
 theorem singleton_norm {box1 box2: SVar} {x: EVar}
-  (ctx1 rho1: Pattern box1 x) (ctx2 rho2: Pattern box2 x)
-  (phi: Pattern x)
+  (ctx1 rho1 ctx2 rho2 phi: Pattern box1 box2 x)
   (h1: $ Norm (app[ (eVar x) /\ phi / box1 ] ctx1) rho1 $)
   (h2: $ Norm (app[ (eVar x) /\ ~phi / box2 ] ctx2) rho2 $):
   $ ~(rho1 /\ rho2) $ =
