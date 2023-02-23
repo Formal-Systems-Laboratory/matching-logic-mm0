@@ -733,6 +733,15 @@ theorem mem_def {x: EVar} (phi: Pattern x):
   $ (x in |^ phi ^|) <-> |^ phi ^| $ =
   '(ibii mem_def_forward mem_def_reverse);
 
+theorem ceil_floor_floor: $ |^ |_ phi _| ^| <-> |_ phi _| $ =
+  '(ibii
+    (rsyl (anl lemma_ceil_exists_membership) @ exists_generalization_strict (! mem_floor_forward x))
+    corollary_57_ceil);
+theorem floor_ceil_ceil: $ |_ |^ phi ^| _| <-> |^ phi ^| $ =
+  '(ibii
+    corollary_57_floor
+    (rsyl (framing_def notnot1) (rsyl (con2 @ anl ceil_floor_floor) @ framing_floor @ framing_def dne)));
+
 do {
   (def (cong_of_equiv_eVar_propag x equiv_pf ctx) @ match ctx
     [$eVar ,y$ (if (== x y) equiv_pf 'biid)]
