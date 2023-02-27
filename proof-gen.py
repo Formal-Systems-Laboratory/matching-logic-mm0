@@ -2,7 +2,7 @@
 
 import tempfile, shutil, os, sys, subprocess, re, argparse
 
-maude_src = "regexp-proof-gen/regexp.maude"
+maude_src = "regexp-proof-gen.maude"
 maude_cmd = "maude -no-banner -no-wrap -interactive {}"
 maude_appendix = """
 reduce in PATTERN-METAMATH-TRANSLATE : {0} .
