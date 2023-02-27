@@ -317,6 +317,12 @@ theorem eVar_in_subset {x: EVar} (phi: Pattern x):
 theorem eVar_in_subset_rev {x: EVar} (phi: Pattern x):
   $ (eVar x C_ phi) <-> (x in phi) $ =
   '(bicom eVar_in_subset);
+theorem eVar_in_subset_forward {x: EVar} (phi: Pattern x):
+  $ (x in phi) -> (eVar x C_ phi) $
+= '(bi1i eVar_in_subset);
+theorem eVar_in_subset_reverse {x: EVar} (phi: Pattern x):
+  $ (eVar x C_ phi) -> (x in phi) $
+= '(bi2i eVar_in_subset);
 
 theorem lemma_exists_and: $ phi <-> exists x (eVar x /\ phi) $ =
   '(ibii
