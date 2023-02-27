@@ -56,7 +56,7 @@ endfm
 fmod PATTERN-METAMATH is
     including PATTERN-METAMATH-CORE .
 
-    op _ *          : Pattern         -> Pattern [ctor prec 25] .
+    op kleene _  : Pattern         -> Pattern [ctor prec 25] .
 
     *** ERE sugar
     vars Alpha Beta Gamma : Pattern .
@@ -89,7 +89,7 @@ fmod PATTERN-METAMATH is
     eq toNat(a) = 2 .
     eq toNat(b) = 3 .
     eq toNat(top) = 4 .
-    eq toNat(phi *) = 5 .
+    eq toNat(kleene phi) = 5 .
     eq toNat(~ phi) = 6 .
     eq toNat(phi1 . phi2) = 7 .
     eq toNat(phi1 /\ phi2) = 8 .
@@ -100,7 +100,7 @@ fmod PATTERN-METAMATH is
     eq phi <=> phi = EQ .
     ceq phi <=> psi = LT if toNat(phi) < toNat(psi) .
     ceq phi <=> psi = GT if toNat(phi) > toNat(psi) .
-    eq (phi *) <=> (psi *) = phi <=> psi .
+    eq (kleene phi) <=> (kleene psi) = phi <=> psi .
     eq (~ phi) <=> (~ psi) = phi <=> psi .
     ceq (phi1 . phi2) <=> (psi1 . psi2) = phi2 <=> psi2 if phi1 <=> psi1 = EQ .
     eq (phi1 . phi2) <=> (psi1 . psi2) = phi1 <=> psi1 [owise] .
@@ -145,7 +145,7 @@ mod ERE-THEOREMS is
     rl [regex_eq_der_same_a]  : (derivative A A)            => epsilon .
    crl [regex_eq_der_diff_a]  : (derivative A B)            => bot if A =/= B .
 
-    rl [regex_eq_der_kleene]  : (derivative A Alpha *)         => (derivative A Alpha) . (Alpha *) .
+    rl [regex_eq_der_kleene]  : (derivative A (kleene Alpha))         => (derivative A Alpha) . (kleene Alpha) .
     rl [regex_eq_der_concat]  : (derivative A (Alpha . Beta))  => ((derivative A Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative A Beta)) .
     rl [regex_eq_der_choice]  : (derivative A (Alpha \/ Beta)) => (derivative A Alpha) \/ (derivative A Beta) .
     rl [regex_eq_der_conj]    : (derivative A (Alpha /\ Beta)) => (derivative A Alpha) /\ (derivative A Beta) .
@@ -158,7 +158,7 @@ mod ERE-THEOREMS is
     rl [regex_eq_ewp_concat]  : epsilon /\ (Alpha . Beta)  => (epsilon /\ Alpha) /\ (epsilon /\ Beta) .
     rl [regex_eq_ewp_and]     : epsilon /\ (Alpha /\ Beta) => (epsilon /\ Alpha) /\ (epsilon /\ Beta) .
     rl [regex_eq_ewp_choice]  : epsilon /\ (Alpha \/ Beta) => (epsilon /\ Alpha) \/ (epsilon /\ Beta) .
-    rl [regex_eq_ewp_kleene]  : epsilon /\ (Alpha *)       => epsilon .
+    rl [regex_eq_ewp_kleene]  : epsilon /\ (kleene Alpha)       => epsilon .
 
     rl [regex_eq_ewp_not_bot]     : epsilon /\ ~(bot)           => epsilon .
     rl [regex_eq_ewp_not_eps]     : epsilon /\ ~(epsilon)       => bot .
@@ -167,7 +167,7 @@ mod ERE-THEOREMS is
     rl [regex_eq_ewp_not_concat]  : epsilon /\ ~(Alpha . Beta)  => (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta) .
     rl [regex_eq_ewp_not_and]     : epsilon /\ ~(Alpha /\ Beta) => (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta) .
     rl [regex_eq_ewp_not_choice]  : epsilon /\ ~(Alpha \/ Beta) => (epsilon /\ ~ Alpha) /\ (epsilon /\ ~ Beta) .
-    rl [regex_eq_ewp_not_kleene]  : epsilon /\ ~(Alpha *)       => bot .
+    rl [regex_eq_ewp_not_kleene]  : epsilon /\ ~(kleene Alpha)       => bot .
     rl [regex_eq_ewp_not_not]     : epsilon /\ ~(~ Alpha)       => epsilon /\ Alpha .
 
     --- Identity and idemoptency of \/
@@ -194,10 +194,10 @@ mod ERE-THEOREMS is
     rl [regex_eq_eps_concat_r] : Alpha . epsilon => Alpha .
 
     rl [regex_eq_double_neg] : ~ ~ Alpha => Alpha .
-    rl [regex_eq_double_kleene] : Alpha * * => Alpha * .
+    rl [regex_eq_double_kleene] : (kleene (kleene Alpha)) => (kleene Alpha) .
 
-    rl [regex_eq_eps_kleene] : epsilon * => epsilon .
-    rl [regex_eq_bot_kleene] : bot * => epsilon .
+    rl [regex_eq_eps_kleene] : (kleene epsilon) => epsilon .
+    rl [regex_eq_bot_kleene] : (kleene bot) => epsilon .
 
 
     *** Rules *********************************
@@ -392,7 +392,7 @@ mod PROOF-GEN is
     eq str(Alpha \/ Beta) = "C" + str(Alpha) + "p" + str(Beta) + "D" .
     eq str(Alpha /\ Beta) = "C" + str(Alpha) + "q" + str(Beta) + "D" .
     eq str(Alpha -> Beta) = "C" + str(Alpha) + "i" + str(Beta) + "D" .
-    eq str(Alpha *) = "C" + str(Alpha) + "Dx" .
+    eq str(kleene Alpha) = "C" + str(Alpha) + "Dx" .
     eq str(~ Alpha) = "nC" + str(Alpha) + "D" .
 
     *** fp *******************************************************************
