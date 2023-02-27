@@ -27,11 +27,37 @@ theorem l_der_phi_imp_phi (l phi: Pattern):
   $ (l . derivative l phi) -> phi $ =
   '(norm (norm_imp_l appCtxRVar) (! unwrap box _ _ _ dummy id));
 
-axiom der_equality:
-    $phi == (epsilon /\ phi) \/ ((a . (derivative a phi)) \/ (b . (derivative b phi)))$;
+theorem concat_appctx_l : $ Norm (app[ phi / box ] (sVar box . psi)) (phi . psi)$
+= '(norm_trans appCtxL @ norm_app (norm_trans appCtxR @ norm_app norm_refl appCtxVar) norm_refl);
+theorem concat_appctx_r : $ Norm (app[ psi / box ] (phi . sVar box)) (phi . psi)$
+= '(norm_trans appCtxR @ norm_app norm_refl appCtxVar);
+
+theorem propag_or_concat : $(phi1 \/ phi2) . psi ->  (phi1 . psi) \/ (phi2 . psi)$
+= '(norm (norm_imp concat_appctx_l (norm_or concat_appctx_l concat_appctx_l)) (! propag_or dummy) );
+
+--- The following theorems lift ctximp_in_ctx to derivatives.
+theorem der_in_ctx_reverse
+  : $w2 -> w1 . (derivative w1 w2)$
+= '(norm_lemma_r (norm_sym concat_appctx_r ) (! ctximp_in_ctx_reverse dummy _ box ));
+theorem der_in_ctx_forward : $w1 . (derivative w1 w2) -> w2$
+ = '(norm_lemma (norm_sym @ norm_trans appCtxR (norm_app norm_refl appCtxVar))
+                (! ctximp_in_ctx_forward dummy1 _ dummy _ )
+    );
+
+theorem der_equality:
+    $phi == (epsilon /\ phi) \/ ((a . (derivative a phi)) \/ (b . (derivative b phi)))$
+= '(equiv_to_eq @ ibii
+    (mp (! unfold_l_top_word_r X _ @ eori (exp @ orld id)
+                                    (rsyl propag_or_concat @ eori
+                                      (exp @ orrd @ orld @ rsyl (anwr id) der_in_ctx_reverse)
+                                      (exp @ orrd @ orrd @ rsyl (anwr id) der_in_ctx_reverse)
+                                    ))
+        domain_words)
+    (eori anr @ eori der_in_ctx_forward der_in_ctx_forward)
+  ) ;
 
 axiom eq_der_a_concat:
-    $(derivative a (phi . psi)) <->    (derivative a phi) . psi
+    $(derivative a (phi . psi)) <->   (derivative a phi) . psi
                                    \/ ((epsilon /\ phi) . (derivative a psi))$;
 axiom eq_der_a_or:
     $(derivative a (phi \/ psi)) <-> (derivative a phi) \/ (derivative a psi)$;
