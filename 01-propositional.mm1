@@ -711,3 +711,9 @@ theorem lemma_60_helper_1: $ a -> (a /\ ~b) \/ (a /\ b) $ =
 
 theorem lemma_60_helper_2: $ a -> ~b \/ (a /\ b) $ =
   '(syl (imim1i dne) ian);
+
+
+theorem advance_andl (h1: $b1 -> b$) (h2:  $a -> b1 /\ c$) : $a -> b /\ c$
+= '(iand (syl h1 @ anld h2) @ anrd h2);
+theorem advance_andr (h1: $c1 -> c$) (h2:  $a -> b /\ c1$) : $a -> b /\ c$
+= '(iand (anld h2) @ syl h1 @ anrd h2);
