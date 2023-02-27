@@ -34,6 +34,7 @@ fmod PATTERN-METAMATH-CORE is
     op b            :                 -> Letter [ctor] .
     op top-letter   :                 -> Pattern [ctor] .
     op kleene _ _   : Qid Pattern     -> Pattern [ctor prec 25] .
+    op top-word _   : Qid             -> Pattern [ctor] .
 
     op _ . _        : Pattern Pattern -> Pattern [ctor prec 28] .
 
@@ -406,6 +407,9 @@ mod PROOF-GEN is
     subsort Qid < MetaMathProof .
     vars MMP : MetaMathProof .
 
+    sort MM0Decl .
+    op pub theorem _ colon $ _ $ = quote _ ; : Qid Pattern MetaMathProof -> MM0Decl .
+
     *** Contextual reasoning with equalities *********************************
 
     vars LR : String .
@@ -497,6 +501,12 @@ mod PROOF-GEN is
     *** fp-implies-regex ************************************************************
     --- Here, we the proof for (fp -> Alpha) .
 
+    op theorem-fp-implies-regex : Pattern -> MM0Decl .
+    eq theorem-fp-implies-regex(Phi)
+     = pub theorem 'fp-implies-regex
+             colon $ fp(proofHint(Phi)) -> Phi $
+                 = quote(proof-fp-implies-regex(proofHint(Phi))) ; .
+
     op fp-implies-regex-leaf : -> MetaMathProof [ctor] .
     op fp-implies-regex-interior _ _ _ : MetaMathProof MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
 
@@ -514,6 +524,7 @@ mod PROOF-GEN is
             (norm-lemma propag-sSubst(qid(str(Alpha)), fp(N_A))  proof-fp-implies-regex(N_A))
             (norm-lemma propag-sSubst(qid(str(Alpha)), fp(N_B))  proof-fp-implies-regex(N_B))
      .
+
 endm
 
 --- search in ERE-THEOREMS : ((a . a)* ->> ((a * . a) \/ epsilon)) =>* P:Pattern .

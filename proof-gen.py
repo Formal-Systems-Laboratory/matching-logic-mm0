@@ -5,9 +5,7 @@ import tempfile, shutil, os, sys, subprocess, re, argparse
 maude_src = "regexp-proof-gen.maude"
 maude_cmd = "maude -no-banner -no-wrap -interactive {}"
 maude_appendix = """
-reduce in PROOF-GEN : {0} .
-reduce in PROOF-GEN : fp(proofHint({0})) .
-reduce in PROOF-GEN : proof-fp-implies-regex(proofHint({0})) .
+reduce in PROOF-GEN : theorem-fp-implies-regex({0}) .
 q .
 """
 
@@ -15,9 +13,15 @@ q .
 def process_mm(s):
     s = s.replace("'", "")
     s = s.replace("-", "_")
+    s = s.replace(";)", ";")
+    s = s.replace("(pub", "pub")
     s = s.replace("_>>", "->>")
+    s = s.replace("_>", "->")
+    s = s.replace("colon", ":")
+    s = s.replace("no-binders", "")
+    s = s.replace("bang", "!")
+    s = s.replace("quote ", "'")
     s = s.replace("cong_of_equiv ", "cong_of_equiv_")
-    s = s.replace("regex_", "regex_")
     return s
 
 parser = argparse.ArgumentParser()
@@ -27,23 +31,11 @@ regex = args.regex
 
 with subprocess.Popen(maude_cmd.format(maude_src), shell=True,
                       stdin=subprocess.PIPE,
-                      stdout=subprocess.PIPE) as maude_proc:
+                      stdout=subprocess.PIPE,
+                      stderr=subprocess.PIPE,
+                     ) as maude_proc:
     (maude_output, _) = maude_proc.communicate(bytes(maude_appendix.format(regex), 'utf-8'))
-    all_outputs = re.findall(r"result \[?(?:Pattern|MetaMathProof)\]?: ([^\n]*)\n", process_mm(str(maude_output, 'utf8')))
-
-# print(all_outputs)
-mm_regex = all_outputs[0]
-mm_fp = all_outputs[1]
-mm_fp_implies_regex = all_outputs[2]
-
-raw_svars = re.findall(r"(?:sVar|mu) ([^ )]*)", mm_fp)
-svars = " ".join(set(raw_svars))
-
-if " Xk " in mm_regex:
-    svars = svars + " Xk"
-if svars.strip():
-    svars = " {{{}: SVar}} ".format(svars)
+    all_outputs = re.findall(r"result \[?(?:Pattern|MetaMathProof|MM0Decl)\]?: ([^\n]*)\n", process_mm(str(maude_output, 'utf8')))
 
 print('import "../24-words-derivatives.mm1";')
-print("pub theorem fp_to_regex{}: ${} -> {}$ = \n  '{};".format(svars, mm_fp, mm_regex, mm_fp_implies_regex))
-
+print(all_outputs[0])
