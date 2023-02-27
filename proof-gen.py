@@ -13,19 +13,11 @@ q .
 """
 
 def process_mm(s):
-    s = s.replace("'top-implies-fp-leaf", "top_implies_fp_leaf")
-    s = s.replace("'orl", "orl")
+    s = s.replace("'", "")
     s = s.replace("-", "_")
     s = s.replace("_>>", "->>")
-    s = s.replace("cong_of_equiv '", "cong_of_equiv_")
-    s = s.replace("'regex_", "regex_")
-    s = s.replace("Var '", "Var ")
-    s = s.replace("mu '", "mu ")
-    s = s.replace("'sSubst", "sSubst")
-    s = s.replace("'_", "_")
     s = s.replace("bang", "!")
-    s = s.replace("'X", "X")
-    s = s.replace("'box", "box")
+    s = s.replace("cong_of_equiv ", "cong_of_equiv_")
     return s
 
 parser = argparse.ArgumentParser()
