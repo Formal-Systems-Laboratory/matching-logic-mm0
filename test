@@ -34,11 +34,12 @@ test_mm() {
 }
 
 test_regex() {
+    theorem="$1"; shift
     test_name="$1"; shift
     regexp="$1"; shift
 
     test_basename="$test_dir/$test_name"
-    ./proof-gen.py "$regexp" > "$test_basename.mm1"
+    ./proof-gen.py "$theorem" "$regexp" > "$test_basename.mm1"
     test_mm "$test_basename.mm1"
 }
 
@@ -49,12 +50,12 @@ warn_unproved
 for f in $(ls *.mm0 *.mm1 | sort); do
     test_mm $f;
 done
-test_regex  'a-or-b-star'      '(a + b)*'
-test_regex  'kleene-star-star' '(a *) * ->> (a *)'
-test_regex  'example-in-paper' '(a . a)* ->> (((a *) . a) + epsilon) '
-test_regex  'alternate-top'    '((a *) . b) * + (((b *) . a) *)'
-test_regex  'even-or-odd' \
-    '((((a . a) + (a . b)) + (b . a)) + (b . b)) * + ((a + b) . (((((a . a) + (a . b)) + (b . a)) + (b . b)) *))'
-test_regex  'no-contains-a-or-no-only-b' \
-    '(~ (top . (a . top))) + ~ (b *)'
+test_regex 'fp-implies-regex' 'a-or-b-star'                '(a + b)*'
+test_regex 'fp-implies-regex' 'kleene-star-star'           '(a *) * ->> (a *)'
+test_regex 'fp-implies-regex' 'example-in-paper'           '(a . a)* ->> (((a *) . a) + epsilon) '
+test_regex 'fp-implies-regex' 'alternate-top'              '((a *) . b) * + (((b *) . a) *)'
+test_regex 'fp-implies-regex' 'even-or-odd'                '((((a . a) + (a . b)) + (b . a)) + (b . b)) * + ((a + b) . (((((a . a) + (a . b)) + (b . a)) + (b . b)) *))'
+test_regex 'fp-implies-regex' 'no-contains-a-or-no-only-b' '(~ (top . (a . top))) + ~ (b *)'
+
+test_regex 'top-implies-fp' 'a-or-b-star'                '(a + b)*'
 echo Passed.
