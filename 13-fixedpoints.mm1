@@ -14,6 +14,10 @@ theorem unfold_r (phi: Pattern)
   $phi -> mu X psi$ =
   '(unfold_r_TODO positivity_hack_TODO h);
 
+theorem propag_floor (phi psi ctx: Pattern box):
+    $app[ phi /\ |_ psi _| / box ] ctx
+        -> app[ phi  / box ] ctx /\ |_ psi _| $
+ = '(iand (framing anl)  @ rsyl (framing anr) (rsyl lemma_56 (bi1 ceil_floor_floor)) );
 
 
 --- Appendix G: Properties of Proof System H_mu
