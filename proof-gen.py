@@ -7,7 +7,7 @@ maude_cmd = "maude -no-banner -no-wrap -interactive {}"
 maude_appendix = """
 reduce in PATTERN-METAMATH-TRANSLATE : {0} .
 reduce in PROOF-GEN : fp(proofHint({0})) .
-reduce in PROOF-GEN : proof-main-goal(proofHint({0})) .
+reduce in PROOF-GEN : proof-fp-implies-regex(proofHint({0})) .
 q .
 """
 
