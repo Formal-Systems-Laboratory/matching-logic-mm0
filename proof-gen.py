@@ -5,12 +5,13 @@ import tempfile, shutil, os, sys, subprocess, re, argparse
 maude_src = "regexp-proof-gen.maude"
 maude_cmd = "maude -no-banner -no-wrap -interactive {}"
 maude_appendix = """
-reduce in PATTERN-METAMATH-TRANSLATE : {0} .
+reduce in PROOF-GEN : {0} .
 reduce in PROOF-GEN : fp(proofHint({0})) .
 reduce in PROOF-GEN : proof-top-implies-fp(proofHint({0})) .
 reduce in PROOF-GEN : proof-fp-implies-regex(proofHint({0})) .
 q .
 """
+
 
 def process_mm(s):
     s = s.replace("'", "")
