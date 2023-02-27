@@ -28,7 +28,6 @@ regex = args.regex
 with subprocess.Popen(maude_cmd.format(maude_src), shell=True,
                       stdin=subprocess.PIPE,
                       stdout=subprocess.PIPE,
-                      stderr=subprocess.PIPE,
                      ) as maude_proc:
     (maude_output, _) = maude_proc.communicate(bytes(maude_appendix.format(regex), 'utf-8'))
     all_outputs = re.findall(r"result \[?(?:Pattern|MetaMathProof)\]?: ([^\n]*)\n", process_mm(str(maude_output, 'utf8')))
