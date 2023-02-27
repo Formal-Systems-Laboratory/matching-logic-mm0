@@ -2,14 +2,28 @@
 
 import tempfile, shutil, os, sys, subprocess, re
 
-maude_src = "regexp-proof-gen.maude"
-maude_cmd = "maude -no-banner -no-wrap -interactive {}"
-maude_appendix = """
-reduce in PROOF-GEN : theorem-{0}({1}) .
-q .
-"""
+def reduce_in_module(src, module, expected_sort, term):
+    output = subprocess.check_output(
+        ['maude', '-no-banner', '-no-wrap', '-batch', src],
+        input='reduce in {0} : {1} . \n'.format(module, term),
+        text=True
+    )
+    output = output.split('\n')
 
-def process_mm(s):
+    # Sanity check
+    assert(output[0] == 'Maude> ==========================================')
+    assert(output[1].startswith('reduce in {0}'.format(module)))
+    assert(output[2].startswith('rewrites: '))
+    assert(output[-2:] == ['Maude> Bye.', ''])
+    output = output[3:-2]
+
+    result_string = 'result {0}: '.format(expected_sort)
+    assert(output[0].startswith(result_string))
+
+    output[0] = output[0][len(result_string):]
+    return '\n'.join(output)
+
+def cleanup_maude_output(s):
     s = s.replace("'", "")
     s = s.replace("-", "_")
     s = s.replace(";)", ";")
@@ -27,12 +41,7 @@ assert len(sys.argv) == 3, "Usage: proof-gen <fp-implies-top> <regex>"
 theorem = sys.argv[1]
 regex = sys.argv[2]
 
-with subprocess.Popen(maude_cmd.format(maude_src), shell=True,
-                      stdin=subprocess.PIPE,
-                      stdout=subprocess.PIPE,
-                     ) as maude_proc:
-    (maude_output, _) = maude_proc.communicate(bytes(maude_appendix.format(theorem, regex), 'utf-8'))
-    all_outputs = re.findall(r"result \[?(?:Pattern|MetaMathProof|MM0Decl)\]?: ([^\n]*)\n", process_mm(str(maude_output, 'utf8')))
-
 print('import "../24-words-derivatives.mm1";')
-print(all_outputs[0])
+print(cleanup_maude_output(
+      reduce_in_module('regexp-proof-gen.maude', 'PROOF-GEN', 'MM0Decl',
+                            'theorem-{0}({1})'.format(theorem, regex))))
