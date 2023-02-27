@@ -127,7 +127,7 @@ mod ERE-THEOREMS is
     vars Beta  Beta1  Beta2  : Pattern .
     vars Gamma : Pattern .
     vars A B A1 A2 : Letter .
-    vars X Y : Qid . 
+    vars X Y : Qid .
 
     rl [regex_eq_der_bot]     : (derivative A bot)          => bot .
     rl [regex_eq_der_epsilon] : (derivative A epsilon)      => bot .
@@ -424,6 +424,7 @@ mod PROOF-GEN is
     op bang _ _ _ : MetaMathProof MetaMathProof MetaMathProof -> MetaMathProof .
 
     sort MM0Decl .
+    op _ _ : MM0Decl MM0Decl -> MM0Decl [ctor assoc format(d n d)] .
     op pub theorem _ colon $ _ $ = quote _ ; : Qid Pattern MetaMathProof -> MM0Decl .
 
     *** Contextual reasoning with equalities *********************************
@@ -513,8 +514,21 @@ mod PROOF-GEN is
 
     op unfold-r _ : MetaMathProof -> MetaMathProof [ctor] .
 
-    *** top-implies-fp *******************************************************
+    *** main-goal ************************************************************
+    --- Here, we split the proof for a regular expression into
+    --- two subgoals --- (top-implies-fp) and (fp-implies-regexp).
 
+    op theorem-main-goal : Pattern -> MM0Decl .
+    eq theorem-main-goal(Phi)
+     = theorem-top-implies-fp(Phi)
+       theorem-fp-implies-regex(Phi) .
+---       pub theorem 'proof-main-goal
+---             colon $ Phi $
+---                 = quote( main-goal 'top-implies-fp 'fp-implies-regex ) ; .
+
+    op main-goal _ _ : MetaMathProof MetaMathProof -> MetaMathProof .
+
+    *** top-implies-fp *******************************************************
     op theorem-top-implies-fp : Pattern -> MM0Decl .
     eq theorem-top-implies-fp(Phi)
      = pub theorem 'top-implies-fp

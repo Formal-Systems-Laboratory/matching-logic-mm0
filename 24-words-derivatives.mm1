@@ -105,6 +105,12 @@ theorem eq_to_concat_bi
 --- Reasoning about regular expressions
 ---------------------------------------
 
+--- Main goal
+-------------
+
+theorem main_goal (h1: $top_word X -> psi$) (h2: $psi -> phi$) : $phi$
+ = '(mp (rsyl h1 h2) domain_words);
+
 --- top-implies-fp
 ------------------
 

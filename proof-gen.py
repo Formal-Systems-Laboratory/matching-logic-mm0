@@ -26,8 +26,10 @@ def reduce_in_module(src, module, expected_sort, term):
 def cleanup_maude_output(s):
     s = s.replace("'", "")
     s = s.replace("-", "_")
-    s = s.replace(";)", ";")
     s = s.replace("(pub", "pub")
+    s = s.replace("(pub", "pub")
+    s = s.replace(";)", ";")
+    s = s.replace(";)", ";")
     s = s.replace("_>>", "->>")
     s = s.replace("_>", "->")
     s = s.replace("colon", ":")
@@ -37,7 +39,7 @@ def cleanup_maude_output(s):
     s = s.replace("cong_of_equiv ", "cong_of_equiv_")
     return s
 
-assert len(sys.argv) == 3, "Usage: proof-gen <top-implies-fp|fp-implies-top> <regex>"
+assert len(sys.argv) == 3, "Usage: proof-gen <main-goal|top-implies-fp|fp-implies-top> <regex>"
 theorem = sys.argv[1]
 regex = sys.argv[2]
 
