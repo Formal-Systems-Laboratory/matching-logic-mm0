@@ -28,13 +28,18 @@ fmod PATTERN-METAMATH-CORE is
     subsort Letter < Pattern .
     op a            :                 -> Letter [ctor] .
     op b            :                 -> Letter [ctor] .
+    op top-letter   :                 -> Pattern [ctor] .
 
     op _ . _        : Pattern Pattern -> Pattern [ctor prec 28] .
 
     op (derivative _ _) : Pattern Pattern -> Pattern [ctor] .
 
+    *** Meta variables *************************
+    vars phi phi1 phi2 psi psi1 psi2 : Pattern .
+    vars x y X Y : Qid .
 
-    *** Helpers
+
+    *** Helpers ***************************************************
     op substitute [ _ / _ ] in _ : Pattern Qid Pattern -> Pattern .
     eq substitute [ phi / X ] in sVar X = phi .
    ceq substitute [ phi / X ] in sVar Y = sVar Y if X =/= Y .
@@ -427,6 +432,8 @@ mod PROOF-GEN is
     subsort Qid < MetaMathProof .
     vars MMP : MetaMathProof .
 
+    op bang _ _ _ : MetaMathProof MetaMathProof MetaMathProof -> MetaMathProof .
+
     *** Contextual reasoning with equalities *********************************
 
     op cong-thm : Qid -> Qid .
@@ -506,13 +513,41 @@ mod PROOF-GEN is
     op positive-in-or _ _ : MetaMathProof MetaMathProof  -> MetaMathProof .
     op positive-in-concat _ _ : MetaMathProof MetaMathProof  -> MetaMathProof .
 
-    *** unfold ***************************************************************
+    *** unfold-r ***************************************************************
     op unfold-r : Pattern MetaMathProof -> MetaMathProof .
-    eq unfold-r(mu X Phi, MMP) = (unfold-r positivity(X, Phi) MMP) .
+    eq unfold-r(mu X Phi, MMP)
+     = (unfold-r positivity(X, Phi) (norm-lemma-r propag-sSubst(X, Phi) MMP)) .
+    eq unfold-r(sVar X, MMP) = ( unfold-r '- '- ) .
 
-    op unfold-r _ _ : MetaMathProof MetaMathProof -> MetaMathProof .
+    op unfold-r _ _ : MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
 
     *** top-implies-fp *******************************************************
+
+    op proof-top-implies-fp : Node -> MetaMathProof .
+    eq proof-top-implies-fp(N) = ( top-implies-fp-init proof-top-implies-fp(fp(N), N) ) .
+    op proof-top-implies-fp : Pattern Node -> MetaMathProof .
+    eq proof-top-implies-fp(Phi, node(< Alpha >, eqEdge(applResult(R, Ctx, Subst), N)))
+     = proof-top-implies-fp(Phi, N) .
+    eq proof-top-implies-fp(sVar X, backlink(< Alpha >))
+     = ( bang 'top-implies-fp-leaf 'X 'box ) .
+    eq proof-top-implies-fp(mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))) ,
+                            node(< Phi >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
+                                                             rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
+                                                             rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
+                           )                      )
+     = (top-implies-fp-interior
+         (norm-lemma-r propag-sSubst(Q, Alpha)
+                       unfold-r( substitute[ mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))) / Q ] in Alpha , 'orl))
+         (norm-lemma-r propag-sSubst(Q, Beta)
+                       unfold-r( substitute[ mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))) / Q ] in Beta , 'orl))
+         (norm-lemma-r propag-sSubst(Q, Alpha)
+           (norm-lemma propag-sSubst(Q, Alpha . top-letter) proof-top-implies-fp(Alpha, N_A)))
+         (norm-lemma-r propag-sSubst(Q, Beta)
+           (norm-lemma propag-sSubst(Q, Beta . top-letter) proof-top-implies-fp(Beta, N_B)))
+       ) .
+
+    op top-implies-fp-init _ : MetaMathProof -> MetaMathProof .
+    op top-implies-fp-interior _ _ _ _ : MetaMathProof MetaMathProof MetaMathProof MetaMathProof -> MetaMathProof .
 
     *** main-goal ************************************************************
     --- Here, we the proof for (fp -> Alpha) .
