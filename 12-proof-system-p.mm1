@@ -179,8 +179,13 @@ theorem lemma_46 (phi: Pattern) {box: SVar} (ctx: Pattern box)
   (p : $ phi $):
   $ ~ (app[ (~ phi) / box ] ctx) $ = '(syl propag_bot @ framing @ notnot1 p);
 
-theorem equiv_to_eq (h: $ phi <-> psi $):
-  $ phi == psi $ = '(norm (norm_not @ ! defNorm box) @ lemma_46 h);
+
+theorem lemma_46_floor
+  (h: $phi$)
+: $|_ phi _|$
+= '(norm (norm_not @ ! defNorm box) @ lemma_46 h);
+theorem subset_to_imp  (h: $ phi -> psi $): $ phi C_ psi $ = '(lemma_46_floor h);
+theorem equiv_to_eq  (h: $ phi <-> psi $): $ phi == psi $ = '(lemma_46_floor h);
 
 theorem eq_refl: $ phi == phi $ = '(equiv_to_eq biid);
 
