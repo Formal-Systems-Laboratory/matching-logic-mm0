@@ -111,12 +111,18 @@ theorem eq_to_concat_bi
 axiom top_implies_fp_init {X: SVar} (h: $phi . top_letter -> phi$)
     : $top_word X -> phi$;
 
+axiom top_implies_fp_leaf (phi : Pattern box)
+    : $( ctximp_app X (sVar X . top_letter) phi box ) . top_letter -> phi $ ;
+
 axiom top_implies_fp_interior {X: SVar}
-    (he_a: $epsilon -> s[ (mu X (epsilon \/ (a . phi_a) \/ (b . phi_b))) / X ] phi_a$)
-    (he_b: $epsilon -> s[ (mu X (epsilon \/ (a . phi_a) \/ (b . phi_b))) / X ] phi_b$)
+    (phi_a phi_b psi_a psi_b : Pattern X box)
+    (he_a: $epsilon -> s[ (mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b)))) / X ] phi_a$)
+    (he_b: $epsilon -> s[ (mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b)))) / X ] phi_b$)
                                 --- ^^^ Together these give (letter -> rhs)
-    (ha: $(s[ (ctximp_app Box (sVar Box . top_letter) (mu X (epsilon \/ (a . phi_a) \/ (b . phi_b))) _) / X ] psi_a) -> (s[ (mu X (epsilon \/ (a . phi_a) \/ (b . phi_b))) / X ] phi_a)$)
-    (hb: $(s[ (ctximp_app Box (sVar Box . top_letter) (mu X (epsilon \/ (a . phi_a) \/ (b . phi_b))) _) / X ] psi_b) -> (s[ (mu X (epsilon \/ (a . phi_a) \/ (b . phi_b))) / X ] phi_b)$)
+    (ha: $(s[ (ctximp_app Box (sVar Box . top_letter) (mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b)))) box) / X ] (psi_a . top_letter))
+            -> (s[ (mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b)))) / X ] phi_a)$)
+    (hb: $(s[ (ctximp_app Box (sVar Box . top_letter) (mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b)))) box) / X ] (psi_b . top_letter))
+            -> (s[ (mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b)))) / X ] phi_b)$)
   : ------------------------
     $(mu X (epsilon \/ ((a . psi_a) \/ (b . psi_b)))) . top_letter -> (mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b))))$;
 
