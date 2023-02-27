@@ -703,6 +703,12 @@ theorem membership_sym {x y: EVar} {box: SVar} (ctx: Pattern box x) (phi: Patter
     bitr (corollary_57_floor membership_exists) @
     bitr (cong_of_equiv_exists membership_and_bi)
          (cong_of_equiv_exists @ cong_of_equiv_and_l lemma_in_in));
+theorem membership_sym_forward {x y: EVar} {box: SVar} (ctx: Pattern box x) (phi: Pattern x):
+  $ (x in app[ phi / box ] ctx) -> exists y ((y in phi) /\ (x in app[ eVar y / box ] ctx)) $
+= '(eq_to_intro membership_sym);
+theorem membership_sym_reverse {x y: EVar} {box: SVar} (ctx: Pattern box x) (phi: Pattern x):
+  $ exists y ((y in phi) /\ (x in app[ eVar y / box ] ctx)) -> (x in app[ phi / box ] ctx) $
+= '(eq_to_intro_rev membership_sym);
 
 --- lemma 59
 -- theorem functional_subst {x: EVar} {y: EVar} (phi1: Pattern x y) (phi2: Pattern x):
