@@ -28,10 +28,14 @@ theorem propag_floor (phi psi ctx: Pattern box):
 --- Appendix I: Notations and Proofs about Recursive Symbols
 ------------------------------------------------------------
 
-
 --- contextual implications
 def ctximp_app {box: SVar} (ctx: Pattern box) (phi: Pattern) {dummy: EVar}: Pattern
  = $ exists dummy (eVar dummy /\ ((app[ eVar dummy / box ] ctx) C_ phi)) $;
+
+--- The following theorem can likely only be proved as a metatheorem, as we need
+--- to induct on the context ctx. We should replace this with a meta-theorem.
+axiom ctximp_in_ctx_reverse {box: SVar} (ctx: Pattern box)
+: $psi -> app[ (ctximp_app box ctx psi dummy) / box ] ctx$;
 
 theorem wrap_lemma {x: EVar} (phi psi: Pattern x)
   (h: $ (x in phi) -> psi $):
