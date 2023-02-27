@@ -31,6 +31,7 @@ fmod PATTERN-METAMATH-CORE is
     op b            :                 -> Letter [ctor] .
     op kleene _ _   : Qid Pattern     -> Pattern [ctor prec 25] .
     op top-letter   :                 -> Pattern [ctor] .
+    op top-word _   : Qid             -> Pattern [ctor] .
 
     op _ . _        : Pattern Pattern -> Pattern [ctor prec 28] .
 
@@ -422,6 +423,9 @@ mod PROOF-GEN is
 
     op bang _ _ _ : MetaMathProof MetaMathProof MetaMathProof -> MetaMathProof .
 
+    sort MM0Decl .
+    op pub theorem _ colon $ _ $ = quote _ ; : Qid Pattern MetaMathProof -> MM0Decl .
+
     *** Contextual reasoning with equalities *********************************
 
     vars LR : String .
@@ -511,6 +515,12 @@ mod PROOF-GEN is
 
     *** top-implies-fp *******************************************************
 
+    op theorem-top-implies-fp : Pattern -> MM0Decl .
+    eq theorem-top-implies-fp(Phi)
+     = pub theorem 'top-implies-fp
+             colon $ (top-word 'X) -> fp(proofHint(Phi)) $
+                 = quote(proof-top-implies-fp(proofHint(Phi))) ; .
+
     op proof-top-implies-fp : Node -> MetaMathProof .
     eq proof-top-implies-fp(N) = ( top-implies-fp-init proof-top-implies-fp(fp(N), N) ) .
     op proof-top-implies-fp : Pattern Node -> MetaMathProof .
@@ -540,6 +550,12 @@ mod PROOF-GEN is
     *** fp-implies-regex ************************************************************
     --- Here, we the proof for (fp -> Alpha) .
 
+    op theorem-fp-implies-regex : Pattern -> MM0Decl .
+    eq theorem-fp-implies-regex(Phi)
+     = pub theorem 'fp-implies-regex
+             colon $ fp(proofHint(Phi)) -> Phi $
+                 = quote(proof-fp-implies-regex(proofHint(Phi))) ; .
+
     op fp-implies-regex-leaf : -> MetaMathProof [ctor] .
     op fp-implies-regex-interior _ _ _ : MetaMathProof MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
 
@@ -557,6 +573,7 @@ mod PROOF-GEN is
             (norm-lemma propag-sSubst(qid(str(Alpha)), fp(N_A))  proof-fp-implies-regex(N_A))
             (norm-lemma propag-sSubst(qid(str(Alpha)), fp(N_B))  proof-fp-implies-regex(N_B))
      .
+
 endm
 
 --- search in ERE-THEOREMS : ((a . a)* ->> ((a * . a) \/ epsilon)) =>* P:Pattern .
