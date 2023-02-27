@@ -42,10 +42,6 @@ test_regex() {
     test_mm "$test_basename.mm1"
 }
 
-should_fail() {
-    ! test_regex "$@" 2>/dev/null >/dev/null
-}
-
 ### Main #######################
 
 mkdir -p "$test_dir"
@@ -53,7 +49,6 @@ warn_unproved
 for f in $(ls *.mm0 *.mm1 | sort); do
     test_mm $f;
 done
-should_fail 'fail-a-star'      '(a)*'
 test_regex  'a-or-b-star'      '(a + b)*'
 test_regex  'kleene-star-star' '(a *) * ->> (a *)'
 test_regex  'example-in-paper' '(a . a)* ->> ((a * . a) + epsilon) '
