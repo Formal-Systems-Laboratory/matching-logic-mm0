@@ -342,6 +342,9 @@ theorem example_1 {X: SVar} (phi: Pattern):
 --   $ Norm (e[ phi / x ] (eVar x)) phi $ =
 --   propag_e_subst_auto;
 
+--- Tests for LISP based tactic -------------------------------------
+---------------------------------------------------------------------
+
 theorem example_2 {X: SVar} (phi: Pattern):
   $ Norm (s[ phi / X ] (app bot (sVar X))) (app bot phi) $ =
   propag_s_subst_auto;
