@@ -163,10 +163,10 @@ theorem epsilon_kleene {X: SVar} (phi: Pattern X):
   '(epsilon_kleene_TODO positivity_hack_TODO);
 
 
-theorem main_goal_leaf :
+theorem fp_implies_regex_leaf :
     $rho -> rho$ = 'id;
 
-theorem main_goal_interior_TODO {X: SVar} (phi_a phi_b: Pattern X)
+theorem fp_implies_regex_interior_TODO {X: SVar} (phi_a phi_b: Pattern X)
     (posa: $ _Positive X phi_a $)
     (posb: $ _Positive X phi_b $)
     (he: $epsilon -> epsilon /\ rho$)
@@ -180,13 +180,13 @@ theorem main_goal_interior_TODO {X: SVar} (phi_a phi_b: Pattern X)
         (norm_imp_l @ norm_sym @ _sSubst_or sSubstitution_triv @ _sSubst_or (sSubst_concat_r norm_refl) (sSubst_concat_r norm_refl))
         (orim he @ orim (framing_concat_r ha) (framing_concat_r hb))
       ));
-theorem main_goal_interior {X: SVar} (phi_a phi_b: Pattern X)
+theorem fp_implies_regex_interior {X: SVar} (phi_a phi_b: Pattern X)
     (he: $epsilon -> epsilon /\ rho$)
     (ha: $s[ rho / X ] phi_a -> (derivative a rho)$)
     (hb: $s[ rho / X ] phi_b -> (derivative b rho)$):
     ----------------------------------------------
     $(mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b)))) -> rho$ =
-    '(main_goal_interior_TODO positivity_hack_TODO positivity_hack_TODO he ha hb);
+    '(fp_implies_regex_interior_TODO positivity_hack_TODO positivity_hack_TODO he ha hb);
 
 theorem regex_eq_der_bot_lemma_1 {x y v w: EVar}:
   $ (forall v (exists x (eVar x == eVar w . eVar v ))) -> exists x (eVar x == eVar w . eVar y ) $ =

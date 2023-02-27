@@ -504,25 +504,25 @@ mod PROOF-GEN is
 
     *** top-implies-fp *******************************************************
 
-    *** main-goal ************************************************************
+    *** fp-implies-regex ************************************************************
     --- Here, we the proof for (fp -> Alpha) .
 
-    op main-goal-leaf : -> MetaMathProof [ctor] .
-    op main-goal-interior _ _ _ : MetaMathProof MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
+    op fp-implies-regex-leaf : -> MetaMathProof [ctor] .
+    op fp-implies-regex-interior _ _ _ : MetaMathProof MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
 
-    op proof-main-goal : Node -> MetaMathProof .
-    eq proof-main-goal(node(< id >, none)) = id .
-    eq proof-main-goal(backlink(< Alpha >)) = main-goal-leaf .
-    eq proof-main-goal(node(check-ewp[ Alpha ], eqEdge(applResult(R, Ctx, Subst), N))) = apply-equiv (lift-equality-to-context Ctx eq-thm(Subst, R)) proof-main-goal(N) .
-    eq proof-main-goal(node(< Alpha >,          eqEdge(applResult(R, Ctx, Subst), N))) = apply-equiv (lift-equality-to-context Ctx eq-thm(Subst, R)) proof-main-goal(N) .
-    eq proof-main-goal(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
+    op proof-fp-implies-regex : Node -> MetaMathProof .
+    eq proof-fp-implies-regex(node(< id >, none)) = id .
+    eq proof-fp-implies-regex(backlink(< Alpha >)) = fp-implies-regex-leaf .
+    eq proof-fp-implies-regex(node(check-ewp[ Alpha ], eqEdge(applResult(R, Ctx, Subst), N))) = apply-equiv (lift-equality-to-context Ctx eq-thm(Subst, R)) proof-fp-implies-regex(N) .
+    eq proof-fp-implies-regex(node(< Alpha >,          eqEdge(applResult(R, Ctx, Subst), N))) = apply-equiv (lift-equality-to-context Ctx eq-thm(Subst, R)) proof-fp-implies-regex(N) .
+    eq proof-fp-implies-regex(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
                                        rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
                                        rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
                       )    )
-     = main-goal-interior
-            proof-main-goal(N_EWP)
-            (norm-lemma propag-sSubst(qid(str(Alpha)), fp(N_A))  proof-main-goal(N_A))
-            (norm-lemma propag-sSubst(qid(str(Alpha)), fp(N_B))  proof-main-goal(N_B))
+     = fp-implies-regex-interior
+            proof-fp-implies-regex(N_EWP)
+            (norm-lemma propag-sSubst(qid(str(Alpha)), fp(N_A))  proof-fp-implies-regex(N_A))
+            (norm-lemma propag-sSubst(qid(str(Alpha)), fp(N_B))  proof-fp-implies-regex(N_B))
      .
 endm
 
@@ -534,4 +534,4 @@ set print with parentheses on .
 --- show search graph .
 --- reduce proofHint((a . a)* ->> ((a * . a) \/ epsilon)) .
 --- reduce fp(proofHint((a . a)* ->> ((a * . a) \/ epsilon))) .
---- reduce proof-main-goal(proofHint((a . a)* ->> ((a * . a) \/ epsilon))) .
+--- reduce proof-fp-implies-regex(proofHint((a . a)* ->> ((a * . a) \/ epsilon))) .
