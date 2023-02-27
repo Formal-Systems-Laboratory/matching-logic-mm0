@@ -3,10 +3,7 @@ fmod PATTERN-METAMATH-CORE is
     sorts Symbol SVar EVar Pattern .
     subsorts Symbol SVar EVar < Pattern .
 
-    vars phi phi1 phi2 psi psi1 psi2 : Pattern .
-    vars x y X Y : Qid .
-
-    *** core
+    *** Core ***************************************
     op sVar _ : Qid -> SVar [ctor] .
     op eVar _ : Qid -> EVar [ctor] .
     op app _ _ : Pattern Pattern -> Pattern [ctor] .
@@ -15,13 +12,14 @@ fmod PATTERN-METAMATH-CORE is
     op bot         : -> Pattern [ctor] .
     op exists _ _ : Qid Pattern -> Pattern [ctor] .
 
+    *** Standard sugar **********************************
     op _ /\ _       : Pattern Pattern -> Pattern [ctor] .
     op _ \/ _       : Pattern Pattern -> Pattern [ctor] .
     op nu _ _       : Qid Pattern     -> Pattern [ctor] .
     op forall _ _   : Qid Pattern     -> Pattern [ctor] .
     op ~ _           : Pattern         -> Pattern [ctor] .
 
-    *** ERE
+    *** ERE *********************************************
     op epsilon      :                 -> Pattern [ctor] .
 
     --- TODO: Ideally, we'd want to be parametric over an alphabet.
@@ -34,6 +32,20 @@ fmod PATTERN-METAMATH-CORE is
     op _ . _        : Pattern Pattern -> Pattern [ctor prec 28] .
 
     op (derivative _ _) : Pattern Pattern -> Pattern [ctor] .
+
+
+    *** Helpers
+    op substitute [ _ / _ ] in _ : Pattern Qid Pattern -> Pattern .
+    eq substitute [ phi / X ] in sVar X = phi .
+   ceq substitute [ phi / X ] in sVar Y = sVar Y if X =/= Y .
+    eq substitute [ phi / X ] in mu X psi = mu X psi .
+   ceq substitute [ phi / X ] in mu Y psi = mu X (substitute [ phi / X ] in psi) if X =/= Y .
+    eq substitute [ phi / X ] in (psi1 \/ psi2) = (substitute [ phi / X ] in psi1) \/ (substitute [ phi / X ] in psi2) .
+    eq substitute [ phi / X ] in epsilon = epsilon .
+    eq substitute [ phi / X ] in a = a .
+    eq substitute [ phi / X ] in b = b .
+    eq substitute [ phi / X ] in (psi1 . psi2)
+     = (substitute [ phi / X ] in psi1) . (substitute [ phi / X ] in psi2) .
 endfm
 
 fmod PATTERN-METAMATH is
