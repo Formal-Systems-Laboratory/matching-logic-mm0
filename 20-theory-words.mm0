@@ -1,4 +1,4 @@
-import "10-theory-definedness.mm1";
+import "10-theory-definedness.mm0";
 
 term a_symbol : Symbol ;
 def a : Pattern = $sym a_symbol$ ;
