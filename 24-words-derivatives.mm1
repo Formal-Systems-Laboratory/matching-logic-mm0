@@ -4,6 +4,7 @@ import "02-ml-normalization.mm1";
 import "12-proof-system-p.mm1";
 import "13-fixedpoints.mm1";
 import "21-words-normalization.mm1";
+import "22-assumptions.mm1";
 
 --- Derivatives
 ---------------
@@ -23,11 +24,6 @@ theorem concat_appctx_r : $ Norm (app[ psi / box ] (phi . sVar box)) (phi . psi)
 
 theorem propag_or_concat : $(phi1 \/ phi2) . psi ->  (phi1 . psi) \/ (phi2 . psi)$
 = '(norm (norm_imp concat_appctx_l (norm_or concat_appctx_l concat_appctx_l)) (! propag_or dummy) );
-
---- The following theorem can likely only be proved as a metatheorem, as we need
---- to induct on the context ctx. We should replace this with a meta-theorem.
-axiom ctximp_in_ctx_reverse {box: SVar} (ctx: Pattern box)
-: $psi -> app[ (ctximp_app box ctx psi dummy) / box ] ctx$;
 
 --- The following theorems lift ctximp_in_ctx to derivatives.
 theorem der_in_ctx_reverse
@@ -49,18 +45,6 @@ theorem der_equality:
         domain_words)
     (eori anr @ eori der_in_ctx_forward der_in_ctx_forward)
   ) ;
-
-axiom eq_der_a_concat:
-    $(derivative a (phi . psi)) <->   (derivative a phi) . psi
-                                   \/ ((epsilon /\ phi) . (derivative a psi))$;
-axiom eq_der_a_or:
-    $(derivative a (phi \/ psi)) <-> (derivative a phi) \/ (derivative a psi)$;
-axiom eq_der_a_kleene {X: SVar} (phi: Pattern X):
-    $(derivative a (kleene X phi)) <-> (derivative a phi) . (kleene X phi)$;
-axiom eq_der_a_not:
-    $(derivative a (~ phi)) <-> ~ (derivative a phi)$;
-axiom eq_der_a_imp:
-    $(derivative a (phi -> psi)) <-> ((derivative a phi) -> (derivative a psi))$;
 
 --- Contextual reasoning
 ------------------------
@@ -102,26 +86,12 @@ theorem eq_to_concat_bi
 --- top-implies-fp
 ------------------
 
-axiom top_implies_fp_init {X: SVar} (h: $phi . top_letter -> phi$)
-    : $top_word X -> phi$;
-
-axiom top_implies_fp_interior {X: SVar}
-    (he_a: $epsilon -> s[ (mu X (epsilon \/ (a . phi_a) \/ (b . phi_b))) / X ] phi_a$)
-    (he_b: $epsilon -> s[ (mu X (epsilon \/ (a . phi_a) \/ (b . phi_b))) / X ] phi_b$)
-                                --- ^^^ Together these give (letter -> rhs)
-    (ha: $(s[ (ctximp_app Box (sVar Box . top_letter) (mu X (epsilon \/ (a . phi_a) \/ (b . phi_b))) _) / X ] psi_a) -> (s[ (mu X (epsilon \/ (a . phi_a) \/ (b . phi_b))) / X ] phi_a)$)
-    (hb: $(s[ (ctximp_app Box (sVar Box . top_letter) (mu X (epsilon \/ (a . phi_a) \/ (b . phi_b))) _) / X ] psi_b) -> (s[ (mu X (epsilon \/ (a . phi_a) \/ (b . phi_b))) / X ] phi_b)$)
-  : ------------------------
-    $(mu X (epsilon \/ ((a . psi_a) \/ (b . psi_b)))) . top_letter -> (mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b))))$;
-
-
 --- fp-implies-alpha
 --------------------
 
 --| Apply equivalence left to right
 theorem apply_equiv (eq: $phi <-> psi$) (cont: $rho -> psi$): $rho -> phi$
   = '(syl (bi2i eq) cont);
-
 
 
 theorem _sSubst_nnimp {X: SVar} (phi phi1 phi2 psi1 psi2: Pattern X)
@@ -205,21 +175,6 @@ theorem regex_eq_der_bot_wrt_a:
 theorem regex_eq_der_bot_wrt_b:
   $ (derivative b bot) <-> bot $ = '(ibii (regex_eq_der_bot (! functional_b x)) absurdum);
 
-axiom regex_eq_der_epsilon_wrt_a:
-  $ (derivative a epsilon) <-> bot $;
-axiom regex_eq_der_epsilon_wrt_b:
-  $ (derivative b epsilon) <-> bot $;
-
-axiom regex_eq_der_same_a_wrt_a:
-  $ (derivative a a) <-> epsilon $;
-axiom regex_eq_der_same_a_wrt_b:
-  $ (derivative b b) <-> epsilon $;
-
-axiom regex_eq_der_diff_a_wrt_a:
-  $ (derivative a b) <-> bot $;
-axiom regex_eq_der_diff_a_wrt_b:
-  $ (derivative b a) <-> bot $;
-
 theorem functional_a_concat {.w x v: EVar} :
   $ exists x (eVar x == a . eVar v) $ =
   '(var_subst_same_var ,(functional_subst 'w 'z $forall v (exists x (eVar x == (eVar w . eVar v)))$ 'functional_concat 'functional_a));
@@ -238,11 +193,6 @@ theorem der_transformer_test_1 {x y: EVar} (phi: Pattern):
   $ (exists x ((eVar y == eVar x) /\ ((a . eVar x) C_ (~ phi)))) <-> ((a . eVar y) C_ (~ phi)) $ =
   (der_transformer 'x 'y 'a $~ phi$);
 
-
-axiom regex_eq_der_kleene_wrt_a {X: SVar} (Alpha: Pattern X): $ (derivative a (kleene X Alpha)) <-> ((derivative a Alpha) . (kleene X Alpha)) $;
-axiom regex_eq_der_kleene_wrt_b {X: SVar} (Alpha: Pattern X): $ (derivative b (kleene X Alpha)) <-> ((derivative b Alpha) . (kleene X Alpha)) $;
-axiom regex_eq_der_concat_wrt_a: $ (derivative a (Alpha . Beta)) <-> ((derivative a Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative a Beta)) $;
-axiom regex_eq_der_concat_wrt_b: $ (derivative b (Alpha . Beta)) <-> ((derivative b Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative b Beta)) $;
 theorem regex_eq_der_choice_wrt_a: $ (derivative a (Alpha \/ Beta)) <-> (derivative a Alpha) \/ (derivative a Beta) $ =
   '(bitr (! der_expand d1) @
     bitr (
@@ -411,9 +361,7 @@ theorem regex_eq_eps_concat_r: $ Alpha . epsilon <-> Alpha $ =
     (! lemma_62 _ x));
 
 theorem regex_eq_double_neg: $ ~ (~ Alpha) <-> Alpha $ = '(bicom notnot);
-axiom regex_eq_double_kleene {X: SVar} (Alpha: Pattern X): $ (kleene X (kleene X Alpha)) <-> (kleene X Alpha) $;
 
-axiom regex_eq_eps_kleene: $ (kleene X epsilon) <-> epsilon $;
 theorem regex_eq_bot_kleene: $ (kleene X bot) <-> epsilon $ = '(ibii
   (rsyl (mu_framing (positive_in_or positive_triv @ positive_in_concat positive_triv positive_in_same_sVar) positive_triv (rsyl (orim2 @ norm (norm_imp_l appCtxLRVar) (! propag_bot box)) dne)) (KT positive_triv @ norm (norm_sym @ norm_imp_l sSubstitution_triv) id))
   (epsilon_kleene_TODO positive_triv));
