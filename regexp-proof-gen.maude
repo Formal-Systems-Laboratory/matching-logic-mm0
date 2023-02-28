@@ -67,6 +67,7 @@ fmod PATTERN-METAMATH-CORE is
     eq all-sVars(mu X phi) = X minus(all-sVars(phi), X) .
     eq all-sVars(bot) = nil .
     eq all-sVars(exists X phi) = all-sVars(phi) .
+    eq all-sVars(~ phi) = all-sVars(phi) .
 
     eq all-sVars(epsilon)  = nil .
     eq all-sVars(a)  = nil .
@@ -74,6 +75,7 @@ fmod PATTERN-METAMATH-CORE is
     eq all-sVars(phi \/ psi)  = all-sVars(phi) minus(all-sVars(psi), all-sVars(phi)) .
     eq all-sVars(phi .  psi)  = all-sVars(phi) minus(all-sVars(psi), all-sVars(phi)) .
 
+    eq all-sVars([ kleene X phi ]) = X .
     eq all-sVars(top-word X) = X .
 
     op minus : QidList QidList -> QidList .
@@ -542,16 +544,16 @@ mod PROOF-GEN is
     op theorem-main-goal : Pattern -> MM0Decl .
     eq theorem-main-goal(Phi)
      = theorem-top-implies-fp(Phi)
-       theorem-fp-implies-regex(Phi) .
----       pub theorem 'proof-main-goal
----             colon $ Phi $
----                 = quote( main-goal 'top-implies-fp 'fp-implies-regex ) ; .
+       theorem-fp-implies-regex(Phi)
+       pub theorem 'proof-main-goal no-binders
+             colon $ Phi $
+                 = quote([ 'main-goal [ 'bang 'top-implies-fp 'X 'CCapbDDx ] 'fp-implies-regex ]) ; .
 
     *** top-implies-fp *******************************************************
     op theorem-top-implies-fp : Pattern -> MM0Decl .
     eq theorem-top-implies-fp(Phi)
      = pub theorem 'top-implies-fp
-             { all-sVars((top-word 'X) -> fp(proofHint(Phi))) colon SVar } 
+             { all-sVars((top-word 'X) -> fp(proofHint(Phi))) colon SVar }
              colon $ (top-word 'X) -> fp(proofHint(Phi)) $
                  = quote(proof-top-implies-fp(proofHint(Phi))) ; .
 
@@ -583,7 +585,8 @@ mod PROOF-GEN is
 
     op theorem-fp-implies-regex : Pattern -> MM0Decl .
     eq theorem-fp-implies-regex(Phi)
-     = pub theorem 'fp-implies-regex no-binders
+     = pub theorem 'fp-implies-regex
+             { all-sVars(fp(proofHint(Phi)) -> Phi) colon SVar }
              colon $ fp(proofHint(Phi)) -> Phi $
                  = quote(proof-fp-implies-regex(proofHint(Phi))) ; .
 
