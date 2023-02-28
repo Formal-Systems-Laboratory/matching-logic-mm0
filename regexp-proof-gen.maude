@@ -29,7 +29,7 @@ fmod PATTERN-METAMATH-CORE is
     subsort Letter < Pattern .
     op a            :                 -> Letter [ctor] .
     op b            :                 -> Letter [ctor] .
-    op kleene _ _   : Qid Pattern     -> Pattern [ctor prec 25] .
+    op [ kleene _ _ ] : Qid Pattern     -> Pattern [ctor prec 25] .
     op top-letter   :                 -> Pattern [ctor] .
     op top-word _   : Qid             -> Pattern [ctor] .
 
@@ -64,7 +64,7 @@ fmod PATTERN-METAMATH-CORE is
     eq all-sVars(sym  X) = nil .
     eq all-sVars(app phi psi) = all-sVars(phi) minus(all-sVars(psi), all-sVars(phi)) .
     eq all-sVars(phi -> psi)  = all-sVars(phi) minus(all-sVars(psi), all-sVars(phi)) .
-    eq all-sVars(mu X phi) = X all-sVars(phi) .
+    eq all-sVars(mu X phi) = X minus(all-sVars(phi), X) .
     eq all-sVars(bot) = nil .
     eq all-sVars(exists X phi) = all-sVars(phi) .
 
@@ -95,7 +95,7 @@ fmod PATTERN-METAMATH is
     eq Alpha + Beta = Alpha \/ Beta .
 
     op _ *          : Pattern -> Pattern [prec 30] .
-    eq Alpha * = kleene 'Xk Alpha .
+    eq Alpha * = [ kleene 'Xk Alpha ] .
 
     op _ ->> _        : Pattern Pattern -> Pattern [prec 31] .
     eq Alpha ->> Beta = (~ Alpha) \/ Beta .
@@ -119,7 +119,7 @@ fmod PATTERN-METAMATH is
     eq toNat(a) = 2 .
     eq toNat(b) = 3 .
     eq toNat(top) = 4 .
-    eq toNat(kleene X phi) = 5 .
+    eq toNat([kleene X phi]) = 5 .
     eq toNat(~ phi) = 6 .
     eq toNat(phi1 . phi2) = 7 .
     eq toNat(phi1 /\ phi2) = 8 .
@@ -130,7 +130,7 @@ fmod PATTERN-METAMATH is
     eq phi <=> phi = EQ .
     ceq phi <=> psi = LT if toNat(phi) < toNat(psi) .
     ceq phi <=> psi = GT if toNat(phi) > toNat(psi) .
-    eq (kleene X phi) <=> (kleene X psi) = phi <=> psi .
+    eq ([kleene X phi]) <=> ([kleene X psi]) = phi <=> psi .
     eq (~ phi) <=> (~ psi) = phi <=> psi .
     ceq (phi1 . phi2) <=> (psi1 . psi2) = phi2 <=> psi2 if phi1 <=> psi1 = EQ .
     eq (phi1 . phi2) <=> (psi1 . psi2) = phi1 <=> psi1 [owise] .
@@ -161,7 +161,7 @@ mod ERE-THEOREMS is
     rl [regex_eq_der_same_a]  : (derivative A A)            => epsilon .
    crl [regex_eq_der_diff_a]  : (derivative A B)            => bot if A =/= B .
 
-    rl [regex_eq_der_kleene]  : (derivative A (kleene X Alpha))         => (derivative A Alpha) . (kleene X Alpha) .
+    rl [regex_eq_der_kleene]  : (derivative A [kleene X Alpha])         => (derivative A Alpha) . [kleene X Alpha] .
     rl [regex_eq_der_concat]  : (derivative A (Alpha . Beta))  => ((derivative A Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative A Beta)) .
     rl [regex_eq_der_choice]  : (derivative A (Alpha \/ Beta)) => (derivative A Alpha) \/ (derivative A Beta) .
     rl [regex_eq_der_conj]    : (derivative A (Alpha /\ Beta)) => (derivative A Alpha) /\ (derivative A Beta) .
@@ -174,7 +174,7 @@ mod ERE-THEOREMS is
     rl [regex_eq_ewp_concat]  : epsilon /\ (Alpha . Beta)  => (epsilon /\ Alpha) /\ (epsilon /\ Beta) .
     rl [regex_eq_ewp_and]     : epsilon /\ (Alpha /\ Beta) => (epsilon /\ Alpha) /\ (epsilon /\ Beta) .
     rl [regex_eq_ewp_choice]  : epsilon /\ (Alpha \/ Beta) => (epsilon /\ Alpha) \/ (epsilon /\ Beta) .
-    rl [regex_eq_ewp_kleene]  : epsilon /\ (kleene X Alpha)       => epsilon .
+    rl [regex_eq_ewp_kleene]  : epsilon /\ [kleene X Alpha]       => epsilon .
 
     rl [regex_eq_ewp_not_bot]     : epsilon /\ ~(bot)           => epsilon .
     rl [regex_eq_ewp_not_eps]     : epsilon /\ ~(epsilon)       => bot .
@@ -183,7 +183,7 @@ mod ERE-THEOREMS is
     rl [regex_eq_ewp_not_concat]  : epsilon /\ ~(Alpha . Beta)  => (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta) .
     rl [regex_eq_ewp_not_and]     : epsilon /\ ~(Alpha /\ Beta) => (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta) .
     rl [regex_eq_ewp_not_choice]  : epsilon /\ ~(Alpha \/ Beta) => (epsilon /\ ~ Alpha) /\ (epsilon /\ ~ Beta) .
-    rl [regex_eq_ewp_not_kleene]  : epsilon /\ ~(kleene X Alpha)       => bot .
+    rl [regex_eq_ewp_not_kleene]  : epsilon /\ ~ ([ kleene X Alpha ]) => bot .
     rl [regex_eq_ewp_not_not]     : epsilon /\ ~(~ Alpha)       => epsilon /\ Alpha .
 
     --- Identity and idemoptency of \/
@@ -210,10 +210,10 @@ mod ERE-THEOREMS is
     rl [regex_eq_eps_concat_r] : Alpha . epsilon => Alpha .
 
     rl [regex_eq_double_neg] : ~ ~ Alpha => Alpha .
-    rl [regex_eq_double_kleene] : (kleene X (kleene Y Alpha)) => (kleene X Alpha) .
+    rl [regex_eq_double_kleene] : [kleene X [kleene Y Alpha]] => [kleene X Alpha] .
 
-    rl [regex_eq_eps_kleene] : (kleene X epsilon) => epsilon .
-    rl [regex_eq_bot_kleene] : (kleene X bot) => epsilon .
+    rl [regex_eq_eps_kleene] : [kleene X epsilon] => epsilon .
+    rl [regex_eq_bot_kleene] : [kleene X bot] => epsilon .
 
 
     *** Rules *********************************
@@ -234,9 +234,27 @@ mod ERE-THEOREMS is
     eq check-ewp[ epsilon ] = < id > .
 endm
 
+
+fmod MM0 is
+    protecting QID-LIST .
+
+    sort MM0SExpr MM0Atom .
+    subsort Qid < MM0Atom < MM0SExpr .
+
+    --- We use square brackets instead of parens for S-Expressions since
+    --- Maude treats parens specially.
+    --- TODO: Consider using List{MM0SExpr}?
+    op [ _ _ ]        : MM0SExpr MM0SExpr                             -> MM0SExpr .
+    op [ _ _ _ ]      : MM0SExpr MM0SExpr MM0SExpr                    -> MM0SExpr .
+    op [ _ _ _ _ ]    : MM0SExpr MM0SExpr MM0SExpr MM0SExpr           -> MM0SExpr .
+    op [ _ _ _ _ _ ]  : MM0SExpr MM0SExpr MM0SExpr MM0SExpr MM0SExpr  -> MM0SExpr .
+
+endfm
+
 --- Manually performs a search, and returns the search graph as a tree with backlinks.
 mod PROOF-GEN is
     extending ERE-THEOREMS .
+    protecting MM0 .
     protecting META-LEVEL .
     protecting NAT .
 
@@ -408,7 +426,7 @@ mod PROOF-GEN is
     eq str(Alpha \/ Beta) = "C" + str(Alpha) + "p" + str(Beta) + "D" .
     eq str(Alpha /\ Beta) = "C" + str(Alpha) + "q" + str(Beta) + "D" .
     eq str(Alpha -> Beta) = "C" + str(Alpha) + "i" + str(Beta) + "D" .
-    eq str(kleene X Alpha) = "C" + str(Alpha) + "Dx" .
+    eq str([kleene X Alpha]) = "C" + str(Alpha) + "Dx" .
     eq str(~ Alpha) = "nC" + str(Alpha) + "D" .
 
     *** fp *******************************************************************
@@ -441,18 +459,11 @@ mod PROOF-GEN is
 
     *** Metamath proofs ******************************************************
 
-    sort MetaMathProof .
-
-    op id : -> MetaMathProof .
-    --- The Qids corresponding to equational rules are all theorems.
-    subsort Qid < MetaMathProof .
-    vars MMP : MetaMathProof .
-
-    op bang _ _ _ : MetaMathProof MetaMathProof MetaMathProof -> MetaMathProof .
+    vars MMP : MM0SExpr .
 
     sort MM0Decl MM0Binder .
     op _ _ : MM0Decl MM0Decl -> MM0Decl [ctor assoc format(d n d)] .
-    op pub theorem _ _ colon $ _ $ = quote _ ; : Qid MM0Binder Pattern MetaMathProof -> MM0Decl .
+    op pub theorem _ _ colon $ _ $ = quote _ ; : Qid MM0Binder Pattern MM0SExpr -> MM0Decl .
 
     op no-binders : -> MM0Binder [ctor] .
     op { _ colon SVar } : QidList -> MM0Binder [ctor] .
@@ -466,83 +477,64 @@ mod PROOF-GEN is
     eq cong-thm('_/\_, LR) = qid("and" + LR) .
     eq cong-thm('_._, LR) = qid("concat" + LR) .
     eq cong-thm('~_, LR) = 'not .
-    eq cong-thm('kleene__, LR) = 'kleene .
+    eq cong-thm('`[kleene__`], LR) = 'kleene .
 
     op eq-thm : Substitution Qid -> Qid .
     eq eq-thm('A:Letter <- Q ; Subst , R) = qid(string(R) + "-wrt-" + string(getName(Q))) .
     eq eq-thm(          Subst , R) = R [owise] .
 
 
-    op cong-of-equiv _ _ : Qid MetaMathProof -> MetaMathProof [ctor] .
+    op cong-of-equiv _ _ : Qid MM0SExpr -> MM0SExpr .
+    eq cong-of-equiv Q MMP = [ qid("cong-of-equiv-" + string(Q)) MMP ] .
 
-    op lift-equality-to-context _  _ : Context MetaMathProof -> MetaMathProof .
-    eq lift-equality-to-context [] MMP = MMP .
+    op lift-equality-to-context : Context MM0SExpr -> MM0SExpr .
+    eq lift-equality-to-context([], MMP) = MMP .
 
     --- special cases for state ctors
-    eq lift-equality-to-context ('check-ewp`[_`][ Ctx ]) MMP = lift-equality-to-context Ctx MMP .
-    eq lift-equality-to-context ('<_>[ Ctx ]) MMP = lift-equality-to-context Ctx MMP .
+    eq lift-equality-to-context('check-ewp`[_`][ Ctx ], MMP) = lift-equality-to-context(Ctx, MMP) .
+    eq lift-equality-to-context('<_>[ Ctx ], MMP) = lift-equality-to-context(Ctx, MMP) .
 
-    eq lift-equality-to-context (Q [ Ctx ]) MMP
-     = cong-of-equiv cong-thm(Q, "") (lift-equality-to-context Ctx MMP) .
-    eq lift-equality-to-context (Q [ Ctx , T ] ) MMP
-     = cong-of-equiv cong-thm(Q, "-l") (lift-equality-to-context Ctx MMP) .
-    eq lift-equality-to-context (Q [ T , Ctx ] ) MMP
-     = cong-of-equiv cong-thm(Q, "-r") (lift-equality-to-context Ctx MMP) .
-
-    op apply-equiv _ _ : MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
+    eq lift-equality-to-context(Q [ Ctx ], MMP)
+     = cong-of-equiv cong-thm(Q, "") lift-equality-to-context(Ctx, MMP) .
+    eq lift-equality-to-context(Q [ Ctx , T ], MMP)
+     = cong-of-equiv cong-thm(Q, "-l") lift-equality-to-context(Ctx, MMP) .
+    eq lift-equality-to-context(Q [ T , Ctx ], MMP)
+     = cong-of-equiv cong-thm(Q, "-r") lift-equality-to-context(Ctx, MMP) .
 
     *** push-s-subst *********************************************************
 
-    op propag-sSubst : Qid Pattern -> MetaMathProof .
+    op propag-sSubst : Qid Pattern -> MM0SExpr .
     eq propag-sSubst(X, bot) = 'sSubstitution-triv .
     eq propag-sSubst(X, top) = 'sSubstitution-triv .
     eq propag-sSubst(X, eVar X) = 'sSubstitution-triv .
     eq propag-sSubst(X, sVar X) = 'sSubstitution-in-same-sVar .
    ceq propag-sSubst(X, sVar Y) = 'sSubstitution-triv if X =/= Y .
     eq propag-sSubst(X, mu X Phi) = 'sSubstitution-in-same-mu .
-   ceq propag-sSubst(X, mu Y Phi) = -sSubst-mu propag-sSubst(X, Phi) if X =/= Y .
-    eq propag-sSubst(X, Phi1 \/ Phi2) = -sSubst-or propag-sSubst(X, Phi1) propag-sSubst(X, Phi2) .
+   ceq propag-sSubst(X, mu Y Phi) = [ '-sSubst-mu propag-sSubst(X, Phi) ] if X =/= Y .
+    eq propag-sSubst(X, Phi1 \/ Phi2) = [ '-sSubst-or propag-sSubst(X, Phi1) propag-sSubst(X, Phi2) ] .
 
-    eq propag-sSubst(X, Phi1 . Phi2) = sSubst-concat propag-sSubst(X, Phi1) propag-sSubst(X, Phi2) .
+    eq propag-sSubst(X, Phi1 . Phi2) = [ 'sSubst-concat propag-sSubst(X, Phi1) propag-sSubst(X, Phi2) ] .
     eq propag-sSubst(X, a) = 'sSubstitution-triv .
     eq propag-sSubst(X, b) = 'sSubstitution-triv .
     eq propag-sSubst(X, epsilon) = 'sSubstitution-triv .
     eq propag-sSubst(X, top-letter) = 'sSubstitution-triv .
 
-    op -sSubst-mu _ : MetaMathProof -> MetaMathProof [ctor] .
-    op -sSubst-or _ _ : MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
-    op sSubst-concat _ _ : MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
-
-    op norm-lemma _ _ : MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
-    op norm-lemma-r _ _ : MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
-
     *** pos ******************************************************************
-    op positivity : Qid Pattern -> MetaMathProof .
-    eq positivity(X, sVar X) = positive-in-same-sVar .
-   ceq positivity(X, sVar Y) = positive-in-sVar if X =/= Y  .
-    eq positivity(X, mu X Phi) = positive-in-same-mu .
-   ceq positivity(X, mu Y Phi) = ( positive-in-mu positivity(X, Phi) )  if X =/= Y .
-    eq positivity(X, Phi1 \/ Phi2) = positive-in-or positivity(X, Phi1) positivity(X, Phi2) .
-    eq positivity(X, epsilon) = positive-triv .
-    eq positivity(X, a) = positive-triv .
-    eq positivity(X, b) = positive-triv .
-    eq positivity(X, Phi1 . Phi2) = positive-in-concat positivity(X, Phi1) positivity(X, Phi2) .
-
-
-    op positive-in-sVar : -> MetaMathProof .
-    op positive-in-same-sVar : -> MetaMathProof .
-    op positive-triv : -> MetaMathProof .
-    op positive-in-mu _ : MetaMathProof -> MetaMathProof .
-    op positive-in-same-mu : -> MetaMathProof .
-    op positive-in-or _ _ : MetaMathProof MetaMathProof  -> MetaMathProof .
-    op positive-in-concat _ _ : MetaMathProof MetaMathProof  -> MetaMathProof .
+    op positivity : Qid Pattern -> MM0SExpr .
+    eq positivity(X, sVar X) = 'positive-in-same-sVar .
+   ceq positivity(X, sVar Y) = 'positive-in-sVar if X =/= Y  .
+    eq positivity(X, mu X Phi) = 'positive-in-same-mu .
+   ceq positivity(X, mu Y Phi) = [ 'positive-in-mu positivity(X, Phi) ]  if X =/= Y .
+    eq positivity(X, Phi1 \/ Phi2) = [ 'positive-in-or positivity(X, Phi1) positivity(X, Phi2) ] .
+    eq positivity(X, epsilon) = 'positive-triv .
+    eq positivity(X, a) = 'positive-triv .
+    eq positivity(X, b) = 'positive-triv .
+    eq positivity(X, Phi1 . Phi2) = [ 'positive-in-concat positivity(X, Phi1) positivity(X, Phi2) ] .
 
     *** unfold-r ***************************************************************
-    op unfold-r : Pattern MetaMathProof -> MetaMathProof .
+    op unfold-r : Pattern MM0SExpr -> MM0SExpr .
     eq unfold-r(mu X Phi, MMP)
-     = (unfold-r (norm-lemma-r propag-sSubst(X, Phi) MMP)) .
-
-    op unfold-r _ : MetaMathProof -> MetaMathProof [ctor] .
+     = [ 'unfold-r [ 'norm-lemma-r propag-sSubst(X, Phi) MMP ] ] .
 
     *** main-goal ************************************************************
     --- Here, we split the proof for a regular expression into
@@ -556,8 +548,6 @@ mod PROOF-GEN is
 ---             colon $ Phi $
 ---                 = quote( main-goal 'top-implies-fp 'fp-implies-regex ) ; .
 
-    op main-goal _ _ : MetaMathProof MetaMathProof -> MetaMathProof .
-
     *** top-implies-fp *******************************************************
     op theorem-top-implies-fp : Pattern -> MM0Decl .
     eq theorem-top-implies-fp(Phi)
@@ -566,31 +556,28 @@ mod PROOF-GEN is
              colon $ (top-word 'X) -> fp(proofHint(Phi)) $
                  = quote(proof-top-implies-fp(proofHint(Phi))) ; .
 
-    op proof-top-implies-fp : Node -> MetaMathProof .
-    eq proof-top-implies-fp(N) = ( top-implies-fp-init proof-top-implies-fp(fp(N), N) ) .
-    op proof-top-implies-fp : Pattern Node -> MetaMathProof .
+    op proof-top-implies-fp : Node -> MM0SExpr .
+    eq proof-top-implies-fp(N) = [ 'top-implies-fp-init proof-top-implies-fp(fp(N), N) ] .
+    op proof-top-implies-fp : Pattern Node -> MM0SExpr .
     eq proof-top-implies-fp(Phi, node(< Alpha >, eqEdge(applResult(R, Ctx, Subst), N)))
      = proof-top-implies-fp(Phi, N) .
     eq proof-top-implies-fp(sVar X, backlink(< Alpha >))
-     = ( bang 'top-implies-fp-leaf 'X 'box ) .
+     = [ 'bang 'top-implies-fp-leaf 'X 'box ] .
     eq proof-top-implies-fp(mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))) ,
                             node(< Phi >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
                                                              rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
                                                              rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
                            )                      )
-     = (top-implies-fp-interior
-         (norm-lemma-r propag-sSubst(Q, Alpha)
-                       unfold-r( substitute[ mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))) / Q ] in Alpha , 'orl))
-         (norm-lemma-r propag-sSubst(Q, Beta)
-                       unfold-r( substitute[ mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))) / Q ] in Beta , 'orl))
-         (norm-lemma-r propag-sSubst(Q, Alpha)
-           (norm-lemma propag-sSubst(Q, Alpha . top-letter) proof-top-implies-fp(Alpha, N_A)))
-         (norm-lemma-r propag-sSubst(Q, Beta)
-           (norm-lemma propag-sSubst(Q, Beta . top-letter) proof-top-implies-fp(Beta, N_B)))
-       ) .
-
-    op top-implies-fp-init _ : MetaMathProof -> MetaMathProof .
-    op top-implies-fp-interior _ _ _ _ : MetaMathProof MetaMathProof MetaMathProof MetaMathProof -> MetaMathProof .
+     = ['top-implies-fp-interior
+         [ 'norm-lemma-r propag-sSubst(Q, Alpha)
+                       unfold-r( substitute[ mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))) / Q ] in Alpha , 'orl)]
+         [ 'norm-lemma-r propag-sSubst(Q, Beta)
+                       unfold-r( substitute[ mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))) / Q ] in Beta , 'orl)]
+         [ 'norm-lemma-r propag-sSubst(Q, Alpha)
+           ['norm-lemma propag-sSubst(Q, Alpha . top-letter) proof-top-implies-fp(Alpha, N_A) ] ]
+         [ 'norm-lemma-r propag-sSubst(Q, Beta)
+           [ 'norm-lemma propag-sSubst(Q, Beta . top-letter) proof-top-implies-fp(Beta, N_B) ] ]
+       ] .
 
     *** fp-implies-regex ************************************************************
     --- Here, we the proof for (fp -> Alpha) .
@@ -601,32 +588,20 @@ mod PROOF-GEN is
              colon $ fp(proofHint(Phi)) -> Phi $
                  = quote(proof-fp-implies-regex(proofHint(Phi))) ; .
 
-    op fp-implies-regex-leaf : -> MetaMathProof [ctor] .
-    op fp-implies-regex-interior _ _ _ : MetaMathProof MetaMathProof MetaMathProof -> MetaMathProof [ctor] .
-
-    op proof-fp-implies-regex : Node -> MetaMathProof .
-    eq proof-fp-implies-regex(node(< id >, none)) = id .
-    eq proof-fp-implies-regex(backlink(< Alpha >)) = fp-implies-regex-leaf .
-    eq proof-fp-implies-regex(node(check-ewp[ Alpha ], eqEdge(applResult(R, Ctx, Subst), N))) = apply-equiv (lift-equality-to-context Ctx eq-thm(Subst, R)) proof-fp-implies-regex(N) .
-    eq proof-fp-implies-regex(node(< Alpha >,          eqEdge(applResult(R, Ctx, Subst), N))) = apply-equiv (lift-equality-to-context Ctx eq-thm(Subst, R)) proof-fp-implies-regex(N) .
+    op proof-fp-implies-regex : Node -> MM0SExpr .
+    eq proof-fp-implies-regex(node(< id >, none)) = 'id .
+    eq proof-fp-implies-regex(backlink(< Alpha >)) = 'fp-implies-regex-leaf .
+    eq proof-fp-implies-regex(node(check-ewp[ Alpha ], eqEdge(applResult(R, Ctx, Subst), N))) = [ 'apply-equiv lift-equality-to-context(Ctx, eq-thm(Subst, R)) proof-fp-implies-regex(N) ] .
+    eq proof-fp-implies-regex(node(< Alpha >,          eqEdge(applResult(R, Ctx, Subst), N))) = [ 'apply-equiv lift-equality-to-context(Ctx, eq-thm(Subst, R)) proof-fp-implies-regex(N) ] .
     eq proof-fp-implies-regex(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
                                        rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
                                        rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
                       )    )
-     = fp-implies-regex-interior
+     = [ 'fp-implies-regex-interior
             proof-fp-implies-regex(N_EWP)
-            (norm-lemma propag-sSubst(qid(str(Alpha)), fp(N_A))  proof-fp-implies-regex(N_A))
-            (norm-lemma propag-sSubst(qid(str(Alpha)), fp(N_B))  proof-fp-implies-regex(N_B))
+            [ 'norm-lemma propag-sSubst(qid(str(Alpha)), fp(N_A))  proof-fp-implies-regex(N_A)]
+            [ 'norm-lemma propag-sSubst(qid(str(Alpha)), fp(N_B))  proof-fp-implies-regex(N_B)]
+       ]
      .
 
 endm
-
---- search in ERE-THEOREMS : ((a . a)* ->> ((a * . a) \/ epsilon)) =>* P:Pattern .
---- show search graph .
-
-set print with parentheses on .
---- search  (epsilon -> (epsilon /\ (( ~ ((a . a) *)) \/ (((a *) . a) \/ epsilon)))) =>! P:Pattern .
---- show search graph .
---- reduce proofHint((a . a)* ->> ((a * . a) \/ epsilon)) .
---- reduce fp(proofHint((a . a)* ->> ((a * . a) \/ epsilon))) .
---- reduce proof-fp-implies-regex(proofHint((a . a)* ->> ((a * . a) \/ epsilon))) .
