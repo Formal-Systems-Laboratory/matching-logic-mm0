@@ -35,6 +35,11 @@ theorem concat_appctx_r : $ Norm (app[ psi / box ] (phi . sVar box)) (phi . psi)
 theorem propag_or_concat : $(phi1 \/ phi2) . psi ->  (phi1 . psi) \/ (phi2 . psi)$
 = '(norm (norm_imp concat_appctx_l (norm_or concat_appctx_l concat_appctx_l)) (! propag_or dummy) );
 
+--- The following theorem can likely only be proved as a metatheorem, as we need
+--- to induct on the context ctx. We should replace this with a meta-theorem.
+axiom ctximp_in_ctx_reverse {box: SVar} (ctx: Pattern box)
+: $psi -> app[ (ctximp_app box ctx psi dummy) / box ] ctx$;
+
 --- The following theorems lift ctximp_in_ctx to derivatives.
 theorem der_in_ctx_reverse
   : $w2 -> w1 . (derivative w1 w2)$
