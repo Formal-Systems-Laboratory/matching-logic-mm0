@@ -28,10 +28,6 @@ theorem propag_floor (phi psi ctx: Pattern box):
 --- Appendix I: Notations and Proofs about Recursive Symbols
 ------------------------------------------------------------
 
---- contextual implications
-def ctximp_app {box: SVar} (ctx: Pattern box) (phi: Pattern) {dummy: EVar}: Pattern
- = $ exists dummy (eVar dummy /\ ((app[ eVar dummy / box ] ctx) C_ phi)) $;
-
 theorem ctximp_in_ctx_forward {box: SVar} (ctx: Pattern box)
 : $app[ (ctximp_app box ctx psi dummy) / box ] ctx -> psi$
  = '(rsyl (propag_exists eFresh_triv) @ exists_generalization eFresh_triv @ rsyl propag_floor @ impcom @ rsyl corollary_57_floor id );

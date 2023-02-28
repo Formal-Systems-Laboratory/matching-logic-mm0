@@ -17,3 +17,10 @@ infixl _in: $in$ prec 35;
 
 axiom definedness {x: EVar}: $ |^ eVar x ^| $;
 
+--- Contextual Implications
+---------------------------
+
+--- We define this here, so it can be used in public theories.
+def ctximp_app {box: SVar} (ctx: Pattern box) (phi: Pattern) {dummy: EVar}: Pattern
+ = $ exists dummy (eVar dummy /\ ((app[ eVar dummy / box ] ctx) C_ phi)) $;
+
