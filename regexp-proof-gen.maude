@@ -237,6 +237,7 @@ endm
 
 fmod MM0 is
     protecting QID-LIST .
+    protecting PATTERN-METAMATH-CORE .
 
     sort MM0SExpr MM0Atom .
     subsort Qid < MM0Atom < MM0SExpr .
@@ -249,6 +250,11 @@ fmod MM0 is
     op [ _ _ _ _ ]    : MM0SExpr MM0SExpr MM0SExpr MM0SExpr           -> MM0SExpr .
     op [ _ _ _ _ _ ]  : MM0SExpr MM0SExpr MM0SExpr MM0SExpr MM0SExpr  -> MM0SExpr .
 
+    sort MM0Decl MM0Binder .
+    op _ _ : MM0Decl MM0Decl -> MM0Decl [ctor assoc format(d n d)] .
+    op pub theorem _ _ colon $ _ $ = quote _ ; : Qid MM0Binder Pattern MM0SExpr -> MM0Decl .
+    op no-binders : -> MM0Binder [ctor] .
+    op { _ colon SVar } : QidList -> MM0Binder [ctor] .
 endfm
 
 --- Manually performs a search, and returns the search graph as a tree with backlinks.
@@ -460,13 +466,6 @@ mod PROOF-GEN is
     *** Metamath proofs ******************************************************
 
     vars MMP : MM0SExpr .
-
-    sort MM0Decl MM0Binder .
-    op _ _ : MM0Decl MM0Decl -> MM0Decl [ctor assoc format(d n d)] .
-    op pub theorem _ _ colon $ _ $ = quote _ ; : Qid MM0Binder Pattern MM0SExpr -> MM0Decl .
-
-    op no-binders : -> MM0Binder [ctor] .
-    op { _ colon SVar } : QidList -> MM0Binder [ctor] .
 
     *** Contextual reasoning with equalities *********************************
 
