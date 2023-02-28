@@ -26,18 +26,6 @@ def top_word_l {X: SVar} : Pattern = $(kleene_l X top_letter )$ ;
 def top_word_r {X: SVar} : Pattern = $(kleene_r X top_letter )$ ;
 def top_word   {X: SVar} : Pattern = $(kleene   X top_letter )$ ;
 
---- Secondary sugar
-
-def nnimp (phi1 phi2: Pattern): Pattern = $ ~phi1 \/ phi2 $;
-infixr nnimp: $->>$ prec 24;
-
-def nnequiv (phi1 phi2: Pattern): Pattern = $ (phi1 ->> phi2) /\ (phi2 ->> phi1) $;
-infixr nnequiv: $<<->>$ prec 20;
-
-def replus (phi1 phi2: Pattern): Pattern = $ phi1 \/ phi2 $;
-infixl replus: $+$ prec 29;
-
-
 --- Axioms (e suffix indicates over element vars)
 
 axiom domain_words {X: SVar} : $ top_word X $;
@@ -57,4 +45,17 @@ axiom assoc_concat_e     {u v w: EVar} : $forall u (forall v (forall w  (eVar u 
 axiom identity_left_e    {u : EVar} : $forall u ((eVar u) . epsilon == (eVar u))$;
 axiom identity_right_e   {u : EVar} : $forall u (epsilon . (eVar u) == (eVar u))$;
 
+
+--- Secondary sugar
+
+--- TODO: Remove these (Need to be removed from maude as well.
+def nnimp (phi1 phi2: Pattern): Pattern = $ ~phi1 \/ phi2 $;
+infixr nnimp: $->>$ prec 24;
+def nnequiv (phi1 phi2: Pattern): Pattern = $ (phi1 ->> phi2) /\ (phi2 ->> phi1) $;
+infixr nnequiv: $<<->>$ prec 20;
+def replus (phi1 phi2: Pattern): Pattern = $ phi1 \/ phi2 $;
+infixl replus: $+$ prec 29;
+
+def derivative (l: Pattern) (phi: Pattern): Pattern
+= $ctximp_app box (l . sVar box) phi dummy $;
 
