@@ -3,7 +3,7 @@ import "01-propositional.mm1";
 import "02-ml-normalization.mm1";
 import "12-proof-system-p.mm1";
 import "13-fixedpoints.mm1";
-import "21-words-normalization.mm1";
+import "21-words-helpers.mm1";
 import "22-assumptions.mm1";
 
 --- Derivatives
@@ -46,39 +46,6 @@ theorem der_equality:
     (eori anr @ eori der_in_ctx_forward der_in_ctx_forward)
   ) ;
 
---- Contextual reasoning
-------------------------
-
-theorem cong_of_equiv_concat_l (h: $phi1 <-> phi2$): $(phi1 . psi) <-> (phi2 . psi)$ =
-  '(ibii (framing_concat_l @ anl h) (framing_concat_l @ anr h));
-theorem cong_of_equiv_concat_r (h: $phi1 <-> phi2$): $(psi . phi1) <-> (psi . phi2)$ =
-  '(ibii (framing_concat_r @ anl h) (framing_concat_r @ anr h));
-theorem cong_of_equiv_concat (h1: $phi1 <-> phi2$) (h2: $psi1 <-> psi2$): $(phi1 . psi1) <-> (phi2 . psi2)$ =
-  '(bitr (cong_of_equiv_concat_l h1) (cong_of_equiv_concat_r h2));
-theorem cong_of_equiv_kleene_TODO {X: SVar} (phi1 phi2: Pattern X)
-  (h1: $ _Positive X phi1 $)
-  (h2: $ _Positive X phi2 $)
-  (h: $ phi1 <-> phi2 $):
-  $ (kleene X phi1) <-> (kleene X phi2) $ =
-  '(cong_of_equiv_mu_TODO
-    (positive_in_kleene_r_body h1)
-    (positive_in_kleene_r_body h2)
-    (cong_of_equiv_or_r @ cong_of_equiv_concat_l h));
-theorem cong_of_equiv_kleene {X: SVar} (phi1 phi2: Pattern X)
-  (h: $ phi1 <-> phi2 $):
-  $ (kleene X phi1) <-> (kleene X phi2) $ =
-  '(cong_of_equiv_kleene_TODO positivity_hack_TODO positivity_hack_TODO h);
-
-theorem eq_to_nnimp_bi
-  (h1: $ (phi1 == phi2) -> (psi1 <-> psi2) $)
-  (h2: $ (phi1 == phi2) -> (rho1 <-> rho2) $):
-  $ (phi1 == phi2) -> ((psi1 ->> rho1) <-> (psi2 ->> rho2)) $ =
-  '(eq_to_imp_bi (eq_to_not_bi @ eq_to_not_bi h1) h2);
-theorem eq_to_concat_bi
-  (h1: $ (phi1 == phi2) -> (psi1 <-> psi2) $)
-  (h2: $ (phi1 == phi2) -> (rho1 <-> rho2) $):
-  $ (phi1 == phi2) -> ((psi1 . rho1) <-> (psi2 . rho2)) $ =
-  '(eq_to_app_bi (eq_to_app_r_bi h1) h2);
 
 --- Reasoning about regular expressions
 ---------------------------------------
@@ -92,28 +59,6 @@ theorem eq_to_concat_bi
 --| Apply equivalence left to right
 theorem apply_equiv (eq: $phi <-> psi$) (cont: $rho -> psi$): $rho -> phi$
   = '(syl (bi2i eq) cont);
-
-
-theorem _sSubst_nnimp {X: SVar} (phi phi1 phi2 psi1 psi2: Pattern X)
-  (h1: $ Norm (s[ phi / X ] phi1) psi1 $)
-  (h2: $ Norm (s[ phi / X ] phi2) psi2 $):
-  $ Norm (s[ phi / X ] (phi1 ->> phi2)) (psi1 ->> psi2) $ =
-  '(_sSubst_imp (_sSubst_not @ _sSubst_not h1) h2);
-
-theorem _eSubst_concat {x: EVar} (phi psi1 psi2 rho1 rho2: Pattern x)
-  (h1: $ Norm (e[ phi / x ] psi1) rho1 $)
-  (h2: $ Norm (e[ phi / x ] psi2) rho2 $):
-  $ Norm (e[ phi / x ] (psi1 . psi2)) (rho1 . rho2) $ =
-  '(_eSubst_app (_eSubst_app eSubstitution_triv h1) h2);
-
-theorem _eSubst_concat_l {x: EVar} (phi psi rho: Pattern x) (gamma: Pattern)
-  (h: $ Norm (e[ phi / x ] psi) rho $):
-  $ Norm (e[ phi / x ] (psi . gamma)) (rho . gamma) $ =
-  '(_eSubst_concat h eSubstitution_triv);
-theorem _eSubst_concat_r {x: EVar} (phi psi rho: Pattern x) (gamma: Pattern)
-  (h: $ Norm (e[ phi / x ] psi) rho $):
-  $ Norm (e[ phi / x ] (gamma . psi)) (gamma . rho) $ =
-  '(_eSubst_concat eSubstitution_triv h);
 
 
 theorem epsilon_kleene_TODO {X: SVar} (phi: Pattern X)
