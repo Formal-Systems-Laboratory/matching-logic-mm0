@@ -24,6 +24,13 @@ theorem framing_concat_l (h: $phi -> psi$): $phi . rho -> psi . rho$ =
 theorem framing_concat_r (h: $phi -> psi$): $rho . phi -> rho . psi$ =
   '(app_framing_r h);
 
+--- Helpers for Kleene
+theorem positive_in_kleene_body {X: SVar} (phi: Pattern X)
+  (h: $ _Positive X phi $):
+  $ _Positive X (epsilon \/ phi . sVar X) $ =
+  '(positive_in_or positive_triv @ positive_in_app (positive_in_app positive_triv h) positive_in_same_sVar);
+
+
 --- Helpers for top_letter
 theorem pos_in_top_letter {X: SVar}:
   $ _Positive X top_letter $ =
