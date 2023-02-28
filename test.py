@@ -103,5 +103,15 @@ test_regex('fp-implies-regex-pub', 'alternate-top',              '((a *) . b) * 
 test_regex('fp-implies-regex-pub', 'even-or-odd',                '((((a . a) + (a . b)) + (b . a)) + (b . b)) * + ((a + b) . (((((a . a) + (a . b)) + (b . a)) + (b . b)) *))')
 test_regex('fp-implies-regex-pub', 'no-contains-a-or-no-only-b', '(~ (top . (a . top))) + ~ (b *)')
 
+### Benchmarks #################
+# From Unified Decision Procedures for Regular Expression Equivalence
+# URL: https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=f650281fc011a2c132690903eb443ff1ab3298f7
+#
+test_regex('fp-implies-regex-pub', 'match-l-04',                  'match-l(4)')
+test_regex('fp-implies-regex-pub', 'match-r-04',                  'match-r(4)')
+test_regex('fp-implies-regex-pub',    'eq-l-04',                     'eq-l(4)')
+test_regex('fp-implies-regex-pub',    'eq-r-04',                     'eq-r(4)')
+test_regex('fp-implies-regex-pub',   'eq-lr-04',                    'eq-lr(4)') # Extension
+
 print()
 print_benchmarks()
