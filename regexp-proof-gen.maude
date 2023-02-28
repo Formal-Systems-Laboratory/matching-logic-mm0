@@ -563,7 +563,7 @@ mod PROOF-GEN is
     eq proof-top-implies-fp(Phi, node(< Alpha >, eqEdge(applResult(R, Ctx, Subst), N)))
      = proof-top-implies-fp(Phi, N) .
     eq proof-top-implies-fp(sVar X, backlink(< Alpha >))
-     = [ 'bang 'top-implies-fp-leaf 'X 'box ] .
+     = [ 'bang 'top-implies-fp-leaf 'box 'X ] .
     eq proof-top-implies-fp(mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))) ,
                             node(< Phi >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
                                                              rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;

@@ -31,7 +31,7 @@ axiom top_implies_fp_init {X: SVar} (phi: Pattern) (h: $phi . top_letter -> phi$
 axiom top_implies_fp_leaf {dummy: EVar} {X: SVar} (phi : Pattern dummy)
     : $( ctximp_app X (sVar X . top_letter) phi dummy ) . top_letter -> phi $ ;
 
-axiom top_implies_fp_interior {box: SVar} {dummy: EVar} {X: SVar}
+axiom top_implies_fp_interior  {X: SVar} {box: SVar} {dummy: EVar}
     (phi_a phi_b psi_a psi_b : Pattern X dummy)
     (he_a: $epsilon -> s[ (mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b)))) / X ] phi_a$)
     (he_b: $epsilon -> s[ (mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b)))) / X ] phi_b$)
