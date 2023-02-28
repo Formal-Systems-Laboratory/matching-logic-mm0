@@ -36,11 +36,6 @@ theorem ctximp_in_ctx_forward {box: SVar} (ctx: Pattern box)
 : $app[ (ctximp_app box ctx psi dummy) / box ] ctx -> psi$
  = '(rsyl (propag_exists eFresh_triv) @ exists_generalization eFresh_triv @ rsyl propag_floor @ impcom @ rsyl corollary_57_floor id );
 
---- The following theorem can likely only be proved as a metatheorem, as we need
---- to induct on the context ctx. We should replace this with a meta-theorem.
-axiom ctximp_in_ctx_reverse {box: SVar} (ctx: Pattern box)
-: $psi -> app[ (ctximp_app box ctx psi dummy) / box ] ctx$;
-
 theorem wrap_lemma {x: EVar} (phi psi: Pattern x)
   (h: $ (x in phi) -> psi $):
   $ (x in phi) -> |_ psi _| $ =
