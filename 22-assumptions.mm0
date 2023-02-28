@@ -1,4 +1,4 @@
-import "20-theory-words.mm1";
+import "20-theory-words.mm0";
 
 --- This file contains unproves theorems as axioms for the theory of words.
 --- As we prove them, we shall move them to an appropriate file.
