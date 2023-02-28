@@ -106,15 +106,3 @@ theorem lemma_83_top_word_r
 theorem unfold_r_top_word_r {X : SVar} (phi: Pattern) (h: $phi -> epsilon \/ top_letter . top_word_r X$) : $phi -> top_word_r X$ = '(rsyl h @ lemma_83_top_word_r_forward);
 theorem unfold_l_top_word_r {X : SVar} (phi: Pattern) (h: $(epsilon \/ top_letter . top_word_r X) -> phi$) : $top_word_r X -> phi$ = '(syl h  lemma_83_top_word_r_reverse);
 
-
-theorem _sSubst_nnimp {X: SVar} (phi phi1 phi2 psi1 psi2: Pattern X)
-  (h1: $ Norm (s[ phi / X ] phi1) psi1 $)
-  (h2: $ Norm (s[ phi / X ] phi2) psi2 $):
-  $ Norm (s[ phi / X ] (phi1 ->> phi2)) (psi1 ->> psi2) $ =
-  '(_sSubst_imp (_sSubst_not @ _sSubst_not h1) h2);
-theorem eq_to_nnimp_bi
-  (h1: $ (phi1 == phi2) -> (psi1 <-> psi2) $)
-  (h2: $ (phi1 == phi2) -> (rho1 <-> rho2) $):
-  $ (phi1 == phi2) -> ((psi1 ->> rho1) <-> (psi2 ->> rho2)) $ =
-  '(eq_to_imp_bi (eq_to_not_bi @ eq_to_not_bi h1) h2);
-
