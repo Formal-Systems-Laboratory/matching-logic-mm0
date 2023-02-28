@@ -6,12 +6,11 @@ import "10-theory-definedness.mm1";
 --- Normalizations over various sugar
 -------------------------------------
 
-def defCtx {box: SVar}: Pattern box = $ (|^ sVar box ^|) $;
 theorem defNorm {box: SVar} (phi: Pattern):
-  $ Norm (app[ phi / box ] (defCtx box)) (|^ phi ^|) $ =
+  $ Norm (app[ phi / box ] (|^ sVar box ^|)) (|^ phi ^|) $ =
   '(norm_trans appCtxR @ norm_app norm_refl appCtxVar);
 theorem defNorm2 {box: SVar} (phi: Pattern):
-  $ Norm (app[ phi / box ] (|^ defCtx box ^|)) (|^ (|^ phi ^|) ^|) $ =
+  $ Norm (app[ phi / box ] (|^ |^ sVar box ^| ^|)) (|^ (|^ phi ^|) ^|) $ =
   '(norm_trans appCtxR @ norm_app norm_refl defNorm);
 theorem singletonDef {x: EVar} (phi: Pattern x):
   $ ~(|^ eVar x /\ phi ^| /\ |^ eVar x /\ ~phi ^|) $ =
