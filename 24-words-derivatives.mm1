@@ -222,9 +222,6 @@ theorem regex_eq_ewp_a:
 theorem regex_eq_ewp_b:
   $ epsilon /\ b <-> bot $ = '(regex_eq_ewp_ab orr);
 
-axiom regex_eq_ewp_concat:
-  $ epsilon /\ (Alpha . Beta) <-> (epsilon /\ Alpha) /\ (epsilon /\ Beta) $;
-
 theorem regex_eq_ewp_and:
   $ epsilon /\ (Alpha /\ Beta) <-> (epsilon /\ Alpha) /\ (epsilon /\ Beta) $ = 'anandi;
 
@@ -247,7 +244,6 @@ theorem regex_eq_ewp_not_a: $ (epsilon /\ ~a) <-> epsilon $ =
   '(ibii anl @ iand id @ dne @ anl regex_eq_ewp_a);
 theorem regex_eq_ewp_not_b: $ (epsilon /\ ~b) <-> epsilon $ =
   '(ibii anl @ iand id @ dne @ anl regex_eq_ewp_b);
-axiom regex_eq_ewp_not_concat: $ (epsilon /\ ~(Alpha . Beta)) <-> ((epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta)) $;
 theorem regex_eq_ewp_not_and: $ (epsilon /\ ~(Alpha /\ Beta)) <-> ((epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta)) $ =
   '(bitr (cong_of_equiv_and_r notan) andi);
 theorem regex_eq_ewp_not_choice: $ (epsilon /\ ~(Alpha \/ Beta)) <-> ((epsilon /\ ~ Alpha) /\ (epsilon /\ ~ Beta)) $ =
