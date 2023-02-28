@@ -16,9 +16,6 @@ theorem positive_in_kleene_body {X: SVar} (phi: Pattern X)
 --- Derivatives
 ---------------
 
-def derivative (l: Pattern) (phi: Pattern): Pattern
-    = $ctximp_app box (l . sVar box) phi dummy $;
-
 theorem der_expand (l: Pattern) (phi: Pattern):
   $ (derivative l phi) <-> exists d (eVar d /\ ((l . eVar d) C_ phi)) $ =
   '(norm (norm_equiv_r @ norm_exists @ norm_and_r @ norm_floor @ norm_imp_l (! appCtxRVar box _ _)) biid);
