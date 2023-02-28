@@ -1,10 +1,7 @@
 fmod PATTERN-METAMATH-CORE is
-    protecting QID .
+    protecting QID-LIST .
     sorts Symbol SVar EVar Pattern .
     subsorts Symbol SVar EVar < Pattern .
-
-    vars phi phi1 phi2 psi psi1 psi2 : Pattern .
-    vars x y X Y : Qid .
 
     *** Core ***************************************
     op sVar _ : Qid -> SVar [ctor] .
@@ -39,6 +36,38 @@ fmod PATTERN-METAMATH-CORE is
     op _ . _        : Pattern Pattern -> Pattern [ctor prec 28] .
 
     op (derivative _ _) : Pattern Pattern -> Pattern [ctor] .
+
+    *** Meta variables *************************
+    vars phi phi1 phi2 psi psi1 psi2 : Pattern .
+    vars x y X Y Q : Qid .
+    vars QL QL1 QL2 : QidList .
+
+    *** Helpers ***************************************************
+
+    op unique : QidList -> QidList .
+
+    op all-sVars : Pattern -> QidList .
+    eq all-sVars(sVar X) = X .
+    eq all-sVars(eVar X) = nil .
+    eq all-sVars(sym  X) = nil .
+    eq all-sVars(app phi psi) = all-sVars(phi) minus(all-sVars(psi), all-sVars(phi)) .
+    eq all-sVars(phi -> psi)  = all-sVars(phi) minus(all-sVars(psi), all-sVars(phi)) .
+    eq all-sVars(mu X phi) = X all-sVars(phi) .
+    eq all-sVars(bot) = nil .
+    eq all-sVars(exists X phi) = all-sVars(phi) .
+
+    eq all-sVars(epsilon)  = nil .
+    eq all-sVars(a)  = nil .
+    eq all-sVars(b)  = nil .
+    eq all-sVars(phi \/ psi)  = all-sVars(phi) minus(all-sVars(psi), all-sVars(phi)) .
+    eq all-sVars(phi .  psi)  = all-sVars(phi) minus(all-sVars(psi), all-sVars(phi)) .
+
+    eq all-sVars(top-word X) = X .
+
+    op minus : QidList QidList -> QidList .
+    eq minus(nil, QL) = nil .
+   ceq minus(Q QL1, QL2) =   minus(QL1, QL2) if     occurs(Q, QL2) .
+   ceq minus(Q QL1, QL2) = Q minus(QL1, QL2) if not occurs(Q, QL2) .
 endfm
 
 fmod PATTERN-METAMATH is
@@ -407,8 +436,12 @@ mod PROOF-GEN is
     subsort Qid < MetaMathProof .
     vars MMP : MetaMathProof .
 
-    sort MM0Decl .
-    op pub theorem _ colon $ _ $ = quote _ ; : Qid Pattern MetaMathProof -> MM0Decl .
+    sort MM0Decl MM0Binder .
+    op _ _ : MM0Decl MM0Decl -> MM0Decl [ctor assoc format(d n d)] .
+    op pub theorem _ _ colon $ _ $ = quote _ ; : Qid MM0Binder Pattern MetaMathProof -> MM0Decl .
+
+    op no-binders : -> MM0Binder [ctor] .
+    op { _ colon SVar } : QidList -> MM0Binder [ctor] .
 
     *** Contextual reasoning with equalities *********************************
 
@@ -498,12 +531,13 @@ mod PROOF-GEN is
 
     *** top-implies-fp *******************************************************
 
+
     *** fp-implies-regex ************************************************************
     --- Here, we the proof for (fp -> Alpha) .
 
     op theorem-fp-implies-regex : Pattern -> MM0Decl .
     eq theorem-fp-implies-regex(Phi)
-     = pub theorem 'fp-implies-regex
+     = pub theorem 'fp-implies-regex no-binders
              colon $ fp(proofHint(Phi)) -> Phi $
                  = quote(proof-fp-implies-regex(proofHint(Phi))) ; .
 
