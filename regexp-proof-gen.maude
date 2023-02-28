@@ -56,6 +56,7 @@ fmod PATTERN-METAMATH-CORE is
     eq all-sVars(mu X phi) = X minus(all-sVars(phi), X) .
     eq all-sVars(bot) = nil .
     eq all-sVars(exists X phi) = all-sVars(phi) .
+    eq all-sVars(~ phi) = all-sVars(phi) .
 
     eq all-sVars(epsilon)  = nil .
     eq all-sVars(a)  = nil .
@@ -63,6 +64,7 @@ fmod PATTERN-METAMATH-CORE is
     eq all-sVars(phi \/ psi)  = all-sVars(phi) minus(all-sVars(psi), all-sVars(phi)) .
     eq all-sVars(phi .  psi)  = all-sVars(phi) minus(all-sVars(psi), all-sVars(phi)) .
 
+    eq all-sVars([ kleene X phi ]) = X .
     eq all-sVars(top-word X) = X .
 
     op minus : QidList QidList -> QidList .
@@ -531,7 +533,8 @@ mod PROOF-GEN is
 
     op theorem-fp-implies-regex : Pattern -> MM0Decl .
     eq theorem-fp-implies-regex(Phi)
-     = pub theorem 'fp-implies-regex no-binders
+     = pub theorem 'fp-implies-regex
+             { all-sVars(fp(proofHint(Phi)) -> Phi) colon SVar }
              colon $ fp(proofHint(Phi)) -> Phi $
                  = quote(proof-fp-implies-regex(proofHint(Phi))) ; .
 
