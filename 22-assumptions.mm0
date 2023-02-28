@@ -9,42 +9,48 @@ import "20-theory-words.mm0";
 axiom ctximp_in_ctx_reverse {box: SVar} {dummy: EVar} (ctx psi: Pattern box)
 : $psi -> app[ (ctximp_app box ctx psi dummy) / box ] ctx$;
 
-axiom eq_der_a_concat {box: SVar} {dummy: EVar} (psi phi: Pattern):
-    $(derivative box dummy a (phi . psi)) <->   (derivative box dummy a phi) . psi
-                                   \/ ((epsilon /\ phi) . (derivative box dummy a psi))$;
-axiom eq_der_a_or {box: SVar} {dummy: EVar} (phi psi : Pattern):
-    $(derivative box dummy a (phi \/ psi)) <-> (derivative box dummy a phi) \/ (derivative box dummy a psi)$;
-axiom eq_der_a_kleene {box: SVar} {dummy: EVar} {X: SVar} (phi: Pattern X):
-    $(derivative box dummy a (kleene X phi)) <-> (derivative box dummy a phi) . (kleene X phi)$;
-axiom eq_der_a_not {box: SVar} {dummy: EVar} (phi: Pattern) :
-    $(derivative box dummy a (~ phi)) <-> ~ (derivative box dummy a phi)$;
-axiom eq_der_a_imp {box: SVar} {dummy: EVar} (psi phi: Pattern) :
-    $(derivative box dummy a (phi -> psi)) <-> ((derivative box dummy a phi) -> (derivative box dummy a psi))$;
+axiom eq_der_a_concat  (psi phi: Pattern):
+    $(derivative a (phi . psi)) <->   (derivative a phi) . psi
+                                   \/ ((epsilon /\ phi) . (derivative a psi))$;
+axiom eq_der_a_or  (phi psi : Pattern):
+    $(derivative a (phi \/ psi)) <-> (derivative a phi) \/ (derivative a psi)$;
+axiom eq_der_a_kleene  {X: SVar} (phi: Pattern X):
+    $(derivative a (kleene X phi)) <-> (derivative a phi) . (kleene X phi)$;
+axiom eq_der_a_not  (phi: Pattern) :
+    $(derivative a (~ phi)) <-> ~ (derivative a phi)$;
+axiom eq_der_a_imp  (psi phi: Pattern) :
+    $(derivative a (phi -> psi)) <-> ((derivative a phi) -> (derivative a psi))$;
 
 
 --- fp-implies-alpha
 --------------------
 
-axiom regex_eq_der_epsilon_wrt_a {box: SVar} {dummy: EVar} :
-  $ (derivative box dummy a epsilon) <-> bot $;
-axiom regex_eq_der_epsilon_wrt_b {box: SVar} {dummy: EVar} :
-  $ (derivative box dummy b epsilon) <-> bot $;
+axiom regex_eq_der_epsilon_wrt_a  :
+  $ (derivative a epsilon) <-> bot $;
+axiom regex_eq_der_epsilon_wrt_b  :
+  $ (derivative b epsilon) <-> bot $;
 
-axiom regex_eq_der_same_a_wrt_a {box: SVar} {dummy: EVar} :
-  $ (derivative box dummy a a) <-> epsilon $;
-axiom regex_eq_der_same_a_wrt_b {box: SVar} {dummy: EVar} :
-  $ (derivative box dummy b b) <-> epsilon $;
+axiom regex_eq_der_same_a_wrt_a  :
+  $ (derivative a a) <-> epsilon $;
+axiom regex_eq_der_same_a_wrt_b  :
+  $ (derivative b b) <-> epsilon $;
 
-axiom regex_eq_der_diff_a_wrt_a {box: SVar} {dummy: EVar} :
-  $ (derivative box dummy a b) <-> bot $;
-axiom regex_eq_der_diff_a_wrt_b {box: SVar} {dummy: EVar} :
-  $ (derivative box dummy b a) <-> bot $;
+axiom regex_eq_der_diff_a_wrt_a  :
+  $ (derivative a b) <-> bot $;
+axiom regex_eq_der_diff_a_wrt_b  :
+  $ (derivative b a) <-> bot $;
 
-axiom regex_eq_der_kleene_wrt_a {box: SVar} {dummy: EVar} {X: SVar} (Alpha: Pattern X): $ (derivative box dummy a (kleene X Alpha)) <-> ((derivative box dummy a Alpha) . (kleene X Alpha)) $;
-axiom regex_eq_der_kleene_wrt_b {box: SVar} {dummy: EVar} {X: SVar} (Alpha: Pattern X): $ (derivative box dummy b (kleene X Alpha)) <-> ((derivative box dummy b Alpha) . (kleene X Alpha)) $;
-axiom regex_eq_der_concat_wrt_a {box: SVar} {dummy: EVar} (Alpha Beta: Pattern) : $ (derivative box dummy a (Alpha . Beta)) <-> ((derivative box dummy a Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative box dummy a Beta)) $;
-axiom regex_eq_der_concat_wrt_b {box: SVar} {dummy: EVar} (Alpha Beta: Pattern) : $ (derivative box dummy b (Alpha . Beta)) <-> ((derivative box dummy b Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative box dummy b Beta)) $;
+axiom regex_eq_der_kleene_wrt_a  {X: SVar} (Alpha: Pattern X): $ (derivative a (kleene X Alpha)) <-> ((derivative a Alpha) . (kleene X Alpha)) $;
+axiom regex_eq_der_kleene_wrt_b  {X: SVar} (Alpha: Pattern X): $ (derivative b (kleene X Alpha)) <-> ((derivative b Alpha) . (kleene X Alpha)) $;
+axiom regex_eq_der_concat_wrt_a  (Alpha Beta: Pattern) : $ (derivative a (Alpha . Beta)) <-> ((derivative a Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative a Beta)) $;
+axiom regex_eq_der_concat_wrt_b  (Alpha Beta: Pattern) : $ (derivative b (Alpha . Beta)) <-> ((derivative b Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative b Beta)) $;
 
 axiom regex_eq_double_kleene {X: SVar} (Alpha: Pattern X): $ (kleene X (kleene X Alpha)) <-> (kleene X Alpha) $;
 
 axiom regex_eq_eps_kleene { X: SVar }: $ (kleene X epsilon) <-> epsilon $;
+
+axiom regex_eq_ewp_concat (Alpha Beta: Pattern):
+  $ epsilon /\ (Alpha . Beta) <-> (epsilon /\ Alpha) /\ (epsilon /\ Beta) $;
+
+axiom regex_eq_ewp_not_concat (Alpha Beta: Pattern):
+  $ (epsilon /\ ~(Alpha . Beta)) <-> ((epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta)) $;
