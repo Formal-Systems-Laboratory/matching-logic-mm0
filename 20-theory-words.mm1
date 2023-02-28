@@ -1,14 +1,14 @@
 import "10-theory-definedness.mm1";
 
 term a_symbol : Symbol ;
-def a = $sym a_symbol$ ;
+def a : Pattern = $sym a_symbol$ ;
 term b_symbol : Symbol ;
-def b = $sym b_symbol$ ;
+def b : Pattern = $sym b_symbol$ ;
 
-def emptyset = $bot$ ;
+def emptyset : Pattern = $bot$ ;
 
 term epsilon_symbol : Symbol ;
-def epsilon = $sym epsilon_symbol$ ;
+def epsilon : Pattern = $sym epsilon_symbol$ ;
 
 term concat_symbol : Symbol ;
 def concat (phi psi: Pattern) : Pattern = $(app (app (sym concat_symbol) phi) psi)$;
@@ -42,9 +42,9 @@ infixl replus: $+$ prec 29;
 
 axiom domain_words {X: SVar} : $ top_word X $;
 
-axiom functional_epsilon : $exists x (eVar x == epsilon)$;
-axiom functional_a       : $exists x (eVar x == a)$;
-axiom functional_b       : $exists x (eVar x == b)$;
+axiom functional_epsilon { x : EVar } : $exists x (eVar x == epsilon)$;
+axiom functional_a       { x : EVar } : $exists x (eVar x == a)$;
+axiom functional_b       { x : EVar } : $exists x (eVar x == b)$;
 axiom functional_concat  {w v x: EVar} : $(forall w (forall v (exists x (eVar x == (eVar w . eVar v) ))))$;
 
 axiom no_confusion_ab_e  : $a != b$;
@@ -54,7 +54,7 @@ axiom no_confusion_cc_e  {u v x y: EVar} : $forall u (forall v (forall x  (x in 
                             -> (eVar x . eVar u == eVar y . eVar v) -> (eVar x == eVar y) /\ (eVar u == eVar v))))$;
 
 axiom assoc_concat_e     {u v w: EVar} : $forall u (forall v (forall w  (eVar u . eVar v) . eVar w == eVar u . (eVar v . eVar w)))$;
-axiom identity_left_e    : $forall u ((eVar u) . epsilon == (eVar u))$;
-axiom identity_right_e   : $forall u (epsilon . (eVar u) == (eVar u))$;
+axiom identity_left_e    {u : EVar} : $forall u ((eVar u) . epsilon == (eVar u))$;
+axiom identity_right_e   {u : EVar} : $forall u (epsilon . (eVar u) == (eVar u))$;
 
 
