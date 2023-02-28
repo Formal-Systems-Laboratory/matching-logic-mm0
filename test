@@ -24,13 +24,23 @@ warn_unproved() {
     echo
 }
 
+join()      { mm0-rs join "$1" "$2" ; }                         # join    <input> <output>
+compile()   { mm0-rs compile -q --warn-as-error "$1" "$2" ; }   # compile <input> <output>
+check()     { mm0-c  "$1" < "$2" ; }                            # check   <mmb>   <mm0>
+
 test_mm() {
-    file_name="$1"; shift
-    test_name="$(basename $file_name)"
+    mm0_file="$1"; shift
+    mm1_file="$1"; shift
+    test_name="$(basename $mm1_file)"
     test_basename="$test_dir/$test_name"
+    test_extension="${test_name##*.}"
     echo "Testing: $test_name."
-    mm0-rs join "$file_name" "$test_basename".combined.mm1
-    mm0-rs compile -q --warn-as-error "$test_basename".combined.mm1 "$test_basename".combined.mmb
+
+    # There seems to be a bug in mm0-rs that causes the program to crash
+    # when compiling un-joined files.
+    join "$mm1_file" "$test_basename".joined."$test_extension"
+    compile "$test_basename".joined."$test_extension" "$test_basename".mmb
+    check "$test_basename".mmb "$mm0_file"
 }
 
 test_regex() {
@@ -39,16 +49,23 @@ test_regex() {
     regexp="$1"; shift
 
     test_basename="$test_dir/$test_name"
-    ./proof-gen.py "$theorem" "$regexp" > "$test_basename.mm1"
-    test_mm "$test_basename.mm1"
+    ./proof-gen.py mm0 "$theorem" "$regexp" > "$test_basename".mm0
+    join "$test_basename".mm0 "$test_basename".joined.mm0
+    ./proof-gen.py mm1 "$theorem" "$regexp" > "$test_basename".mm1
+    test_mm "$test_basename".joined.mm0 "$test_basename".mm1
 }
 
 ### Main #######################
 
 mkdir -p "$test_dir"
 warn_unproved
+last_mm0_file=
 for f in $(ls *.mm0 *.mm1 | sort); do
-    test_mm $f;
+    [[ $f != *.mm0 ]] || {
+        last_mm0_file="$test_dir/joined.$f"
+        join "$f" "$last_mm0_file"
+    }
+    test_mm "$last_mm0_file" "$f"
 done
 test_regex 'main-goal'        'a-or-b-star'                '(a + b)*'
 test_regex 'fp-implies-regex' 'kleene-star-star'           '(a *) * ->> (a *)'

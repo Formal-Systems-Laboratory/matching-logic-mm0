@@ -39,11 +39,16 @@ def cleanup_maude_output(s):
     s = s.replace("cong_of_equiv ", "cong_of_equiv_")
     return s
 
-assert len(sys.argv) == 3, "Usage: proof-gen <main-goal|top-implies-fp|fp-implies-top> <regex>"
-theorem = sys.argv[1]
-regex = sys.argv[2]
+assert len(sys.argv) == 4, "Usage: proof-gen <mm0|mm1> <main-goal|top-implies-fp|fp-implies-top> <regex>"
+(mm01, theorem, regex) = sys.argv[1:]
 
-print('import "../24-words-derivatives.mm1";')
-print(cleanup_maude_output(
-      reduce_in_module('regexp-proof-gen.maude', 'PROOF-GEN', 'MM0Decl',
-                            'theorem-{0}({1})'.format(theorem, regex))))
+if mm01 == 'mm0':
+    print('import "../22-assumptions.mm0";')
+    print(cleanup_maude_output(
+          reduce_in_module('regexp-proof-gen.maude', 'PROOF-GEN', 'MM0Decl',
+                                'theorem-{0}-mm0({1})'.format(theorem, regex))))
+elif mm01 == 'mm1':
+    print('import "../24-words-derivatives.mm1";')
+    print(cleanup_maude_output(
+          reduce_in_module('regexp-proof-gen.maude', 'PROOF-GEN', 'MM0Decl',
+                                'theorem-{0}({1})'.format(theorem, regex))))

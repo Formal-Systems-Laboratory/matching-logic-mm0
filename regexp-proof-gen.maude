@@ -254,6 +254,7 @@ fmod MM0 is
 
     sort MM0Decl MM0Binder .
     op _ _ : MM0Decl MM0Decl -> MM0Decl [ctor assoc format(d n d)] .
+    op     theorem _ _ colon $ _ $           ; : Qid MM0Binder Pattern          -> MM0Decl .
     op pub theorem _ _ colon $ _ $ = quote _ ; : Qid MM0Binder Pattern MM0SExpr -> MM0Decl .
     op no-binders : -> MM0Binder [ctor] .
     op { _ colon SVar } : QidList -> MM0Binder [ctor] .
@@ -545,9 +546,14 @@ mod PROOF-GEN is
     eq theorem-main-goal(Phi)
      = theorem-top-implies-fp(Phi)
        theorem-fp-implies-regex(Phi)
-       pub theorem 'proof-main-goal no-binders
+       pub theorem 'proof-main-goal { all-sVars(Phi) colon SVar }
              colon $ Phi $
                  = quote([ 'main-goal [ 'bang 'top-implies-fp 'X 'CCapbDDx ] 'fp-implies-regex ]) ; .
+    op theorem-main-goal-mm0 : Pattern -> MM0Decl .
+    eq theorem-main-goal-mm0(Phi)
+     = theorem-top-implies-fp-mm0(Phi)
+       theorem-fp-implies-regex-mm0(Phi)
+       theorem 'proof-main-goal { all-sVars(Phi) colon SVar } colon $ Phi $ ; .
 
     *** top-implies-fp *******************************************************
     op theorem-top-implies-fp : Pattern -> MM0Decl .
@@ -556,6 +562,11 @@ mod PROOF-GEN is
              { all-sVars((top-word 'X) -> fp(proofHint(Phi))) colon SVar }
              colon $ (top-word 'X) -> fp(proofHint(Phi)) $
                  = quote(proof-top-implies-fp(proofHint(Phi))) ; .
+    op theorem-top-implies-fp-mm0 : Pattern -> MM0Decl .
+    eq theorem-top-implies-fp-mm0(Phi)
+     = theorem 'top-implies-fp
+             { all-sVars((top-word 'X) -> fp(proofHint(Phi))) colon SVar }
+             colon $ (top-word 'X) -> fp(proofHint(Phi)) $ ; .
 
     op proof-top-implies-fp : Node -> MM0SExpr .
     eq proof-top-implies-fp(N) = [ 'top-implies-fp-init proof-top-implies-fp(fp(N), N) ] .
@@ -589,6 +600,11 @@ mod PROOF-GEN is
              { all-sVars(fp(proofHint(Phi)) -> Phi) colon SVar }
              colon $ fp(proofHint(Phi)) -> Phi $
                  = quote(proof-fp-implies-regex(proofHint(Phi))) ; .
+    op theorem-fp-implies-regex-mm0 : Pattern -> MM0Decl .
+    eq theorem-fp-implies-regex-mm0(Phi)
+     = theorem 'fp-implies-regex
+             { all-sVars(fp(proofHint(Phi)) -> Phi) colon SVar }
+             colon $ fp(proofHint(Phi)) -> Phi $ ; .
 
     op proof-fp-implies-regex : Node -> MM0SExpr .
     eq proof-fp-implies-regex(node(< id >, none)) = 'id .
