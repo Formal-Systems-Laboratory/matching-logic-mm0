@@ -105,6 +105,34 @@ fmod PATTERN-METAMATH is
     op _ <<->> _       : Pattern Pattern -> Pattern [prec 32] .
     eq Alpha <<->> Beta = (Alpha ->> Beta) /\ (Beta ->> Alpha) .
 
+    vars N : Nat .
+
+    --- Benchmarks
+    --------------
+
+    --- n-fold concatenation (right).
+    op _ ^r _ : Pattern Nat -> Pattern .
+    eq (Alpha ^r 0) = epsilon .
+    eq (Alpha ^r (s N)) = (Alpha + (Alpha ^r N)) .
+
+    --- n-fold concatenation (left).
+    op _ ^l _ : Pattern Nat -> Pattern .
+    eq (Alpha ^l 0) = epsilon .
+    eq (Alpha ^l (s N)) = ((Alpha ^l N) + Alpha) .
+
+    op match-l : Nat -> Pattern .
+    eq match-l(N) = (a ^l N) ->> ((a + epsilon) ^l N) . (a ^l N) .
+
+    op match-r : Nat -> Pattern .
+    eq match-r(N) = (a ^r N) ->> ((a + epsilon) ^r N) . (a ^r N) .
+
+    op eq-r : Nat -> Pattern .
+    eq eq-r(N) = [ kleene 'X a ] ->> ((a + epsilon) ^r N) . [ kleene 'X (a ^r N) ] .
+
+    op eq-l : Nat -> Pattern .
+    eq eq-l(N) = [ kleene 'X a ] ->> ((a + epsilon) ^l N) . [ kleene 'X (a ^l N) ] .
+
+
     --- Internal sorting of patterns
     sort Comparison .
     ops LT EQ GT : -> Comparison [ctor] .
