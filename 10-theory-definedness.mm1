@@ -16,3 +16,4 @@ def _in {x: EVar} (phi: Pattern x): Pattern x = $ |^ (eVar x) /\ phi ^| $;
 infixl _in: $in$ prec 35;
 
 axiom definedness {x: EVar}: $ |^ eVar x ^| $;
+
