@@ -5,14 +5,6 @@ import "12-proof-system-p.mm1";
 import "13-fixedpoints.mm1";
 import "23-words-fixedpoints.mm1";
 
---- Helpers
------------
-
-theorem positive_in_kleene_body {X: SVar} (phi: Pattern X)
-  (h: $ _Positive X phi $):
-  $ _Positive X (epsilon \/ phi . sVar X) $ =
-  '(positive_in_or positive_triv @ positive_in_app (positive_in_app positive_triv h) positive_in_same_sVar);
-
 --- Derivatives
 ---------------
 
