@@ -24,7 +24,7 @@ theorem propag_or_concat : $(phi1 \/ phi2) . psi ->  (phi1 . psi) \/ (phi2 . psi
 --- The following theorems lift ctximp_in_ctx to derivatives.
 theorem der_in_ctx_reverse
   : $w2 -> w1 . (derivative w1 w2)$
-= '(norm_lemma_r (norm_sym concat_appctx_r ) (! ctximp_in_ctx_reverse dummy _ box ));
+= '(norm_lemma_r (norm_sym concat_appctx_r ) (! ctximp_in_ctx_reverse box dummy ));
 theorem der_in_ctx_forward : $w1 . (derivative w1 w2) -> w2$
  = '(norm_lemma (norm_sym @ norm_trans appCtxR (norm_app norm_refl appCtxVar))
                 (! ctximp_in_ctx_forward dummy1 _ dummy _ )
