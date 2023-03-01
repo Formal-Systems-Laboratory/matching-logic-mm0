@@ -9,19 +9,6 @@ import "20-theory-words.mm0";
 axiom ctximp_in_ctx_reverse {box: SVar} (ctx psi: Pattern box)
 : $psi -> app[ (ctximp_app box ctx psi) / box ] ctx$;
 
-axiom eq_der_a_concat  (psi phi: Pattern):
-    $(derivative a (phi . psi)) <->   (derivative a phi) . psi
-                                   \/ ((epsilon /\ phi) . (derivative a psi))$;
-axiom eq_der_a_or  (phi psi : Pattern):
-    $(derivative a (phi \/ psi)) <-> (derivative a phi) \/ (derivative a psi)$;
-axiom eq_der_a_kleene  {X: SVar} (phi: Pattern X):
-    $(derivative a (kleene X phi)) <-> (derivative a phi) . (kleene X phi)$;
-axiom eq_der_a_not  (phi: Pattern) :
-    $(derivative a (~ phi)) <-> ~ (derivative a phi)$;
-axiom eq_der_a_imp  (psi phi: Pattern) :
-    $(derivative a (phi -> psi)) <-> ((derivative a phi) -> (derivative a psi))$;
-
-
 --- top-implies-fp
 ------------------
 
