@@ -29,8 +29,8 @@ theorem propag_floor (phi psi ctx: Pattern box):
 ------------------------------------------------------------
 
 theorem ctximp_in_ctx_forward {box: SVar} (ctx: Pattern box)
-: $app[ (ctximp_app box ctx psi dummy) / box ] ctx -> psi$
- = '(rsyl (propag_exists eFresh_triv) @ exists_generalization eFresh_triv @ rsyl propag_floor @ impcom @ rsyl corollary_57_floor id );
+: $app[ (ctximp_app box ctx psi) / box ] ctx -> psi$
+ = '(rsyl (propag_exists eFresh_triv) @ exists_generalization (! eFresh_triv dummy ) @ rsyl propag_floor @ impcom @ rsyl corollary_57_floor id );
 
 theorem wrap_lemma {x: EVar} (phi psi: Pattern x)
   (h: $ (x in phi) -> psi $):
@@ -54,15 +54,15 @@ theorem unwrap_lemma {x y: EVar} {box: SVar} (ctx: Pattern box) (phi: Pattern):
 --- lemma 91 (Specialized to Application contexts)
 --- TODO: review variable binding
 --- TODO: Introduce notation
-theorem unwrap {box: SVar} (ctx: Pattern box) (phi psi: Pattern) {dummy: EVar}
-  (h: $ phi -> (ctximp_app box ctx psi dummy) $):
+theorem unwrap {box: SVar} (ctx: Pattern box) (phi psi: Pattern)
+  (h: $ phi -> (ctximp_app box ctx psi) $):
   $ (app[ phi / box ] ctx) -> psi $ =
   '(imim1 (syl (rsyl propag_exists_strict @ exists_framing lemma_60_forward) @ framing lemma_62_b_reverse) @ exists_generalization_strict @ impcom (imim2 corollary_57_floor (
-    rsyl (membership_imp_forward @ con1 exists_intro_same_var @ membership_intro h) @ rsyl membership_exists_forward @ rsyl (exists_framing membership_and_forward) @ exists_generalization_strict (! unwrap_lemma _ y)
+    rsyl (membership_imp_forward @ con1 exists_intro_same_var @ membership_intro h) @ rsyl membership_exists_forward @ rsyl (exists_framing membership_and_forward) @ exists_generalization_strict (! unwrap_lemma dummy y)
   )));
-theorem wrap {box: SVar} (ctx phi: Pattern box) (psi: Pattern) {dummy: EVar}
+theorem wrap {box: SVar} (ctx phi: Pattern box) (psi: Pattern)
   (h: $ (app[ phi / box ] ctx) -> psi $):
-  $ phi -> (ctximp_app box ctx psi dummy) $ =
+  $ phi -> (ctximp_app box ctx psi) $ =
   '(rsyl lemma_62_b_reverse @ exists_framing @ anim id
-    (wrap_lemma @ expcom @ rsyl exists_intro_same_var (imim1i (rsyl (exists_framing lemma_60_reverse) prop_43_exists) (rsyl (framing (rsyl (exists_framing ancom) lemma_62_forward)) h)))
+    (wrap_lemma @ expcom @ rsyl exists_intro_same_var (imim1i (rsyl (exists_framing lemma_60_reverse) prop_43_exists) (rsyl (framing (rsyl (exists_framing ancom) (! lemma_62_forward dummy ))) h)))
   );

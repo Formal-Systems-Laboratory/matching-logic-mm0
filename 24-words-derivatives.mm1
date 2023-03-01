@@ -11,7 +11,7 @@ theorem der_expand (l: Pattern) (phi: Pattern):
 
 theorem l_der_phi_imp_phi (l phi: Pattern):
   $ (l . derivative l phi) -> phi $ =
-  '(norm (norm_imp_l appCtxRVar) (! unwrap box _ _ _ dummy id));
+  '(norm (norm_imp_l appCtxRVar) (! unwrap box _ _ _ id));
 
 theorem concat_appctx_l : $ Norm (app[ phi / box ] (sVar box . psi)) (phi . psi)$
 = '(norm_trans appCtxL @ norm_app (norm_trans appCtxR @ norm_app norm_refl appCtxVar) norm_refl);
@@ -24,10 +24,10 @@ theorem propag_or_concat : $(phi1 \/ phi2) . psi ->  (phi1 . psi) \/ (phi2 . psi
 --- The following theorems lift ctximp_in_ctx to derivatives.
 theorem der_in_ctx_reverse
   : $w2 -> w1 . (derivative w1 w2)$
-= '(norm_lemma_r (norm_sym concat_appctx_r ) (! ctximp_in_ctx_reverse box dummy ));
+= '(norm_lemma_r (norm_sym concat_appctx_r ) (! ctximp_in_ctx_reverse box ));
 theorem der_in_ctx_forward : $w1 . (derivative w1 w2) -> w2$
  = '(norm_lemma (norm_sym @ norm_trans appCtxR (norm_app norm_refl appCtxVar))
-                (! ctximp_in_ctx_forward dummy1 _ dummy _ )
+                (! ctximp_in_ctx_forward _ dummy )
     );
 
 theorem der_equality:

@@ -6,8 +6,8 @@ import "20-theory-words.mm0";
 --- The following theorem can likely only be proved as a metatheorem, as we need
 --- to induct on the context ctx. We should replace this a concrete proof for
 --- derivatives.
-axiom ctximp_in_ctx_reverse {box: SVar} {dummy: EVar} (ctx psi: Pattern box)
-: $psi -> app[ (ctximp_app box ctx psi dummy) / box ] ctx$;
+axiom ctximp_in_ctx_reverse {box: SVar} (ctx psi: Pattern box)
+: $psi -> app[ (ctximp_app box ctx psi) / box ] ctx$;
 
 axiom eq_der_a_concat  (psi phi: Pattern):
     $(derivative a (phi . psi)) <->   (derivative a phi) . psi
@@ -28,17 +28,17 @@ axiom eq_der_a_imp  (psi phi: Pattern) :
 axiom top_implies_fp_init {X: SVar} (phi: Pattern) (h: $phi . top_letter -> phi$)
     : $top_word X -> phi$;
 
-axiom top_implies_fp_leaf {dummy: EVar} {X: SVar} (phi : Pattern dummy)
-    : $( ctximp_app X (sVar X . top_letter) phi dummy ) . top_letter -> phi $ ;
+axiom top_implies_fp_leaf {X: SVar} (phi : Pattern)
+    : $( ctximp_app X (sVar X . top_letter) phi ) . top_letter -> phi $ ;
 
-axiom top_implies_fp_interior  {X: SVar} {box: SVar} {dummy: EVar}
-    (phi_a phi_b psi_a psi_b : Pattern X dummy)
+axiom top_implies_fp_interior  {X: SVar} {box: SVar}
+    (phi_a phi_b psi_a psi_b : Pattern X)
     (he_a: $epsilon -> s[ (mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b)))) / X ] phi_a$)
     (he_b: $epsilon -> s[ (mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b)))) / X ] phi_b$)
                                 --- ^^^ Together these give (letter -> rhs)
-    (ha: $(s[ (ctximp_app box (sVar box . top_letter) (mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b)))) dummy) / X ] (psi_a . top_letter))
+    (ha: $(s[ (ctximp_app box (sVar box . top_letter) (mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b))))) / X ] (psi_a . top_letter))
             -> (s[ (mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b)))) / X ] phi_a)$)
-    (hb: $(s[ (ctximp_app box (sVar box . top_letter) (mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b)))) dummy) / X ] (psi_b . top_letter))
+    (hb: $(s[ (ctximp_app box (sVar box . top_letter) (mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b))))) / X ] (psi_b . top_letter))
             -> (s[ (mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b)))) / X ] phi_b)$)
   : ------------------------
     $(mu X (epsilon \/ ((a . psi_a) \/ (b . psi_b)))) . top_letter -> (mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b))))$;

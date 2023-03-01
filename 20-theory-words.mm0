@@ -47,5 +47,5 @@ axiom identity_right_e   {u : EVar} : $forall u (epsilon . (eVar u) == (eVar u))
 
 
 def derivative (l: Pattern) (phi: Pattern) { .box : SVar } { .dummy : EVar } : Pattern
-= $ctximp_app box (l . sVar box) phi dummy $;
+= $ctximp_app box (l . sVar box) phi $;
 
