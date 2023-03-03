@@ -4,9 +4,9 @@ import tempfile, shutil, os, sys, subprocess, re
 
 def check_maude_version():
     from packaging import version
-    expected_version = version.parse('2.7.1')
+    expected_version = version.parse('3.2.1')
     actual_version = version.parse(subprocess.check_output(['maude', '--version'], text=True))
-    assert actual_version ==  expected_version, "Expected Maude version '{}' in PATH, got '{}'".format(expected_version, actual_version)
+    assert actual_version >=  expected_version, "Expected Maude version '{}' or greater in PATH, got '{}'".format(expected_version, actual_version)
 
 def reduce_in_module(src, module, expected_sort, term):
     output = subprocess.check_output(
@@ -17,10 +17,10 @@ def reduce_in_module(src, module, expected_sort, term):
     output = output.split('\n')
 
     # Sanity check
-    assert(output[0] == 'Maude> ==========================================')
+    assert(output[0] == '=========================================='), output
     assert(output[1].startswith('reduce in {0}'.format(module)))
     assert(output[2].startswith('rewrites: '))
-    assert(output[-2:] == ['Maude> Bye.', ''])
+    assert(output[-2:] == ['Bye.', ''])
     output = output[3:-2]
 
     result_string = 'result {0}: '.format(expected_sort)
