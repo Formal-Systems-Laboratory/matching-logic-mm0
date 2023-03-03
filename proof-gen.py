@@ -2,6 +2,12 @@
 
 import tempfile, shutil, os, sys, subprocess, re
 
+def check_maude_version():
+    from packaging import version
+    expected_version = version.parse('2.7.1')
+    actual_version = version.parse(subprocess.check_output(['maude', '--version'], text=True))
+    assert actual_version ==  expected_version, "Expected Maude version '{}' in PATH, got '{}'".format(expected_version, actual_version)
+
 def reduce_in_module(src, module, expected_sort, term):
     output = subprocess.check_output(
         ['maude', '-no-banner', '-no-wrap', '-batch', src],
@@ -39,6 +45,7 @@ def cleanup_maude_output(s):
     s = s.replace("cong_of_equiv ", "cong_of_equiv_")
     return s
 
+check_maude_version()
 assert len(sys.argv) == 4, "Usage: proof-gen <mm0|mm1> <main-goal|top-implies-fp|fp-implies-top> <regex>"
 (mm01, theorem, regex) = sys.argv[1:]
 
