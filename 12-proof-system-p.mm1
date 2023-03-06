@@ -795,23 +795,27 @@ do {
     [$_subset ,phi1 ,phi2$ '(eq_to_subset_bi ,(Recurse x phi1 Recurse) ,(Recurse x phi2 Recurse))]
     [$equiv ,phi1 ,phi2$   '(eq_to_equiv_bi  ,(Recurse x phi1 Recurse) ,(Recurse x phi2 Recurse))]
     [$_eq ,phi1 ,phi2$     '(eq_to_eq_bi     ,(Recurse x phi1 Recurse) ,(Recurse x phi2 Recurse))]
-
-    [$nnimp ,phi1 ,phi2$   '(eq_to_nnimp_bi  ,(Recurse x phi1 Recurse) ,(Recurse X phi2 Recurse))]
-    [$concat ,phi1 ,phi2$  '(eq_to_concat_bi ,(Recurse x phi1 Recurse) ,(functional_subst_helper x phi2))]
-
     [_ 'eq_to_id_bi]
   )
-
   (def (functional_subst_helper x ctx)
        (functional_subst_helper_internal x ctx functional_subst_helper_internal)
   )
 
+  (def (functional_subst_helper_regex_internal x ctx Recurse) @ match ctx
+    [$nnimp ,phi1 ,phi2$   '(eq_to_nnimp_bi  ,(Recurse x phi1 Recurse) ,(Recurse x phi2 Recurse))]
+    [$concat ,phi1 ,phi2$  '(eq_to_concat_bi ,(Recurse x phi1 Recurse) ,(Recurse x phi2 Recurse))]
+    [_ (functional_subst_helper_internal x ctx Recurse)]
+  )
+  (def (functional_subst_helper_regex x ctx)
+       (functional_subst_helper_regex_internal x ctx functional_subst_helper_regex_internal)
+  )
+
   (def (functional_subst x y phi1 forall_x_phi1 func_phi2) '(
-    exists_generalization_strict (mp (com12 @ syl anl ,(functional_subst_helper x phi1)) (norm ,(propag_e_subst x phi1) (! var_subst ,x ,y ,phi1 ,forall_x_phi1))) ,func_phi2
+    exists_generalization_strict (mp (com12 @ syl anl ,(functional_subst_helper_regex x phi1)) (norm ,(propag_e_subst x phi1) (! var_subst ,x ,y ,phi1 ,forall_x_phi1))) ,func_phi2
   ))
 
   (def (functional_subst_implicit x phi1 phi1_pf func_phi2) '(
-    exists_generalization_strict (mp (com12 @ syl anl ,(functional_subst_helper x phi1)) ,phi1_pf) ,func_phi2
+    exists_generalization_strict (mp (com12 @ syl anl ,(functional_subst_helper_regex x phi1)) ,phi1_pf) ,func_phi2
   ))
 
   (def (propag_mem x ctx) @ match ctx

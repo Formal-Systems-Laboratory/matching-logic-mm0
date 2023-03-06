@@ -125,7 +125,7 @@ theorem functional_b_concat {.w x v: EVar} :
 
 do {
   (def (der_transformer x y l phi) '(ibii
-    (exists_generalization_strict @ curry @ syl anr ,(functional_subst_helper 'y $(l . eVar y) C_ phi$))
+    (exists_generalization_strict @ curry @ syl anr ,(functional_subst_helper_regex 'y $(l . eVar y) C_ phi$))
     (rsyl (ian eq_refl) @ norm (norm_imp_l ,(propag_e_subst_adv 'x $(eVar y == eVar x) /\ ((l . eVar x) C_ phi)$ (atom-map! '[l #t] '[phi #t]))) exists_intro)
   ))
 };
