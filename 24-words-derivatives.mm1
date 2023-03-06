@@ -118,10 +118,10 @@ theorem regex_eq_der_bot_wrt_b:
 
 theorem functional_a_concat {.w x v: EVar} :
   $ exists x (eVar x == a . eVar v) $ =
-  '(var_subst_same_var ,(functional_subst 'w 'z $forall v (exists x (eVar x == (eVar w . eVar v)))$ 'functional_concat 'functional_a));
+  '(var_subst_same_var ,(functional_subst_regex 'w 'z $forall v (exists x (eVar x == (eVar w . eVar v)))$ 'functional_concat 'functional_a));
 theorem functional_b_concat {.w x v: EVar} :
   $ exists x (eVar x == b . eVar v) $ =
-  '(var_subst_same_var ,(functional_subst 'w 'z $forall v (exists x (eVar x == (eVar w . eVar v)))$ 'functional_concat 'functional_b));
+  '(var_subst_same_var ,(functional_subst_regex 'w 'z $forall v (exists x (eVar x == (eVar w . eVar v)))$ 'functional_concat 'functional_b));
 
 do {
   (def (der_transformer x y l phi) '(ibii
