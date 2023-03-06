@@ -780,26 +780,30 @@ do {
     [_ 'biid]
   )
 
-  (def (functional_subst_helper x ctx) @ match ctx
+  (def (functional_subst_helper_internal x ctx Recurse) @ match ctx
     [$eVar ,y$ (if (== x y) 'eq_to_intro_bi 'eq_to_id_bi)]
-    [$exists ,y ,psi$ (if (== x y) 'eq_to_id_bi '(eq_to_exists_bi ,(functional_subst_helper x psi)))]
-    [$forall ,y ,psi$ (if (== x y) 'eq_to_id_bi '(eq_to_forall_bi ,(functional_subst_helper x psi)))]
-    [$_in ,y ,psi$ (if (== x y) '(eq_to_gen_mem_bi eq_to_intro_bi ,(functional_subst_helper x psi)) '(eq_to_mem_bi ,(functional_subst_helper x psi)))]
-    [$imp ,phi1 ,phi2$     '(eq_to_imp_bi    ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
-    [$app ,phi1 ,phi2$     '(eq_to_app_bi    ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
-    [$not ,psi$            '(eq_to_not_bi    ,(functional_subst_helper x psi))]
-    [$or ,phi1 ,phi2$      '(eq_to_or_bi     ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
-    [$and ,phi1 ,phi2$     '(eq_to_and_bi    ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
-    [$_ceil ,psi$          '(eq_to_def_bi    ,(functional_subst_helper x psi))]
-    [$_floor ,psi$         '(eq_to_floor_bi  ,(functional_subst_helper x psi))]
-    [$_subset ,phi1 ,phi2$ '(eq_to_subset_bi ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
-    [$equiv ,phi1 ,phi2$   '(eq_to_equiv_bi  ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
-    [$_eq ,phi1 ,phi2$     '(eq_to_eq_bi     ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
+    [$exists ,y ,psi$ (if (== x y) 'eq_to_id_bi '(eq_to_exists_bi ,(Recurse x psi Recurse)))]
+    [$forall ,y ,psi$ (if (== x y) 'eq_to_id_bi '(eq_to_forall_bi ,(Recurse x psi Recurse)))]
+    [$_in ,y ,psi$ (if (== x y) '(eq_to_gen_mem_bi eq_to_intro_bi ,(Recurse x psi Recurse)) '(eq_to_mem_bi ,(Recurse x psi Recurse)))]
+    [$imp ,phi1 ,phi2$     '(eq_to_imp_bi    ,(Recurse x phi1 Recurse) ,(Recurse x phi2 Recurse))]
+    [$app ,phi1 ,phi2$     '(eq_to_app_bi    ,(Recurse x phi1 Recurse) ,(Recurse x phi2 Recurse))]
+    [$not ,psi$            '(eq_to_not_bi    ,(Recurse x psi Recurse))]
+    [$or ,phi1 ,phi2$      '(eq_to_or_bi     ,(Recurse x phi1 Recurse) ,(Recurse x phi2 Recurse))]
+    [$and ,phi1 ,phi2$     '(eq_to_and_bi    ,(Recurse x phi1 Recurse) ,(Recurse x phi2 Recurse))]
+    [$_ceil ,psi$          '(eq_to_def_bi    ,(Recurse x psi Recurse))]
+    [$_floor ,psi$         '(eq_to_floor_bi  ,(Recurse x psi Recurse))]
+    [$_subset ,phi1 ,phi2$ '(eq_to_subset_bi ,(Recurse x phi1 Recurse) ,(Recurse x phi2 Recurse))]
+    [$equiv ,phi1 ,phi2$   '(eq_to_equiv_bi  ,(Recurse x phi1 Recurse) ,(Recurse x phi2 Recurse))]
+    [$_eq ,phi1 ,phi2$     '(eq_to_eq_bi     ,(Recurse x phi1 Recurse) ,(Recurse x phi2 Recurse))]
 
-    [$nnimp ,phi1 ,phi2$   '(eq_to_nnimp_bi  ,(functional_subst_helper x phi1) ,(functional_subst_helper X phi2))]
-    [$concat ,phi1 ,phi2$  '(eq_to_concat_bi ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
+    [$nnimp ,phi1 ,phi2$   '(eq_to_nnimp_bi  ,(Recurse x phi1 Recurse) ,(Recurse X phi2 Recurse))]
+    [$concat ,phi1 ,phi2$  '(eq_to_concat_bi ,(Recurse x phi1 Recurse) ,(functional_subst_helper x phi2))]
 
     [_ 'eq_to_id_bi]
+  )
+
+  (def (functional_subst_helper x ctx)
+       (functional_subst_helper_internal x ctx functional_subst_helper_internal)
   )
 
   (def (functional_subst x y phi1 forall_x_phi1 func_phi2) '(
