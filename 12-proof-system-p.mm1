@@ -810,12 +810,18 @@ do {
        (functional_subst_helper_regex_internal x ctx functional_subst_helper_regex_internal)
   )
 
-  (def (functional_subst x y phi1 forall_x_phi1 func_phi2) '(
-    exists_generalization_strict (mp (com12 @ syl anl ,(functional_subst_helper_regex x phi1)) (norm ,(propag_e_subst x phi1) (! var_subst ,x ,y ,phi1 ,forall_x_phi1))) ,func_phi2
+  (def (functional_subst          x y phi1 forall_x_phi1 func_phi2)
+       (functional_subst_internal x y phi1 forall_x_phi1 func_phi2 functional_subst_helper_regex)
+  )
+  (def (functional_subst_internal x y phi1 forall_x_phi1 func_phi2 FuncSubstHelper) '(
+    exists_generalization_strict (mp (com12 @ syl anl ,(FuncSubstHelper x phi1)) (norm ,(propag_e_subst x phi1) (! var_subst ,x ,y ,phi1 ,forall_x_phi1))) ,func_phi2
   ))
 
-  (def (functional_subst_implicit x phi1 phi1_pf func_phi2) '(
-    exists_generalization_strict (mp (com12 @ syl anl ,(functional_subst_helper_regex x phi1)) ,phi1_pf) ,func_phi2
+  (def (functional_subst_implicit          x phi1 phi1_pf func_phi2)
+       (functional_subst_implicit_internal x phi1 phi1_pf func_phi2 functional_subst_helper)
+  )
+  (def (functional_subst_implicit_internal x phi1 phi1_pf func_phi2 FuncSubstHelper) '(
+    exists_generalization_strict (mp (com12 @ syl anl ,(FuncSubstHelper x phi1)) ,phi1_pf) ,func_phi2
   ))
 
   (def (propag_mem x ctx) @ match ctx

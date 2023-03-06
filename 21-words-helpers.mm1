@@ -106,3 +106,12 @@ theorem lemma_83_top_word_r
 theorem unfold_r_top_word_r {X : SVar} (phi: Pattern) (h: $phi -> epsilon \/ top_letter . top_word_r X$) : $phi -> top_word_r X$ = '(rsyl h @ lemma_83_top_word_r_forward);
 theorem unfold_l_top_word_r {X : SVar} (phi: Pattern) (h: $(epsilon \/ top_letter . top_word_r X) -> phi$) : $top_word_r X -> phi$ = '(syl h  lemma_83_top_word_r_reverse);
 
+
+do {
+  (def (functional_subst_regex    x y phi1 forall_x_phi1 func_phi2)
+       (functional_subst_internal x y phi1 forall_x_phi1 func_phi2 functional_subst_helper_regex)
+  )
+  (def (functional_subst_implicit_regex    x phi1 phi1_pf func_phi2)
+       (functional_subst_implicit_internal x phi1 phi1_pf func_phi2 functional_subst_helper_regex)
+  )
+};
