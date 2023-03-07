@@ -126,11 +126,14 @@ fmod PATTERN-METAMATH is
     op match-r : Nat -> Pattern .
     eq match-r(N) = (a ^r N) ->> ((a + epsilon) ^r N) . (a ^r N) .
 
+    op eq-l : Nat -> Pattern .
+    eq eq-l(N) = [ kleene 'X a ] ->> ((a + epsilon) ^l N) . [ kleene 'X (a ^l N) ] .
+
     op eq-r : Nat -> Pattern .
     eq eq-r(N) = [ kleene 'X a ] ->> ((a + epsilon) ^r N) . [ kleene 'X (a ^r N) ] .
 
-    op eq-l : Nat -> Pattern .
-    eq eq-l(N) = [ kleene 'X a ] ->> ((a + epsilon) ^l N) . [ kleene 'X (a ^l N) ] .
+    op eq-lr : Nat -> Pattern .
+    eq eq-lr(N) = (((a + epsilon) ^l N) . [ kleene 'X (a ^l N) ] ) ->> ((a + epsilon) ^r N) . [ kleene 'X (a ^r N) ] .
 
 
     --- Internal sorting of patterns

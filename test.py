@@ -138,5 +138,10 @@ if run_slow_tests:
     test_regex('fp-implies-regex', 'eq-r-20',                    'eq-r(20)')
     test_regex('fp-implies-regex', 'eq-r-30',                    'eq-r(30)')
 
+    test_regex('fp-implies-regex', 'eq-lr-10',                   'eq-lr(10)')
+    test_regex('fp-implies-regex', 'eq-lr-20',                   'eq-lr(20)')
+    test_regex('fp-implies-regex', 'eq-lr-30',                   'eq-lr(30)')
+    test_regex('fp-implies-regex', 'eq-lr-30',                   'eq-lr(30)')
+
 print_benchmarks()
 print('Passed.')
