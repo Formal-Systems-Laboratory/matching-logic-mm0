@@ -18,7 +18,7 @@ def reduce_in_module(src, module, expected_sort, term):
     output = output[3:-2]
 
     result_string = 'result {0}: '.format(expected_sort)
-    assert(output[0].startswith(result_string))
+    assert(output[0].startswith(result_string)), output[0]
 
     output[0] = output[0][len(result_string):]
     return '\n'.join(output)
@@ -26,14 +26,12 @@ def reduce_in_module(src, module, expected_sort, term):
 def cleanup_maude_output(s):
     s = s.replace("'", "")
     s = s.replace("-", "_")
-    s = s.replace(";)", ";")
-    s = s.replace("(pub", "pub")
+    s = s.replace("[", "(")
+    s = s.replace("]", ")")
     s = s.replace("_>>", "->>")
     s = s.replace("_>", "->")
     s = s.replace("colon", ":")
     s = s.replace("no_binders", "")
-    s = s.replace("({", "{")
-    s = s.replace("})", "}")
     s = s.replace("bang", "!")
     s = s.replace("quote ", "'")
     s = s.replace("cong_of_equiv ", "cong_of_equiv_")
