@@ -32,6 +32,7 @@ fmod PATTERN-METAMATH-CORE is
     subsort Letter < Pattern .
     op a            :                 -> Letter [ctor] .
     op b            :                 -> Letter [ctor] .
+    op top-letter   :                 -> Pattern [ctor] .
 
     op _ . _        : Pattern Pattern -> Pattern [ctor prec 28] .
 
