@@ -4,6 +4,7 @@ from collections import defaultdict
 from glob import glob
 from os import path, makedirs
 from subprocess import check_call, check_output
+from sys import argv
 import time
 from typing import Dict, NamedTuple, Optional
 from tabulate import tabulate
@@ -87,6 +88,16 @@ def test_regex(theorem: str, test_name: str, regex: str) -> None:
 
 ### Main #######################
 
+usage = 'usage: test [--no-slow-tests]'
+# parse_args
+assert len(argv) <= 2, usage
+run_slow_tests = True
+if len(argv) == 2:
+    if argv[1] == '--no-slow-tests':
+        which_tests = False
+    else:
+        raise AssertionError(usage)
+
 makedirs(test_dir, exist_ok=True)
 last_mm0_file = None
 for f in sorted((glob('*.mm0') + glob('*.mm1'))):
@@ -106,23 +117,26 @@ test_regex('fp-implies-regex', 'no-contains-a-or-no-only-b', '(~ (top . (a . top
 # Benchmarks:
 # Unified Decision Procedures for Regular Expression Equivalence
 # From: https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=f650281fc011a2c132690903eb443ff1ab3298f7
-test_regex('fp-implies-regex', 'match-r-4',                  'match-r(4)')
+test_regex('fp-implies-regex', 'match-r-04',                  'match-r(4)')
 test_regex('fp-implies-regex', 'match-r-10',                 'match-r(10)')
-test_regex('fp-implies-regex', 'match-r-20',                 'match-r(20)')
-# test_regex('fp-implies-regex', 'match-r-30',                 'match-r(30)')
-test_regex('fp-implies-regex', 'match-l-4',                  'match-l(4)')
+test_regex('fp-implies-regex', 'match-l-04',                  'match-l(4)')
 test_regex('fp-implies-regex', 'match-l-10',                 'match-l(10)')
 test_regex('fp-implies-regex', 'match-l-20',                 'match-l(20)')
-test_regex('fp-implies-regex', 'match-l-30',                 'match-l(30)')
-# test_regex('fp-implies-regex', 'match-l-100',                'match-l(100)')
-test_regex('fp-implies-regex', 'eq-l-4',                     'eq-l(4)')
+test_regex('fp-implies-regex', 'eq-l-04',                     'eq-l(4)')
 test_regex('fp-implies-regex', 'eq-l-10',                    'eq-l(10)')
 test_regex('fp-implies-regex', 'eq-l-20',                    'eq-l(20)')
-# test_regex('fp-implies-regex', 'eq-l-30',                    'eq-l(30)')
-test_regex('fp-implies-regex', 'eq-r-4',                     'eq-r(4)')
+test_regex('fp-implies-regex', 'eq-r-04',                     'eq-r(4)')
 test_regex('fp-implies-regex', 'eq-r-10',                    'eq-r(10)')
-# test_regex('fp-implies-regex', 'eq-r-20',                    'eq-r(20)')
-# test_regex('fp-implies-regex', 'eq-r-30',                    'eq-r(30)')
+if run_slow_tests:
+    test_regex('fp-implies-regex', 'match-r-20',                 'match-r(20)')
+    test_regex('fp-implies-regex', 'match-r-30',                 'match-r(30)')
+    test_regex('fp-implies-regex', 'match-r-40',                 'match-r(40)')
+    test_regex('fp-implies-regex', 'match-l-30',                 'match-l(30)')
+    test_regex('fp-implies-regex', 'match-l-40',                 'match-l(40)')
+    test_regex('fp-implies-regex', 'match-l-99',                 'match-l(99)')
+    test_regex('fp-implies-regex', 'eq-l-30',                    'eq-l(30)')
+    test_regex('fp-implies-regex', 'eq-r-20',                    'eq-r(20)')
+    test_regex('fp-implies-regex', 'eq-r-30',                    'eq-r(30)')
 
 print_benchmarks()
 print('Passed.')
