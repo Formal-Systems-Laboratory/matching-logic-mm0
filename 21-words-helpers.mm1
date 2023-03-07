@@ -54,19 +54,15 @@ theorem positive_in_kleene_r_body {X: SVar} (phi: Pattern X)
   (h: $ _Positive X phi $):
   $ _Positive X (epsilon \/ phi . sVar X) $ =
   '(positive_in_or positive_triv @ positive_in_app (positive_in_app positive_triv h) positive_in_same_sVar);
-theorem cong_of_equiv_kleene_TODO {X: SVar} (phi1 phi2: Pattern X)
+theorem cong_of_equiv_kleene {X: SVar} (phi1 phi2: Pattern X)
   (h1: $ _Positive X phi1 $)
   (h2: $ _Positive X phi2 $)
   (h: $ phi1 <-> phi2 $):
   $ (kleene X phi1) <-> (kleene X phi2) $ =
-  '(cong_of_equiv_mu_TODO
+  '(cong_of_equiv_mu
     (positive_in_kleene_r_body h1)
     (positive_in_kleene_r_body h2)
     (cong_of_equiv_or_r @ cong_of_equiv_concat_l h));
-theorem cong_of_equiv_kleene {X: SVar} (phi1 phi2: Pattern X)
-  (h: $ phi1 <-> phi2 $):
-  $ (kleene X phi1) <-> (kleene X phi2) $ =
-  '(cong_of_equiv_kleene_TODO positivity_hack_TODO positivity_hack_TODO h);
 
 
 --- Helpers for top_letter

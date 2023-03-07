@@ -130,14 +130,12 @@ theorem cong_of_equiv_sSubst_ctx {X: SVar} (phi phi1 phi2: Pattern X)
   (h: $ phi1 <-> phi2 $): $ (s[ phi / X ] phi1) <-> (s[ phi / X ] phi2) $ = '(ibii
     (sSubst_ctx_framing @ anl h)
     (sSubst_ctx_framing @ anr h));
-theorem cong_of_equiv_mu_TODO {X: SVar} (phi1 phi2: Pattern X)
+theorem cong_of_equiv_mu {X: SVar} (phi1 phi2: Pattern X)
   (pos1: $ _Positive X phi1 $)
   (pos2: $ _Positive X phi2 $)
   (h: $ phi1 <-> phi2 $): $ (mu X phi1) <-> (mu X phi2) $ = '(ibii
     (mu_framing pos1 pos2 @ anl h)
     (mu_framing pos2 pos1 @ anr h));
-theorem cong_of_equiv_mu {X: SVar} (phi1 phi2: Pattern X)
-  (h: $ phi1 <-> phi2 $): $ (mu X phi1) <-> (mu X phi2) $ = '(cong_of_equiv_mu_TODO positivity_hack_TODO positivity_hack_TODO h);
 theorem cong_of_equiv_appCtx {box: SVar} (phi: Pattern box)
   (h: $ phi1 <-> phi2 $):
   $ (app[ phi1 / box ] phi) <-> app[ phi2 / box ] phi $ = '(ibii
