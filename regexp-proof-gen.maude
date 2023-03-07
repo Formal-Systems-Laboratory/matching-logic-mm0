@@ -403,11 +403,6 @@ mod PROOF-GEN is
 
     *** Proof hint generation ************************************************
 
-    op getRegExp : State -> Pattern .
-    eq getRegExp(< Alpha >) = Alpha .
-    eq getRegExp(check-ewp[ Alpha ]) = Alpha .
-    eq getRegExp(< id >) = epsilon -> epsilon .
-
     op ruleLabelToLetter : Qid -> Pattern .
     eq ruleLabelToLetter('check-ewp) = epsilon .
     eq ruleLabelToLetter('der-a) = a .
