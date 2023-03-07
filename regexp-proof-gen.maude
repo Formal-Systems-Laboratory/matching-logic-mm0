@@ -486,23 +486,30 @@ mod PROOF-GEN is
     op cong-of-equiv _ _ : Qid MM0SExpr -> MM0SExpr .
     eq cong-of-equiv Q MMP = [ qid("cong-of-equiv-" + string(Q)) MMP ] .
 
-    op lift-equality-to-context : Context MM0SExpr -> MM0SExpr .
-    eq lift-equality-to-context([], MMP) = MMP .
+    --- input: Context, Original Term, Continuation
+    --- At each step, we must unwrap both the original term and the context,
+    --- so that we can pass the pluged context to the positivity generator.
+    op lift-equality-to-context : Context Term MM0SExpr -> MM0SExpr .
+    eq lift-equality-to-context([], T, MMP) = MMP .
 
     --- special case for Kleene due to positivitiy
-    eq lift-equality-to-context('`[kleene__`][ T, Ctx ], MMP)
-     = [ 'cong-of-equiv-kleene 'positivity_hack_TODO 'positivity_hack_TODO  MMP ].
+    eq lift-equality-to-context('`[kleene__`][ T1, Ctx ], '`[kleene__`][ T1, T2 ], MMP)
+     = [ 'cong-of-equiv-kleene positivity(downTerm(T1, 'bad-down-term), downTerm(T2, sVar 'bad-down-term))
+                               'positivity_hack_TODO
+                               MMP ].
 
     --- special cases for state ctors
-    eq lift-equality-to-context('check-ewp`[_`][ Ctx ], MMP) = lift-equality-to-context(Ctx, MMP) .
-    eq lift-equality-to-context('<_>[ Ctx ], MMP) = lift-equality-to-context(Ctx, MMP) .
+    eq lift-equality-to-context('check-ewp`[_`][ Ctx ], 'check-ewp`[_`][ T ], MMP)
+     = lift-equality-to-context(Ctx, T, MMP) .
+    eq lift-equality-to-context('<_>[ Ctx ], '<_>[ T ], MMP)
+     = lift-equality-to-context(Ctx, T, MMP) .
 
-    eq lift-equality-to-context(Q [ Ctx ], MMP)
-     = cong-of-equiv cong-thm(Q, "") lift-equality-to-context(Ctx, MMP) .
-    eq lift-equality-to-context(Q [ Ctx , T ], MMP)
-     = cong-of-equiv cong-thm(Q, "-l") lift-equality-to-context(Ctx, MMP) .
-    eq lift-equality-to-context(Q [ T , Ctx ], MMP)
-     = cong-of-equiv cong-thm(Q, "-r") lift-equality-to-context(Ctx, MMP) .
+    eq lift-equality-to-context(Q [ Ctx ], Q[ T ], MMP)
+     = cong-of-equiv cong-thm(Q, "") lift-equality-to-context(Ctx, T, MMP) .
+    eq lift-equality-to-context(Q [ Ctx , T2 ], Q [ T1 , T2 ], MMP)
+     = cong-of-equiv cong-thm(Q, "-l") lift-equality-to-context(Ctx, T1, MMP) .
+    eq lift-equality-to-context(Q [ T1 , Ctx ], Q [ T1 , T2 ], MMP)
+     = cong-of-equiv cong-thm(Q, "-r") lift-equality-to-context(Ctx, T2, MMP) .
 
     *** push-s-subst *********************************************************
 
@@ -561,8 +568,9 @@ mod PROOF-GEN is
     op proof-fp-implies-regex : Node -> MM0SExpr .
     eq proof-fp-implies-regex(node(< id >, none)) = 'id .
     eq proof-fp-implies-regex(backlink(< Alpha >)) = 'fp-implies-regex-leaf .
-    eq proof-fp-implies-regex(node(check-ewp[ Alpha ], eqEdge(applResult(R, Ctx, Subst), N))) = [ 'apply-equiv lift-equality-to-context(Ctx, eq-thm(Subst, R)) proof-fp-implies-regex(N) ] .
-    eq proof-fp-implies-regex(node(< Alpha >,          eqEdge(applResult(R, Ctx, Subst), N))) = [ 'apply-equiv lift-equality-to-context(Ctx, eq-thm(Subst, R)) proof-fp-implies-regex(N) ] .
+    --- Context, Original Term, Continuation
+    eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [ 'apply-equiv lift-equality-to-context(Ctx, upTerm(S), eq-thm(Subst, R)) proof-fp-implies-regex(N) ] .
+    eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [ 'apply-equiv lift-equality-to-context(Ctx, upTerm(S), eq-thm(Subst, R)) proof-fp-implies-regex(N) ] .
     eq proof-fp-implies-regex(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
                                        rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
                                        rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
