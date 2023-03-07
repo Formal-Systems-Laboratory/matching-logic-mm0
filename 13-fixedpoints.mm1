@@ -4,15 +4,11 @@ import "12-proof-system-p.mm1";
 --- Helpers
 -----------
 
-theorem unfold_r_TODO (psi phi: Pattern X)
+theorem unfold_r (psi phi: Pattern X)
   (p: $_Positive X psi$)
   (h: $phi -> s[ mu X psi / X ] psi$):
   $phi -> mu X psi$ =
   '(syl (pre_fixpoint p) h );
-theorem unfold_r (psi phi: Pattern X)
-  (h: $phi -> s[ mu X psi / X ] psi$):
-  $phi -> mu X psi$ =
-  '(unfold_r_TODO positivity_hack_TODO h);
 
 theorem propag_floor (phi psi ctx: Pattern box):
     $app[ phi /\ |_ psi _| / box ] ctx

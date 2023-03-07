@@ -57,21 +57,18 @@ theorem apply_equiv (eq: $phi <-> psi$) (cont: $rho -> psi$): $rho -> phi$
   = '(syl (bi2i eq) cont);
 
 
-theorem epsilon_kleene_TODO {X: SVar} (phi: Pattern X)
+theorem epsilon_kleene {X: SVar} (phi: Pattern X)
   (h: $ _Positive X phi $):
   $ epsilon -> kleene X phi $ =
   '(rsyl orl (norm (norm_imp_l
     ,(propag_s_subst 'X $epsilon \/ phi . sVar X$)
     ) @ pre_fixpoint @ positive_in_kleene_r_body h));
-theorem epsilon_kleene {X: SVar} (phi: Pattern X):
-  $ epsilon -> kleene X phi $ =
-  '(epsilon_kleene_TODO positivity_hack_TODO);
 
 
 theorem fp_implies_regex_leaf :
     $rho -> rho$ = 'id;
 
-theorem fp_implies_regex_interior_TODO {X: SVar} (phi_a phi_b: Pattern X)
+theorem fp_implies_regex_interior {X: SVar} (phi_a phi_b: Pattern X)
     (posa: $ _Positive X phi_a $)
     (posb: $ _Positive X phi_b $)
     (he: $epsilon -> epsilon /\ rho$)
@@ -85,13 +82,6 @@ theorem fp_implies_regex_interior_TODO {X: SVar} (phi_a phi_b: Pattern X)
         (norm_imp_l @ norm_sym @ _sSubst_or sSubstitution_triv @ _sSubst_or (sSubst_concat_r norm_refl) (sSubst_concat_r norm_refl))
         (orim he @ orim (framing_concat_r ha) (framing_concat_r hb))
       ));
-theorem fp_implies_regex_interior {X: SVar} (phi_a phi_b: Pattern X)
-    (he: $epsilon -> epsilon /\ rho$)
-    (ha: $s[ rho / X ] phi_a -> (derivative a rho)$)
-    (hb: $s[ rho / X ] phi_b -> (derivative b rho)$):
-    ----------------------------------------------
-    $(mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b)))) -> rho$ =
-    '(fp_implies_regex_interior_TODO positivity_hack_TODO positivity_hack_TODO he ha hb);
 
 theorem regex_eq_der_bot_lemma_1 {x y v w: EVar}:
   $ (forall v (exists x (eVar x == eVar w . eVar v ))) -> exists x (eVar x == eVar w . eVar y ) $ =
@@ -228,13 +218,10 @@ theorem regex_eq_ewp_and:
 theorem regex_eq_ewp_choice:
   $ epsilon /\ (Alpha \/ Beta) <-> (epsilon /\ Alpha) \/ (epsilon /\ Beta) $ = 'andi;
 
-theorem regex_eq_ewp_kleene_TODO {X: SVar} (Alpha: Pattern X)
+theorem regex_eq_ewp_kleene {X: SVar} (Alpha: Pattern X)
   (h: $ _Positive X Alpha $):
   $ epsilon /\ (kleene X Alpha) <-> epsilon $ =
-  '(ibii anl @ iand id @ epsilon_kleene_TODO h);
-theorem regex_eq_ewp_kleene {X: SVar} (Alpha: Pattern X):
-  $ epsilon /\ (kleene X Alpha) <-> epsilon $ =
-  '(regex_eq_ewp_kleene_TODO positivity_hack_TODO);
+  '(ibii anl @ iand id @ epsilon_kleene h);
 
 theorem regex_eq_ewp_not_bot: $ (epsilon /\ ~bot) <-> epsilon $ =
   '(ibii anl @ syl ancom top_and);
@@ -248,13 +235,10 @@ theorem regex_eq_ewp_not_and: $ (epsilon /\ ~(Alpha /\ Beta)) <-> ((epsilon /\ ~
   '(bitr (cong_of_equiv_and_r notan) andi);
 theorem regex_eq_ewp_not_choice: $ (epsilon /\ ~(Alpha \/ Beta)) <-> ((epsilon /\ ~ Alpha) /\ (epsilon /\ ~ Beta)) $ =
   '(bitr (cong_of_equiv_and_r not_distr_or) and_distr);
-theorem regex_eq_ewp_not_kleene_TODO {X: SVar} (Alpha: Pattern X)
+theorem regex_eq_ewp_not_kleene {X: SVar} (Alpha: Pattern X)
   (h: $ _Positive X Alpha $):
   $ (epsilon /\ ~(kleene X Alpha)) <-> bot $ =
-  '(ibii (notnot1 @ syl notnot1 @ epsilon_kleene_TODO h) absurdum);
-theorem regex_eq_ewp_not_kleene {X: SVar} (Alpha: Pattern X):
-  $ (epsilon /\ ~(kleene X Alpha)) <-> bot $ =
-  '(regex_eq_ewp_not_kleene_TODO positivity_hack_TODO);
+  '(ibii (notnot1 @ syl notnot1 @ epsilon_kleene h) absurdum);
 theorem regex_eq_ewp_not_not: $ (epsilon /\ ~(~ Alpha)) <-> (epsilon /\ Alpha) $ =
   '(cong_of_equiv_and_r @ bicom notnot);
 
@@ -301,4 +285,4 @@ theorem regex_eq_double_neg: $ ~ (~ Alpha) <-> Alpha $ = '(bicom notnot);
 
 theorem regex_eq_bot_kleene: $ (kleene X bot) <-> epsilon $ = '(ibii
   (rsyl (mu_framing (positive_in_or positive_triv @ positive_in_concat positive_triv positive_in_same_sVar) positive_triv (rsyl (orim2 @ norm (norm_imp_l appCtxLRVar) (! propag_bot box)) dne)) (KT positive_triv @ norm (norm_sym @ norm_imp_l sSubstitution_triv) id))
-  (epsilon_kleene_TODO positive_triv));
+  (epsilon_kleene positive_triv));
