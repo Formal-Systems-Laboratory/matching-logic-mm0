@@ -325,12 +325,10 @@ theorem lemma_ceil_exists_membership:
   '(bitr (cong_of_equiv_def lemma_exists_and) @
     ibii propag_exists_def prop_43_exists_def);
 
-theorem lemma_56 {box: SVar} (ctx: Pattern box) (phi: Pattern):
-  $ (app[ phi / box ] ctx) -> |^ phi ^| $ =
-  '(rsyl (rsyl
-    (framing @ anl lemma_exists_and)
-    propag_exists_strict)
-    (exists_generalization_strict @ rsyl
+theorem lemma_56 {box: SVar} (phi ctx: Pattern box)
+: $ (app[ phi / box ] ctx) -> |^ phi ^| $ =
+  '(rsyl (rsyl (framing @ anl lemma_exists_and) @ propag_exists eFresh_triv)
+    (exists_generalization eFresh_triv @ rsyl
       (dne @ singleton_norm norm_refl (! defNorm box2))
       (propag_or_def @ framing_def (anl com12b @ rsyl dne @ imim2i dne) (! definedness x))
     ));
