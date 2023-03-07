@@ -286,6 +286,11 @@ mod PROOF-GEN is
     vars Subst Subst_EWP Subst_A Subst_B : Substitution .
     vars Ctx CtxEWP Ctx_A Ctx_B : Context .
 
+    op getState : Node -> State .
+    eq getState(node(S, Es?)) = S .
+    eq getState(backlink(S)) = S .
+    eq getState(depthReached(S)) = S .
+
     sorts NeStateList StateList .
     subsort State < NeStateList < StateList .
 
@@ -486,30 +491,36 @@ mod PROOF-GEN is
     op cong-of-equiv _ _ : Qid MM0SExpr -> MM0SExpr .
     eq cong-of-equiv Q MMP = [ qid("cong-of-equiv-" + string(Q)) MMP ] .
 
-    --- input: Context, Original Term, Continuation
+    op lift-equality-to-context : Context Term Term MM0SExpr -> MM0SExpr .
+    --- input: Context, Original Term, Final Term, Continuation
     --- At each step, we must unwrap both the original term and the context,
     --- so that we can pass the pluged context to the positivity generator.
-    op lift-equality-to-context : Context Term MM0SExpr -> MM0SExpr .
-    eq lift-equality-to-context([], T, MMP) = MMP .
+    vars TOrig TFinal : Term .
+
+    eq lift-equality-to-context([], TOrig, TFinal, MMP) = MMP .
 
     --- special case for Kleene due to positivitiy
-    eq lift-equality-to-context('`[kleene__`][ T1, Ctx ], '`[kleene__`][ T1, T2 ], MMP)
-     = [ 'cong-of-equiv-kleene positivity(downTerm(T1, 'bad-down-term), downTerm(T2, sVar 'bad-down-term))
-                               'positivity_hack_TODO
+    eq lift-equality-to-context('`[kleene__`][ T1, Ctx ], '`[kleene__`][ T1, TOrig ], '`[kleene__`][ T1, TFinal ], MMP)
+     = [ 'cong-of-equiv-kleene positivity(downTerm(T1, 'bad-down-term), downTerm(TOrig,  sVar 'bad-down-term))
+                               positivity(downTerm(T1, 'bad-down-term), downTerm(TFinal, sVar 'bad-down-term))
                                MMP ].
 
     --- special cases for state ctors
-    eq lift-equality-to-context('check-ewp`[_`][ Ctx ], 'check-ewp`[_`][ T ], MMP)
-     = lift-equality-to-context(Ctx, T, MMP) .
-    eq lift-equality-to-context('<_>[ Ctx ], '<_>[ T ], MMP)
-     = lift-equality-to-context(Ctx, T, MMP) .
+    eq lift-equality-to-context('check-ewp`[_`][ Ctx ], 'check-ewp`[_`][ TOrig ], 'check-ewp`[_`][ TFinal ], MMP)
+     = lift-equality-to-context(Ctx, TOrig, TFinal, MMP) .
+    ---- Special case for <id>
+    eq lift-equality-to-context('check-ewp`[_`][ Ctx ], 'check-ewp`[_`][ TOrig ], '<`id`>.State , MMP)
+     = lift-equality-to-context(Ctx, TOrig, TOrig, MMP) .
 
-    eq lift-equality-to-context(Q [ Ctx ], Q[ T ], MMP)
-     = cong-of-equiv cong-thm(Q, "") lift-equality-to-context(Ctx, T, MMP) .
-    eq lift-equality-to-context(Q [ Ctx , T2 ], Q [ T1 , T2 ], MMP)
-     = cong-of-equiv cong-thm(Q, "-l") lift-equality-to-context(Ctx, T1, MMP) .
-    eq lift-equality-to-context(Q [ T1 , Ctx ], Q [ T1 , T2 ], MMP)
-     = cong-of-equiv cong-thm(Q, "-r") lift-equality-to-context(Ctx, T2, MMP) .
+    eq lift-equality-to-context('<_>[ Ctx ], '<_>[ TOrig ], '<_>[ TFinal ], MMP)
+     = lift-equality-to-context(Ctx, TOrig, TFinal, MMP) .
+
+    eq lift-equality-to-context(Q [ Ctx ], Q[ TOrig ], Q[ TFinal ], MMP)
+     = cong-of-equiv cong-thm(Q, "") lift-equality-to-context(Ctx, TOrig, TFinal, MMP) .
+    eq lift-equality-to-context(Q [ Ctx , T2 ], Q [ TOrig , T2 ], Q [ TFinal , T2 ], MMP)
+     = cong-of-equiv cong-thm(Q, "-l") lift-equality-to-context(Ctx, TOrig, TFinal, MMP) .
+    eq lift-equality-to-context(Q [ T1 , Ctx ], Q [ T1 , TOrig ], Q [ T1 , TFinal ], MMP)
+     = cong-of-equiv cong-thm(Q, "-r") lift-equality-to-context(Ctx, TOrig, TFinal, MMP) .
 
     *** push-s-subst *********************************************************
 
@@ -569,8 +580,8 @@ mod PROOF-GEN is
     eq proof-fp-implies-regex(node(< id >, none)) = 'id .
     eq proof-fp-implies-regex(backlink(< Alpha >)) = 'fp-implies-regex-leaf .
     --- Context, Original Term, Continuation
-    eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [ 'apply-equiv lift-equality-to-context(Ctx, upTerm(S), eq-thm(Subst, R)) proof-fp-implies-regex(N) ] .
-    eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [ 'apply-equiv lift-equality-to-context(Ctx, upTerm(S), eq-thm(Subst, R)) proof-fp-implies-regex(N) ] .
+    eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [ 'apply-equiv lift-equality-to-context(Ctx, upTerm(S), upTerm(getState(N)), eq-thm(Subst, R)) proof-fp-implies-regex(N) ] .
+    eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [ 'apply-equiv lift-equality-to-context(Ctx, upTerm(S), upTerm(getState(N)), eq-thm(Subst, R)) proof-fp-implies-regex(N) ] .
     eq proof-fp-implies-regex(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
                                        rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
                                        rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
