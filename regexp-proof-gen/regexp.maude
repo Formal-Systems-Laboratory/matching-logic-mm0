@@ -6,7 +6,7 @@ fmod PATTERN-METAMATH-CORE is
     vars phi phi1 phi2 psi psi1 psi2 : Pattern .
     vars x y X Y : Qid .
 
-    *** core
+    *** Core ***************************************
     op sVar _ : Qid -> SVar [ctor] .
     op eVar _ : Qid -> EVar [ctor] .
     op app _ _ : Pattern Pattern -> Pattern [ctor] .
@@ -15,13 +15,14 @@ fmod PATTERN-METAMATH-CORE is
     op bot         : -> Pattern [ctor] .
     op exists _ _ : Qid Pattern -> Pattern [ctor] .
 
+    *** Standard sugar **********************************
     op _ /\ _       : Pattern Pattern -> Pattern [ctor] .
     op _ \/ _       : Pattern Pattern -> Pattern [ctor] .
     op nu _ _       : Qid Pattern     -> Pattern [ctor] .
     op forall _ _   : Qid Pattern     -> Pattern [ctor] .
     op ~ _           : Pattern         -> Pattern [ctor] .
 
-    *** ERE
+    *** ERE *********************************************
     op epsilon      :                 -> Pattern [ctor] .
 
     --- TODO: Ideally, we'd want to be parametric over an alphabet.
