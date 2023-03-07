@@ -221,8 +221,6 @@ mod ERE-THEOREMS is
 
     --- We don't want the derivative rules to apply when checking EWS.
     op check-ewp[ _ ] : Pattern -> State [ctor] .
-    op < id > : -> State [ctor] .
-    eq check-ewp[ epsilon ] = < id > .
 endm
 
 
@@ -503,9 +501,6 @@ mod PROOF-GEN is
     --- special cases for state ctors
     eq lift-equality-to-context('check-ewp`[_`][ Ctx ], 'check-ewp`[_`][ TOrig ], 'check-ewp`[_`][ TFinal ], MMP)
      = lift-equality-to-context(Ctx, TOrig, TFinal, MMP) .
-    ---- Special case for <id>
-    eq lift-equality-to-context('check-ewp`[_`][ Ctx ], 'check-ewp`[_`][ TOrig ], '<`id`>.State , MMP)
-     = lift-equality-to-context(Ctx, TOrig, TOrig, MMP) .
 
     eq lift-equality-to-context('<_>[ Ctx ], '<_>[ TOrig ], '<_>[ TFinal ], MMP)
      = lift-equality-to-context(Ctx, TOrig, TFinal, MMP) .
@@ -572,7 +567,7 @@ mod PROOF-GEN is
              colon $ fp(proofHint(Phi)) -> Phi $ ; .
 
     op proof-fp-implies-regex : Node -> MM0SExpr .
-    eq proof-fp-implies-regex(node(< id >, none)) = 'id .
+    eq proof-fp-implies-regex(node(check-ewp[ epsilon ], none)) = 'id .
     eq proof-fp-implies-regex(backlink(< Alpha >)) = 'fp-implies-regex-leaf .
     --- Context, Original Term, Continuation
     eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [ 'apply-equiv lift-equality-to-context(Ctx, upTerm(S), upTerm(getState(N)), eq-thm(Subst, R)) proof-fp-implies-regex(N) ] .
