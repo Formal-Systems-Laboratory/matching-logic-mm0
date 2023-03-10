@@ -57,8 +57,6 @@ fmod PATTERN-METAMATH-CORE is
     eq substitute [ phi / X ] in (psi1 . psi2)
      = (substitute [ phi / X ] in psi1) . (substitute [ phi / X ] in psi2) .
 
-    op unique : QidList -> QidList .
-
     op all-sVars : Pattern -> QidList .
     eq all-sVars(sVar X) = X .
     eq all-sVars(eVar X) = nil .
