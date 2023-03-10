@@ -523,7 +523,7 @@ mod PROOF-GEN is
     eq lift-equality-to-context('`[kleene__`][ T1, Ctx ], '`[kleene__`][ T1, TOrig ], '`[kleene__`][ T1, TFinal ], MMP)
      = [ 'cong-of-equiv-kleene positivity(downTerm(T1, 'bad-down-term), downTerm(TOrig,  sVar 'bad-down-term))
                                positivity(downTerm(T1, 'bad-down-term), downTerm(TFinal, sVar 'bad-down-term))
-                               MMP ].
+                               lift-equality-to-context(Ctx, TOrig, TFinal, MMP) ].
 
     --- special cases for state ctors
     eq lift-equality-to-context('check-ewp`[_`][ Ctx ], 'check-ewp`[_`][ TOrig ], 'check-ewp`[_`][ TFinal ], MMP)
