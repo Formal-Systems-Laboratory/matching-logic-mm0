@@ -43,6 +43,23 @@ fmod PATTERN-METAMATH-CORE is
     vars x y X Y Q : Qid .
     vars QL QL1 QL2 : QidList .
 
+    *** ERE sugar *****************************************
+    --- This sugar is only for use by the user, and not for
+    --- use on the left-hand-side of an equation or rule.
+
+    vars Alpha Beta Gamma : Pattern .
+    op top : -> Pattern .
+    eq top = ~ bot .
+    op _ + _        : Pattern Pattern -> Pattern [prec 30] .
+    eq Alpha + Beta = Alpha \/ Beta .
+    op _ *          : Pattern -> Pattern [prec 30] .
+    eq Alpha * = [ kleene 'Xk Alpha ] .
+    op _ ->> _        : Pattern Pattern -> Pattern [prec 31] .
+    eq Alpha ->> Beta = (~ Alpha) \/ Beta .
+    op _ <<->> _       : Pattern Pattern -> Pattern [prec 32] .
+    eq Alpha <<->> Beta = (Alpha ->> Beta) /\ (Beta ->> Alpha) .
+
+
     *** Helpers ***************************************************
 
     op substitute [ _ / _ ] in _ : Pattern Qid Pattern -> Pattern .
@@ -85,24 +102,6 @@ endfm
 
 fmod PATTERN-METAMATH is
     including PATTERN-METAMATH-CORE .
-
-    *** ERE sugar
-    vars Alpha Beta Gamma : Pattern .
-    --- NOT FOR INTERNAL USE.
-    op top : -> Pattern .
-    eq top = ~ bot .
-
-    op _ + _        : Pattern Pattern -> Pattern [prec 30] .
-    eq Alpha + Beta = Alpha \/ Beta .
-
-    op _ *          : Pattern -> Pattern [prec 30] .
-    eq Alpha * = [ kleene 'Xk Alpha ] .
-
-    op _ ->> _        : Pattern Pattern -> Pattern [prec 31] .
-    eq Alpha ->> Beta = (~ Alpha) \/ Beta .
-
-    op _ <<->> _       : Pattern Pattern -> Pattern [prec 32] .
-    eq Alpha <<->> Beta = (Alpha ->> Beta) /\ (Beta ->> Alpha) .
 
     --- Internal sorting of patterns
     sort Comparison .
