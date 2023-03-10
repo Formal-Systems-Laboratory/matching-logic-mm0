@@ -561,6 +561,24 @@ mod PROOF-GEN is
     eq unfold-r(mu X Phi, MMP) = [ 'unfold-r positivity(X, Phi) [ 'norm-lemma-r propag-sSubst(X, Phi) MMP ] ] .
 
 
+    *** main-goal ************************************************************
+    --- Here, we split the proof for a regular expression into
+    --- two subgoals --- (top-implies-fp) and (fp-implies-regexp).
+
+    op theorem-main-goal : Pattern -> MM0Decl .
+    eq theorem-main-goal(Phi)
+     = theorem-top-implies-fp(Phi)
+       theorem-fp-implies-regex(Phi)
+       pub theorem 'proof-main-goal { all-sVars(Phi) colon SVar }
+             colon $ Phi $
+                 = quote([ 'mp [ 'rsyl [ 'bang 'top-implies-fp 'X 'CCapbDDx ] 'fp-implies-regex ] 'domain-words ]) ; .
+    op theorem-main-goal-mm0 : Pattern -> MM0Decl .
+    eq theorem-main-goal-mm0(Phi)
+     =  theorem-top-implies-fp-mm0(Phi)
+        theorem-fp-implies-regex-mm0(Phi)
+        theorem 'proof-main-goal { all-sVars(Phi) colon SVar } colon $ Phi $ ; .
+
+
     *** top-implies-fp *******************************************************
     op theorem-top-implies-fp : Pattern -> MM0Decl .
     eq theorem-top-implies-fp(Phi)
