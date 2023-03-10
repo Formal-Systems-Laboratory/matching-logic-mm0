@@ -115,28 +115,28 @@ fmod PATTERN-METAMATH is
     sort Comparison .
     ops LT EQ GT : -> Comparison [ctor] .
 
-    op toNat : Pattern -> Nat .
+    op rank : Pattern -> Nat .
     op compare : Pattern Pattern -> Comparison .
 
     vars phi phi1 phi2 psi psi1 psi2 : Pattern .
     vars x y X Y : Qid .
 
-    eq toNat(bot) = 0 .
-    eq toNat(epsilon) = 1 .
-    eq toNat(a) = 2 .
-    eq toNat(b) = 3 .
-    eq toNat(top) = 4 .
-    eq toNat([kleene X phi]) = 5 .
-    eq toNat(~ phi) = 6 .
-    eq toNat(phi1 . phi2) = 7 .
-    eq toNat(phi1 /\ phi2) = 8 .
-    eq toNat(phi1 \/ phi2) = 9 .
-    eq toNat(phi1 -> phi2) = 10 .
-    eq toNat(derivative phi1 phi2) = 11 .
+    eq rank(bot) = 0 .
+    eq rank(epsilon) = 1 .
+    eq rank(a) = 2 .
+    eq rank(b) = 3 .
+    eq rank(top) = 4 .
+    eq rank([kleene X phi]) = 5 .
+    eq rank(~ phi) = 6 .
+    eq rank(phi1 . phi2) = 7 .
+    eq rank(phi1 /\ phi2) = 8 .
+    eq rank(phi1 \/ phi2) = 9 .
+    eq rank(phi1 -> phi2) = 10 .
+    eq rank(derivative phi1 phi2) = 11 .
 
     eq compare(phi, phi) = EQ .
-   ceq compare(phi, psi) = LT if toNat(phi) < toNat(psi) .
-   ceq compare(phi, psi) = GT if toNat(phi) > toNat(psi) .
+   ceq compare(phi, psi) = LT if rank(phi) < rank(psi) .
+   ceq compare(phi, psi) = GT if rank(phi) > rank(psi) .
     eq compare([kleene X phi], [kleene X psi]) = compare(phi, psi) .
     eq compare(~ phi, ~ psi) = compare(phi, psi) .
    ceq compare(phi1 . phi2, psi1 . psi2) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
