@@ -62,6 +62,14 @@ fmod PATTERN-METAMATH-CORE is
 
     *** Helpers ***************************************************
 
+    op isConjunction : Pattern -> Bool .
+    eq isConjunction(phi /\ psi) = true .
+    eq isConjunction(phi) = false [owise].
+
+    op isDisjunction : Pattern -> Bool .
+    eq isDisjunction(phi \/ psi) = true .
+    eq isDisjunction(phi) = false [owise].
+
     op substitute [ _ / _ ] in _ : Pattern Qid Pattern -> Pattern .
     eq substitute [ phi / X ] in sVar X = phi .
    ceq substitute [ phi / X ] in sVar Y = sVar Y if X =/= Y .
@@ -113,7 +121,6 @@ fmod PATTERN-METAMATH is
     vars phi phi1 phi2 psi psi1 psi2 : Pattern .
     vars x y X Y : Qid .
 
-    *** ! Changing these values also requires changing the two *-choice-comm-leaf rules
     eq toNat(bot) = 0 .
     eq toNat(epsilon) = 1 .
     eq toNat(a) = 2 .
@@ -128,19 +135,19 @@ fmod PATTERN-METAMATH is
     eq toNat(derivative phi1 phi2) = 11 .
 
     eq compare(phi, phi) = EQ .
-    ceq compare(phi, psi) = LT if toNat(phi) < toNat(psi) .
-    ceq compare(phi, psi) = GT if toNat(phi) > toNat(psi) .
+   ceq compare(phi, psi) = LT if toNat(phi) < toNat(psi) .
+   ceq compare(phi, psi) = GT if toNat(phi) > toNat(psi) .
     eq compare([kleene X phi], [kleene X psi]) = compare(phi, psi) .
     eq compare(~ phi, ~ psi) = compare(phi, psi) .
-    ceq compare(phi1 . phi2, psi1 . psi2) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
+   ceq compare(phi1 . phi2, psi1 . psi2) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
     eq compare(phi1 . phi2, psi1 . psi2) = compare(phi1, psi1) [owise] .
-    ceq compare(phi1 /\ phi2, psi1 /\ psi2) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
+   ceq compare(phi1 /\ phi2, psi1 /\ psi2) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
     eq compare(phi1 /\ phi2, psi1 /\ psi2) = compare(phi1, psi1) [owise] .
-    ceq compare(phi1 \/ phi2, psi1 \/ psi2) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
+   ceq compare(phi1 \/ phi2, psi1 \/ psi2) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
     eq compare(phi1 \/ phi2, psi1 \/ psi2) = compare(phi1, psi1) [owise] .
-    ceq compare(phi1 -> phi2, psi1 -> psi2) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
+   ceq compare(phi1 -> phi2, psi1 -> psi2) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
     eq compare(phi1 -> phi2, psi1 -> psi2) = compare(phi1, psi1) [owise] .
-    ceq compare(derivative phi1 phi2, derivative psi1 psi2) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
+   ceq compare(derivative phi1 phi2, derivative psi1 psi2) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
     eq compare(derivative phi1 phi2, derivative psi1 psi2) = compare(phi1, psi1) [owise] .
 endfm
 
@@ -192,7 +199,7 @@ mod ERE-THEOREMS is
     rl [regex_eq_or_choice_idem] : Alpha \/ Alpha => Alpha .
     rl [regex_eq_or_choice_assoc] : (Alpha \/ Beta) \/ Gamma  => Alpha \/ (Beta \/ Gamma) .
    crl [regex_eq_or_choice_comm_node] : Alpha \/ (Beta \/ Gamma) => Beta \/ (Alpha \/ Gamma) if compare(Alpha, Beta) = GT .
-   crl [regex_eq_or_choice_comm_leaf] : Alpha \/ Beta => Beta \/ Alpha if compare(Alpha, Beta) == GT and toNat(Beta) =/= 9 .
+   crl [regex_eq_or_choice_comm_leaf] : Alpha \/ Beta => Beta \/ Alpha if compare(Alpha, Beta) == GT and not isDisjunction(Beta) .
 
     --- Identity and idemoptency of /\
     rl [regex_eq_and_choice_abs] : bot   /\ Alpha => bot .
@@ -200,7 +207,7 @@ mod ERE-THEOREMS is
     rl [regex_eq_and_choice_idem] : Alpha /\ Alpha => Alpha .
     rl [regex_eq_and_choice_assoc] : (Alpha /\ Beta) /\ Gamma  => Alpha /\ (Beta /\ Gamma) .
    crl [regex_eq_and_choice_comm_node] : Alpha /\ (Beta /\ Gamma) => Beta /\ (Alpha /\ Gamma) if compare(Alpha, Beta) = GT .
-   crl [regex_eq_and_choice_comm_leaf] : Alpha /\ Beta => Beta /\ Alpha if compare(Alpha, Beta) == GT and toNat(Beta) =/= 8 .
+   crl [regex_eq_and_choice_comm_leaf] : Alpha /\ Beta => Beta /\ Alpha if compare(Alpha, Beta) == GT and not isConjunction(Beta) .
 
     ---- Optional simplifications
     rl [regex_eq_bot_concat_l] : bot . Alpha => bot .
