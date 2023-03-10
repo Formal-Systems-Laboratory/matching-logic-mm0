@@ -108,7 +108,7 @@ fmod PATTERN-METAMATH is
     ops LT EQ GT : -> Comparison [ctor] .
 
     op toNat : Pattern -> Nat .
-    op (_ <=> _) : Pattern Pattern -> Comparison .
+    op compare : Pattern Pattern -> Comparison .
 
     vars phi phi1 phi2 psi psi1 psi2 : Pattern .
     vars x y X Y : Qid .
@@ -127,21 +127,21 @@ fmod PATTERN-METAMATH is
     eq toNat(phi1 -> phi2) = 10 .
     eq toNat(derivative phi1 phi2) = 11 .
 
-    eq phi <=> phi = EQ .
-    ceq phi <=> psi = LT if toNat(phi) < toNat(psi) .
-    ceq phi <=> psi = GT if toNat(phi) > toNat(psi) .
-    eq ([kleene X phi]) <=> ([kleene X psi]) = phi <=> psi .
-    eq (~ phi) <=> (~ psi) = phi <=> psi .
-    ceq (phi1 . phi2) <=> (psi1 . psi2) = phi2 <=> psi2 if phi1 <=> psi1 = EQ .
-    eq (phi1 . phi2) <=> (psi1 . psi2) = phi1 <=> psi1 [owise] .
-    ceq (phi1 /\ phi2) <=> (psi1 /\ psi2) = phi2 <=> psi2 if phi1 <=> psi1 = EQ .
-    eq (phi1 /\ phi2) <=> (psi1 /\ psi2) = phi1 <=> psi1 [owise] .
-    ceq (phi1 \/ phi2) <=> (psi1 \/ psi2) = phi2 <=> psi2 if phi1 <=> psi1 = EQ .
-    eq (phi1 \/ phi2) <=> (psi1 \/ psi2) = phi1 <=> psi1 [owise] .
-    ceq (phi1 -> phi2) <=> (psi1 -> psi2) = phi2 <=> psi2 if phi1 <=> psi1 = EQ .
-    eq (phi1 -> phi2) <=> (psi1 -> psi2) = phi1 <=> psi1 [owise] .
-    ceq (derivative phi1 phi2) <=> (derivative psi1 psi2) = phi2 <=> psi2 if phi1 <=> psi1 = EQ .
-    eq (derivative phi1 phi2) <=> (derivative psi1 psi2) = phi1 <=> psi1 [owise] .
+    eq compare(phi, phi) = EQ .
+    ceq compare(phi, psi) = LT if toNat(phi) < toNat(psi) .
+    ceq compare(phi, psi) = GT if toNat(phi) > toNat(psi) .
+    eq compare([kleene X phi], [kleene X psi]) = compare(phi, psi) .
+    eq compare(~ phi, ~ psi) = compare(phi, psi) .
+    ceq compare(phi1 . phi2, psi1 . psi2) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
+    eq compare(phi1 . phi2, psi1 . psi2) = compare(phi1, psi1) [owise] .
+    ceq compare(phi1 /\ phi2, psi1 /\ psi2) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
+    eq compare(phi1 /\ phi2, psi1 /\ psi2) = compare(phi1, psi1) [owise] .
+    ceq compare(phi1 \/ phi2, psi1 \/ psi2) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
+    eq compare(phi1 \/ phi2, psi1 \/ psi2) = compare(phi1, psi1) [owise] .
+    ceq compare(phi1 -> phi2, psi1 -> psi2) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
+    eq compare(phi1 -> phi2, psi1 -> psi2) = compare(phi1, psi1) [owise] .
+    ceq compare(derivative phi1 phi2, derivative psi1 psi2) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
+    eq compare(derivative phi1 phi2, derivative psi1 psi2) = compare(phi1, psi1) [owise] .
 endfm
 
 mod ERE-THEOREMS is
@@ -191,16 +191,16 @@ mod ERE-THEOREMS is
     rl [regex_eq_or_choice_unit] : bot   \/ Alpha => Alpha .
     rl [regex_eq_or_choice_idem] : Alpha \/ Alpha => Alpha .
     rl [regex_eq_or_choice_assoc] : (Alpha \/ Beta) \/ Gamma  => Alpha \/ (Beta \/ Gamma) .
-   crl [regex_eq_or_choice_comm_node] : Alpha \/ (Beta \/ Gamma) => Beta \/ (Alpha \/ Gamma) if Alpha <=> Beta = GT .
-   crl [regex_eq_or_choice_comm_leaf] : Alpha \/ Beta => Beta \/ Alpha if (Alpha <=> Beta == GT) and (toNat(Beta) =/= 9) .
+   crl [regex_eq_or_choice_comm_node] : Alpha \/ (Beta \/ Gamma) => Beta \/ (Alpha \/ Gamma) if compare(Alpha, Beta) = GT .
+   crl [regex_eq_or_choice_comm_leaf] : Alpha \/ Beta => Beta \/ Alpha if compare(Alpha, Beta) == GT and toNat(Beta) =/= 9 .
 
     --- Identity and idemoptency of /\
     rl [regex_eq_and_choice_abs] : bot   /\ Alpha => bot .
     rl [regex_eq_and_choice_unit] : (~ bot)   /\ Alpha => Alpha .
     rl [regex_eq_and_choice_idem] : Alpha /\ Alpha => Alpha .
     rl [regex_eq_and_choice_assoc] : (Alpha /\ Beta) /\ Gamma  => Alpha /\ (Beta /\ Gamma) .
-   crl [regex_eq_and_choice_comm_node] : Alpha /\ (Beta /\ Gamma) => Beta /\ (Alpha /\ Gamma) if Alpha <=> Beta = GT .
-   crl [regex_eq_and_choice_comm_leaf] : Alpha /\ Beta => Beta /\ Alpha if (Alpha <=> Beta == GT) and (toNat(Beta) =/= 8) .
+   crl [regex_eq_and_choice_comm_node] : Alpha /\ (Beta /\ Gamma) => Beta /\ (Alpha /\ Gamma) if compare(Alpha, Beta) = GT .
+   crl [regex_eq_and_choice_comm_leaf] : Alpha /\ Beta => Beta /\ Alpha if compare(Alpha, Beta) == GT and toNat(Beta) =/= 8 .
 
     ---- Optional simplifications
     rl [regex_eq_bot_concat_l] : bot . Alpha => bot .
