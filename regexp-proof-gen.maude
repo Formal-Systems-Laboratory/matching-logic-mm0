@@ -1,4 +1,4 @@
-fmod PATTERN-METAMATH-CORE is
+fmod PATTERN-METAMATH is
     protecting QID-LIST .
     sorts Symbol SVar EVar Pattern .
     subsorts Symbol SVar EVar < Pattern .
@@ -108,16 +108,24 @@ fmod PATTERN-METAMATH-CORE is
    ceq minus(Q QL1, QL2) = Q minus(QL1, QL2) if not occurs(Q, QL2) .
 endfm
 
-fmod PATTERN-METAMATH is
-    including PATTERN-METAMATH-CORE .
+*** Comparing Patterns ******************************************************
+--- Since MM0 does not natively support associativity and commutativity,
+--- we must generate the corresponding theorem applications when we need to
+--- rearrange terms. Currently, this is only in the case of the application
+--- of the idempotency axiom. To enable the idempotency rule, the identical
+--- patterns must neighbour each other in a conjunction or disjunction.
+--- This is done by sorting the patterns in a conjunct/disjunct according to
+--- some arbitary total order, defined in the following module.
+
+fmod PATTERN-METAMATH-COMPARE is
+    including PATTERN-METAMATH .
+
+    vars phi phi1 phi2 psi psi1 psi2 : Pattern .
+    vars x y X Y : Qid .
 
     --- Internal sorting of patterns
     sort Comparison .
     ops LT EQ GT : -> Comparison [ctor] .
-
-
-    vars phi phi1 phi2 psi psi1 psi2 : Pattern .
-    vars x y X Y : Qid .
 
     op rank : Pattern -> Nat .
     eq rank(bot) = 0 .
@@ -154,7 +162,7 @@ fmod PATTERN-METAMATH is
 endfm
 
 mod ERE-THEOREMS is
-    protecting PATTERN-METAMATH .
+    protecting PATTERN-METAMATH-COMPARE .
     protecting META-TERM . --- TODO: I think this is required due to a bug in maude 2.7
                            --- I get this warning: Advisory: could not find sort Sort in meta-module ERE-THEOREMS.
                            --- Does this go away in newer versions of Maude?
@@ -244,7 +252,7 @@ endm
 
 fmod MM0 is
     protecting QID-LIST .
-    protecting PATTERN-METAMATH-CORE .
+    protecting PATTERN-METAMATH .
 
     sort MM0SExpr MM0Atom .
     subsort Qid < MM0Atom < MM0SExpr .
