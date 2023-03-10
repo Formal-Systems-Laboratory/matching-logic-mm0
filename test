@@ -67,10 +67,10 @@ for f in $(ls *.mm0 *.mm1 | sort); do
     }
     test_mm "$last_mm0_file" "$f"
 done
-test_regex 'main-goal'        'a-or-b-star'                '(a + b)*'
-test_regex 'fp-implies-regex' 'kleene-star-star'           '(a *) * ->> (a *)'
-test_regex 'fp-implies-regex' 'example-in-paper'           '(a . a)* ->> (((a *) . a) + epsilon) '
-test_regex 'fp-implies-regex' 'alternate-top'              '((a *) . b) * + (((b *) . a) *)'
-test_regex 'fp-implies-regex' 'even-or-odd'                '((((a . a) + (a . b)) + (b . a)) + (b . b)) * + ((a + b) . (((((a . a) + (a . b)) + (b . a)) + (b . b)) *))'
-test_regex 'fp-implies-regex' 'no-contains-a-or-no-only-b' '(~ (top . (a . top))) + ~ (b *)'
+test_regex 'main-goal'              'a-or-b-star'                   '(a + b)*'
+test_regex 'fp-implies-regex-pub'   'kleene-star-star'              '(a *) * ->> (a *)'
+test_regex 'fp-implies-regex-pub'   'example-in-paper'              '(a . a)* ->> (((a *) . a) + epsilon) '
+test_regex 'fp-implies-regex-pub'   'alternate-top'                 '((a *) . b) * + (((b *) . a) *)'
+test_regex 'fp-implies-regex-pub'   'even-or-odd'                   '((((a . a) + (a . b)) + (b . a)) + (b . b)) * + ((a + b) . (((((a . a) + (a . b)) + (b . a)) + (b . b)) *))'
+test_regex 'fp-implies-regex-pub'   'no-contains-a-or-no-only-b'    '(~ (top . (a . top))) + ~ (b *)'
 echo Passed.
