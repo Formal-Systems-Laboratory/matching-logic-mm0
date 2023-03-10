@@ -115,12 +115,11 @@ fmod PATTERN-METAMATH is
     sort Comparison .
     ops LT EQ GT : -> Comparison [ctor] .
 
-    op rank : Pattern -> Nat .
-    op compare : Pattern Pattern -> Comparison .
 
     vars phi phi1 phi2 psi psi1 psi2 : Pattern .
     vars x y X Y : Qid .
 
+    op rank : Pattern -> Nat .
     eq rank(bot) = 0 .
     eq rank(epsilon) = 1 .
     eq rank(a) = 2 .
@@ -134,21 +133,24 @@ fmod PATTERN-METAMATH is
     eq rank(phi1 -> phi2) = 10 .
     eq rank(derivative phi1 phi2) = 11 .
 
+    op pair : Pattern Pattern -> PatternPair [ctor] .
+
+    sort PatternPair .
+    op compare : PatternPair PatternPair -> Comparison .
+   ceq compare(pair(phi1, phi2), pair(psi1, psi2)) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
+    eq compare(pair(phi1, phi2), pair(psi1, psi2)) = compare(phi1, psi1) [owise] .
+
+    op compare : Pattern Pattern -> Comparison .
     eq compare(phi, phi) = EQ .
    ceq compare(phi, psi) = LT if rank(phi) < rank(psi) .
    ceq compare(phi, psi) = GT if rank(phi) > rank(psi) .
     eq compare([kleene X phi], [kleene X psi]) = compare(phi, psi) .
     eq compare(~ phi, ~ psi) = compare(phi, psi) .
-   ceq compare(phi1 . phi2, psi1 . psi2) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
-    eq compare(phi1 . phi2, psi1 . psi2) = compare(phi1, psi1) [owise] .
-   ceq compare(phi1 /\ phi2, psi1 /\ psi2) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
-    eq compare(phi1 /\ phi2, psi1 /\ psi2) = compare(phi1, psi1) [owise] .
-   ceq compare(phi1 \/ phi2, psi1 \/ psi2) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
-    eq compare(phi1 \/ phi2, psi1 \/ psi2) = compare(phi1, psi1) [owise] .
-   ceq compare(phi1 -> phi2, psi1 -> psi2) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
-    eq compare(phi1 -> phi2, psi1 -> psi2) = compare(phi1, psi1) [owise] .
-   ceq compare(derivative phi1 phi2, derivative psi1 psi2) = compare(phi2, psi2) if compare(phi1, psi1) = EQ .
-    eq compare(derivative phi1 phi2, derivative psi1 psi2) = compare(phi1, psi1) [owise] .
+    eq compare(phi1 . phi2, psi1 . psi2) = compare(pair(phi1, phi2), pair(psi1, psi2)) .
+    eq compare(phi1 /\ phi2, psi1 /\ psi2) = compare(pair(phi1, phi2), pair(psi1, psi2)) .
+    eq compare(phi1 \/ phi2, psi1 \/ psi2) = compare(pair(phi1, phi2), pair(psi1, psi2)) .
+    eq compare(phi1 -> phi2, psi1 -> psi2) = compare(pair(phi1, phi2), pair(psi1, psi2)) .
+    eq compare(derivative phi1 phi2, derivative psi1 psi2) = compare(pair(phi1, phi2), pair(psi1, psi2)) .
 endfm
 
 mod ERE-THEOREMS is
