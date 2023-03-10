@@ -1,6 +1,6 @@
 import "20-theory-words.mm0";
 
---- This file contains unproves theorems as axioms for the theory of words.
+--- This file contains unproven theorems as axioms for the theory of words.
 --- As we prove them, we shall move them to an appropriate file.
 
 --- The following theorem can likely only be proved as a metatheorem, as we need
