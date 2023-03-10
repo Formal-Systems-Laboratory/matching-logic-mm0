@@ -257,8 +257,9 @@ fmod MM0 is
 
     sort MM0Decl MM0Binder .
     op _ _ : MM0Decl MM0Decl -> MM0Decl [ctor assoc format(d n d)] .
-    op     theorem _ _ colon $ _ $           ; : Qid MM0Binder Pattern          -> MM0Decl .
-    op pub theorem _ _ colon $ _ $ = quote _ ; : Qid MM0Binder Pattern MM0SExpr -> MM0Decl .
+    op theorem _ _ colon $ _ $           ; : Qid MM0Binder Pattern          -> MM0Decl .
+    op theorem _ _ colon $ _ $ = quote _ ; : Qid MM0Binder Pattern MM0SExpr -> MM0Decl .
+    op pub _ : MM0Decl -> MM0Decl .
     op no-binders : -> MM0Binder [ctor] .
     op { _ colon SVar } : QidList -> MM0Binder [ctor] .
 endfm
@@ -570,19 +571,17 @@ mod PROOF-GEN is
      = theorem-top-implies-fp(Phi)
        theorem-fp-implies-regex(Phi)
        pub theorem 'proof-main-goal { all-sVars(Phi) colon SVar }
-             colon $ Phi $
-                 = quote([ 'mp [ 'rsyl [ 'bang 'top-implies-fp 'X 'CCapbDDx ] 'fp-implies-regex ] 'domain-words ]) ; .
+           colon $ Phi $
+             = quote([ 'rsyl [ 'bang 'top-implies-fp 'X 'CCapbDDx ] 'fp-implies-regex 'domain-words ]) ; .
     op theorem-main-goal-mm0 : Pattern -> MM0Decl .
     eq theorem-main-goal-mm0(Phi)
-     =  theorem-top-implies-fp-mm0(Phi)
-        theorem-fp-implies-regex-mm0(Phi)
-        theorem 'proof-main-goal { all-sVars(Phi) colon SVar } colon $ Phi $ ; .
+     =  theorem 'proof-main-goal { all-sVars(Phi) colon SVar } colon $ Phi $ ; .
 
 
     *** top-implies-fp *******************************************************
     op theorem-top-implies-fp : Pattern -> MM0Decl .
     eq theorem-top-implies-fp(Phi)
-     = pub theorem 'top-implies-fp
+     = theorem 'top-implies-fp
              { all-sVars((top-word 'X) -> fp(proofHint(Phi))) colon SVar }
              colon $ (top-word 'X) -> fp(proofHint(Phi)) $
                  = quote(proof-top-implies-fp(proofHint(Phi))) ; .
@@ -619,7 +618,7 @@ mod PROOF-GEN is
     *** fp-implies-regex ************************************************************
     op theorem-fp-implies-regex : Pattern -> MM0Decl .
     eq theorem-fp-implies-regex(Phi)
-     = pub theorem 'fp-implies-regex
+     = theorem 'fp-implies-regex
              { all-sVars(fp(proofHint(Phi)) -> Phi) colon SVar }
              colon $ fp(proofHint(Phi)) -> Phi $
                  = quote(proof-fp-implies-regex(proofHint(Phi))) ; .
@@ -648,4 +647,10 @@ mod PROOF-GEN is
        ]
      .
 
+   --- We don't want this theorem to be public when proving the main theorem,
+   --- so that we can avoid generating the fixedpoint pattern.
+    op theorem-fp-implies-regex-pub-mm0 : Pattern -> MM0Decl .
+    op theorem-fp-implies-regex-pub : Pattern -> MM0Decl .
+    eq theorem-fp-implies-regex-pub-mm0(Phi) = theorem-fp-implies-regex-mm0(Phi) .
+    eq theorem-fp-implies-regex-pub(Phi)     = pub theorem-fp-implies-regex(Phi) .
 endm
