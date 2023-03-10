@@ -3,10 +3,11 @@
 from collections import defaultdict
 from glob import glob
 from os import path, makedirs
-from subprocess import check_call, check_output
 import time
-from typing import Dict, NamedTuple, Optional
 from tabulate import tabulate
+from typing import Dict, List, NamedTuple, Optional, Tuple
+from subprocess import check_call, check_output
+from sys import argv
 
 test_dir=".build"
 
@@ -87,6 +88,17 @@ def test_regex(theorem: str, test_name: str, regex: str) -> None:
 
 ### Main #######################
 
+# Arg parsing
+usage = 'usage: test [--no-slow-tests]'
+run_slow_tests = True
+assert len(argv) <= 2, usage
+if len(argv) == 2:
+    if argv[1] == '--no-slow-tests':
+        run_slow_tests = False
+    else:
+        raise AssertionError(usage)
+
+# Check concrete MM0/MM1 lemmas
 makedirs(test_dir, exist_ok=True)
 last_mm0_file = None
 for f in sorted((glob('*.mm0') + glob('*.mm1'))):
@@ -96,22 +108,36 @@ for f in sorted((glob('*.mm0') + glob('*.mm1'))):
     assert last_mm0_file
     test_mm(last_mm0_file, f)
 
-test_regex('main-goal',            'a-or-b-star',                '(a + b)*')
-test_regex('fp-implies-regex-pub', 'kleene-star-star',           '(a *) * ->> (a *)')
-test_regex('fp-implies-regex-pub', 'example-in-paper',           '(a . a)* ->> (((a *) . a) + epsilon) ')
-test_regex('fp-implies-regex-pub', 'alternate-top',              '((a *) . b) * + (((b *) . a) *)')
-test_regex('fp-implies-regex-pub', 'even-or-odd',                '((((a . a) + (a . b)) + (b . a)) + (b . b)) * + ((a + b) . (((((a . a) + (a . b)) + (b . a)) + (b . b)) *))')
-test_regex('fp-implies-regex-pub', 'no-contains-a-or-no-only-b', '(~ (top . (a . top))) + ~ (b *)')
+fast = False
+slow = True
+# Regular expression tests
+tests : List[Tuple[bool, str, str, str]] = [
+    (fast, 'main-goal',            'a-or-b-star',                '(a + b)*'),
+    (fast, 'fp-implies-regex-pub', 'kleene-star-star',           '(a *) * ->> (a *)'),
+    (fast, 'fp-implies-regex-pub', 'example-in-paper',           '(a . a)* ->> (((a *) . a) + epsilon) '),
+    (fast, 'fp-implies-regex-pub', 'alternate-top',              '((a *) . b) * + (((b *) . a) *)'),
+    (fast, 'fp-implies-regex-pub', 'even-or-odd',                '((((a . a) + (a . b)) + (b . a)) + (b . b)) * + ((a + b) . (((((a . a) + (a . b)) + (b . a)) + (b . b)) *))'),
+    (fast, 'fp-implies-regex-pub', 'no-contains-a-or-no-only-b', '(~ (top . (a . top))) + ~ (b *)'),
 
-### Benchmarks #################
-# From Unified Decision Procedures for Regular Expression Equivalence
-# URL: https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=f650281fc011a2c132690903eb443ff1ab3298f7
-#
-test_regex('fp-implies-regex-pub', 'match-l-04',                  'match-l(4)')
-test_regex('fp-implies-regex-pub', 'match-r-04',                  'match-r(4)')
-test_regex('fp-implies-regex-pub',    'eq-l-04',                     'eq-l(4)')
-test_regex('fp-implies-regex-pub',    'eq-r-04',                     'eq-r(4)')
-test_regex('fp-implies-regex-pub',   'eq-lr-04',                    'eq-lr(4)') # Extension
+# Benchmarks from Unified Decision Procedures for Regular Expression Equivalence
+# https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=f650281fc011a2c132690903eb443ff1ab3298f7
+    (fast, 'fp-implies-regex-pub', 'match-l-04',                  'match-l(4)'),
+    (fast, 'fp-implies-regex-pub', 'match-r-04',                  'match-r(4)'),
+    (fast, 'fp-implies-regex-pub',    'eq-l-04',                     'eq-l(4)'),
+    (fast, 'fp-implies-regex-pub',    'eq-r-04',                     'eq-r(4)'),
+    (fast, 'fp-implies-regex-pub',   'eq-lr-04',                    'eq-lr(4)'), # Extension
+
+    (slow, 'fp-implies-regex-pub', 'match-l-40',                 'match-l(40)'),
+    (slow, 'fp-implies-regex-pub', 'match-r-40',                 'match-r(40)'),
+    (slow, 'fp-implies-regex-pub',    'eq-l-40',                    'eq-l(40)'),
+    (slow, 'fp-implies-regex-pub',    'eq-r-40',                    'eq-r(40)'),
+    (slow, 'fp-implies-regex-pub',   'eq-lr-40',                   'eq-lr(40)'),
+]
+
+for test in tests:
+    is_slow, theorem, name, expression = test
+    if (not is_slow) or run_slow_tests:
+        test_regex(theorem, name, expression)
 
 print()
 print_benchmarks()
