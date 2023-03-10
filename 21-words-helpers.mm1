@@ -47,6 +47,13 @@ theorem eq_to_concat_bi
   (h2: $ (phi1 == phi2) -> (rho1 <-> rho2) $):
   $ (phi1 == phi2) -> ((psi1 . rho1) <-> (psi2 . rho2)) $ =
   '(eq_to_app_bi (eq_to_app_r_bi h1) h2);
+theorem appctx_concat_l : $ Norm (app[ phi / box ] (sVar box . psi)) (phi . psi)$
+= '(norm_trans appCtxL @ norm_app (norm_trans appCtxR @ norm_app norm_refl appCtxVar) norm_refl);
+theorem appctx_concat_r : $ Norm (app[ psi / box ] (phi . sVar box)) (phi . psi)$
+= '(norm_trans appCtxR @ norm_app norm_refl appCtxVar);
+theorem propag_or_concat : $(phi1 \/ phi2) . psi ->  (phi1 . psi) \/ (phi2 . psi)$
+= '(norm (norm_imp appctx_concat_l (norm_or appctx_concat_l appctx_concat_l)) (! propag_or dummy) );
+
 
 
 --- Helpers for Kleene
