@@ -85,6 +85,17 @@ def test_regex(theorem: str, test_name: str, regex: str) -> None:
     with benchmark(test_name, 'gen_mm1'): run_proof_gen('mm1', theorem, regex, output_mm1_file)
     test_mm(output_joined_mm0_file, output_mm1_file)
 
+fast = False
+slow = True
+TestData = Tuple[bool, str, str, str]
+
+def param_test(theorem: str, test_name: str, regex: str, fast=[], slow=[]) -> List[TestData]:
+    ret = []
+    for param in fast:
+        ret.append((fast, theorem, test_name.format(param), regex.format(param)))
+    for param in slow:
+        ret.append((slow, theorem, test_name.format(param), regex.format(param)))
+    return ret
 
 ### Main #######################
 
@@ -108,10 +119,8 @@ for f in sorted((glob('*.mm0') + glob('*.mm1'))):
     assert last_mm0_file
     test_mm(last_mm0_file, f)
 
-fast = False
-slow = True
 # Regular expression tests
-tests : List[Tuple[bool, str, str, str]] = [
+tests : List[TestData] = [
     (fast, 'main-goal',            'a-or-b-star',                '(a + b)*'),
     (fast, 'fp-implies-regex-pub', 'kleene-star-star',           '(a *) * ->> (a *)'),
     (fast, 'fp-implies-regex-pub', 'example-in-paper',           '(a . a)* ->> (((a *) . a) + epsilon) '),
@@ -119,19 +128,13 @@ tests : List[Tuple[bool, str, str, str]] = [
     (fast, 'fp-implies-regex-pub', 'even-or-odd',                '((((a . a) + (a . b)) + (b . a)) + (b . b)) * + ((a + b) . (((((a . a) + (a . b)) + (b . a)) + (b . b)) *))'),
     (fast, 'fp-implies-regex-pub', 'no-contains-a-or-no-only-b', '(~ (top . (a . top))) + ~ (b *)'),
 
-# Benchmarks from Unified Decision Procedures for Regular Expression Equivalence
-# https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=f650281fc011a2c132690903eb443ff1ab3298f7
-    (fast, 'fp-implies-regex-pub', 'match-l-04',                  'match-l(4)'),
-    (fast, 'fp-implies-regex-pub', 'match-r-04',                  'match-r(4)'),
-    (fast, 'fp-implies-regex-pub',    'eq-l-04',                     'eq-l(4)'),
-    (fast, 'fp-implies-regex-pub',    'eq-r-04',                     'eq-r(4)'),
-    (fast, 'fp-implies-regex-pub',   'eq-lr-04',                    'eq-lr(4)'), # Extension
-
-    (slow, 'fp-implies-regex-pub', 'match-l-40',                 'match-l(40)'),
-    (slow, 'fp-implies-regex-pub', 'match-r-40',                 'match-r(40)'),
-    (slow, 'fp-implies-regex-pub',    'eq-l-40',                    'eq-l(40)'),
-    (slow, 'fp-implies-regex-pub',    'eq-r-40',                    'eq-r(40)'),
-    (slow, 'fp-implies-regex-pub',   'eq-lr-40',                   'eq-lr(40)'),
+    # Benchmarks from Unified Decision Procedures for Regular Expression Equivalence
+    # https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=f650281fc011a2c132690903eb443ff1ab3298f7
+    *param_test('fp-implies-regex-pub', 'match-l-{:03d}', 'match-l({})', fast=[1,4], slow=[2, 10, 20, 30, 40, 100]),
+    *param_test('fp-implies-regex-pub', 'match-r-{:03d}', 'match-r({})', fast=[1,4], slow=[2, 10, 20, 30]),
+    *param_test('fp-implies-regex-pub',    'eq-l-{:03d}',    'eq-l({})', fast=[1,4], slow=[2, 10, 20, 30]),
+    *param_test('fp-implies-regex-pub',    'eq-r-{:03d}',    'eq-r({})', fast=[1,4], slow=[2, 10, 20, 30]),
+    *param_test('fp-implies-regex-pub',   'eq-lr-{:03d}',   'eq-lr({})', fast=[1,4], slow=[2, 10, 20, 30]),
 ]
 
 for test in tests:
