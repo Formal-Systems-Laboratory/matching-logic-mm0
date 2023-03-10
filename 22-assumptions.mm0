@@ -9,48 +9,39 @@ import "20-theory-words.mm0";
 axiom ctximp_in_ctx_reverse {box: SVar} {dummy: EVar} (ctx psi: Pattern box)
 : $psi -> app[ (ctximp_app box ctx psi dummy) / box ] ctx$;
 
-axiom eq_der_a_concat  (psi phi: Pattern):
-    $(derivative a (phi . psi)) <->   (derivative a phi) . psi
-                                   \/ ((epsilon /\ phi) . (derivative a psi))$;
-axiom eq_der_a_or  (phi psi : Pattern):
-    $(derivative a (phi \/ psi)) <-> (derivative a phi) \/ (derivative a psi)$;
-axiom eq_der_a_kleene  {X: SVar} (phi: Pattern X):
-    $(derivative a (kleene X phi)) <-> (derivative a phi) . (kleene X phi)$;
-axiom eq_der_a_not  (phi: Pattern) :
-    $(derivative a (~ phi)) <-> ~ (derivative a phi)$;
-axiom eq_der_a_imp  (psi phi: Pattern) :
-    $(derivative a (phi -> psi)) <-> ((derivative a phi) -> (derivative a psi))$;
 
-
---- fp-implies-alpha
---------------------
-
+--- Derivative simplifications
+axiom regex_eq_der_kleene_wrt_a  {X: SVar} (Alpha: Pattern X):
+  $ (derivative a (kleene X Alpha)) <-> ((derivative a Alpha) . (kleene X Alpha)) $;
+axiom regex_eq_der_kleene_wrt_b  {X: SVar} (Alpha: Pattern X):
+  $ (derivative b (kleene X Alpha)) <-> ((derivative b Alpha) . (kleene X Alpha)) $;
+axiom regex_eq_der_concat_wrt_a  (Alpha Beta: Pattern) :
+  $ (derivative a (Alpha . Beta)) <-> ((derivative a Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative a Beta)) $;
+axiom regex_eq_der_concat_wrt_b  (Alpha Beta: Pattern) :
+  $ (derivative b (Alpha . Beta)) <-> ((derivative b Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative b Beta)) $;
 axiom regex_eq_der_epsilon_wrt_a  :
   $ (derivative a epsilon) <-> bot $;
 axiom regex_eq_der_epsilon_wrt_b  :
   $ (derivative b epsilon) <-> bot $;
-
 axiom regex_eq_der_same_a_wrt_a  :
   $ (derivative a a) <-> epsilon $;
 axiom regex_eq_der_same_a_wrt_b  :
   $ (derivative b b) <-> epsilon $;
-
 axiom regex_eq_der_diff_a_wrt_a  :
   $ (derivative a b) <-> bot $;
 axiom regex_eq_der_diff_a_wrt_b  :
   $ (derivative b a) <-> bot $;
 
-axiom regex_eq_der_kleene_wrt_a  {X: SVar} (Alpha: Pattern X): $ (derivative a (kleene X Alpha)) <-> ((derivative a Alpha) . (kleene X Alpha)) $;
-axiom regex_eq_der_kleene_wrt_b  {X: SVar} (Alpha: Pattern X): $ (derivative b (kleene X Alpha)) <-> ((derivative b Alpha) . (kleene X Alpha)) $;
-axiom regex_eq_der_concat_wrt_a  (Alpha Beta: Pattern) : $ (derivative a (Alpha . Beta)) <-> ((derivative a Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative a Beta)) $;
-axiom regex_eq_der_concat_wrt_b  (Alpha Beta: Pattern) : $ (derivative b (Alpha . Beta)) <-> ((derivative b Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative b Beta)) $;
 
+--- Theorems that reduce the size of the automata/proof
 axiom regex_eq_double_kleene {X: SVar} (Alpha: Pattern X): $ (kleene X (kleene X Alpha)) <-> (kleene X Alpha) $;
-
 axiom regex_eq_eps_kleene { X: SVar }: $ (kleene X epsilon) <-> epsilon $;
 
+
+--- EWP related simplifications
 axiom regex_eq_ewp_concat (Alpha Beta: Pattern):
   $ epsilon /\ (Alpha . Beta) <-> (epsilon /\ Alpha) /\ (epsilon /\ Beta) $;
-
 axiom regex_eq_ewp_not_concat (Alpha Beta: Pattern):
   $ (epsilon /\ ~(Alpha . Beta)) <-> ((epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta)) $;
+
+
