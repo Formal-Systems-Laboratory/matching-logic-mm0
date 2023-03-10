@@ -67,6 +67,7 @@ for f in $(ls *.mm0 *.mm1 | sort); do
     }
     test_mm "$last_mm0_file" "$f"
 done
+test_regex 'top-implies-fp'   'a-or-b-star-top'            '(a + b)*'
 test_regex 'fp-implies-regex' 'a-or-b-star'                '(a + b)*'
 test_regex 'fp-implies-regex' 'kleene-star-star'           '(a *) * ->> (a *)'
 test_regex 'fp-implies-regex' 'example-in-paper'           '(a . a)* ->> (((a *) . a) + epsilon) '
