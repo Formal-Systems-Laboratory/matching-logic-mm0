@@ -149,24 +149,16 @@ fmod PATTERN-METAMATH is
      = (substitute [ phi / X ] in psi1) . (substitute [ phi / X ] in psi2) .
 
     op all-sVars : Pattern -> QidList .
+    eq all-sVars(Notation) = all-sVars(desugar(Notation)) .
+    eq all-sVars(bot) = nil .
     eq all-sVars(sVar X) = X .
     eq all-sVars(eVar X) = nil .
     eq all-sVars(sym  X) = nil .
-    eq all-sVars(app phi psi) = all-sVars(phi) minus(all-sVars(psi), all-sVars(phi)) .
     eq all-sVars(phi -> psi)  = all-sVars(phi) minus(all-sVars(psi), all-sVars(phi)) .
+    eq all-sVars(app[ phi / X ] psi) = all-sVars(phi) minus(all-sVars(psi), all-sVars(phi)) .
+    eq all-sVars(app phi psi) = all-sVars(phi) minus(all-sVars(psi), all-sVars(phi)) .
     eq all-sVars(mu X phi) = X minus(all-sVars(phi), X) .
-    eq all-sVars(bot) = nil .
     eq all-sVars(exists X phi) = all-sVars(phi) .
-    eq all-sVars(~ phi) = all-sVars(phi) .
-
-    eq all-sVars(epsilon)  = nil .
-    eq all-sVars(a)  = nil .
-    eq all-sVars(b)  = nil .
-    eq all-sVars(phi \/ psi)  = all-sVars(phi) minus(all-sVars(psi), all-sVars(phi)) .
-    eq all-sVars(phi .  psi)  = all-sVars(phi) minus(all-sVars(psi), all-sVars(phi)) .
-
-    eq all-sVars([ kleene X phi ]) = X .
-    eq all-sVars(top-word X) = X .
 
     op minus : QidList QidList -> QidList .
     eq minus(nil, QL) = nil .
