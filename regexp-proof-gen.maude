@@ -29,10 +29,9 @@ fmod PATTERN-METAMATH is
     subsort Letter < Pattern .
     op a            :                 -> Letter [ctor] .
     op b            :                 -> Letter [ctor] .
-    op [ kleene _ _ ] : Qid Pattern     -> Pattern [ctor prec 25] .
     op top-letter   :                 -> Pattern [ctor] .
-    op kleene _ _   : Qid Pattern     -> Pattern [ctor prec 25] .
     op top-word _   : Qid             -> Pattern [ctor] .
+    op [ kleene _ _ ] : Qid Pattern   -> Pattern [ctor prec 25] .
 
     op _ . _        : Pattern Pattern -> Pattern [ctor prec 28] .
 
