@@ -6,22 +6,27 @@ mod TEST is
 
     sort TestResult .
     op passed : -> TestResult [ctor] .
-    op _ and _ : TestResult TestResult -> TestResult .
+    op _ _ : TestResult TestResult -> TestResult [assoc] .
 
     vars TR : TestResult .
     vars TestName : Qid .
-    vars Actual Expected : Bool .
 
-    eq passed and TR =  TR .
-    eq TR and passed =  TR .
+    eq passed TR =  TR .
+    eq TR passed =  TR .
 
-    op test _ @ _ ?= _ : Qid Bool Bool -> TestResult .
-    eq test TestName @ Expected ?= Expected = passed .
+    op test _ @ _ ?= _ ; : Qid Universal Universal -> TestResult [poly(2 3)] .
+    **************************************************************************
+    *** NOTE: MAKE SURE YOU DEFINE AN EQUATION BELOW FOR ANY SORT YOU USE! ***
+    **************************************************************************
+    eq test TestName @ Expected:Bool    ?= Expected:Bool    ; = passed .
+    eq test TestName @ Expected:Pattern ?= Expected:Pattern ; = passed .
 
     op unit-tests : -> TestResult .
     eq unit-tests
-     =      test 'true-is-true @ true ?= true
----     and test 'false-is-true @ false ?= true
+     =  test 'true-is-true @ true ?= true ;
+        test 'occurs-in-subset-1 @ occursIn('nCzD, sVar 'X C= sVar 'Y)        ?= false ;
+        test 'occurs-in-subset-2 @ occursIn('nCzD, sVar 'X C= sVar 'nCzD)     ?= true ;
+        test 's-subst            @ substitute[sVar 'Z / 'X] in mu 'Y sVar 'X  ?= mu 'Y sVar 'Z ;
      .
 endm
 
