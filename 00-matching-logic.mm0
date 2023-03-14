@@ -72,10 +72,8 @@ axiom negative_in_mu {X: SVar} {Y: SVar} (phi: Pattern X Y):
   $ _Negative X phi $ > $ _Negative X (mu Y phi) $;
 axiom negative_in_same_mu {X: SVar} (phi: Pattern X): $ _Negative X (mu X phi) $;
 
--- Freshness definitions
+-- Freshness for Element Variables
 term _eFresh {x: EVar}: Pattern x > Freshness;
--- term _sFresh: SVar > Pattern > Freshness;
-
 axiom eFresh_disjoint {x: EVar} (phi: Pattern): $ _eFresh x phi $;
 axiom eFresh_imp {x: EVar} (phi1 phi2: Pattern x):
   $ _eFresh x phi1 $ >
@@ -109,7 +107,44 @@ axiom eFresh_appCtx {x: EVar} {box: SVar} (ctx psi: Pattern x box):
   $ _eFresh x psi $ >
   $ _eFresh x (app[ psi / box ] ctx) $;
 
--- TODO: define freshness for set variables too?
+-- Freshness for Set Variables
+term _sFresh: SVar > Pattern > Freshness;
+axiom sFresh_disjoint {X: SVar} (phi: Pattern): $ _sFresh X phi $;
+axiom sFresh_imp {X: SVar} (phi1 phi2: Pattern X):
+  $ _sFresh X phi1 $ >
+  $ _sFresh X phi2 $ >
+  $ _sFresh X (phi1 -> phi2) $;
+axiom sFresh_app {X: SVar} (phi1 phi2: Pattern X):
+  $ _sFresh X phi1 $ >
+  $ _sFresh X phi2 $ >
+  $ _sFresh X (app phi1 phi2) $;
+axiom sFresh_exists {X : SVar} {y: EVar} (phi: Pattern X y):
+  $ _sFresh X phi $ >
+  $ _sFresh X (exists y phi) $;
+axiom sFresh_mu_same_var {X: SVar} (phi: Pattern X):
+  $ _sFresh X (mu X phi) $;
+axiom sFresh_mu {X Y: SVar} (phi: Pattern X Y):
+  $ _sFresh X phi $ >
+  $ _sFresh X (mu Y phi) $;
+axiom sFresh_eSubst {X: SVar} {y: EVar} (phi psi: Pattern X y):
+  $ _sFresh X phi $ >
+  $ _sFresh X psi $ >
+  $ _sFresh X (e[ psi / y ] phi) $;
+axiom sFresh_sSubst_same_var {X: SVar} (phi psi: Pattern X):
+  $ _sFresh X psi $ >
+  $ _sFresh X (s[ psi / X ] phi) $;
+axiom sFresh_sSubst {X Y: SVar} (phi psi: Pattern X Y):
+  $ _sFresh X phi $ >
+  $ _sFresh X psi $ >
+  $ _sFresh X (s[ psi / Y ] phi) $;
+axiom sFresh_appCtx {X box: SVar} (ctx psi: Pattern X box):
+  $ _sFresh X ctx $ >
+  $ _sFresh X psi $ >
+  $ _sFresh X (app[ psi / box ] ctx) $;
+--- Since the box variable is immediately plugged away, it is free in app contexts. 
+axiom sFresh_appCtx_box {box: SVar} (ctx psi: Pattern box):
+  $ _sFresh box psi $ >
+  $ _sFresh box (app[ psi / box ] ctx) $;
 
 -- Definition of substitutions and application contexts as meta-level relations
 term Norm: Pattern > Pattern > Normalization;
