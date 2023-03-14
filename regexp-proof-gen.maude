@@ -575,7 +575,7 @@ mod PROOF-GEN is
     eq propag-sSubst(X, sVar X) = 'sSubstitution-in-same-sVar .
    ceq propag-sSubst(X, sVar Y) = 'sSubstitution-triv if X =/= Y .
     eq propag-sSubst(X, mu X Phi) = 'sSubstitution-in-same-mu .
-   ceq propag-sSubst(X, mu Y Phi) = [ '-sSubst-mu propag-sSubst(X, Phi) ] if X =/= Y .
+   ceq propag-sSubst(X, mu Y Phi) = [ '-sSubst-mu-disjoint propag-sSubst(X, Phi) ] if X =/= Y .
     eq propag-sSubst(X, Phi1 \/ Phi2) = [ '-sSubst-or propag-sSubst(X, Phi1) propag-sSubst(X, Phi2) ] .
 
     eq propag-sSubst(X, Phi1 . Phi2) = [ 'sSubst-concat propag-sSubst(X, Phi1) propag-sSubst(X, Phi2) ] .

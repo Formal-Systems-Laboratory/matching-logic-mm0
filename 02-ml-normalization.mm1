@@ -207,7 +207,7 @@ do {
     [$exists ,y ,psi$     '(_sSubst_exists          ,(propag_s_subst X psi))]
     [$mu ,Y ,psi$ (if (== X Y) 
                           'sSubstitution_in_same_mu 
-                          '(_sSubst_mu              ,(propag_s_subst X psi)))]
+                          '(_sSubst_mu_disjoint     ,(propag_s_subst X psi)))]
     [$not ,psi$           '(_sSubst_not             ,(propag_s_subst X psi))]
     [$or ,phi1 ,phi2$     '(_sSubst_or              ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
     [$and ,phi1 ,phi2$    '(_sSubst_and             ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
@@ -223,7 +223,7 @@ do {
     [$top_word ,Y$    (if (== X Y) 'sSubstitution_in_same_mu 'sSubstitution_triv)]
     [$kleene ,Y ,psi$ (if (== X Y)
                           'sSubstitution_in_same_mu
-                          '(_sSubst_mu @ _sSubst_or sSubstitution_triv @ sSubst_concat ,(propag_s_subst X psi) sSubstitution_triv))]
+                          '(_sSubst_mu_disjoint @ _sSubst_or sSubstitution_triv @ sSubst_concat ,(propag_s_subst X psi) sSubstitution_triv))]
     [$nnimp ,phi1 ,phi2$  '(_sSubst_nnimp           ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
     [_            'norm_refl]
     -- [('e[ phi2 / y] psi) '()]
@@ -252,7 +252,7 @@ theorem _sSubst_imp {X: SVar} (phi phi1 phi2 psi1 psi2: Pattern X)
   $ Norm (s[ phi / X ] (phi1 -> phi2)) (psi1 -> psi2) $ =
   '(norm_trans sSubstitution_in_imp (norm_imp h1 h2));
 
-theorem _sSubst_mu {X Y: SVar} (psi rho: Pattern X Y) (phi: Pattern X)
+theorem _sSubst_mu_disjoint {X Y: SVar} (psi rho: Pattern X Y) (phi: Pattern X)
   (h : $ Norm (s[ phi / X ] psi) rho $):
   $ Norm (s[ phi / X ] (mu Y psi)) (mu Y rho) $
   = '(norm_trans sSubstitution_in_mu (norm_mu h));
