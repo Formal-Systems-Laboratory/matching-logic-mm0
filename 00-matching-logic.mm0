@@ -196,13 +196,13 @@ axiom sSubstitution_in_sSubst {X Y: SVar} (psi1 psi2 phi: Pattern X Y):
 axiom sSubstitution_in_appCtx {X box: SVar} (psi1 psi2 phi: Pattern X box):
   $ Norm (s[ psi1 / X ] app[ psi2 / box ] phi) (app[ (s[ psi1 / X ] psi2) / box ] s[ psi1 / X ] phi) $;
 
-axiom appCtxVar {box: SVar} (phi: Pattern): $ Norm (app[ phi / box ] sVar box) phi $;
-axiom appCtxL {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
+axiom appCtxVar {box: SVar} (phi: Pattern box): $ Norm (app[ phi / box ] sVar box) phi $;
+axiom appCtxL {box: SVar} (phi1 phi2 ctx: Pattern box) :
   $ Norm (app[ phi1 / box ] (app ctx phi2)) (app (app[ phi1 / box ] ctx) phi2) $;
-axiom appCtxR {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
+axiom appCtxR {box: SVar} (phi1 phi2 ctx: Pattern box) :
   $ Norm (app[ phi2 / box ] (app phi1 ctx)) (app phi1 (app[ phi2 / box ] ctx)) $;
 -- TODO: Do we need to propagate app[] through the other substitution constructs?
-axiom appCtxNested {box1 box2: SVar} (ctx1 phi: Pattern box1) (ctx2: Pattern box2):
+axiom appCtxNested {box1 box2: SVar} (ctx1 ctx2 phi: Pattern box1 box2):
   $ Norm (app[ phi / box2 ] app[ ctx2 / box1 ] ctx1) (app[ app[ phi / box2 ] ctx2 / box1 ] ctx1) $;
 
 axiom norm_refl (phi: Pattern): $ Norm phi phi $;
