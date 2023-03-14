@@ -255,7 +255,7 @@ theorem _sSubst_imp {X: SVar} (phi phi1 phi2 psi1 psi2: Pattern X)
 theorem _sSubst_mu_disjoint {X Y: SVar} (psi rho: Pattern X Y) (phi: Pattern X)
   (h : $ Norm (s[ phi / X ] psi) rho $):
   $ Norm (s[ phi / X ] (mu Y psi)) (mu Y rho) $
-  = '(norm_trans sSubstitution_in_mu (norm_mu h));
+  = '(norm_trans sSubstitution_in_mu_disjoint (norm_mu h));
 
 theorem _sSubst_not {X: SVar} (phi psi rho: Pattern X)
   (h: $ Norm (s[ phi / X ] psi) rho $):
