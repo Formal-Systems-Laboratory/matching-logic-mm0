@@ -13,35 +13,57 @@ fmod PATTERN-METAMATH is
     op bot         : -> Pattern [ctor] .
     op exists _ _ : Qid Pattern -> Pattern [ctor] .
 
-    *** Standard sugar **********************************
-    op _ /\ _       : Pattern Pattern -> Pattern [ctor] .
-    op _ \/ _       : Pattern Pattern -> Pattern [ctor] .
-    op nu _ _       : Qid Pattern     -> Pattern [ctor] .
-    op forall _ _   : Qid Pattern     -> Pattern [ctor] .
-    op ~ _           : Pattern         -> Pattern [ctor] .
-
-    *** ERE *********************************************
-    op epsilon      :                 -> Pattern [ctor] .
-
-    --- TODO: Ideally, we'd want to be parametric over an alphabet.
-    --- However, two letters are enough to encode all words.
-    sort Letter .
-    subsort Letter < Pattern .
-    op a            :                 -> Letter [ctor] .
-    op b            :                 -> Letter [ctor] .
-    op top-letter   :                 -> Pattern [ctor] .
-    op top-word _   : Qid             -> Pattern [ctor] .
-    op [ kleene _ _ ] : Qid Pattern   -> Pattern [ctor prec 25] .
-
-    op _ . _        : Pattern Pattern -> Pattern [ctor prec 28] .
-
-    op (derivative _ _) : Pattern Pattern -> Pattern [ctor] .
-
     *** Meta variables *************************
     vars phi phi1 phi2 psi psi1 psi2 : Pattern .
     vars x y X Y Q : Qid .
     vars QL QL1 QL2 : QidList .
     vars N : Nat .
+
+    *** Notation ****************************************
+    --- The desugar operation is defined over Notation,
+    --- and allows us to replace a single notation with
+    --- its definition. Note that this isn't intended to
+    --- completely elemenate notation from a pattern
+    --- but to merely remove one layer of sugar.
+    sort Notation .
+    subsort Notation < Pattern .
+    op desugar : Notation -> Pattern .
+
+    *** Standard sugar **********************************
+    op ~ _          : Pattern         -> Notation [ctor] .
+    op _ \/ _       : Pattern Pattern -> Notation [ctor] .
+    op _ /\ _       : Pattern Pattern -> Notation [ctor] .
+    op nu _ _       : Qid Pattern     -> Notation [ctor] .
+    op forall _ _   : Qid Pattern     -> Notation [ctor] .
+
+    eq desugar(~ phi) = phi -> bot .
+    eq desugar(phi \/ psi) = ~ phi -> psi .
+    eq desugar(phi /\ psi) = ~ (phi -> ~ psi) .
+    eq desugar(nu X phi) = ~ (mu X substitute [ ~ sVar X / X ] in ~ phi) .
+    eq desugar(forall x phi) = ~ (exists x ~ phi) .
+
+    *** ERE *********************************************
+    op epsilon      :                 -> Notation [ctor] .
+    --- TODO: Ideally, we'd want to be parametric over an alphabet.
+    --- However, two letters are enough to encode all words.
+    sort Letter .
+    subsort Letter < Notation .
+    op a            :                 -> Letter [ctor] .
+    op b            :                 -> Letter [ctor] .
+    op [ kleene _ _ ] : Qid Pattern   -> Notation [ctor prec 25] .
+    op top-letter   :                 -> Notation [ctor] .
+    op kleene _ _   : Qid Pattern     -> Notation [ctor prec 25] .
+    op top-word _   : Qid             -> Notation [ctor] .
+    op _ . _        : Pattern Pattern -> Notation [ctor prec 28] .
+
+    eq desugar(epsilon) = sym 'epsilon-symbol .
+    eq desugar(a) = sym 'a-symbol .
+    eq desugar(b) = sym 'b-symbol .
+    eq desugar(top-letter) = a \/ b .
+    eq desugar([ kleene X phi ]) = mu X (epsilon \/ (phi . sVar X)) .
+    eq desugar(top-word X) = [ kleene X top-letter ] .
+
+    op (derivative _ _) : Pattern Pattern -> Pattern [ctor] .
 
     *** ERE sugar *****************************************
     --- This sugar is only for use by the user, and not for
