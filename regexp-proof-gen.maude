@@ -17,9 +17,11 @@ fmod PATTERN-METAMATH is
 
     *** Meta variables *************************
     vars phi phi1 phi2 psi psi1 psi2 : Pattern .
+    vars ctx : Pattern .
     vars x y X Y Q : Qid .
     vars QL QL1 QL2 : QidList .
     vars N : Nat .
+    vars Notation : Notation .
 
     *** Notation ****************************************
     --- The desugar operation is defined over Notation,
@@ -44,6 +46,18 @@ fmod PATTERN-METAMATH is
     eq desugar(nu X phi) = ~ (mu X substitute [ ~ sVar X / X ] in ~ phi) .
     eq desugar(forall x phi) = ~ (exists x ~ phi) .
 
+    *** Definedness *************************************
+    op ceil : Pattern -> Notation [ctor] .
+    op floor : Pattern -> Notation [ctor] .
+    op _ C= _ : Pattern Pattern -> Notation .
+    op [ ctximp-app _ _ _ _ ] : Qid Pattern Pattern Qid -> Notation .
+
+    eq desugar(ceil(phi)) = app (sym 'defSym) phi .
+    eq desugar(floor(phi)) = ~ ceil(~ phi) .
+    eq desugar(phi C= psi) = floor(phi -> psi) .
+    eq desugar([ ctximp-app X ctx phi x ])
+     =  exists x (eVar x /\ ((app[ eVar x / X ] ctx) C= phi)) .
+
     *** ERE *********************************************
     op epsilon      :                 -> Notation [ctor] .
     --- TODO: Ideally, we'd want to be parametric over an alphabet.
@@ -64,6 +78,7 @@ fmod PATTERN-METAMATH is
     eq desugar(top-letter) = a \/ b .
     eq desugar([ kleene X phi ]) = mu X (epsilon \/ (phi . sVar X)) .
     eq desugar(top-word X) = [ kleene X top-letter ] .
+    eq desugar(phi . psi) = ( app ( app ( sym 'concat-symbol ) phi ) psi ) .
 
     op (derivative _ _) : Pattern Pattern -> Pattern [ctor] .
 
