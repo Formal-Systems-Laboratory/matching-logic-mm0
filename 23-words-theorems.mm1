@@ -110,8 +110,8 @@ theorem regex_eq_eps_concat_r: $ Alpha . epsilon <-> Alpha $ =
     (! lemma_62 _ x));
 theorem regex_eq_double_neg: $ ~ (~ Alpha) <-> Alpha $ = '(bicom notnot);
 theorem regex_eq_bot_kleene: $ (kleene X bot) <-> epsilon $ = '(ibii
-  (rsyl (mu_framing (positive_in_or positive_triv @ positive_in_concat positive_triv positive_in_same_sVar) positive_triv (rsyl (orim2 @ norm (norm_imp_l appCtxLRVar) (! propag_bot box)) dne)) (KT positive_triv @ norm (norm_sym @ norm_imp_l sSubstitution_triv) id))
-  (epsilon_implies_kleene positive_triv));
+  (rsyl (mu_framing (positive_in_or positive_disjoint @ positive_in_concat positive_disjoint positive_in_same_sVar) positive_disjoint (rsyl (orim2 @ norm (norm_imp_l appCtxLRVar) (! propag_bot box)) dne)) (KT positive_disjoint @ norm (norm_sym @ norm_imp_l sSubstitution_disjoint) id))
+  (epsilon_implies_kleene positive_disjoint));
 
 
 --- Derivatives: "Semantic" theorems
@@ -269,9 +269,9 @@ theorem fp_implies_regex_interior {X: SVar} (phi_a phi_b: Pattern X)
     ----------------------------------------------
     $(mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b)))) -> rho$ =
     '(KT
-      (positive_in_or positive_triv @ positive_in_or (positive_in_concat positive_triv posa) (positive_in_concat positive_triv posb)) @
+      (positive_in_or positive_disjoint @ positive_in_or (positive_in_concat positive_disjoint posa) (positive_in_concat positive_disjoint posb)) @
       apply_equiv (corollary_57_floor der_equality) (norm
-        (norm_imp_l @ norm_sym @ _sSubst_or sSubstitution_triv @ _sSubst_or (sSubst_concat_r norm_refl) (sSubst_concat_r norm_refl))
+        (norm_imp_l @ norm_sym @ _sSubst_or sSubstitution_disjoint @ _sSubst_or (sSubst_concat_r norm_refl) (sSubst_concat_r norm_refl))
         (orim he @ orim (framing_concat_r ha) (framing_concat_r hb))
       ));
 

@@ -5,20 +5,20 @@ import "13-fixedpoints.mm1";
 --- Helpers for concat
 theorem positive_in_concat {X: SVar} (phi1 phi2: Pattern X)
   (h1: $ _Positive X phi1 $) (h2: $ _Positive X phi2 $): $ _Positive X (phi1 . phi2) $
-  = '(positive_in_app (positive_in_app positive_triv h1) h2);
+  = '(positive_in_app (positive_in_app positive_disjoint h1) h2);
 theorem sSubst_concat {X: SVar} (psi rho1 rho2 phi1 phi2: Pattern X)
   (h1: $ Norm (s[ psi  / X ] phi1) rho1 $)
   (h2: $ Norm (s[ psi  / X ] phi2) rho2 $):
   $ Norm (s[ psi  / X ] (phi1 . phi2))  (rho1 . rho2) $ =
-  '(_sSubst_app (_sSubst_app sSubstitution_triv h1) h2);
+  '(_sSubst_app (_sSubst_app sSubstitution_disjoint h1) h2);
 theorem sSubst_concat_l {X: SVar} (phi psi rho: Pattern X) (gamma: Pattern)
   (h: $ Norm (s[ phi / X ] psi) rho $):
   $ Norm (s[ phi / X ] (psi . gamma)) (rho . gamma) $ =
-  '(sSubst_concat h sSubstitution_triv);
+  '(sSubst_concat h sSubstitution_disjoint);
 theorem sSubst_concat_r {X: SVar} (phi psi rho: Pattern X) (gamma: Pattern)
   (h: $ Norm (s[ phi / X ] psi) rho $):
   $ Norm (s[ phi / X ] (gamma . psi)) (gamma . rho) $ =
-  '(sSubst_concat sSubstitution_triv h);
+  '(sSubst_concat sSubstitution_disjoint h);
 theorem framing_concat_l (h: $phi -> psi$): $phi . rho -> psi . rho$ =
   '(app_framing_l @ app_framing_r h);
 theorem framing_concat_r (h: $phi -> psi$): $rho . phi -> rho . psi$ =
@@ -27,15 +27,15 @@ theorem _eSubst_concat {x: EVar} (phi psi1 psi2 rho1 rho2: Pattern x)
   (h1: $ Norm (e[ phi / x ] psi1) rho1 $)
   (h2: $ Norm (e[ phi / x ] psi2) rho2 $):
   $ Norm (e[ phi / x ] (psi1 . psi2)) (rho1 . rho2) $ =
-  '(_eSubst_app (_eSubst_app eSubstitution_triv h1) h2);
+  '(_eSubst_app (_eSubst_app eSubstitution_disjoint h1) h2);
 theorem _eSubst_concat_l {x: EVar} (phi psi rho: Pattern x) (gamma: Pattern)
   (h: $ Norm (e[ phi / x ] psi) rho $):
   $ Norm (e[ phi / x ] (psi . gamma)) (rho . gamma) $ =
-  '(_eSubst_concat h eSubstitution_triv);
+  '(_eSubst_concat h eSubstitution_disjoint);
 theorem _eSubst_concat_r {x: EVar} (phi psi rho: Pattern x) (gamma: Pattern)
   (h: $ Norm (e[ phi / x ] psi) rho $):
   $ Norm (e[ phi / x ] (gamma . psi)) (gamma . rho) $ =
-  '(_eSubst_concat eSubstitution_triv h);
+  '(_eSubst_concat eSubstitution_disjoint h);
 theorem cong_of_equiv_concat_l (h: $phi1 <-> phi2$): $(phi1 . psi) <-> (phi2 . psi)$ =
   '(ibii (framing_concat_l @ anl h) (framing_concat_l @ anr h));
 theorem cong_of_equiv_concat_r (h: $phi1 <-> phi2$): $(psi . phi1) <-> (psi . phi2)$ =
@@ -60,7 +60,7 @@ theorem propag_or_concat : $(phi1 \/ phi2) . psi ->  (phi1 . psi) \/ (phi2 . psi
 theorem positive_in_kleene_r_body {X: SVar} (phi: Pattern X)
   (h: $ _Positive X phi $):
   $ _Positive X (epsilon \/ phi . sVar X) $ =
-  '(positive_in_or positive_triv @ positive_in_app (positive_in_app positive_triv h) positive_in_same_sVar);
+  '(positive_in_or positive_disjoint @ positive_in_app (positive_in_app positive_disjoint h) positive_in_same_sVar);
 theorem cong_of_equiv_kleene {X: SVar} (phi1 phi2: Pattern X)
   (h1: $ _Positive X phi1 $)
   (h2: $ _Positive X phi2 $)
@@ -75,15 +75,15 @@ theorem cong_of_equiv_kleene {X: SVar} (phi1 phi2: Pattern X)
 --- Helpers for top_letter
 theorem positive_in_top_letter {X: SVar}:
   $ _Positive X top_letter $ =
-  '(positive_in_or positive_triv positive_triv);
+  '(positive_in_or positive_disjoint positive_disjoint);
 theorem sSubst_top_letter {X: SVar} (psi: Pattern X):
- $ Norm (s[ psi  / X ] (top_letter))  (top_letter) $ = 'sSubstitution_triv;
+ $ Norm (s[ psi  / X ] (top_letter))  (top_letter) $ = 'sSubstitution_disjoint;
 
 --- Helpers for top_word_l
 --- TODO: Define in terms of kleene_l
 theorem positive_in_top_word_l_body {X: SVar}: $_Positive X (epsilon \/ sVar X . top_letter)$ =
-  '(positive_in_or positive_triv @
-    positive_in_app (positive_in_app positive_triv positive_in_same_sVar) positive_in_top_letter);
+  '(positive_in_or positive_disjoint @
+    positive_in_app (positive_in_app positive_disjoint positive_in_same_sVar) positive_in_top_letter);
 theorem kt_top_word_l {X: SVar} (psi: Pattern X) (base: $epsilon -> psi$) (rec: $psi . top_letter -> psi$): $top_word_l X -> psi$ =
   '(KT positive_in_top_word_l_body @ norm_lemma ,(propag_s_subst 'X $epsilon \/ sVar X . top_letter$) @ eori base rec);
 theorem unfold_r_top_word_l {X : SVar} (phi: Pattern) (h: $phi -> epsilon \/ top_word_l X . top_letter$) : $phi -> top_word_l X$ =
@@ -92,13 +92,13 @@ theorem unfold_r_top_word_l {X : SVar} (phi: Pattern) (h: $phi -> epsilon \/ top
 --- Helpers for top_word_r
 --- TODO: Define in terms of kleene_r
 theorem positive_in_top_word_r_body {X: SVar}: $_Positive X (epsilon \/ top_letter . sVar X)$ =
-  '(positive_in_or positive_triv @
-    positive_in_app (positive_in_app positive_triv positive_in_top_letter) positive_in_same_sVar);
+  '(positive_in_or positive_disjoint @
+    positive_in_app (positive_in_app positive_disjoint positive_in_top_letter) positive_in_same_sVar);
 theorem kt_top_word_r {X: SVar} (psi: Pattern X) (base: $epsilon -> psi$) (rec: $top_letter . psi -> psi$): $top_word_r X -> psi$ =
   '(KT positive_in_top_word_r_body @ norm_lemma ,(propag_s_subst 'X $epsilon \/ top_letter . sVar X$) @ eori base rec);
 theorem lemma_83_top_word_r_forward
     : $( epsilon \/ top_letter . top_word_r X ) -> top_word_r X $
- = '(norm_lemma (norm_sym @ _sSubst_or sSubstitution_triv @ sSubst_concat sSubstitution_triv sSubstitution_in_same_sVar ) @ pre_fixpoint positive_in_top_word_r_body ) ;
+ = '(norm_lemma (norm_sym @ _sSubst_or sSubstitution_disjoint @ sSubst_concat sSubstitution_disjoint sSubstitution_in_same_sVar ) @ pre_fixpoint positive_in_top_word_r_body ) ;
 theorem lemma_83_top_word_r_reverse
     : $ top_word_r X -> ( epsilon \/ top_letter . top_word_r X ) $
  = '(kt_top_word_r (orld id) (orrd @ framing_concat_r lemma_83_top_word_r_forward));

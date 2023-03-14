@@ -49,7 +49,7 @@ def nu {X: SVar} (phi: Pattern X): Pattern = $ ~(mu X (~ s[ ~ sVar X / X ] phi))
 term _Positive {X: SVar}: Pattern X > Positivity;
 term _Negative {X: SVar}: Pattern X > Positivity;
 
-axiom positive_triv {X: SVar} (phi: Pattern): $ _Positive X phi $;
+axiom positive_disjoint {X: SVar} (phi: Pattern): $ _Positive X phi $;
 axiom positive_in_same_sVar {X: SVar}: $ _Positive X (sVar X) $;
 axiom positive_in_imp {X: SVar} (phi1 phi2: Pattern X):
   $ _Negative X phi1 $ > $ _Positive X phi2 $ > $ _Positive X (phi1 -> phi2) $;
@@ -61,7 +61,7 @@ axiom positive_in_mu {X: SVar} {Y: SVar} (phi: Pattern X Y):
   $ _Positive X phi $ > $ _Positive X (mu Y phi) $;
 axiom positive_in_same_mu {X: SVar} (phi: Pattern X): $ _Positive X (mu X phi) $;
 
-axiom negative_triv {X: SVar} (phi: Pattern): $ _Negative X phi $;
+axiom negative_disjoint {X: SVar} (phi: Pattern): $ _Negative X phi $;
 axiom negative_in_imp {X: SVar} (phi1 phi2: Pattern X):
   $ _Positive X phi1 $ > $ _Negative X phi2 $ > $ _Negative X (phi1 -> phi2) $;
 axiom negative_in_app {X: SVar} (phi1 phi2: Pattern X):
@@ -76,7 +76,7 @@ axiom negative_in_same_mu {X: SVar} (phi: Pattern X): $ _Negative X (mu X phi) $
 term _eFresh {x: EVar}: Pattern x > Freshness;
 -- term _sFresh: SVar > Pattern > Freshness;
 
-axiom eFresh_triv {x: EVar} (phi: Pattern): $ _eFresh x phi $;
+axiom eFresh_disjoint {x: EVar} (phi: Pattern): $ _eFresh x phi $;
 axiom eFresh_imp {x: EVar} (phi1 phi2: Pattern x):
   $ _eFresh x phi1 $ >
   $ _eFresh x phi2 $ >
@@ -114,7 +114,7 @@ axiom eFresh_appCtx {x: EVar} {box: SVar} (ctx psi: Pattern x box):
 -- Definition of substitutions and application contexts as meta-level relations
 term Norm: Pattern > Pattern > Normalization;
 
-axiom eSubstitution_triv {x: EVar} (phi: Pattern) (psi: Pattern x): $ Norm (e[ psi / x ] phi) phi $;
+axiom eSubstitution_disjoint {x: EVar} (phi: Pattern) (psi: Pattern x): $ Norm (e[ psi / x ] phi) phi $;
 axiom eSubstitution_in_same_eVar {x: EVar} (psi: Pattern x): $ Norm (e[ psi / x ] eVar x) psi $;
 axiom eSubstitution_in_imp {x: EVar} (psi phi1 phi2: Pattern x):
   $ Norm (e[ psi / x ] (phi1 -> phi2)) ((e[ psi / x ] phi1) -> e[ psi / x ] phi2) $;
@@ -138,7 +138,7 @@ axiom eSubstitution_in_sSubst {x: EVar} {X: SVar} (psi1 psi2 phi: Pattern x X):
 axiom eSubstitution_in_appCtx {x: EVar} {box: SVar} (psi1 psi2 phi: Pattern x box):
   $ Norm (e[ psi1 / x ] app[ psi2 / box ] phi) (app[ (e[ psi1 / x ] psi2) / box ] e[ psi1 / x ] phi) $;
 
-axiom sSubstitution_triv {X: SVar} (phi: Pattern) (psi: Pattern X): $ Norm (s[ psi / X ]  phi) phi $;
+axiom sSubstitution_disjoint {X: SVar} (phi: Pattern) (psi: Pattern X): $ Norm (s[ psi / X ]  phi) phi $;
 axiom sSubstitution_in_same_sVar {X: SVar} (psi: Pattern X): $ Norm (s[ psi / X ] sVar X) psi $;
 axiom sSubstitution_in_imp {X: SVar} (psi phi1 phi2: Pattern X):
   $ Norm (s[ psi / X ] (phi1 -> phi2)) ((s[ psi / X ] phi1) -> (s[ psi / X ] phi2)) $;
