@@ -5,6 +5,7 @@ import "01-propositional.mm1";
 --- Normalizations over various sugar
 -------------------------------------
 
+--- app
 theorem norm_app_l (phi phi1 phi2: Pattern)
   (h: $ Norm phi1 phi2 $):
   $ Norm (app phi1 phi) (app phi2 phi) $ =
@@ -13,12 +14,8 @@ theorem norm_app_r (phi phi1 phi2: Pattern)
   (h: $ Norm phi1 phi2 $):
   $ Norm (app phi phi1) (app phi phi2) $ =
   '(norm_app norm_refl h);
-theorem norm_app2 (phi phi1 phi2 psi1 psi2: Pattern)
-  (h1: $ Norm phi1 phi2 $)
-  (h2: $ Norm psi1 psi2 $):
-  $ Norm (app (app phi phi1) psi1) (app (app phi phi2) psi2) $ =
-  '(norm_app (norm_app norm_refl h1) h2);
 
+--- not
 theorem norm_not (phi phi2: Pattern)
   (h: $ Norm phi phi2 $):
   $ Norm (~phi) (~phi2) $ =
