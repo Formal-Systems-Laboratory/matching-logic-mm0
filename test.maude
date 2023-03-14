@@ -1,0 +1,28 @@
+load "./regexp-proof-gen.maude"
+
+mod TEST is
+    protecting PROOF-GEN .
+    protecting QID .
+
+    sort TestResult .
+    op passed : -> TestResult [ctor] .
+    op _ and _ : TestResult TestResult -> TestResult .
+
+    vars TR : TestResult .
+    vars TestName : Qid .
+    vars Actual Expected : Bool .
+
+    eq passed and TR =  TR .
+    eq TR and passed =  TR .
+
+    op test _ @ _ ?= _ : Qid Bool Bool -> TestResult .
+    eq test TestName @ Expected ?= Expected = passed .
+
+    op unit-tests : -> TestResult .
+    eq unit-tests
+     =      test 'true-is-true @ true ?= true
+---     and test 'false-is-true @ false ?= true
+     .
+endm
+
+reduce unit-tests .
