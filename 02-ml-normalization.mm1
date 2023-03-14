@@ -1,6 +1,11 @@
 import "00-matching-logic.mm0";
 import "01-propositional.mm1";
 
+--- TODO: Remove me. We should instead be adding a positivity hypothesis
+--- to each theorem that needs this.
+theorem sSubstitution_in_mu_disjoint {X: SVar} (psi: Pattern X) {Y: SVar} (phi: Pattern X Y):
+  $ Norm (s[ psi / X ] mu Y phi) (mu Y (s[ psi / X ] phi)) $
+= '(sSubstitution_in_mu sFresh_disjoint);
 
 --- Normalizations over various sugar
 -------------------------------------
@@ -380,4 +385,3 @@ theorem norm_lemma_r
   (h2: $ phi -> psi $):
   $ phi -> rho $ =
   '(norm (norm_imp_r @ norm_sym h1) h2);
-

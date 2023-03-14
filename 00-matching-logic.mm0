@@ -182,7 +182,8 @@ axiom sSubstitution_in_app {X: SVar} (psi phi1 phi2: Pattern X):
 axiom sSubstitution_in_exists {X: SVar} (psi: Pattern X) {x: EVar} (phi: Pattern X x):
   $ Norm (s[ psi / X ] exists x phi) (exists x (s[ psi / X ] phi)) $;
 -- TODO: ditto
-axiom sSubstitution_in_mu_disjoint {X: SVar} (psi: Pattern X) {Y: SVar} (phi: Pattern X Y):
+axiom sSubstitution_in_mu {X Y: SVar} (psi phi: Pattern X Y):
+  $ _sFresh Y psi $ >
   $ Norm (s[ psi / X ] mu Y phi) (mu Y (s[ psi / X ] phi)) $;
 axiom sSubstitution_in_same_mu {X: SVar} (psi phi: Pattern X):
   $ Norm (s[ psi / X ] mu X phi) (mu X phi) $;
