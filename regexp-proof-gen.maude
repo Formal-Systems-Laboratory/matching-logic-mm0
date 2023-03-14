@@ -13,6 +13,8 @@ fmod PATTERN-METAMATH is
     op bot         : -> Pattern [ctor] .
     op exists _ _ : Qid Pattern -> Pattern [ctor] .
 
+    op app[ _ / _ ] _ : Pattern Qid Pattern -> Pattern [ctor] .
+
     *** Meta variables *************************
     vars phi phi1 phi2 psi psi1 psi2 : Pattern .
     vars x y X Y Q : Qid .
