@@ -43,7 +43,7 @@ infixl and: $/\$ prec 33;
 def equiv (phi1 phi2: Pattern): Pattern = $ (phi1 -> phi2) /\ (phi2 -> phi1) $;
 infixl equiv: $<->$ prec 19;
 def forall {x: EVar} (phi: Pattern x): Pattern = $ ~(exists x (~phi)) $;
-def nu {X: SVar} (phi: Pattern X): Pattern = $ ~(mu X (~phi)) $;
+def nu {X: SVar} (phi: Pattern X): Pattern = $ ~(mu X (~ s[ ~ sVar X / X ] phi)) $;
 
 -- Positivity definitions
 term _Positive {X: SVar}: Pattern X > Positivity;
