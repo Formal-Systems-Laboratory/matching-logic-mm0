@@ -164,6 +164,10 @@ fmod PATTERN-METAMATH is
     eq minus(nil, QL) = nil .
    ceq minus(Q QL1, QL2) =   minus(QL1, QL2) if     occurs(Q, QL2) .
    ceq minus(Q QL1, QL2) = Q minus(QL1, QL2) if not occurs(Q, QL2) .
+
+    op occursIn : Qid Pattern -> Bool .
+    --- TODO: Handle EVars as well
+    eq occursIn(X, phi) = occurs(X, all-sVars(phi)) .
 endfm
 
 *** Comparing Patterns ******************************************************
@@ -229,7 +233,7 @@ mod ERE-THEOREMS is
     vars Beta  Beta1  Beta2  : Pattern .
     vars Gamma : Pattern .
     vars A B A1 A2 : Letter .
-    vars X Y : Qid . 
+    vars X Y : Qid .
 
     rl [regex_eq_der_bot]     : (derivative A bot)          => bot .
     rl [regex_eq_der_epsilon] : (derivative A epsilon)      => bot .
@@ -481,8 +485,9 @@ mod PROOF-GEN is
     vars Alpha Alpha1 Alpha2 : Pattern .
     vars Beta  Beta1  Beta2  : Pattern .
     vars Phi   Phi1   Phi2   : Pattern .
+    vars Psi   Psi1   Psi2   : Pattern .
     vars A B A1 A2 : Letter .
-
+    vars Notation : Notation .
 
     *** Proof hint generation ************************************************
 
@@ -597,23 +602,36 @@ mod PROOF-GEN is
     eq lift-equality-to-context(Q [ T1 , Ctx ], Q [ T1 , TOrig ], Q [ T1 , TFinal ], MMP)
      = cong-of-equiv cong-thm(Q, "-r") lift-equality-to-context(Ctx, TOrig, TFinal, MMP) .
 
-    *** push-s-subst *********************************************************
+    *** sFresh ****************************************************************
+    op sFresh : Qid Pattern -> MM0SExpr .
+    eq sFresh(X, Notation)      = sFresh(X, desugar(Notation))   .
+   ceq sFresh(X, Phi)           = 'sFresh-disjoint               if not occursIn(X, Phi) .
+   ceq sFresh(X, app Phi1 Phi2) = [ 'sFresh-app sFresh(X, Phi1) sFresh(X, Phi2) ]
+                                                                 if     occursIn(X, app Phi1 Phi2) .
+   ceq sFresh(X, Phi1 -> Phi2)  = [ 'sFresh-imp sFresh(X, Phi1) sFresh(X, Phi2) ]
+                                                                 if     occursIn(X, Phi1 -> Phi2) .
+   ceq sFresh(X, exists Y Phi)  = [ 'sFresh-exists sFresh(X, Phi) ]
+                                                                 if     occursIn(X, Phi) .
+   ceq sFresh(X, mu X Phi)      = 'sFresh-mu-same-var            if     occursIn(X, Phi) .
+   ceq sFresh(X, mu Y Phi)      = [ 'sFresh-mu sFresh(X, Phi) ]  if     occursIn(X, Phi)
+                                                                     /\ X =/= Y .
 
-    op propag-sSubst : Qid Pattern -> MM0SExpr .
-    eq propag-sSubst(X, bot) = 'sSubstitution-disjoint .
-    eq propag-sSubst(X, top) = 'sSubstitution-disjoint .
-    eq propag-sSubst(X, eVar X) = 'sSubstitution-disjoint .
-    eq propag-sSubst(X, sVar X) = 'sSubstitution-in-same-sVar .
-   ceq propag-sSubst(X, sVar Y) = 'sSubstitution-disjoint if X =/= Y .
-    eq propag-sSubst(X, mu X Phi) = 'sSubstitution-in-same-mu .
-   ceq propag-sSubst(X, mu Y Phi) = [ '-sSubst-mu-disjoint propag-sSubst(X, Phi) ] if X =/= Y .
-    eq propag-sSubst(X, Phi1 \/ Phi2) = [ '-sSubst-or propag-sSubst(X, Phi1) propag-sSubst(X, Phi2) ] .
+    *** propag-sSubst *********************************************************
+    op propag-sSubst : Pattern Qid Pattern -> MM0SExpr .
+    eq propag-sSubst(Psi, X, bot) = 'sSubstitution-disjoint .
+    eq propag-sSubst(Psi, X, top) = 'sSubstitution-disjoint .
+    eq propag-sSubst(Psi, X, eVar X) = 'sSubstitution-disjoint .
+    eq propag-sSubst(Psi, X, sVar X) = 'sSubstitution-in-same-sVar .
+   ceq propag-sSubst(Psi, X, sVar Y) = 'sSubstitution-disjoint if X =/= Y .
+    eq propag-sSubst(Psi, X, mu X Phi) = 'sSubstitution-in-same-mu .
+   ceq propag-sSubst(Psi, X, mu Y Phi) = [ '-sSubst-mu sFresh(Y, Psi) propag-sSubst(Psi, X, Phi) ] if X =/= Y .
+    eq propag-sSubst(Psi, X, Phi1 \/ Phi2) = [ '-sSubst-or propag-sSubst(Psi, X, Phi1) propag-sSubst(Psi, X, Phi2) ] .
 
-    eq propag-sSubst(X, Phi1 . Phi2) = [ 'sSubst-concat propag-sSubst(X, Phi1) propag-sSubst(X, Phi2) ] .
-    eq propag-sSubst(X, a) = 'sSubstitution-disjoint .
-    eq propag-sSubst(X, b) = 'sSubstitution-disjoint .
-    eq propag-sSubst(X, epsilon) = 'sSubstitution-disjoint .
-    eq propag-sSubst(X, top-letter) = 'sSubstitution-disjoint .
+    eq propag-sSubst(Psi, X, Phi1 . Phi2) = [ 'sSubst-concat propag-sSubst(Psi, X, Phi1) propag-sSubst(Psi, X, Phi2) ] .
+    eq propag-sSubst(Psi, X, a) = 'sSubstitution-disjoint .
+    eq propag-sSubst(Psi, X, b) = 'sSubstitution-disjoint .
+    eq propag-sSubst(Psi, X, epsilon) = 'sSubstitution-disjoint .
+    eq propag-sSubst(Psi, X, top-letter) = 'sSubstitution-disjoint .
 
     *** pos ******************************************************************
     op positivity : Qid Pattern -> MM0SExpr .
@@ -631,7 +649,7 @@ mod PROOF-GEN is
 
     *** unfold ***************************************************************
     op unfold-r : Pattern MM0SExpr -> MM0SExpr .
-    eq unfold-r(mu X Phi, MMP) = [ 'unfold-r positivity(X, Phi) [ 'norm-lemma-r propag-sSubst(X, Phi) MMP ] ] .
+    eq unfold-r(mu X Phi, MMP) = [ 'unfold-r positivity(X, Phi) [ 'norm-lemma-r propag-sSubst(mu X Phi, X, Phi) MMP ] ] .
 
 
     *** main-goal ************************************************************
@@ -665,6 +683,7 @@ mod PROOF-GEN is
 
     op proof-top-implies-fp : Node -> MM0SExpr .
     eq proof-top-implies-fp(N) = [ 'top-implies-fp-init proof-top-implies-fp(fp(N), N) ] .
+
     op proof-top-implies-fp : Pattern Node -> MM0SExpr .
     eq proof-top-implies-fp(Phi, node(< Alpha >, eqEdge(applResult(R, Ctx, Subst), N)))
      = proof-top-implies-fp(Phi, N) .
@@ -676,14 +695,14 @@ mod PROOF-GEN is
                                                              rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
                            )                      )
      = ['top-implies-fp-interior
-         [ 'norm-lemma-r propag-sSubst(Q, Alpha)
-                       unfold-r( substitute[ mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))) / Q ] in Alpha , 'orl)]
-         [ 'norm-lemma-r propag-sSubst(Q, Beta)
-                       unfold-r( substitute[ mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))) / Q ] in Beta , 'orl)]
-         [ 'norm-lemma-r propag-sSubst(Q, Alpha)
-           ['norm-lemma propag-sSubst(Q, Alpha . top-letter) proof-top-implies-fp(Alpha, N_A) ] ]
-         [ 'norm-lemma-r propag-sSubst(Q, Beta)
-           [ 'norm-lemma propag-sSubst(Q, Beta . top-letter) proof-top-implies-fp(Beta, N_B) ] ]
+         [ 'norm-lemma-r propag-sSubst(mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))), Q, Alpha)
+                         unfold-r( substitute[ mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))) / Q ] in Alpha , 'orl) ]
+         [ 'norm-lemma-r propag-sSubst(mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))), Q, Beta)
+                         unfold-r( substitute[ mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))) / Q ] in Beta  , 'orl) ]
+         [ 'norm-lemma-r propag-sSubst(mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))), Q, Alpha)
+           [ 'norm-lemma propag-sSubst([ctximp-app 'box (sVar 'box . top-letter) (mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta)))) 'dummy], Q, Alpha . top-letter) proof-top-implies-fp(Alpha, N_A) ] ]
+         [ 'norm-lemma-r propag-sSubst(mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))), Q, Beta)
+           [ 'norm-lemma propag-sSubst([ctximp-app 'box (sVar 'box . top-letter) (mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta)))) 'dummy], Q, Beta  . top-letter) proof-top-implies-fp(Beta, N_B) ] ]
        ] .
 
 
@@ -703,19 +722,18 @@ mod PROOF-GEN is
     op proof-fp-implies-regex : Node -> MM0SExpr .
     eq proof-fp-implies-regex(node(check-ewp[ epsilon ], none)) = 'id .
     eq proof-fp-implies-regex(backlink(< Alpha >)) = 'fp-implies-regex-leaf .
-    --- Context, Original Term, Continuation
     eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [ 'apply-equiv lift-equality-to-context(Ctx, upTerm(S), upTerm(getState(N)), eq-thm(Subst, R)) proof-fp-implies-regex(N) ] .
     eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [ 'apply-equiv lift-equality-to-context(Ctx, upTerm(S), upTerm(getState(N)), eq-thm(Subst, R)) proof-fp-implies-regex(N) ] .
     eq proof-fp-implies-regex(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
                                        rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
                                        rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
-                      )    )
+                             )    )
      = [ 'fp-implies-regex-interior
             positivity(F(Alpha), fp(N_A))
             positivity(F(Alpha), fp(N_B))
             proof-fp-implies-regex(N_EWP)
-            [ 'norm-lemma propag-sSubst(qid(str(Alpha)), fp(N_A))  proof-fp-implies-regex(N_A)]
-            [ 'norm-lemma propag-sSubst(qid(str(Alpha)), fp(N_B))  proof-fp-implies-regex(N_B)]
+            [ 'norm-lemma propag-sSubst(Alpha, qid(str(Alpha)), fp(N_A))  proof-fp-implies-regex(N_A)]
+            [ 'norm-lemma propag-sSubst(Alpha, qid(str(Alpha)), fp(N_B))  proof-fp-implies-regex(N_B)]
        ]
      .
 
