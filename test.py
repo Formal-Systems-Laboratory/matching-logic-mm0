@@ -121,11 +121,16 @@ for f in sorted((glob('*.mm0') + glob('*.mm1'))):
 
 # Regular expression tests
 tests : List[TestData] = [
+    (fast, 'top-implies-fp-pub',   'example-in-paper-1',         '(a . a)* ->> (((a *) . a) + epsilon) '),
     (fast, 'main-goal',            'a-or-b-star',                '(a + b)*'),
+    (fast, 'top-implies-fp-pub',   'kleene-star-star-1',         '(a *) * ->> (a *)'),
     (fast, 'fp-implies-regex-pub', 'kleene-star-star',           '(a *) * ->> (a *)'),
     (fast, 'fp-implies-regex-pub', 'example-in-paper',           '(a . a)* ->> (((a *) . a) + epsilon) '),
+    (fast, 'top-implies-fp-pub',   'alternate-top-1',            '((a *) . b) * + (((b *) . a) *)'),
     (fast, 'fp-implies-regex-pub', 'alternate-top',              '((a *) . b) * + (((b *) . a) *)'),
+    (fast, 'top-implies-fp-pub',   'even-or-odd-1',              '((((a . a) + (a . b)) + (b . a)) + (b . b)) * + ((a + b) . (((((a . a) + (a . b)) + (b . a)) + (b . b)) *))'),
     (fast, 'fp-implies-regex-pub', 'even-or-odd',                '((((a . a) + (a . b)) + (b . a)) + (b . b)) * + ((a + b) . (((((a . a) + (a . b)) + (b . a)) + (b . b)) *))'),
+    (fast, 'top-implies-fp-pub',   'no-contains-a-or-no-only-b-1', '(~ (top . (a . top))) + ~ (b *)'),
     (fast, 'fp-implies-regex-pub', 'no-contains-a-or-no-only-b', '(~ (top . (a . top))) + ~ (b *)'),
 
     # Benchmarks from Unified Decision Procedures for Regular Expression Equivalence
@@ -135,6 +140,12 @@ tests : List[TestData] = [
     *param_test('fp-implies-regex-pub',    'eq-l-{:03d}',    'eq-l({})', fast=[1,4], slow=[2, 10, 20, 30]),
     *param_test('fp-implies-regex-pub',    'eq-r-{:03d}',    'eq-r({})', fast=[1,4], slow=[2, 10, 20, 30]),
     *param_test('fp-implies-regex-pub',   'eq-lr-{:03d}',   'eq-lr({})', fast=[1,4], slow=[2, 10, 20, 30]),
+
+    *param_test('top-implies-fp-pub', 'match-l-{:03d}-1', 'match-l({})', fast=[1,4], slow=[2, 10, 20, 30, 40, 100]),
+    *param_test('top-implies-fp-pub', 'match-r-{:03d}-1', 'match-r({})', fast=[1,4], slow=[2, 10, 20, 30]),
+    *param_test('top-implies-fp-pub',    'eq-l-{:03d}-1',    'eq-l({})', fast=[1,4], slow=[2, 10, 20, 30]),
+    *param_test('top-implies-fp-pub',    'eq-r-{:03d}-1',    'eq-r({})', fast=[1,4], slow=[2, 10, 20, 30]),
+    *param_test('top-implies-fp-pub',   'eq-lr-{:03d}-1',   'eq-lr({})', fast=[1,4], slow=[2, 10, 20, 30]),
 ]
 
 for test in tests:

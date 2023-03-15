@@ -342,8 +342,19 @@ fmod MM0 is
     op [ _ _ _ _ _ ]  : MM0SExpr MM0SExpr MM0SExpr MM0SExpr MM0SExpr  -> MM0SExpr .
     op [ _ _ _ _ _ _ ]
                       : MM0SExpr MM0SExpr MM0SExpr MM0SExpr MM0SExpr MM0SExpr  -> MM0SExpr .
-    op [ _ _ _ _ _ _ _ ]
+    op [ _ _ _ _    _ _ _ ]
                       : MM0SExpr MM0SExpr MM0SExpr MM0SExpr MM0SExpr MM0SExpr MM0SExpr  -> MM0SExpr .
+    op [ _ _ _ _    _ _ _ _     _ ]
+                      : MM0SExpr MM0SExpr MM0SExpr MM0SExpr
+                        MM0SExpr MM0SExpr MM0SExpr MM0SExpr
+                        MM0SExpr
+                     -> MM0SExpr .
+    op [ _ _ _ _    _ _ _ _     _ _ _ _     _ ]
+                      : MM0SExpr MM0SExpr MM0SExpr MM0SExpr
+                        MM0SExpr MM0SExpr MM0SExpr MM0SExpr
+                        MM0SExpr MM0SExpr MM0SExpr MM0SExpr
+                        MM0SExpr
+                     -> MM0SExpr .
 
     sort MM0Decl MM0Binder .
     op _ _ : MM0Decl MM0Decl -> MM0Decl [ctor assoc format(d n d)] .
@@ -692,6 +703,8 @@ mod PROOF-GEN is
 
 
     *** top-implies-fp *******************************************************
+    vars FpUnf FpUnfA FpUnfB FpCtximp FpCtximpA FpCtximpB : Pattern .
+
     op theorem-top-implies-fp : Pattern -> MM0Decl .
     eq theorem-top-implies-fp(Phi)
      = theorem 'top-implies-fp
@@ -705,28 +718,35 @@ mod PROOF-GEN is
              colon $ (top-word 'X) -> fp(proofHint(Phi)) $ ; .
 
     op proof-top-implies-fp : Node -> MM0SExpr .
-    eq proof-top-implies-fp(N) = [ 'top-implies-fp-init proof-top-implies-fp(fp(N), N) ] .
+    eq proof-top-implies-fp(N) = [ 'top-implies-fp-init proof-top-implies-fp((fp(N) . top-letter) -> fp(N), N) ] .
 
     op proof-top-implies-fp : Pattern Node -> MM0SExpr .
     eq proof-top-implies-fp(Phi, node(< Alpha >, eqEdge(applResult(R, Ctx, Subst), N)))
      = proof-top-implies-fp(Phi, N) .
-    eq proof-top-implies-fp(sVar X, backlink(< Alpha >))
-     = [ 'bang 'top-implies-fp-leaf 'X '- 'dummy ] .
-    eq proof-top-implies-fp(mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))) ,
-                            node(< Phi >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
+    eq proof-top-implies-fp(Phi, backlink(< Alpha >))
+     = [ 'bang 'top-implies-fp-leaf 'box '- 'dummy ] .
+
+   ceq proof-top-implies-fp( ( FpCtximp . top-letter ) -> FpUnf
+                           , node(< Phi >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
                                                              rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
                                                              rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
-                           )                      )
-     = ['top-implies-fp-interior
-         [ 'norm-lemma-r propag-sSubst(mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))), Q, Alpha)
-                         unfold-r( substitute[ mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))) / Q ] in Alpha , 'orl) ]
-         [ 'norm-lemma-r propag-sSubst(mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))), Q, Beta)
-                         unfold-r( substitute[ mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))) / Q ] in Beta  , 'orl) ]
-         [ 'norm-lemma-r propag-sSubst(mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))), Q, Alpha)
-           [ 'norm-lemma propag-sSubst([ctximp-app 'box (sVar 'box . top-letter) (mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta)))) 'dummy], Q, Alpha . top-letter) proof-top-implies-fp(Alpha, N_A) ] ]
-         [ 'norm-lemma-r propag-sSubst(mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta))), Q, Beta)
-           [ 'norm-lemma propag-sSubst([ctximp-app 'box (sVar 'box . top-letter) (mu Q (epsilon \/ ((a . Alpha) \/ (b . Beta)))) 'dummy], Q, Beta  . top-letter) proof-top-implies-fp(Beta, N_B) ] ]
-       ] .
+                           )     )
+     = [ 'bang 'top-implies-fp-interior
+         '- 'box 'dummy '-    '- '- '-
+         [ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfA) unfold-r(substitute[ FpUnf / X ] in FpUnfA, 'orl) ]
+         [ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfB) unfold-r(substitute[ FpUnf / X ] in FpUnfB, 'orl) ]
+         [ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfA)
+           [ 'norm-lemma propag-sSubst([ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy], X, FpCtximpA . top-letter)
+                         proof-top-implies-fp((substitute[ [ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy] / X ] in (FpCtximpA . top-letter)) -> substitute[ FpUnf / X ] in FpUnfA , N_A)
+         ] ]
+         [ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfB)
+           [ 'norm-lemma propag-sSubst([ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy], X, FpCtximpB . top-letter)
+                         proof-top-implies-fp((substitute[ [ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy] / X ] in (FpCtximpB . top-letter)) -> substitute[ FpUnf / X ] in FpUnfB , N_B)
+         ] ]
+       ]
+    if mu X (epsilon \/ ((a . FpCtximpA) \/ (b . FpCtximpB))) := FpCtximp
+    /\ mu X (epsilon \/ ((a . FpUnfA)    \/ (b . FpUnfB)))   := FpUnf
+     .
 
 
     *** fp-implies-regex ************************************************************
@@ -760,10 +780,18 @@ mod PROOF-GEN is
        ]
      .
 
-   --- We don't want this theorem to be public when proving the main theorem,
+   *** Public versions of Lemmas
+   --- We don't want these theorems to be public when proving the main theorem,
    --- so that we can avoid generating the fixedpoint pattern.
+   --- However, it is useful to have public versions available for debugging purposes.
+
     op theorem-fp-implies-regex-pub-mm0 : Pattern -> MM0Decl .
     op theorem-fp-implies-regex-pub : Pattern -> MM0Decl .
     eq theorem-fp-implies-regex-pub-mm0(Phi) = theorem-fp-implies-regex-mm0(Phi) .
     eq theorem-fp-implies-regex-pub(Phi)     = pub theorem-fp-implies-regex(Phi) .
+
+    op theorem-top-implies-fp-pub-mm0 : Pattern -> MM0Decl .
+    op theorem-top-implies-fp-pub : Pattern -> MM0Decl .
+    eq theorem-top-implies-fp-pub-mm0(Phi) = theorem-top-implies-fp-mm0(Phi) .
+    eq theorem-top-implies-fp-pub(Phi)     = pub theorem-top-implies-fp(Phi) .
 endm
