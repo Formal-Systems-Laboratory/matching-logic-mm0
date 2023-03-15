@@ -206,12 +206,6 @@ axiom norm_ctxApp_pt {box: SVar} (ctx ctx2 phi phi2: Pattern box):
   $ Norm phi phi2 $ >
   $ Norm (ctxApp box ctx phi) (ctxApp box ctx2 phi2) $;
 
--- TODO: Are these necessary?
--- axiom exists_alpha {x y: EVar} (phi: Pattern x):
---   $ Norm (exists x phi) (exists y (e[ eVar y / x ] phi)) $;
--- axiom mu_alpha {X Y: SVar} (phi: Pattern X):
---   $ Norm (mu X phi) (mu Y (s[ sVar Y / X ] phi)) $;
-
 -- The Proof System of Matching Logic
 axiom norm (phi psi: Pattern):
   $ Norm phi psi $ >
