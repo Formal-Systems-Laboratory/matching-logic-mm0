@@ -145,8 +145,11 @@ fmod PATTERN-METAMATH is
     eq substitute [ phi / X ] in epsilon = epsilon .
     eq substitute [ phi / X ] in a = a .
     eq substitute [ phi / X ] in b = b .
+    eq substitute [ phi / X ] in top-letter = top-letter .
     eq substitute [ phi / X ] in (psi1 . psi2)
      = (substitute [ phi / X ] in psi1) . (substitute [ phi / X ] in psi2) .
+    eq substitute [ phi / X ] in [ ctximp-app Y psi1 psi2 x ]
+     = [ ctximp-app Y (substitute [ phi / X ] in psi1) (substitute [ phi / X ] in psi2)  x ] .
 
     op all-sVars : Pattern -> QidList .
     eq all-sVars(Notation) = all-sVars(desugar(Notation)) .
