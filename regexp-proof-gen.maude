@@ -163,14 +163,25 @@ fmod PATTERN-METAMATH is
     eq all-sVars(mu X phi) = X minus(all-sVars(phi), X) .
     eq all-sVars(exists X phi) = all-sVars(phi) .
 
+    op all-eVars : Pattern -> QidList .
+    eq all-eVars(Notation) = all-eVars(desugar(Notation)) .
+    eq all-eVars(bot) = nil .
+    eq all-eVars(sVar X) = nil .
+    eq all-eVars(eVar X) = X .
+    eq all-eVars(sym  X) = nil .
+    eq all-eVars(phi -> psi)  = all-eVars(phi) minus(all-eVars(psi), all-eVars(phi)) .
+    eq all-eVars(app[ phi / X ] psi) = all-eVars(phi) minus(all-eVars(psi), all-eVars(phi)) .
+    eq all-eVars(app phi psi) = all-eVars(phi) minus(all-eVars(psi), all-eVars(phi)) .
+    eq all-eVars(mu X phi) = all-eVars(phi) .
+    eq all-eVars(exists X phi) = X minus(all-eVars(phi), X) .
+
     op minus : QidList QidList -> QidList .
     eq minus(nil, QL) = nil .
    ceq minus(Q QL1, QL2) =   minus(QL1, QL2) if     occurs(Q, QL2) .
    ceq minus(Q QL1, QL2) = Q minus(QL1, QL2) if not occurs(Q, QL2) .
 
     op occursIn : Qid Pattern -> Bool .
-    --- TODO: Handle EVars as well
-    eq occursIn(X, phi) = occurs(X, all-sVars(phi)) .
+    eq occursIn(X, phi) = occurs(X, all-sVars(phi)) or occurs(X, all-eVars(phi)) .
 endfm
 
 *** Comparing Patterns ******************************************************
