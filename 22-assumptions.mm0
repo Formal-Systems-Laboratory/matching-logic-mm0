@@ -47,10 +47,12 @@ axiom regex_eq_ewp_not_concat (Alpha Beta: Pattern):
 --- top-implies-fp
 axiom top_implies_fp_init {X: SVar} (phi: Pattern) (h: $phi . top_letter -> phi$)
   : $top_word X -> phi$;
-axiom top_implies_fp_leaf {X: SVar} (phi : Pattern) {dummy: EVar}
-  : $( ctximp_app X (sVar X . top_letter) phi dummy) . top_letter -> phi $ ;
+axiom top_implies_fp_leaf {box: SVar} (phi : Pattern box) {dummy: EVar}
+--- TODO: Add eFresh hypothesis? eFresh box phi
+  : $( ctximp_app box (sVar box . top_letter) phi dummy) . top_letter -> phi $ ;
 axiom top_implies_fp_interior  {X: SVar} {box: SVar} {dummy: EVar}
-  (fp_unf_a fp_unf_b fp_ctximp_a fp_ctximp_b : Pattern X)
+--- TODO: Add eFresh hypothesis? eFresh X { fp_unf_a fp_unf_b fp_ctximp_a fp_ctximp_b }
+  (fp_unf_a fp_unf_b fp_ctximp_a fp_ctximp_b : Pattern X box dummy)
 
   (he_a: $epsilon -> s[ (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) / X ] fp_unf_a$)
   (he_b: $epsilon -> s[ (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) / X ] fp_unf_b$)
