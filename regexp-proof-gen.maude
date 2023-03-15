@@ -616,6 +616,20 @@ mod PROOF-GEN is
     eq lift-equality-to-context(Q [ T1 , Ctx ], Q [ T1 , TOrig ], Q [ T1 , TFinal ], MMP)
      = cong-of-equiv cong-thm(Q, "-r") lift-equality-to-context(Ctx, TOrig, TFinal, MMP) .
 
+    *** eFresh ****************************************************************
+    op eFresh : Qid Pattern -> MM0SExpr .
+    eq eFresh(X, Notation)      = eFresh(X, desugar(Notation))   .
+   ceq eFresh(X, Phi)           = 'eFresh-disjoint               if not occursIn(X, Phi) .
+   ceq eFresh(X, app Phi1 Phi2) = [ 'eFresh-app eFresh(X, Phi1) eFresh(X, Phi2) ]
+                                                                 if     occursIn(X, app Phi1 Phi2) .
+   ceq eFresh(X, Phi1 -> Phi2)  = [ 'eFresh-imp eFresh(X, Phi1) eFresh(X, Phi2) ]
+                                                                 if     occursIn(X, Phi1 -> Phi2) .
+    eq eFresh(X, exists X Phi)  = 'eFresh-exists-same-var .
+   ceq eFresh(X, exists Y Phi)  = [ 'bang 'eFresh-exists '- Y '- eFresh(X, Phi) ]
+                                                                 if     occursIn(X, Phi)
+                                                                     /\ X =/= Y .
+   ceq eFresh(X, mu Y Phi)      = [ 'eFresh-mu eFresh(X, Phi) ]  if     occursIn(X, Phi) .
+
     *** sFresh ****************************************************************
     op sFresh : Qid Pattern -> MM0SExpr .
     eq sFresh(X, Notation)      = sFresh(X, desugar(Notation))   .
