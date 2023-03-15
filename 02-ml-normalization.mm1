@@ -279,10 +279,16 @@ theorem _sSubst_and {X: SVar} (phi phi1 phi2 psi1 psi2: Pattern X)
   $ Norm (s[ phi / X ] (phi1 /\ phi2)) (psi1 /\ psi2) $ =
   '(_sSubst_not @ _sSubst_imp h1 (_sSubst_not h2));
 
+theorem _sSubst_exists {X: SVar} {x: EVar} (phi psi rho: Pattern X x)
+  (f: $ _eFresh x phi $)
+  (h: $ Norm (s[ phi / X ] psi) rho $):
+  $ Norm (s[ phi / X ] (exists x psi)) (exists x rho) $ =
+  '(norm_trans (sSubstitution_in_exists f) (norm_exists h));
+
 theorem _sSubst_exists_disjoint {X: SVar} {x: EVar} (psi rho: Pattern X x) (phi: Pattern X)
   (h: $ Norm (s[ phi / X ] psi) rho $):
   $ Norm (s[ phi / X ] (exists x psi)) (exists x rho) $ =
-  '(norm_trans sSubstitution_in_exists (norm_exists h));
+  '(_sSubst_exists eFresh_disjoint h);
 
 theorem _eSubst_exists {x y: EVar} (psi rho: Pattern x y) (phi: Pattern x)
   (h: $ Norm (e[ phi / x ] psi) rho $):
