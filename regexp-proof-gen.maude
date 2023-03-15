@@ -638,9 +638,9 @@ mod PROOF-GEN is
                                                                  if     occursIn(X, app Phi1 Phi2) .
    ceq sFresh(X, Phi1 -> Phi2)  = [ 'sFresh-imp sFresh(X, Phi1) sFresh(X, Phi2) ]
                                                                  if     occursIn(X, Phi1 -> Phi2) .
-   ceq sFresh(X, exists Y Phi)  = [ 'sFresh-exists sFresh(X, Phi) ]
+   ceq sFresh(X, exists Y Phi)  = [ 'bang 'sFresh-exists '- Y '- sFresh(X, Phi) ]
                                                                  if     occursIn(X, Phi) .
-   ceq sFresh(X, mu X Phi)      = 'sFresh-mu-same-var            if     occursIn(X, Phi) .
+    eq sFresh(X, mu X Phi)      = 'sFresh-mu-same-var .
    ceq sFresh(X, mu Y Phi)      = [ 'sFresh-mu sFresh(X, Phi) ]  if     occursIn(X, Phi)
                                                                      /\ X =/= Y .
 
