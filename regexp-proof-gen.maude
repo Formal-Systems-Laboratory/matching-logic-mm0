@@ -646,20 +646,15 @@ mod PROOF-GEN is
 
     *** propag-sSubst *********************************************************
     op propag-sSubst : Pattern Qid Pattern -> MM0SExpr .
-    eq propag-sSubst(Psi, X, bot) = 'sSubstitution-disjoint .
-    eq propag-sSubst(Psi, X, top) = 'sSubstitution-disjoint .
-    eq propag-sSubst(Psi, X, eVar X) = 'sSubstitution-disjoint .
+    eq propag-sSubst(Psi, X, Notation) = propag-sSubst(Psi, X, desugar(Notation)) .
+   ceq propag-sSubst(Psi, X, Phi) = 'sSubstitution-disjoint if not occursIn(X, Phi) .
     eq propag-sSubst(Psi, X, sVar X) = 'sSubstitution-in-same-sVar .
-   ceq propag-sSubst(Psi, X, sVar Y) = 'sSubstitution-disjoint if X =/= Y .
+    eq propag-sSubst(Psi, X, app Phi1 Phi2) = [ '-sSubst-app propag-sSubst(Psi, X, Phi1) propag-sSubst(Psi, X, Phi2) ] .
+    eq propag-sSubst(Psi, X, Phi1 -> Phi2) = [ '-sSubst-imp propag-sSubst(Psi, X, Phi1) propag-sSubst(Psi, X, Phi2) ] .
+    eq propag-sSubst(Psi, X, exists Y Phi) = [ 'bang '-sSubst-exists '- Y '- '- '- eFresh(Y, Psi) propag-sSubst(Psi, X, Phi) ] .
     eq propag-sSubst(Psi, X, mu X Phi) = 'sSubstitution-in-same-mu .
    ceq propag-sSubst(Psi, X, mu Y Phi) = [ '-sSubst-mu sFresh(Y, Psi) propag-sSubst(Psi, X, Phi) ] if X =/= Y .
-    eq propag-sSubst(Psi, X, Phi1 \/ Phi2) = [ '-sSubst-or propag-sSubst(Psi, X, Phi1) propag-sSubst(Psi, X, Phi2) ] .
 
-    eq propag-sSubst(Psi, X, Phi1 . Phi2) = [ 'sSubst-concat propag-sSubst(Psi, X, Phi1) propag-sSubst(Psi, X, Phi2) ] .
-    eq propag-sSubst(Psi, X, a) = 'sSubstitution-disjoint .
-    eq propag-sSubst(Psi, X, b) = 'sSubstitution-disjoint .
-    eq propag-sSubst(Psi, X, epsilon) = 'sSubstitution-disjoint .
-    eq propag-sSubst(Psi, X, top-letter) = 'sSubstitution-disjoint .
 
     *** pos ******************************************************************
     op positivity : Qid Pattern -> MM0SExpr .
