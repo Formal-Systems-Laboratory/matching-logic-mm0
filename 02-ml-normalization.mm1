@@ -204,7 +204,7 @@ do {
     [$sVar ,Y$ (if (== X Y) 'sSubstitution_in_same_sVar 'sSubstitution_disjoint)]
     [$imp ,phi1 ,phi2$    '(_sSubst_imp             ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
     [$app ,phi1 ,phi2$    '(_sSubst_app             ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
-    [$exists ,y ,psi$     '(_sSubst_exists          ,(propag_s_subst X psi))]
+    [$exists ,y ,psi$     '(_sSubst_exists_disjoint          ,(propag_s_subst X psi))]
     [$mu ,Y ,psi$ (if (== X Y) 
                           'sSubstitution_in_same_mu 
                           '(_sSubst_mu_disjoint     ,(propag_s_subst X psi)))]
@@ -274,7 +274,7 @@ theorem _sSubst_and {X: SVar} (phi phi1 phi2 psi1 psi2: Pattern X)
   $ Norm (s[ phi / X ] (phi1 /\ phi2)) (psi1 /\ psi2) $ =
   '(_sSubst_not @ _sSubst_imp h1 (_sSubst_not h2));
 
-theorem _sSubst_exists {X: SVar} {x: EVar} (psi rho: Pattern X x) (phi: Pattern X)
+theorem _sSubst_exists_disjoint {X: SVar} {x: EVar} (psi rho: Pattern X x) (phi: Pattern X)
   (h: $ Norm (s[ phi / X ] psi) rho $):
   $ Norm (s[ phi / X ] (exists x psi)) (exists x rho) $ =
   '(norm_trans sSubstitution_in_exists (norm_exists h));
