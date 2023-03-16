@@ -27,10 +27,6 @@ axiom regex_eq_der_same_a_wrt_a  :
   $ (derivative a a) <-> epsilon $;
 axiom regex_eq_der_same_a_wrt_b  :
   $ (derivative b b) <-> epsilon $;
-axiom regex_eq_der_diff_a_wrt_a  :
-  $ (derivative a b) <-> bot $;
-axiom regex_eq_der_diff_a_wrt_b  :
-  $ (derivative b a) <-> bot $;
 
 axiom regex_eq_concat_assoc (Alpha Beta Gamma: Pattern) : $ (Alpha . Beta) . Gamma <-> Alpha . (Beta . Gamma) $;
 
