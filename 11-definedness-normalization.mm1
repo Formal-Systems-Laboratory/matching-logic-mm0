@@ -26,6 +26,17 @@ theorem norm_mem {x: EVar} (phi1 phi2: Pattern x)
   $ Norm (x in phi1) (x in phi2) $ =
   '(norm_def @ norm_and norm_refl h);
 
+theorem norm_subset (phi1 phi2: Pattern)
+  (h1: $ Norm phi1 phi2 $)
+  (h2: $ Norm psi1 psi2 $):
+  $ Norm (phi1 C_ psi1) (phi2 C_ psi2) $
+  = '(norm_floor @ norm_imp h1 h2 );
+
+theorem norm_ctximp_app (phi1: Pattern sBox) (phi2: Pattern)
+  (h1: $ Norm phi1 phi2 $)
+  (h2: $ Norm psi1 psi2 $):
+  $ Norm (ctximp_app sBox phi1 psi1 eBox) (ctximp_app sBox phi2 psi2 eBox) $ =
+  '(norm_exists @ norm_and_r @ norm_subset (norm_ctxApp_pt h1 norm_refl) h2);
 
 --- High level versions of axioms
 ---------------------------------
