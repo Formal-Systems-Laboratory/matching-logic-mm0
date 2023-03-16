@@ -183,6 +183,11 @@ theorem regex_eq_bot_kleene: $ (kleene X bot) <-> epsilon $ = '(ibii
   (rsyl (mu_framing (positive_in_or positive_disjoint @ positive_in_concat positive_disjoint positive_in_same_sVar) positive_disjoint (rsyl (orim2 @ norm (norm_imp_l appCtxLRVar) (! propag_bot box)) dne)) (KT positive_disjoint @ norm (norm_sym @ norm_imp_l sSubstitution_disjoint) id))
   (epsilon_implies_kleene positive_disjoint));
 
+theorem regex_eq_eps_kleene {X: SVar}: $ (kleene X epsilon) <-> epsilon $ =
+  '(ibii
+    (KT (positive_in_kleene_r_body positive_triv) @ norm (norm_sym @ norm_imp_l ,(propag_s_subst 'Y $epsilon \/ (epsilon . sVar Y)$)) @ eori id @ eq_to_intro ,(functional_subst_implicit 'u $(eVar u) . epsilon == (eVar u)$ 'identity_left_e '(! functional_epsilon w)))
+    (imim1i orl @ norm (norm_imp_l ,(propag_s_subst 'Y $epsilon \/ (epsilon . sVar Y)$)) @ pre_fixpoint (positive_in_kleene_r_body positive_triv))
+  );
 
 --- Derivatives: "Semantic" theorems
 ------------------------------------

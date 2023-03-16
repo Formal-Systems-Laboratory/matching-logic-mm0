@@ -32,7 +32,6 @@ axiom regex_eq_concat_assoc (Alpha Beta Gamma: Pattern) : $ (Alpha . Beta) . Gam
 
 --- Theorems that reduce the size of the automata/proof
 axiom regex_eq_double_kleene {X: SVar} (Alpha: Pattern X): $ (kleene X (kleene X Alpha)) <-> (kleene X Alpha) $;
-axiom regex_eq_eps_kleene {X: SVar}: $ (kleene X epsilon) <-> epsilon $;
 
 
 --- EWP related simplifications
