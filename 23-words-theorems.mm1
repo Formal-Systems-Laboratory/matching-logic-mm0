@@ -177,6 +177,30 @@ theorem regex_eq_der_bot_wrt_a:
 theorem regex_eq_der_bot_wrt_b:
   $ (derivative b bot) <-> bot $ = '(ibii (regex_eq_der_bot (! functional_b x)) absurdum);
 
+theorem regex_eq_der_epsilon_wrt_a:
+  $ (derivative a epsilon) <-> bot $ =
+  '(ibii (rsyl (anl der_expand) @ syl not_exists_bot @ exists_framing @ con3 anr @
+    rsyl ,(functional_subst_implicit 'x $((a . eVar d) C_ eVar x) -> ((a . eVar d) == eVar x)$ (
+        functional_subst_implicit 'y $((eVar y . eVar d) C_ eVar x) -> ((eVar y . eVar d) == eVar x)$ (
+          functional_subst_implicit 'z $(eVar z C_ eVar x) -> (eVar z == eVar x)$ '(eVars_subset_eq_forward) '(! functional_concat _ _ k)
+        ) '(! functional_a w1)
+      ) '(! functional_epsilon w2)) @
+    rsyl eq_sym @
+    rsyl ,(functional_subst_implicit 'x $(epsilon == eVar x . eVar d) -> ((epsilon == eVar x) /\ (epsilon == eVar d))$ '(! no_confusion_ec_e _ d) '(! functional_a w3)) @
+      con3 anl @ con3 (rsyl eq_imp_subset subset_imp_subset_or_l) no_confusion_ae_e
+  ) absurdum);
+theorem regex_eq_der_epsilon_wrt_b:
+  $ (derivative b epsilon) <-> bot $ =
+  '(ibii (rsyl (anl der_expand) @ syl not_exists_bot @ exists_framing @ con3 anr @
+    rsyl ,(functional_subst_implicit 'x $((b . eVar d) C_ eVar x) -> ((b . eVar d) == eVar x)$ (
+        functional_subst_implicit 'y $((eVar y . eVar d) C_ eVar x) -> ((eVar y . eVar d) == eVar x)$ (
+          functional_subst_implicit 'z $(eVar z C_ eVar x) -> (eVar z == eVar x)$ '(eVars_subset_eq_forward) '(! functional_concat _ _ k)
+        ) '(! functional_b w1)
+      ) '(! functional_epsilon w2)) @
+    rsyl eq_sym @
+    rsyl ,(functional_subst_implicit 'x $(epsilon == eVar x . eVar d) -> ((epsilon == eVar x) /\ (epsilon == eVar d))$ '(! no_confusion_ec_e _ d) '(! functional_b w3)) @
+      con3 anl @ con3 (rsyl eq_imp_subset subset_imp_subset_or_r) no_confusion_ae_e
+  ) absurdum);
 
 theorem regex_eq_der_choice_wrt_a: $ (derivative a (Alpha \/ Beta)) <-> (derivative a Alpha) \/ (derivative a Beta) $ =
   '(bitr (! der_expand d1) @
