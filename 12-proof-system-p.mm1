@@ -184,10 +184,19 @@ theorem lemma_46_floor
 theorem subset_to_imp  (h: $ phi -> psi $): $ phi C_ psi $ = '(lemma_46_floor h);
 theorem equiv_to_eq  (h: $ phi <-> psi $): $ phi == psi $ = '(lemma_46_floor h);
 
+theorem eq_imp_subset: $ (phi == psi) -> (phi C_ psi) $ = '(framing_floor anl);
+
 theorem eq_refl: $ phi == phi $ = '(equiv_to_eq biid);
 
 theorem eq_sym: $ (phi1 == phi2) -> (phi2 == phi1) $ =
   '(con3 @ framing_def @ con3 bicom);
+
+theorem subset_imp_subset_or_l:
+  $(phi C_ psi) -> (phi C_ (psi \/ rho))$ =
+  '(framing_floor @ imim2i orl);
+theorem subset_imp_subset_or_r:
+  $(phi C_ psi) -> (phi C_ (rho \/ psi))$ =
+  '(framing_floor @ imim2i orr);
 
 theorem taut_equiv_top (h: $ phi $): $ phi <-> top $ =
   '(ibii imp_top @ a1i h);
@@ -320,6 +329,16 @@ theorem eVar_in_subset_forward {x: EVar} (phi: Pattern x):
 theorem eVar_in_subset_reverse {x: EVar} (phi: Pattern x):
   $ (eVar x C_ phi) -> (x in phi) $
 = '(bi2i eVar_in_subset);
+
+theorem eVars_subset_eq_forward {x y: EVar}:
+  $ (eVar x C_ eVar y) -> (eVar x == eVar y) $ =
+  '(rsyl eVar_in_subset_reverse membership_var_forward);
+theorem eVars_subset_eq_reverse {x y: EVar}:
+  $ (eVar x == eVar y) -> (eVar x C_ eVar y) $ =
+  'eq_imp_subset;
+theorem eVars_subset_eq {x y: EVar}:
+  $ (eVar x C_ eVar y) <-> (eVar x == eVar y) $ =
+  '(ibii eVars_subset_eq_forward eVars_subset_eq_reverse);
 
 theorem lemma_exists_and: $ phi <-> exists x (eVar x /\ phi) $ =
   '(ibii
@@ -660,6 +679,9 @@ theorem eq_to_subset_bi
 --   (h: $ (phi1 == phi2) -> (psi1 == psi2) $):
 --   $ (phi1 == phi2) -> ((app psi1 rho) == (app psi2 rho)) $ =
 --   '(syl equiv_to_eq @ ibid (eq_to_app_l @ syl eq_to_intro h) (eq_to_app_l @ syl eq_to_intro @ syl eq_sym h));
+
+theorem not_exists_bot: $ ~ exists x bot $ =
+  '(exists_generalization_strict taut);
 
 theorem ceil_mem_imp_mem {x: EVar} (phi: Pattern x):
   $ |^ x in phi ^| -> x in phi $ =
