@@ -42,7 +42,6 @@ theorem propag_bot {box: SVar} (ctx: Pattern box):
   $ (app[ bot / box ] ctx) -> bot $ =
   '(syl (! singleton_same_var _ x _ _ (eVar x)) @ iand (framing absurdum) (framing absurdum));
 
-theorem propag_or_def (phi1 phi2: Pattern)
-  (h: $ |^ phi1 \/ phi2 ^| $):
-  $ |^ phi1 ^| \/ |^ phi2 ^| $ =
-  '(norm (norm_or defNorm defNorm) @ propag_or @ norm (norm_sym (! defNorm box)) h);
+theorem propag_or_def (phi1 phi2: Pattern):
+  $ |^ phi1 \/ phi2 ^| -> |^ phi1 ^| \/ |^ phi2 ^| $ =
+  '(norm (norm_imp defNorm (norm_or defNorm defNorm)) (! propag_or x));

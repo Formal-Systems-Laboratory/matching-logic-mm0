@@ -57,6 +57,12 @@ theorem prop_43_exists_def {x: EVar} (phi: Pattern x):
   $ (exists x (|^ phi ^|)) -> |^ exists x phi ^| $ =
   '(exists_generalization (eFresh_app eFresh_triv eFresh_exists_same_var) (framing_def exists_intro_same_var));
 
+theorem floor_and: $|_ phi /\ psi _| <-> |_ phi _| /\ |_ psi _|$ =
+  '(ibii
+    (iand (framing_floor anl) (framing_floor anr))
+    (rsyl (anr notor) @ rsyl (con3 propag_or_def) @ con3 @ framing_def @ anl notan)
+  );
+
 theorem appCtxLVar {box: SVar} (phi1 phi2: Pattern):
   $ Norm (app[ phi1 / box ] (app (sVar box) phi2)) (app phi1 phi2) $ =
   '(norm_trans appCtxL @ norm_app appCtxVar norm_refl);
@@ -450,9 +456,8 @@ theorem lemma_14 {box: SVar} (ctx: Pattern box) (psi phi1 phi2: Pattern)
 
 -- Equality reasoning
 
-theorem eq_trans (h1: $ phi1 == phi2 $) (h2: $ phi2 == phi3 $):
-  $ phi1 == phi3 $ =
-  '(equiv_to_eq @ bitr (corollary_57_floor h1) (corollary_57_floor h2));
+theorem eq_trans: $(phi1 == phi2) -> (phi2 == phi3) -> (phi1 == phi3)$ =
+  '(exp @ rsyl (anr floor_and) @ framing_floor @ curry bitr);
 
 theorem eq_to_intro:
   $ (phi1 == phi2) -> (phi1 -> phi2) $ =

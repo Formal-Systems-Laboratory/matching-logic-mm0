@@ -23,10 +23,6 @@ axiom regex_eq_der_same_a_wrt_a  :
   $ (derivative a a) <-> epsilon $;
 axiom regex_eq_der_same_a_wrt_b  :
   $ (derivative b b) <-> epsilon $;
-axiom regex_eq_der_diff_a_wrt_a  :
-  $ (derivative a b) <-> bot $;
-axiom regex_eq_der_diff_a_wrt_b  :
-  $ (derivative b a) <-> bot $;
 
 
 --- Theorems that reduce the size of the automata/proof
