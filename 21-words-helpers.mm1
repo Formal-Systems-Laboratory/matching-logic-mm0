@@ -47,13 +47,21 @@ theorem eq_to_concat_bi
   (h2: $ (phi1 == phi2) -> (rho1 <-> rho2) $):
   $ (phi1 == phi2) -> ((psi1 . rho1) <-> (psi2 . rho2)) $ =
   '(eq_to_app_bi (eq_to_app_r_bi h1) h2);
-theorem appctx_concat_l : $ Norm (app[ phi / box ] (sVar box . psi)) (phi . psi)$
+
+theorem norm_concat
+  (h1: $Norm phi1 phi2$)
+  (h2: $Norm psi1 psi2$)
+: $ Norm (phi1 . psi1) (phi2 . psi2)$
+= '(norm_app (norm_app norm_refl h1) h2);
+
+theorem appctx_concat_l (phi psi : Pattern box)
+: $ Norm (app[ phi / box ] (sVar box . psi)) (phi . psi)$
 = '(norm_trans appCtxL @ norm_app (norm_trans appCtxR @ norm_app norm_refl appCtxVar) norm_refl);
-theorem appctx_concat_r : $ Norm (app[ psi / box ] (phi . sVar box)) (phi . psi)$
+theorem appctx_concat_r (phi psi : Pattern box)
+: $ Norm (app[ psi / box ] (phi . sVar box)) (phi . psi)$
 = '(norm_trans appCtxR @ norm_app norm_refl appCtxVar);
 theorem propag_or_concat : $(phi1 \/ phi2) . psi ->  (phi1 . psi) \/ (phi2 . psi)$
 = '(norm (norm_imp appctx_concat_l (norm_or appctx_concat_l appctx_concat_l)) (! propag_or dummy) );
-
 
 
 --- Helpers for Kleene
@@ -78,6 +86,8 @@ theorem positive_in_top_letter {X: SVar}:
   '(positive_in_or positive_disjoint positive_disjoint);
 theorem sSubst_top_letter {X: SVar} (psi: Pattern X):
  $ Norm (s[ psi  / X ] (top_letter))  (top_letter) $ = 'sSubstitution_disjoint;
+theorem eSubst_top_letter {X: EVar} (psi: Pattern X):
+ $ Norm (e[ psi  / X ] (top_letter))  (top_letter) $ = 'eSubstitution_disjoint;
 
 --- Helpers for top_word_l
 --- TODO: Define in terms of kleene_l
