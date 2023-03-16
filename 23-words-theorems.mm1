@@ -8,10 +8,10 @@ import "22-assumptions.mm0";
 --- Lift functional axioms to $ a . [] $ and $ b . [] $.
 theorem functional_a_concat {.w x v: EVar} :
   $ exists x (eVar x == a . eVar v) $ =
-  '(var_subst_same_var ,(functional_subst 'w 'z $forall v (exists x (eVar x == (eVar w . eVar v)))$ 'functional_concat 'functional_a));
+  (functional_subst_implicit 'w $exists x (eVar x == (eVar w . eVar v))$ 'functional_concat '(! functional_a k));
 theorem functional_b_concat {.w x v: EVar} :
   $ exists x (eVar x == b . eVar v) $ =
-  '(var_subst_same_var ,(functional_subst 'w 'z $forall v (exists x (eVar x == (eVar w . eVar v)))$ 'functional_concat 'functional_b));
+  (functional_subst_implicit 'w $exists x (eVar x == (eVar w . eVar v))$ 'functional_concat '(! functional_b k));
 
 
 --- Proving the Empty Word Property
@@ -99,14 +99,14 @@ theorem regex_eq_eps_concat_l: $ epsilon . Alpha <-> Alpha $ =
     bitr (norm (norm_equiv appCtxRVar @ norm_exists appCtxRVar) (! exists_appCtx x box1)) @
     bitr (cong_of_equiv_exists @
       bitr (norm (norm_equiv appCtxRVar @ norm_and_r appCtxRVar) (! lemma_60_b _ box2)) @
-      cong_of_equiv_and_r @ corollary_57_floor @ norm ,(propag_e_subst 'x $(epsilon . (eVar x)) == (eVar x)$) @ var_subst (! identity_right_e y))
+      cong_of_equiv_and_r @ corollary_57_floor (! identity_right_e x))
     (! lemma_62 _ x));
 theorem regex_eq_eps_concat_r: $ Alpha . epsilon <-> Alpha $ =
   '(bitr (cong_of_equiv_concat_l @ bicom lemma_62) @
     bitr (norm (norm_equiv appCtxLRVar @ norm_exists appCtxLRVar) (! exists_appCtx x box1)) @
     bitr (cong_of_equiv_exists @
       bitr (norm (norm_equiv appCtxLRVar @ norm_and_r appCtxLRVar) (! lemma_60_b _ box2)) @
-      cong_of_equiv_and_r @ corollary_57_floor @ norm ,(propag_e_subst 'x $((eVar x) . epsilon) == (eVar x)$) @ var_subst (! identity_left_e y))
+      cong_of_equiv_and_r @ corollary_57_floor (! identity_left_e x))
     (! lemma_62 _ x));
 theorem regex_eq_double_neg: $ ~ (~ Alpha) <-> Alpha $ = '(bicom notnot);
 theorem regex_eq_bot_kleene: $ (kleene X bot) <-> epsilon $ = '(ibii
@@ -162,12 +162,6 @@ theorem der_transformer_test_1 {x y: EVar} (phi: Pattern):
   (der_transformer 'x 'y 'a $~ phi$);
 
 
-theorem regex_eq_der_bot_lemma_1 {x y v w: EVar}:
-  $ (forall v (exists x (eVar x == eVar w . eVar v ))) -> exists x (eVar x == eVar w . eVar y ) $ =
-  '(norm (norm_imp_r ,(propag_e_subst 'v $exists x (eVar x == eVar w . eVar v )$)) var_subst);
-theorem regex_eq_der_bot_lemma_2 {x y v w: EVar}:
-  $ (forall w (forall v (exists x (eVar x == eVar w . eVar v )))) -> forall v (exists x (eVar x == eVar y . eVar v )) $ =
-  '(norm (norm_imp_r ,(propag_e_subst 'w $forall v (exists x (eVar x == eVar w . eVar v ))$)) var_subst);
 theorem regex_eq_der_bot
   (h: $ exists x (eVar x == A) $):
   $ (derivative A bot) -> bot $
@@ -175,7 +169,7 @@ theorem regex_eq_der_bot
     exists_generalization_strict (com12
       (eq_to_def @ norm (norm_imp_r @ norm_imp_r @ norm_sym @ norm_trans appCtxR @ norm_app norm_refl (! appCtxVar box)) @ eq_to_app_l @ eq_to_app_r eq_to_intro)
       (exists_generalization_strict (com12 (eq_to_def eq_to_intro) definedness)
-          (! regex_eq_der_bot_lemma_1 x1 y1 v1 x (regex_eq_der_bot_lemma_2 (! functional_concat w2 v1 x1))))
+          (! functional_concat x v1 x1))
         ) h
   );
 theorem regex_eq_der_bot_wrt_a:
