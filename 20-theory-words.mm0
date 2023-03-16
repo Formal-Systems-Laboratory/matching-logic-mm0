@@ -30,20 +30,20 @@ def top_word   {X: SVar} : Pattern = $(kleene   X top_letter )$ ;
 
 axiom domain_words {X: SVar} : $ top_word X $;
 
-axiom functional_epsilon { x : EVar } : $exists x (eVar x == epsilon)$;
-axiom functional_a       { x : EVar } : $exists x (eVar x == a)$;
-axiom functional_b       { x : EVar } : $exists x (eVar x == b)$;
-axiom functional_concat  {w v x: EVar} : $(forall w (forall v (exists x (eVar x == (eVar w . eVar v) ))))$;
+axiom functional_epsilon {x : EVar} : $exists x (eVar x == epsilon)$;
+axiom functional_a       {x : EVar} : $exists x (eVar x == a)$;
+axiom functional_b       {x : EVar} : $exists x (eVar x == b)$;
+axiom functional_concat  {w v x: EVar} : $exists x (eVar x == (eVar w . eVar v))$;
 
 axiom no_confusion_ab_e  : $a != b$;
-axiom no_confusion_ae_e  : $not (epsilon C_ top_letter)$;
-axiom no_confusion_ec_e  {u v: EVar} : $forall u (forall v (epsilon == eVar u . eVar v) -> (eVar u == epsilon) /\ (eVar v == epsilon))$;
-axiom no_confusion_cc_e  {u v x y: EVar} : $forall u (forall v (forall x  (x in top_letter) -> (forall y  (y in top_letter)
-                            -> (eVar x . eVar u == eVar y . eVar v) -> (eVar x == eVar y) /\ (eVar u == eVar v))))$;
+axiom no_confusion_ae_e  : $~(epsilon C_ top_letter)$;
+axiom no_confusion_ec_e  {u v: EVar} : $(epsilon == eVar u . eVar v) -> (epsilon == eVar u) /\ (epsilon == eVar v)$;
+axiom no_confusion_cc_e  {u v x y: EVar} : $(x in top_letter) -> (y in top_letter)
+                            -> (eVar x . eVar u == eVar y . eVar v) -> (eVar x == eVar y) /\ (eVar u == eVar v)$;
 
-axiom assoc_concat_e     {u v w: EVar} : $forall u (forall v (forall w  (eVar u . eVar v) . eVar w == eVar u . (eVar v . eVar w)))$;
-axiom identity_left_e    {u : EVar} : $forall u ((eVar u) . epsilon == (eVar u))$;
-axiom identity_right_e   {u : EVar} : $forall u (epsilon . (eVar u) == (eVar u))$;
+axiom assoc_concat_e     {u v w: EVar} : $(eVar u . eVar v) . eVar w == eVar u . (eVar v . eVar w)$;
+axiom identity_left_e    {u : EVar} : $(eVar u) . epsilon == (eVar u)$;
+axiom identity_right_e   {u : EVar} : $epsilon . (eVar u) == (eVar u)$;
 
 
 --- Secondary sugar
