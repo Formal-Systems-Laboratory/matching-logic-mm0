@@ -241,8 +241,63 @@ theorem regex_eq_der_neg_wrt_b: $ (derivative b (~ Alpha)) <-> ~ (derivative b A
           bicom @ cong_of_equiv_not ,(der_transformer 'x 'y 'b $Alpha$)) @
     bicom @ cong_of_equiv_not (! der_expand d1));
 
+theorem inductive_domain_l_implies_r { X : SVar }
+  : $(top_word_l X) -> (top_word_r X)$
+  = '( kt_top_word_l
+           ( unfold_r_top_word_r orl)
+           ( norm (norm_imp (! appctx_concat_l _) norm_refl)
+                  (unwrap @ kt_top_word_r
+                    (wrap ( norm ( norm_sym  (norm_imp (! appctx_concat_l _) norm_refl) )
+                            (sylbi regex_eq_eps_concat_l
+                            @ unfold_r_top_word_r @ orrd
+                            @ sylbir regex_eq_eps_concat_r
+                            @ framing_concat_r
+                            @ unfold_r_top_word_r orl)
+                          )
+                    )
+                    @ syl (bi2i (! alpha_rename_ctximp_app sBox eBox1 eBox2))
+                    (wrap ( norm ( norm_sym  (norm_imp (! appctx_concat_l _) norm_refl) )
+                           @ unfold_r_top_word_r @ orrd
+                           @ sylbir (bicom regex_eq_concat_assoc) @ framing_concat_r
+                           @ norm (norm_imp (norm_trans appctx_concat_l norm_refl) norm_refl)
+                           @ ctximp_in_ctx_forward
+                          ) )
+                  ))
+     );
+theorem inductive_domain_r_implies_l { X : SVar }
+  : $(top_word_r X) -> (top_word_l X)$
+  = '( kt_top_word_r
+        ( unfold_r_top_word_l orl)
+        ( norm (norm_imp appctx_concat_r norm_refl)
+               (unwrap @ kt_top_word_l
+                    (wrap @ norm ( norm_sym  (norm_imp appctx_concat_r norm_refl) )
+                          @ sylbi regex_eq_eps_concat_r
+                          @ unfold_r_top_word_l @ orrd
+                          @ sylbir regex_eq_eps_concat_l
+                          @ framing_concat_l
+                          @ unfold_r_top_word_l orl
+                    )
+                    @ syl (bi2i (! alpha_rename_ctximp_app sBox eBox1 eBox2))
+                    (wrap @ norm ( norm_sym  (norm_imp appctx_concat_r norm_refl) )
+                          @ unfold_r_top_word_l @ orrd
+                          @ sylbir regex_eq_concat_assoc @ framing_concat_l
+                          @ norm (norm_imp (norm_trans appctx_concat_r norm_refl) norm_refl)
+                          @ ctximp_in_ctx_forward
+                    )
+               )
+        )
+     );
+
+
 --- Proof certificate implementation
 ------------------------------------
+
+theorem top_implies_fp_init {X: SVar} (phi: Pattern)
+    (he: $epsilon -> phi$)
+    (hl:  $phi . top_letter -> phi$)
+  : $top_word X -> phi$
+= '( rsyl inductive_domain_r_implies_l @ kt_top_word_l he hl );
+
 
 --- fp-implies-alpha
 --------------------

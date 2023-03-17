@@ -718,7 +718,11 @@ mod PROOF-GEN is
              colon $ (top-word 'X) -> fp(proofHint(Phi)) $ ; .
 
     op proof-top-implies-fp : Node -> MM0SExpr .
-    eq proof-top-implies-fp(N) = [ 'top-implies-fp-init proof-top-implies-fp((fp(N) . top-letter) -> fp(N), N) ] .
+    eq proof-top-implies-fp(N) =
+       [ 'top-implies-fp-init
+            unfold-r(fp(N), 'orl )
+            proof-top-implies-fp((fp(N) . top-letter) -> fp(N), N)
+       ] .
 
     op proof-top-implies-fp : Pattern Node -> MM0SExpr .
     eq proof-top-implies-fp(Phi, node(< Alpha >, eqEdge(applResult(R, Ctx, Subst), N)))
