@@ -96,7 +96,7 @@ theorem positive_in_top_word_l_body {X: SVar}: $_Positive X (epsilon \/ sVar X .
     positive_in_app (positive_in_app positive_disjoint positive_in_same_sVar) positive_in_top_letter);
 theorem kt_top_word_l {X: SVar} (psi: Pattern X) (base: $epsilon -> psi$) (rec: $psi . top_letter -> psi$): $top_word_l X -> psi$ =
   '(KT positive_in_top_word_l_body @ norm_lemma ,(propag_s_subst 'X $epsilon \/ sVar X . top_letter$) @ eori base rec);
-theorem unfold_r_top_word_l {X : SVar} (phi: Pattern) (h: $phi -> epsilon \/ top_word_l X . top_letter$) : $phi -> top_word_l X$ =
+theorem unfold_r_top_word_l {X : SVar} (phi: Pattern X) (h: $phi -> epsilon \/ top_word_l X . top_letter$) : $phi -> top_word_l X$ =
   '(rsyl h @ norm (norm_imp_l ,(propag_s_subst 'X $epsilon \/ sVar X . top_letter$)) @ pre_fixpoint positive_in_top_word_l_body);
 
 --- Helpers for top_word_r
@@ -116,8 +116,8 @@ theorem lemma_83_top_word_r
     : $( epsilon \/ top_letter . top_word_r X ) <-> top_word_r X $
  = '(ibii lemma_83_top_word_r_forward lemma_83_top_word_r_reverse);
 
-theorem unfold_r_top_word_r {X : SVar} (phi: Pattern) (h: $phi -> epsilon \/ top_letter . top_word_r X$) : $phi -> top_word_r X$ = '(rsyl h @ lemma_83_top_word_r_forward);
-theorem unfold_l_top_word_r {X : SVar} (phi: Pattern) (h: $(epsilon \/ top_letter . top_word_r X) -> phi$) : $top_word_r X -> phi$ = '(syl h  lemma_83_top_word_r_reverse);
+theorem unfold_r_top_word_r {X : SVar} (phi: Pattern X) (h: $phi -> epsilon \/ top_letter . top_word_r X$) : $phi -> top_word_r X$ = '(rsyl h @ lemma_83_top_word_r_forward);
+theorem unfold_l_top_word_r {X : SVar} (phi: Pattern X) (h: $(epsilon \/ top_letter . top_word_r X) -> phi$) : $top_word_r X -> phi$ = '(syl h  lemma_83_top_word_r_reverse);
 
 
 theorem _sSubst_nnimp {X: SVar} (phi phi1 phi2 psi1 psi2: Pattern X)
