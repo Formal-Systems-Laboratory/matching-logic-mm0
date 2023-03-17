@@ -1,5 +1,9 @@
 import "20-theory-words.mm0";
 
+axiom alpha_rename_ctximp_app {sBox: SVar} {eBox1 eBox2: EVar}
+                              (phi: Pattern sBox eBox1) (psi: Pattern sBox)
+  : $(ctximp_app sBox phi psi eBox1) <-> (ctximp_app sBox phi psi eBox2)$;
+
 --- This file contains unproven theorems as axioms for the theory of words.
 --- As we prove them, we shall move them to an appropriate file.
 
@@ -32,6 +36,7 @@ axiom regex_eq_der_diff_a_wrt_a  :
 axiom regex_eq_der_diff_a_wrt_b  :
   $ (derivative b a) <-> bot $;
 
+axiom regex_eq_concat_assoc (Alpha Beta Gamma: Pattern) : $ (Alpha . Beta) . Gamma <-> Alpha . (Beta . Gamma) $;
 
 --- Theorems that reduce the size of the automata/proof
 axiom regex_eq_double_kleene {X: SVar} (Alpha: Pattern X): $ (kleene X (kleene X Alpha)) <-> (kleene X Alpha) $;
@@ -45,8 +50,6 @@ axiom regex_eq_ewp_not_concat (Alpha Beta: Pattern):
   $ (epsilon /\ ~(Alpha . Beta)) <-> ((epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta)) $;
 
 --- top-implies-fp
-axiom top_implies_fp_init {X: SVar} (phi: Pattern) (h: $phi . top_letter -> phi$)
-  : $top_word X -> phi$;
 axiom top_implies_fp_leaf {box: SVar} (phi : Pattern box) {dummy: EVar}
 --- TODO: Add eFresh hypothesis? eFresh box phi
   : $( ctximp_app box (sVar box . top_letter) phi dummy) . top_letter -> phi $ ;
