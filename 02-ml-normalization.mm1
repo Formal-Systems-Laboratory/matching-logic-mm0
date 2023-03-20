@@ -1,12 +1,6 @@
 import "00-matching-logic.mm0";
 import "01-propositional.mm1";
 
---- TODO: Remove me. We should instead be adding a positivity hypothesis
---- to each theorem that needs this.
-theorem sSubstitution_in_mu_disjoint {X: SVar} (psi: Pattern X) {Y: SVar} (phi: Pattern X Y):
-  $ Norm (s[ psi / X ] mu Y phi) (mu Y (s[ psi / X ] phi)) $
-= '(sSubstitution_in_mu sFresh_disjoint);
-
 --- Normalizations over various sugar
 -------------------------------------
 
@@ -107,6 +101,10 @@ theorem exists_generalization_strict {x: EVar} (phi1: Pattern x) (phi2: Pattern)
 theorem propag_exists_strict {box: SVar} {x: EVar} (ctx: Pattern box) (phi: Pattern x):
   $ app[ exists x phi / box ] ctx -> exists x (app[ phi / box ] ctx) $ =
   '(propag_exists eFresh_disjoint);
+
+theorem propag_or_bi {box: SVar} (ctx phi1 phi2: Pattern box):
+  $ (app[ phi1 \/ phi2 / box ] ctx) <-> (app[ phi1 / box ] ctx \/ app[ phi2 / box ] ctx) $
+= '(ibii  propag_or (eori (framing orl) (framing orr)));
 
 theorem exists_framing {x: EVar} (phi1 phi2: Pattern x)
   (h: $ phi1 -> phi2 $):
