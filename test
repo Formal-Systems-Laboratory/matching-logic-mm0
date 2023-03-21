@@ -2,5 +2,6 @@
 set -euo pipefail
 export PYTHONPYCACHEPREFIX='.build/'
 
-mypy --disallow-untyped-calls --disallow-incomplete-defs *.py
-exec pytest ./test.py "$@"
+poetry install
+poetry run mypy *.py
+poetry run pytest ./test.py "$@"
