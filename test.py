@@ -87,46 +87,48 @@ def test_regex(theorem: str, test_name: str, regex: str) -> None:
 
 ### Parametric tests #################
 
-fast = False
-slow = True
+FAST = False
+SLOW = True
 TestData = Tuple[bool, str, str, str]
 
-def param_test(theorem: str, test_name: str, regex: str, fast=[], slow=[]) -> List[TestData]:
-    ret = []
+def param_test(theorem: str, test_name: str, regex: str, fast: List[int] = [], slow: List[int] = []) -> List[TestData]:
+    ret : List[TestData] = []
     for param in fast:
-        ret.append((fast, theorem, test_name.format(param), regex.format(param)))
+        ret.append((FAST, theorem, test_name.format(param), regex.format(param)))
     for param in slow:
-        ret.append((slow, theorem, test_name.format(param), regex.format(param)))
+        ret.append((SLOW, theorem, test_name.format(param), regex.format(param)))
     return ret
 
 ### Randomized tests using hypothesis
 
-def regex():
-    from hypothesis.strategies import composite, just, recursive
+from typing import Callable
+from hypothesis import given, settings
+from hypothesis.strategies import composite, just, recursive, SearchStrategy, DrawFn
 
-    def letters():
+
+def regex() -> SearchStrategy[str]:
+
+    def letters() -> SearchStrategy[str]:
         return just('a') | just('b')
 
     @composite
-    def neg(draw, arg):
+    def neg(draw: DrawFn, arg: SearchStrategy[str]) -> str:
         return '( ~ ' + draw(arg) + ')'
 
     @composite
-    def kleene(draw, arg):
+    def kleene(draw: DrawFn, arg: SearchStrategy[str]) -> str:
         return '( ' + draw(arg) + ' * )'
 
     @composite
-    def concat(draw, arg):
+    def concat(draw: DrawFn, arg: SearchStrategy[str]) -> str:
         return '(' + draw(arg) + ' . ' + draw(arg) + ')'
 
     @composite
-    def plus(draw, arg):
+    def plus(draw: DrawFn, arg: SearchStrategy[str]) -> str:
         return '( ' + draw(arg) + ' + ' + draw(arg) + ' )'
 
     return recursive(letters(),
                      lambda sub: concat(sub) | kleene(sub) | plus(sub))
-
-from hypothesis import given, settings
 
 @given(regex())
 @settings(deadline=None)
@@ -158,21 +160,21 @@ for f in sorted((glob('*.mm0') + glob('*.mm1'))):
 
 # Regular expression tests
 tests : List[TestData] = [
-    (fast, 'fp-implies-regex-pub', 'matches-self-a',             'a ->> a'),
-    (fast, 'fp-implies-regex-pub', 'matches-self-aa.aa',         '(a . a) . (a . a) ->> (a . a) . (a . a)'),
-    (fast, 'fp-implies-regex-pub', 'matches-self-a+b',           '(a + b) ->> (a + b)'),
-    (fast, 'fp-implies-regex-pub', 'matches-self-bbx.bx',        '(( (b . b) * ) . ( b * )) ->> (( (b . b) * ) . ( b * ))'),
-    (fast, 'top-implies-fp-pub',   'example-in-paper-1',         '(a . a)* ->> (((a *) . a) + epsilon) '),
-    (fast, 'main-goal',            'a-or-b-star',                '(a + b)*'),
-    (fast, 'top-implies-fp-pub',   'kleene-star-star-1',         '(a *) * ->> (a *)'),
-    (fast, 'fp-implies-regex-pub', 'kleene-star-star',           '(a *) * ->> (a *)'),
-    (fast, 'fp-implies-regex-pub', 'example-in-paper',           '(a . a)* ->> (((a *) . a) + epsilon) '),
-    (fast, 'top-implies-fp-pub',   'alternate-top-1',            '((a *) . b) * + (((b *) . a) *)'),
-    (fast, 'fp-implies-regex-pub', 'alternate-top',              '((a *) . b) * + (((b *) . a) *)'),
-    (fast, 'top-implies-fp-pub',   'even-or-odd-1',              '((((a . a) + (a . b)) + (b . a)) + (b . b)) * + ((a + b) . (((((a . a) + (a . b)) + (b . a)) + (b . b)) *))'),
-    (fast, 'fp-implies-regex-pub', 'even-or-odd',                '((((a . a) + (a . b)) + (b . a)) + (b . b)) * + ((a + b) . (((((a . a) + (a . b)) + (b . a)) + (b . b)) *))'),
-    (fast, 'top-implies-fp-pub',   'no-contains-a-or-no-only-b-1', '(~ (top . (a . top))) + ~ (b *)'),
-    (fast, 'fp-implies-regex-pub', 'no-contains-a-or-no-only-b', '(~ (top . (a . top))) + ~ (b *)'),
+    (FAST, 'fp-implies-regex-pub', 'matches-self-a',             'a ->> a'),
+    (FAST, 'fp-implies-regex-pub', 'matches-self-aa.aa',         '(a . a) . (a . a) ->> (a . a) . (a . a)'),
+    (FAST, 'fp-implies-regex-pub', 'matches-self-a+b',           '(a + b) ->> (a + b)'),
+    (FAST, 'fp-implies-regex-pub', 'matches-self-bbx.bx',        '(( (b . b) * ) . ( b * )) ->> (( (b . b) * ) . ( b * ))'),
+    (FAST, 'top-implies-fp-pub',   'example-in-paper-1',         '(a . a)* ->> (((a *) . a) + epsilon) '),
+    (FAST, 'main-goal',            'a-or-b-star',                '(a + b)*'),
+    (FAST, 'top-implies-fp-pub',   'kleene-star-star-1',         '(a *) * ->> (a *)'),
+    (FAST, 'fp-implies-regex-pub', 'kleene-star-star',           '(a *) * ->> (a *)'),
+    (FAST, 'fp-implies-regex-pub', 'example-in-paper',           '(a . a)* ->> (((a *) . a) + epsilon) '),
+    (FAST, 'top-implies-fp-pub',   'alternate-top-1',            '((a *) . b) * + (((b *) . a) *)'),
+    (FAST, 'fp-implies-regex-pub', 'alternate-top',              '((a *) . b) * + (((b *) . a) *)'),
+    (FAST, 'top-implies-fp-pub',   'even-or-odd-1',              '((((a . a) + (a . b)) + (b . a)) + (b . b)) * + ((a + b) . (((((a . a) + (a . b)) + (b . a)) + (b . b)) *))'),
+    (FAST, 'fp-implies-regex-pub', 'even-or-odd',                '((((a . a) + (a . b)) + (b . a)) + (b . b)) * + ((a + b) . (((((a . a) + (a . b)) + (b . a)) + (b . b)) *))'),
+    (FAST, 'top-implies-fp-pub',   'no-contains-a-or-no-only-b-1', '(~ (top . (a . top))) + ~ (b *)'),
+    (FAST, 'fp-implies-regex-pub', 'no-contains-a-or-no-only-b', '(~ (top . (a . top))) + ~ (b *)'),
 
     # Benchmarks from Unified Decision Procedures for Regular Expression Equivalence
     # https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=f650281fc011a2c132690903eb443ff1ab3298f7
