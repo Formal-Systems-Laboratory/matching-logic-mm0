@@ -265,7 +265,6 @@ mod ERE-THEOREMS is
     rl [regex_eq_ewp_a]       : epsilon /\ a               => bot .
     rl [regex_eq_ewp_b]       : epsilon /\ b               => bot .
     rl [regex_eq_ewp_concat]  : epsilon /\ (Alpha . Beta)  => (epsilon /\ Alpha) /\ (epsilon /\ Beta) .
-    rl [regex_eq_ewp_and]     : epsilon /\ (Alpha /\ Beta) => (epsilon /\ Alpha) /\ (epsilon /\ Beta) .
     rl [regex_eq_ewp_choice]  : epsilon /\ (Alpha \/ Beta) => (epsilon /\ Alpha) \/ (epsilon /\ Beta) .
     rl [regex_eq_ewp_kleene]  : epsilon /\ [kleene X Alpha]       => epsilon .
 
@@ -435,10 +434,10 @@ mod PROOF-GEN is
         applyEq(S, SL, NAT, 'regex_eq_der_neg) or-else
         applyEq(S, SL, NAT, 'regex_eq_ewp_bot) or-else
         applyEq(S, SL, NAT, 'regex_eq_ewp_epsilon) or-else
+
         applyEq(S, SL, NAT, 'regex_eq_ewp_a) or-else
         applyEq(S, SL, NAT, 'regex_eq_ewp_b) or-else
         applyEq(S, SL, NAT, 'regex_eq_ewp_concat) or-else
-        applyEq(S, SL, NAT, 'regex_eq_ewp_and) or-else
         applyEq(S, SL, NAT, 'regex_eq_ewp_choice) or-else
         applyEq(S, SL, NAT, 'regex_eq_ewp_kleene) or-else
         applyEq(S, SL, NAT, 'regex_eq_ewp_not_bot) or-else
