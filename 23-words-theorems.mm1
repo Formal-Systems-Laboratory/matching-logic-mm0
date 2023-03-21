@@ -78,6 +78,7 @@ theorem regex_eq_ewp_not_not: $ (epsilon /\ ~(~ Alpha)) <-> (epsilon /\ Alpha) $
 theorem regex_eq_or_choice_abs: $ top \/ Alpha <-> top $ = '(ibii imp_top @ a1i top_or);
 theorem regex_eq_or_choice_unit: $ bot \/ Alpha <-> Alpha $ = '(ibii bot_or prop_1);
 theorem regex_eq_or_choice_idem: $ Alpha \/ Alpha <-> Alpha $ = 'oridm;
+theorem regex_eq_or_choice_idem_leaf: $ Alpha \/ (Alpha \/ Beta) <-> Alpha \/ Beta$ = '(ibii (eori orl id) orr);
 theorem regex_eq_or_choice_assoc: $ (Alpha \/ Beta) \/ Gamma <-> Alpha \/ (Beta \/ Gamma) $ = 'orass;
 theorem regex_eq_or_choice_comm_node: $ Alpha \/ (Beta \/ Gamma) <-> Beta \/ (Alpha \/ Gamma) $ = 'or12;
 theorem regex_eq_or_choice_comm_leaf: $ Alpha \/ Beta <-> Beta \/ Alpha $ = 'orcomb;
@@ -86,6 +87,7 @@ theorem regex_eq_or_choice_comm_leaf: $ Alpha \/ Beta <-> Beta \/ Alpha $ = 'orc
 theorem regex_eq_and_choice_abs: $ bot /\ Alpha <-> bot $ = '(ibii anl absurdum);
 theorem regex_eq_and_choice_unit: $ top /\ Alpha <-> Alpha $ = '(ibii anr top_and);
 theorem regex_eq_and_choice_idem: $ Alpha /\ Alpha <-> Alpha $ = 'anidm;
+theorem regex_eq_and_choice_idem_leaf: $ Alpha /\ (Alpha /\ Beta) <-> Alpha /\ Beta$ = '(bicom @ bian11i @ bicom anidm);
 theorem regex_eq_and_choice_assoc: $ (Alpha /\ Beta) /\ Gamma <-> Alpha /\ (Beta /\ Gamma) $ = 'anass;
 theorem regex_eq_and_choice_comm_node: $ Alpha /\ (Beta /\ Gamma) <-> Beta /\ (Alpha /\ Gamma) $ = 'anlass;
 theorem regex_eq_and_choice_comm_leaf: $ Alpha /\ Beta <-> Beta /\ Alpha $ = 'ancomb;
