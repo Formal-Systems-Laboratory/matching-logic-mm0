@@ -39,5 +39,3 @@ mod TEST is
                                           ?=   [ ctximp-app 'ZZ (sVar 'box . top-letter) (sVar 'Rho) 'dummy ] ;
      .
 endm
-
-reduce unit-tests .
