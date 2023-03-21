@@ -489,7 +489,7 @@ mod PROOF-GEN is
     eq applyAllRules(S, SL, NAT) =
         applyRule(S, SL, NAT, 'check-ewp) ;
         applyRule(S, SL, NAT, 'der-a) ;
-        applyRule(S, SL, NAT, 'der-b) .
+        applyRule(S, SL, NAT, 'der-b) [print "rl: " S] .
 
     op myModule : -> Module .
     eq myModule = upModule('ERE-THEOREMS, false) .
@@ -500,7 +500,7 @@ mod PROOF-GEN is
    ceq applyEq(S, SL, NAT, R) = eqEdge( applResult(R, getContext(Result), getSubstitution(Result))
                                       , mkProofHint(downTerm(getTerm(Result), < error >), SL, NAT)
                                       )
-    if Result := metaXapply(myModule, upTerm(S), R, none, 0, unbounded, 0) .
+    if Result := metaXapply(myModule, upTerm(S), R, none, 0, unbounded, 0) [print "eq: " R " " S ] .
     eq applyEq(S, SL, NAT, R) = none [owise] .
 
     op applyRule : State StateList Nat Qid -> Edges .
@@ -802,3 +802,5 @@ mod PROOF-GEN is
     eq theorem-top-implies-fp-pub-mm0(Phi) = theorem-top-implies-fp-mm0(Phi) .
     eq theorem-top-implies-fp-pub(Phi)     = pub theorem-top-implies-fp(Phi) .
 endm
+
+--- set print attribute on .
