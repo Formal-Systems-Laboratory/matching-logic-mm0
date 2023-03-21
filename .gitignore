@@ -1,1 +1,4 @@
 /.build
+
+# Hypothesis example database. Could we move this to a new directory?
+/.hypothesis
