@@ -3,4 +3,4 @@ set -euo pipefail
 export PYTHONPYCACHEPREFIX='.build/'
 
 mypy --disallow-untyped-calls --disallow-incomplete-defs *.py
-exec ./test.py "$@"
+exec pytest ./test.py "$@"
