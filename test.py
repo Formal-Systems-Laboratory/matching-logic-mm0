@@ -85,6 +85,8 @@ def test_regex(theorem: str, test_name: str, regex: str) -> None:
     with benchmark(test_name, 'gen_mm1'): run_proof_gen('mm1', theorem, regex, output_mm1_file)
     test_mm(output_joined_mm0_file, output_mm1_file)
 
+### Parametric tests #################
+
 fast = False
 slow = True
 TestData = Tuple[bool, str, str, str]
@@ -96,6 +98,41 @@ def param_test(theorem: str, test_name: str, regex: str, fast=[], slow=[]) -> Li
     for param in slow:
         ret.append((slow, theorem, test_name.format(param), regex.format(param)))
     return ret
+
+### Randomized tests using hypothesis
+
+def regex():
+    from hypothesis.strategies import composite, just, recursive
+
+    def letters():
+        return just('a') | just('b')
+
+    @composite
+    def neg(draw, arg):
+        return '( ~ ' + draw(arg) + ')'
+
+    @composite
+    def kleene(draw, arg):
+        return '( ' + draw(arg) + ' * )'
+
+    @composite
+    def concat(draw, arg):
+        return '(' + draw(arg) + ' . ' + draw(arg) + ')'
+
+    @composite
+    def plus(draw, arg):
+        return '( ' + draw(arg) + ' + ' + draw(arg) + ' )'
+
+    return recursive(letters(),
+                     lambda sub: concat(sub) | kleene(sub) | plus(sub))
+
+from hypothesis import given, settings
+
+@given(regex())
+@settings(deadline=None)
+def test_equiv(regex):
+    print(regex)
+    test_regex('fp-implies-regex-pub', 'rand-1', regex + ' ->> ' + regex)
 
 ### Main #######################
 
@@ -156,6 +193,8 @@ for test in tests:
     is_slow, theorem, name, expression = test
     if (not is_slow) or run_slow_tests:
         test_regex(theorem, name, expression)
+
+test_equiv()
 
 print()
 print_benchmarks()
