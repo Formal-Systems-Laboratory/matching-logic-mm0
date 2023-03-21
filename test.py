@@ -121,6 +121,7 @@ for f in sorted((glob('*.mm0') + glob('*.mm1'))):
 
 # Regular expression tests
 tests : List[TestData] = [
+    (fast, 'fp-implies-regex-pub', 'a+b-implies-a+b',            '(a + b) ->> (a + b)'),
     (fast, 'top-implies-fp-pub',   'example-in-paper-1',         '(a . a)* ->> (((a *) . a) + epsilon) '),
     (fast, 'main-goal',            'a-or-b-star',                '(a + b)*'),
     (fast, 'top-implies-fp-pub',   'kleene-star-star-1',         '(a *) * ->> (a *)'),
