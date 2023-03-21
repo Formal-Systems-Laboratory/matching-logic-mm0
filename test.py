@@ -9,7 +9,7 @@ from typing import Dict, List, NamedTuple, Optional, Tuple
 from subprocess import check_call, check_output
 from sys import argv
 
-from maude import check_maude_version
+import maude
 
 test_dir=".build"
 
@@ -144,7 +144,11 @@ def test_equiv(regex):
 
 ### Main #######################
 
-check_maude_version()
+def test_maude_unit_tests() -> None:
+    assert maude.reduce_in_module('test.maude', 'TEST', 'TestResult', 'unit-tests') == 'passed'
+
+maude.check_maude_version()
+test_maude_unit_tests()
 
 # Arg parsing
 usage = 'usage: test [--no-slow-tests]'

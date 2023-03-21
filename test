@@ -2,10 +2,5 @@
 set -euo pipefail
 export PYTHONPYCACHEPREFIX='.build/'
 
-# TODO: Extract Maude running code from proof-gen.py and move the following
-# to test.py
-( maude test.maude  < /dev/null | grep 'result TestResult: passed' ) \
-    || { echo 'Maude unit-tests failed.';  exit 1 ; }
-
 mypy --disallow-untyped-calls --disallow-incomplete-defs *.py
 exec ./test.py "$@"
