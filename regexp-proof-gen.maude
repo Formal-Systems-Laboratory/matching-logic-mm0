@@ -282,6 +282,7 @@ mod ERE-THEOREMS is
     rl [regex_eq_or_choice_abs] : (~ bot)   \/ Alpha => (~ bot) .
     rl [regex_eq_or_choice_unit] : bot   \/ Alpha => Alpha .
     rl [regex_eq_or_choice_idem] : Alpha \/ Alpha => Alpha .
+    rl [regex_eq_or_choice_idem_leaf] : Alpha \/ (Alpha \/ Beta) => Alpha \/ Beta .
     rl [regex_eq_or_choice_assoc] : (Alpha \/ Beta) \/ Gamma  => Alpha \/ (Beta \/ Gamma) .
    crl [regex_eq_or_choice_comm_node] : Alpha \/ (Beta \/ Gamma) => Beta \/ (Alpha \/ Gamma) if compare(Alpha, Beta) = GT .
    crl [regex_eq_or_choice_comm_leaf] : Alpha \/ Beta => Beta \/ Alpha if compare(Alpha, Beta) == GT and not isDisjunction(Beta) .
@@ -290,6 +291,7 @@ mod ERE-THEOREMS is
     rl [regex_eq_and_choice_abs] : bot   /\ Alpha => bot .
     rl [regex_eq_and_choice_unit] : (~ bot)   /\ Alpha => Alpha .
     rl [regex_eq_and_choice_idem] : Alpha /\ Alpha => Alpha .
+    rl [regex_eq_and_choice_idem_node] : Alpha /\ (Alpha /\ Beta) => Alpha /\ Beta .
     rl [regex_eq_and_choice_assoc] : (Alpha /\ Beta) /\ Gamma  => Alpha /\ (Beta /\ Gamma) .
    crl [regex_eq_and_choice_comm_node] : Alpha /\ (Beta /\ Gamma) => Beta /\ (Alpha /\ Gamma) if compare(Alpha, Beta) = GT .
    crl [regex_eq_and_choice_comm_leaf] : Alpha /\ Beta => Beta /\ Alpha if compare(Alpha, Beta) == GT and not isConjunction(Beta) .
@@ -450,16 +452,18 @@ mod PROOF-GEN is
         applyEq(S, SL, NAT, 'regex_eq_ewp_not_kleene) or-else
         applyEq(S, SL, NAT, 'regex_eq_ewp_not_not) or-else
 
-
         applyEq(S, SL, NAT, 'regex_eq_or_choice_abs) or-else
         applyEq(S, SL, NAT, 'regex_eq_or_choice_unit) or-else
         applyEq(S, SL, NAT, 'regex_eq_or_choice_idem) or-else
+        applyEq(S, SL, NAT, 'regex_eq_or_choice_idem_leaf) or-else
         applyEq(S, SL, NAT, 'regex_eq_or_choice_assoc) or-else
         applyEq(S, SL, NAT, 'regex_eq_or_choice_comm_node) or-else
         applyEq(S, SL, NAT, 'regex_eq_or_choice_comm_leaf) or-else
+
         applyEq(S, SL, NAT, 'regex_eq_and_choice_abs) or-else
         applyEq(S, SL, NAT, 'regex_eq_and_choice_unit) or-else
         applyEq(S, SL, NAT, 'regex_eq_and_choice_idem) or-else
+        applyEq(S, SL, NAT, 'regex_eq_and_choice_idem_leaf) or-else
         applyEq(S, SL, NAT, 'regex_eq_and_choice_assoc) or-else
         applyEq(S, SL, NAT, 'regex_eq_and_choice_comm_node) or-else
         applyEq(S, SL, NAT, 'regex_eq_and_choice_comm_leaf) or-else
