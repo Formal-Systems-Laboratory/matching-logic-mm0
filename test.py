@@ -11,6 +11,7 @@ from sys import argv
 
 test_dir=".build"
 
+
 ### Infrastructure ################
 
 class Benchmark(NamedTuple):
@@ -42,6 +43,7 @@ class _Benchmark():
 
 def benchmark(test_name: str, aspect: str) -> _Benchmark:
     return _Benchmark(test_name, aspect)
+
 
 ### Helpers #######################
 
@@ -85,6 +87,7 @@ def test_regex(theorem: str, test_name: str, regex: str) -> None:
     with benchmark(test_name, 'gen_mm1'): run_proof_gen('mm1', theorem, regex, output_mm1_file)
     test_mm(output_joined_mm0_file, output_mm1_file)
 
+
 ### Parametric tests #################
 
 FAST = False
@@ -99,12 +102,12 @@ def param_test(theorem: str, test_name: str, regex: str, fast: List[int] = [], s
         ret.append((SLOW, theorem, test_name.format(param), regex.format(param)))
     return ret
 
+
 ### Randomized tests using hypothesis
 
 from typing import Callable
 from hypothesis import given, settings
 from hypothesis.strategies import composite, just, recursive, SearchStrategy, DrawFn
-
 
 def regex() -> SearchStrategy[str]:
 
@@ -135,6 +138,7 @@ def regex() -> SearchStrategy[str]:
 def test_equiv(regex):
     print(regex)
     test_regex('fp-implies-regex-pub', 'rand-1', regex + ' ->> ' + regex)
+
 
 ### Main #######################
 
