@@ -7,5 +7,5 @@ export PYTHONPYCACHEPREFIX='.build/'
 ( maude test.maude  < /dev/null | grep 'result TestResult: passed' ) \
     || { echo 'Maude unit-tests failed.';  exit 1 ; }
 
-mypy --disallow-untyped-calls --disallow-incomplete-defs ./test.py ./proof-gen.py
+mypy --disallow-untyped-calls --disallow-incomplete-defs *.py
 exec ./test.py "$@"

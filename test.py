@@ -9,10 +9,12 @@ from typing import Dict, List, NamedTuple, Optional, Tuple
 from subprocess import check_call, check_output
 from sys import argv
 
+from maude import check_maude_version
+
 test_dir=".build"
 
 
-### Infrastructure ################
+### Benchmarks ##################
 
 class Benchmark(NamedTuple):
     join:      Optional[int] = None
@@ -141,6 +143,8 @@ def test_equiv(regex):
 
 
 ### Main #######################
+
+check_maude_version()
 
 # Arg parsing
 usage = 'usage: test [--no-slow-tests]'
