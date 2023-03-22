@@ -116,17 +116,12 @@ def test_mm(mm0_file: str, mm1_file: str) -> None:
 ### Test: proof generated certificates ##########################
 
 @pytest.mark.parametrize('theorem,test_name,regex',
-[   ('top-implies-fp-pub',   'example-in-paper-1',         '(a . a)* ->> (((a *) . a) + epsilon) '),
-    ('main-goal',            'a-or-b-star',                '(a + b)*'),
-    ('top-implies-fp-pub',   'kleene-star-star-1',         '(a *) * ->> (a *)'),
-    ('fp-implies-regex-pub', 'kleene-star-star',           '(a *) * ->> (a *)'),
-    ('fp-implies-regex-pub', 'example-in-paper',           '(a . a)* ->> (((a *) . a) + epsilon) '),
-    ('top-implies-fp-pub',   'alternate-top-1',            '((a *) . b) * + (((b *) . a) *)'),
-    ('fp-implies-regex-pub', 'alternate-top',              '((a *) . b) * + (((b *) . a) *)'),
-    ('top-implies-fp-pub',   'even-or-odd-1',              '((((a . a) + (a . b)) + (b . a)) + (b . b)) * + ((a + b) . (((((a . a) + (a . b)) + (b . a)) + (b . b)) *))'),
-    ('fp-implies-regex-pub', 'even-or-odd',                '((((a . a) + (a . b)) + (b . a)) + (b . b)) * + ((a + b) . (((((a . a) + (a . b)) + (b . a)) + (b . b)) *))'),
-    ('top-implies-fp-pub',   'no-contains-a-or-no-only-b-1', '(~ (top . (a . top))) + ~ (b *)'),
-    ('fp-implies-regex-pub', 'no-contains-a-or-no-only-b', '(~ (top . (a . top))) + ~ (b *)'),
+[   ('main-goal',            'a-or-b-star',                '(a + b)*'),
+    ('main-goal',            'kleene-star-star',           '(a *) * ->> (a *)'),
+    ('main-goal',            'example-in-paper',           '(a . a)* ->> (((a *) . a) + epsilon) '),
+    ('main-goal',            'alternate-top',              '((a *) . b) * + (((b *) . a) *)'),
+    ('main-goal',            'even-or-odd',                '((((a . a) + (a . b)) + (b . a)) + (b . b)) * + ((a + b) . (((((a . a) + (a . b)) + (b . a)) + (b . b)) *))'),
+    ('main-goal',            'no-contains-a-or-no-only-b', '(~ (top . (a . top))) + ~ (b *)'),
 ])
 def test_regex(theorem: str, test_name: str, regex: str) -> None:
     output_mm0_file = path.join(test_dir, test_name + '.mm0')
@@ -144,28 +139,23 @@ def test_regex(theorem: str, test_name: str, regex: str) -> None:
 
 @pytest.mark.parametrize('n', [1, 2, 4, slow(10), slow(20), slow(30), slow(40), slow(100)])
 def test_regex_match_l(n: int) -> None:
-    test_regex('fp-implies-regex-pub',  'match-l-{:03d}-1'.format(n), 'match-l({})'.format(n))
-    test_regex('top-implies-fp-pub',    'match-l-{:03d}-2'.format(n), 'match-l({})'.format(n))
+    test_regex('main-goal', 'match-l-{:03d}'.format(n), 'match-l({})'.format(n))
 
 @pytest.mark.parametrize('n', [1, 2, 4, slow(10), slow(20), slow(30)])
 def test_regex_match_r(n: int) -> None:
-    test_regex('fp-implies-regex-pub',  'match-r-{:03d}-1'.format(n), 'match-r({})'.format(n))
-    test_regex('top-implies-fp-pub',    'match-r-{:03d}-2'.format(n), 'match-r({})'.format(n))
+    test_regex('main-goal', 'match-r-{:03d}'.format(n), 'match-r({})'.format(n))
 
 @pytest.mark.parametrize('n', [1, 2, 4, slow(10), slow(20), slow(30)])
 def test_regex_eq_l(n: int) -> None:
-    test_regex('fp-implies-regex-pub',  'eq-l-{:03d}-1'.format(n), 'eq-l({})'.format(n))
-    test_regex('top-implies-fp-pub',    'eq-l-{:03d}-2'.format(n), 'eq-l({})'.format(n))
+    test_regex('main-goal', 'eq-l-{:03d}'.format(n), 'eq-l({})'.format(n))
 
 @pytest.mark.parametrize('n', [1, 2, 4, slow(10), slow(20), slow(30)])
 def test_regex_eq_r(n: int) -> None:
-    test_regex('fp-implies-regex-pub',  'eq-r-{:03d}-1'.format(n), 'eq-r({})'.format(n))
-    test_regex('top-implies-fp-pub',    'eq-r-{:03d}-2'.format(n), 'eq-r({})'.format(n))
+    test_regex('main-goal', 'eq-r-{:03d}'.format(n), 'eq-r({})'.format(n))
 
 @pytest.mark.parametrize('n', [1, 2, 4, slow(10), slow(20), slow(30)])
 def test_regex_eq_lr(n: int) -> None:
-    test_regex('fp-implies-regex-pub',  'eq-lr-{:03d}-1'.format(n), 'eq-lr({})'.format(n))
-    test_regex('top-implies-fp-pub',    'eq-lr-{:03d}-2'.format(n), 'eq-lr({})'.format(n))
+    test_regex('main-goal', 'eq-lr-{:03d}'.format(n), 'eq-lr({})'.format(n))
 
 @pytest.mark.parametrize('exp', [
     'a',
@@ -175,8 +165,7 @@ def test_regex_eq_lr(n: int) -> None:
 ])
 def test_regex_implies_self(exp: str) -> None:
     id = regex_to_id(exp)
-    test_regex('fp-implies-regex-pub',  'implies-self-{}-1'.format(id), '{} ->> {}'.format(exp, exp))
-    test_regex('top-implies-fp-pub',    'implies-self-{}-2'.format(id), '{} ->> {}'.format(exp, exp))
+    test_regex('main-goal',  'implies-self-{}'.format(id), '{} ->> {}'.format(exp, exp))
 
 
 ### Randomized tests using hypothesis
