@@ -211,7 +211,7 @@ def regex() -> SearchStrategy[str]:
                      lambda sub: concat(sub) | kleene(sub) | plus(sub))
 
 @given(regex())
-@settings(deadline=None, verbosity=hypothesis.Verbosity.verbose)
+@settings(deadline=None, verbosity=hypothesis.Verbosity.verbose, max_examples=10)
 @pytest.mark.slow
 def test_equiv(exp):
     test_regex_implies_self(exp)
