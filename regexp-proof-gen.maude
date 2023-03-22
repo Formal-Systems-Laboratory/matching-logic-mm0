@@ -349,6 +349,7 @@ fmod MM0 is
     op pub _ : MM0Decl -> MM0Decl .
     op no-binders : -> MM0Binder [ctor] .
     op { _ colon SVar } : QidList -> MM0Binder [ctor] .
+    eq { nil colon SVar } = no-binders .
 endfm
 
 --- Manually performs a search, and returns the search graph as a tree with backlinks.
