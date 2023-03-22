@@ -686,7 +686,9 @@ mod PROOF-GEN is
        theorem-fp-implies-regex(Phi)
        pub theorem 'proof-main-goal { all-sVars(Phi) colon SVar }
            colon $ Phi $
-             = quote([[ 'rsyl [[ 'bang 'top-implies-fp 'X 'CCapbDDx ]] 'fp-implies-regex 'domain-words ]]) ; .
+             = quote([[ 'rsyl [[ 'bang 'top-implies-fp all-sVars((top-word 'X) -> fp(proofHint(Phi))) ]]
+                              [[ 'bang 'fp-implies-regex all-sVars(fp(proofHint(Phi)) -> Phi) ]]
+                        'domain-words ]]) ; .
     op theorem-main-goal-mm0 : Pattern -> MM0Decl .
     eq theorem-main-goal-mm0(Phi)
      =  theorem 'proof-main-goal { all-sVars(Phi) colon SVar } colon $ Phi $ ; .
