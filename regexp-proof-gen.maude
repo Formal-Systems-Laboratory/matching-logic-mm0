@@ -327,36 +327,20 @@ mod ERE-THEOREMS is
     op check-ewp[ _ ] : Pattern -> State [ctor] .
 endm
 
-
 fmod MM0 is
     protecting QID-LIST .
     protecting PATTERN-METAMATH .
+    sort MM0SExpr NeMM0SExprList MM0SExprList .
+    subsort Qid < MM0SExpr < NeMM0SExprList < MM0SExprList .
+    subsort NeQidList < NeMM0SExprList .
+    subsort QidList < MM0SExprList .
 
-    sort MM0SExpr MM0Atom .
-    subsort Qid < MM0Atom < MM0SExpr .
-
-    --- We use square brackets instead of parens for S-Expressions since
-    --- Maude treats parens specially.
-    --- TODO: Consider using List{MM0SExpr}?
-    op [[ _ _ ]]        : MM0SExpr MM0SExpr                             -> MM0SExpr .
-    op [[ _ _ _ ]]      : MM0SExpr MM0SExpr MM0SExpr                    -> MM0SExpr .
-    op [[ _ _ _ _ ]]    : MM0SExpr MM0SExpr MM0SExpr MM0SExpr           -> MM0SExpr .
-    op [[ _ _ _ _ _ ]]  : MM0SExpr MM0SExpr MM0SExpr MM0SExpr MM0SExpr  -> MM0SExpr .
-    op [[ _ _ _ _ _ _ ]]
-                      : MM0SExpr MM0SExpr MM0SExpr MM0SExpr MM0SExpr MM0SExpr  -> MM0SExpr .
-    op [[ _ _ _ _    _ _ _ ]]
-                      : MM0SExpr MM0SExpr MM0SExpr MM0SExpr MM0SExpr MM0SExpr MM0SExpr  -> MM0SExpr .
-    op [[ _ _ _ _    _ _ _ _     _ ]]
-                      : MM0SExpr MM0SExpr MM0SExpr MM0SExpr
-                        MM0SExpr MM0SExpr MM0SExpr MM0SExpr
-                        MM0SExpr
-                     -> MM0SExpr .
-    op [[ _ _ _ _    _ _ _ _     _ _ _ _     _ ]]
-                      : MM0SExpr MM0SExpr MM0SExpr MM0SExpr
-                        MM0SExpr MM0SExpr MM0SExpr MM0SExpr
-                        MM0SExpr MM0SExpr MM0SExpr MM0SExpr
-                        MM0SExpr
-                     -> MM0SExpr .
+    --- We use square brackets instead of parens for S-Expressions since Maude treats parens specially.
+    --- We use *double* square brackets since single square brackets conflicts with META-TERM syntax.
+    op [[ _ ]] : NeMM0SExprList -> MM0SExpr .
+    op _ _ : MM0SExprList MM0SExprList -> MM0SExprList [ctor ditto].
+    op _ _ : NeMM0SExprList MM0SExprList -> NeMM0SExprList [ctor ditto].
+    op _ _ : MM0SExprList NeMM0SExprList -> NeMM0SExprList [ctor ditto].
 
     sort MM0Decl MM0Binder .
     op _ _ : MM0Decl MM0Decl -> MM0Decl [ctor assoc format(d n d)] .
