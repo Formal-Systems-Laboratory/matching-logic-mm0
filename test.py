@@ -62,6 +62,10 @@ def regex_to_id(exp: str) -> str:
 def slow(*args):
     return pytest.param(*args, marks=pytest.mark.slow)
 
+@no_type_check
+def xfail(*args):
+    return pytest.param(*args, marks=pytest.mark.xfail)
+
 ### MM0 Helpers #######################
 
 def join(input_file: str, output_file: str) -> None:
@@ -164,6 +168,7 @@ def test_regex_eq_lr(n: int) -> None:
     '(a + b)',
     '(( (b . b) * ) . ( b * ))',
     '( a  /\\ ( a /\\ b ) )',
+    '(((((b + a) . (b *)) . (b + a)) . ((b *) + (b . b + (b *)))) * )'
 ])
 def test_regex_implies_self(exp: str) -> None:
     id = regex_to_id(exp)

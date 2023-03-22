@@ -290,6 +290,12 @@ mod ERE-THEOREMS is
     rl [regex_eq_ewp_not_kleene]  : epsilon /\ ~ ([[ kleene X Alpha ]]) => bot .
     rl [regex_eq_ewp_not_not]     : epsilon /\ ~(~ Alpha)       => epsilon /\ Alpha .
 
+    --- Distributivity
+    rl [regex_eq_or_and_l] : (Alpha \/ Beta) /\ Gamma => (Alpha /\ Gamma) \/ (Beta /\ Gamma) .
+    rl [regex_eq_or_and_r] : Gamma /\ (Alpha \/ Beta) => (Gamma /\ Alpha) \/ (Gamma /\ Beta) .
+    rl [regex_eq_or_concat_l] : (Alpha \/ Beta) . Gamma => (Alpha . Gamma) \/ (Beta . Gamma) .
+    rl [regex_eq_or_concat_r] : Gamma . (Alpha \/ Beta) => (Gamma . Alpha) \/ (Gamma . Beta) .
+
     --- Identity and idemoptency of \/
     rl [regex_eq_or_choice_abs] : (~ bot)   \/ Alpha => (~ bot) .
     rl [regex_eq_or_choice_unit] : bot   \/ Alpha => Alpha .
@@ -441,6 +447,11 @@ mod PROOF-GEN is
         applyEq(S, SL, NAT, 'regex_eq_ewp_not_choice) or-else
         applyEq(S, SL, NAT, 'regex_eq_ewp_not_kleene) or-else
         applyEq(S, SL, NAT, 'regex_eq_ewp_not_not) or-else
+
+        applyEq(S, SL, NAT, 'regex_eq_or_and_l) or-else
+        applyEq(S, SL, NAT, 'regex_eq_or_and_r) or-else
+        applyEq(S, SL, NAT, 'regex_eq_or_concat_l) or-else
+        applyEq(S, SL, NAT, 'regex_eq_or_concat_r) or-else
 
         applyEq(S, SL, NAT, 'regex_eq_or_choice_abs) or-else
         applyEq(S, SL, NAT, 'regex_eq_or_choice_unit) or-else
