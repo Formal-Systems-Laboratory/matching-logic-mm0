@@ -6,8 +6,8 @@ from maude import reduce_in_module
 def cleanup_maude_output(s: str) -> str:
     s = s.replace("'", "")
     s = s.replace("-", "_")
-    s = s.replace("[", "(")
-    s = s.replace("]", ")")
+    s = s.replace("[[", "(")
+    s = s.replace("]]", ")")
     s = s.replace("_>>", "->>")
     s = s.replace("_>", "->")
     s = s.replace("colon", ":")

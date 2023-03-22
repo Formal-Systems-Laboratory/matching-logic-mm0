@@ -50,12 +50,12 @@ fmod PATTERN-METAMATH is
     op ceil : Pattern -> Notation [ctor] .
     op floor : Pattern -> Notation [ctor] .
     op _ C= _ : Pattern Pattern -> Notation .
-    op [ ctximp-app _ _ _ _ ] : Qid Pattern Pattern Qid -> Notation .
+    op [[ ctximp-app _ _ _ _ ]] : Qid Pattern Pattern Qid -> Notation .
 
     eq desugar(ceil(phi)) = app (sym 'defSym) phi .
     eq desugar(floor(phi)) = ~ ceil(~ phi) .
     eq desugar(phi C= psi) = floor(phi -> psi) .
-    eq desugar([ ctximp-app X ctx phi x ])
+    eq desugar([[ ctximp-app X ctx phi x ]])
      =  exists x (eVar x /\ ((app[ eVar x / X ] ctx) C= phi)) .
 
     *** ERE *********************************************
@@ -66,7 +66,7 @@ fmod PATTERN-METAMATH is
     subsort Letter < Notation .
     op a            :                 -> Letter [ctor] .
     op b            :                 -> Letter [ctor] .
-    op [ kleene _ _ ] : Qid Pattern   -> Notation [ctor prec 25] .
+    op [[ kleene _ _ ]] : Qid Pattern   -> Notation [ctor prec 25] .
     op top-letter   :                 -> Notation [ctor] .
     op kleene _ _   : Qid Pattern     -> Notation [ctor prec 25] .
     op top-word _   : Qid             -> Notation [ctor] .
@@ -76,8 +76,8 @@ fmod PATTERN-METAMATH is
     eq desugar(a) = sym 'a-symbol .
     eq desugar(b) = sym 'b-symbol .
     eq desugar(top-letter) = a \/ b .
-    eq desugar([ kleene X phi ]) = mu X (epsilon \/ (phi . sVar X)) .
-    eq desugar(top-word X) = [ kleene X top-letter ] .
+    eq desugar([[ kleene X phi ]]) = mu X (epsilon \/ (phi . sVar X)) .
+    eq desugar(top-word X) = [[ kleene X top-letter ]] .
     eq desugar(phi . psi) = ( app ( app ( sym 'concat-symbol ) phi ) psi ) .
 
     op (derivative _ _) : Pattern Pattern -> Pattern [ctor] .
@@ -92,7 +92,7 @@ fmod PATTERN-METAMATH is
     op _ + _        : Pattern Pattern -> Pattern [prec 30] .
     eq Alpha + Beta = Alpha \/ Beta .
     op _ *          : Pattern -> Pattern [prec 30] .
-    eq Alpha * = [ kleene 'Xk Alpha ] .
+    eq Alpha * = [[ kleene 'Xk Alpha ]] .
     op _ ->> _        : Pattern Pattern -> Pattern [prec 31] .
     eq Alpha ->> Beta = (~ Alpha) \/ Beta .
     op _ <<->> _       : Pattern Pattern -> Pattern [prec 32] .
@@ -118,13 +118,13 @@ fmod PATTERN-METAMATH is
     eq match-r(N) = (a ^r N) ->> ((a + epsilon) ^r N) . (a ^r N) .
 
     op eq-l : Nat -> Pattern .
-    eq eq-l(N) = [ kleene 'X a ] ->> ((a + epsilon) ^l N) . [ kleene 'X (a ^l N) ] .
+    eq eq-l(N) = [[ kleene 'X a ]] ->> ((a + epsilon) ^l N) . [[ kleene 'X (a ^l N) ]] .
 
     op eq-r : Nat -> Pattern .
-    eq eq-r(N) = [ kleene 'X a ] ->> ((a + epsilon) ^r N) . [ kleene 'X (a ^r N) ] .
+    eq eq-r(N) = [[ kleene 'X a ]] ->> ((a + epsilon) ^r N) . [[ kleene 'X (a ^r N) ]] .
 
     op eq-lr : Nat -> Pattern .
-    eq eq-lr(N) = (((a + epsilon) ^l N) . [ kleene 'X (a ^l N) ] ) ->> ((a + epsilon) ^r N) . [ kleene 'X (a ^r N) ] .
+    eq eq-lr(N) = (((a + epsilon) ^l N) . [[ kleene 'X (a ^l N) ]] ) ->> ((a + epsilon) ^r N) . [[ kleene 'X (a ^r N) ]] .
 
     *** Helpers ***************************************************
 
@@ -148,8 +148,8 @@ fmod PATTERN-METAMATH is
     eq substitute [ phi / X ] in top-letter = top-letter .
     eq substitute [ phi / X ] in (psi1 . psi2)
      = (substitute [ phi / X ] in psi1) . (substitute [ phi / X ] in psi2) .
-    eq substitute [ phi / X ] in [ ctximp-app Y psi1 psi2 x ]
-     = [ ctximp-app Y (substitute [ phi / X ] in psi1) (substitute [ phi / X ] in psi2)  x ] .
+    eq substitute [ phi / X ] in [[ ctximp-app Y psi1 psi2 x ]]
+     = [[ ctximp-app Y (substitute [ phi / X ] in psi1) (substitute [ phi / X ] in psi2)  x ]] .
 
     op all-sVars : Pattern -> QidList .
     eq all-sVars(Notation) = all-sVars(desugar(Notation)) .
@@ -209,7 +209,7 @@ fmod PATTERN-METAMATH-COMPARE is
     eq rank(a) = 2 .
     eq rank(b) = 3 .
     eq rank(top) = 4 .
-    eq rank([kleene X phi]) = 5 .
+    eq rank([[ kleene X phi ]]) = 5 .
     eq rank(~ phi) = 6 .
     eq rank(phi1 . phi2) = 7 .
     eq rank(phi1 /\ phi2) = 8 .
@@ -228,7 +228,7 @@ fmod PATTERN-METAMATH-COMPARE is
     eq compare(phi, phi) = EQ .
    ceq compare(phi, psi) = LT if rank(phi) < rank(psi) .
    ceq compare(phi, psi) = GT if rank(phi) > rank(psi) .
-    eq compare([kleene X phi], [kleene X psi]) = compare(phi, psi) .
+    eq compare([[ kleene X phi ]], [[kleene X psi ]]) = compare(phi, psi) .
     eq compare(~ phi, ~ psi) = compare(phi, psi) .
     eq compare(phi1 . phi2, psi1 . psi2) = compare(pair(phi1, phi2), pair(psi1, psi2)) .
     eq compare(phi1 /\ phi2, psi1 /\ psi2) = compare(pair(phi1, phi2), pair(psi1, psi2)) .
@@ -254,7 +254,8 @@ mod ERE-THEOREMS is
     rl [regex_eq_der_same_a]  : (derivative A A)            => epsilon .
    crl [regex_eq_der_diff_a]  : (derivative A B)            => bot if A =/= B .
 
-    rl [regex_eq_der_kleene]  : (derivative A [kleene X Alpha])         => (derivative A Alpha) . [kleene X Alpha] .
+    rl [regex_eq_der_kleene]  : (derivative A [[kleene X Alpha]])
+                                                               => (derivative A Alpha) . [[kleene X Alpha]] .
     rl [regex_eq_der_concat]  : (derivative A (Alpha . Beta))  => ((derivative A Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative A Beta)) .
     rl [regex_eq_der_choice]  : (derivative A (Alpha \/ Beta)) => (derivative A Alpha) \/ (derivative A Beta) .
     rl [regex_eq_der_conj]    : (derivative A (Alpha /\ Beta)) => (derivative A Alpha) /\ (derivative A Beta) .
@@ -266,7 +267,7 @@ mod ERE-THEOREMS is
     rl [regex_eq_ewp_b]       : epsilon /\ b               => bot .
     rl [regex_eq_ewp_concat]  : epsilon /\ (Alpha . Beta)  => (epsilon /\ Alpha) /\ (epsilon /\ Beta) .
     rl [regex_eq_ewp_choice]  : epsilon /\ (Alpha \/ Beta) => (epsilon /\ Alpha) \/ (epsilon /\ Beta) .
-    rl [regex_eq_ewp_kleene]  : epsilon /\ [kleene X Alpha]       => epsilon .
+    rl [regex_eq_ewp_kleene]  : epsilon /\ [[kleene X Alpha]]      => epsilon .
 
     rl [regex_eq_ewp_not_bot]     : epsilon /\ ~(bot)           => epsilon .
     rl [regex_eq_ewp_not_eps]     : epsilon /\ ~(epsilon)       => bot .
@@ -275,7 +276,7 @@ mod ERE-THEOREMS is
     rl [regex_eq_ewp_not_concat]  : epsilon /\ ~(Alpha . Beta)  => (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta) .
     rl [regex_eq_ewp_not_and]     : epsilon /\ ~(Alpha /\ Beta) => (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta) .
     rl [regex_eq_ewp_not_choice]  : epsilon /\ ~(Alpha \/ Beta) => (epsilon /\ ~ Alpha) /\ (epsilon /\ ~ Beta) .
-    rl [regex_eq_ewp_not_kleene]  : epsilon /\ ~ ([ kleene X Alpha ]) => bot .
+    rl [regex_eq_ewp_not_kleene]  : epsilon /\ ~ ([[ kleene X Alpha ]]) => bot .
     rl [regex_eq_ewp_not_not]     : epsilon /\ ~(~ Alpha)       => epsilon /\ Alpha .
 
     --- Identity and idemoptency of \/
@@ -304,10 +305,10 @@ mod ERE-THEOREMS is
     rl [regex_eq_eps_concat_r] : Alpha . epsilon => Alpha .
 
     rl [regex_eq_double_neg] : ~ ~ Alpha => Alpha .
-    rl [regex_eq_double_kleene] : [kleene X [kleene Y Alpha]] => [kleene X Alpha] .
+    rl [regex_eq_double_kleene] : [[ kleene X [[ kleene Y Alpha ]] ]] => [[ kleene X Alpha ]] .
 
-    rl [regex_eq_eps_kleene] : [kleene X epsilon] => epsilon .
-    rl [regex_eq_bot_kleene] : [kleene X bot] => epsilon .
+    rl [regex_eq_eps_kleene] : [[ kleene X epsilon ]] => epsilon .
+    rl [regex_eq_bot_kleene] : [[ kleene X bot ]] => epsilon .
 
 
     *** Rules *********************************
@@ -337,20 +338,20 @@ fmod MM0 is
     --- We use square brackets instead of parens for S-Expressions since
     --- Maude treats parens specially.
     --- TODO: Consider using List{MM0SExpr}?
-    op [ _ _ ]        : MM0SExpr MM0SExpr                             -> MM0SExpr .
-    op [ _ _ _ ]      : MM0SExpr MM0SExpr MM0SExpr                    -> MM0SExpr .
-    op [ _ _ _ _ ]    : MM0SExpr MM0SExpr MM0SExpr MM0SExpr           -> MM0SExpr .
-    op [ _ _ _ _ _ ]  : MM0SExpr MM0SExpr MM0SExpr MM0SExpr MM0SExpr  -> MM0SExpr .
-    op [ _ _ _ _ _ _ ]
+    op [[ _ _ ]]        : MM0SExpr MM0SExpr                             -> MM0SExpr .
+    op [[ _ _ _ ]]      : MM0SExpr MM0SExpr MM0SExpr                    -> MM0SExpr .
+    op [[ _ _ _ _ ]]    : MM0SExpr MM0SExpr MM0SExpr MM0SExpr           -> MM0SExpr .
+    op [[ _ _ _ _ _ ]]  : MM0SExpr MM0SExpr MM0SExpr MM0SExpr MM0SExpr  -> MM0SExpr .
+    op [[ _ _ _ _ _ _ ]]
                       : MM0SExpr MM0SExpr MM0SExpr MM0SExpr MM0SExpr MM0SExpr  -> MM0SExpr .
-    op [ _ _ _ _    _ _ _ ]
+    op [[ _ _ _ _    _ _ _ ]]
                       : MM0SExpr MM0SExpr MM0SExpr MM0SExpr MM0SExpr MM0SExpr MM0SExpr  -> MM0SExpr .
-    op [ _ _ _ _    _ _ _ _     _ ]
+    op [[ _ _ _ _    _ _ _ _     _ ]]
                       : MM0SExpr MM0SExpr MM0SExpr MM0SExpr
                         MM0SExpr MM0SExpr MM0SExpr MM0SExpr
                         MM0SExpr
                      -> MM0SExpr .
-    op [ _ _ _ _    _ _ _ _     _ _ _ _     _ ]
+    op [[ _ _ _ _    _ _ _ _     _ _ _ _     _ ]]
                       : MM0SExpr MM0SExpr MM0SExpr MM0SExpr
                         MM0SExpr MM0SExpr MM0SExpr MM0SExpr
                         MM0SExpr MM0SExpr MM0SExpr MM0SExpr
@@ -544,7 +545,7 @@ mod PROOF-GEN is
     eq str(Alpha \/ Beta) = "C" + str(Alpha) + "p" + str(Beta) + "D" .
     eq str(Alpha /\ Beta) = "C" + str(Alpha) + "q" + str(Beta) + "D" .
     eq str(Alpha -> Beta) = "C" + str(Alpha) + "i" + str(Beta) + "D" .
-    eq str([kleene X Alpha]) = "C" + str(Alpha) + "Dx" .
+    eq str([[ kleene X Alpha ]]) = "C" + str(Alpha) + "Dx" .
     eq str(~ Alpha) = "nC" + str(Alpha) + "D" .
 
     *** fp *******************************************************************
@@ -588,19 +589,19 @@ mod PROOF-GEN is
     eq cong-thm('_/\_, LR) = qid("and" + LR) .
     eq cong-thm('_._, LR) = qid("concat" + LR) .
     eq cong-thm('~_, LR) = 'not .
-    eq cong-thm('`[kleene__`], LR) = 'kleene .
+    eq cong-thm('`[`[kleene__`]`], LR) = 'kleene .
 
     op eq-thm : Substitution Qid -> MM0SExpr .
     eq eq-thm('X:Qid <- T1 ; 'Alpha:Pattern <- T2, 'regex_eq_ewp_kleene)
-     = ['regex_eq_ewp_kleene positivity(downTerm(T1, 'bad-down-term), downTerm(T2, sVar 'bad-down-term-alpha))] .
+     = [[ 'regex_eq_ewp_kleene positivity(downTerm(T1, 'bad-down-term), downTerm(T2, sVar 'bad-down-term-alpha)) ]] .
     eq eq-thm('X:Qid <- T1 ; 'Alpha:Pattern <- T2, 'regex_eq_ewp_not_kleene)
-     = ['regex_eq_ewp_not_kleene positivity(downTerm(T1, 'bad-down-term), downTerm(T2, sVar 'bad-down-term-alpha))] .
+     = [[ 'regex_eq_ewp_not_kleene positivity(downTerm(T1, 'bad-down-term), downTerm(T2, sVar 'bad-down-term-alpha)) ]] .
     eq eq-thm('A:Letter <- Q ; Subst , R) = qid(string(R) + "-wrt-" + string(getName(Q))) .
     eq eq-thm(                 Subst , R) = R [owise] .
 
 
     op cong-of-equiv _ _ : Qid MM0SExpr -> MM0SExpr .
-    eq cong-of-equiv Q MMP = [ qid("cong-of-equiv-" + string(Q)) MMP ] .
+    eq cong-of-equiv Q MMP = [[ qid("cong-of-equiv-" + string(Q)) MMP ]] .
 
     op lift-equality-to-context : Context Term Term MM0SExpr -> MM0SExpr .
     --- input: Context, Original Term, Final Term, Continuation
@@ -611,10 +612,10 @@ mod PROOF-GEN is
     eq lift-equality-to-context([], TOrig, TFinal, MMP) = MMP .
 
     --- special case for Kleene due to positivitiy
-    eq lift-equality-to-context('`[kleene__`][ T1, Ctx ], '`[kleene__`][ T1, TOrig ], '`[kleene__`][ T1, TFinal ], MMP)
-     = [ 'cong-of-equiv-kleene positivity(downTerm(T1, 'bad-down-term), downTerm(TOrig,  sVar 'bad-down-term))
+    eq lift-equality-to-context('`[`[kleene__`]`][ T1, Ctx ], '`[`[kleene__`]`][ T1, TOrig ], '`[`[kleene__`]`][ T1, TFinal ], MMP)
+     = [[ 'cong-of-equiv-kleene positivity(downTerm(T1, 'bad-down-term), downTerm(TOrig,  sVar 'bad-down-term))
                                positivity(downTerm(T1, 'bad-down-term), downTerm(TFinal, sVar 'bad-down-term))
-                               lift-equality-to-context(Ctx, TOrig, TFinal, MMP) ].
+                               lift-equality-to-context(Ctx, TOrig, TFinal, MMP) ]] .
 
     --- special cases for state ctors
     eq lift-equality-to-context('check-ewp`[_`][ Ctx ], 'check-ewp`[_`][ TOrig ], 'check-ewp`[_`][ TFinal ], MMP)
@@ -634,40 +635,41 @@ mod PROOF-GEN is
     op eFresh : Qid Pattern -> MM0SExpr .
     eq eFresh(X, Notation)      = eFresh(X, desugar(Notation))   .
    ceq eFresh(X, Phi)           = 'eFresh-disjoint               if not occursIn(X, Phi) .
-   ceq eFresh(X, app Phi1 Phi2) = [ 'eFresh-app eFresh(X, Phi1) eFresh(X, Phi2) ]
+   ceq eFresh(X, app Phi1 Phi2) = [[ 'eFresh-app eFresh(X, Phi1) eFresh(X, Phi2) ]]
                                                                  if     occursIn(X, app Phi1 Phi2) .
-   ceq eFresh(X, Phi1 -> Phi2)  = [ 'eFresh-imp eFresh(X, Phi1) eFresh(X, Phi2) ]
+   ceq eFresh(X, Phi1 -> Phi2)  = [[ 'eFresh-imp eFresh(X, Phi1) eFresh(X, Phi2) ]]
                                                                  if     occursIn(X, Phi1 -> Phi2) .
     eq eFresh(X, exists X Phi)  = 'eFresh-exists-same-var .
-   ceq eFresh(X, exists Y Phi)  = [ 'bang 'eFresh-exists '- Y '- eFresh(X, Phi) ]
+   ceq eFresh(X, exists Y Phi)  = [[ 'bang 'eFresh-exists '- Y '- eFresh(X, Phi) ]]
                                                                  if     occursIn(X, Phi)
                                                                      /\ X =/= Y .
-   ceq eFresh(X, mu Y Phi)      = [ 'eFresh-mu eFresh(X, Phi) ]  if     occursIn(X, Phi) .
+   ceq eFresh(X, mu Y Phi)      = [[ 'eFresh-mu eFresh(X, Phi) ]]
+                                                                 if     occursIn(X, Phi) .
 
     *** sFresh ****************************************************************
     op sFresh : Qid Pattern -> MM0SExpr .
     eq sFresh(X, Notation)      = sFresh(X, desugar(Notation))   .
    ceq sFresh(X, Phi)           = 'sFresh-disjoint               if not occursIn(X, Phi) .
-   ceq sFresh(X, app Phi1 Phi2) = [ 'sFresh-app sFresh(X, Phi1) sFresh(X, Phi2) ]
+   ceq sFresh(X, app Phi1 Phi2) = [[ 'sFresh-app sFresh(X, Phi1) sFresh(X, Phi2) ]]
                                                                  if     occursIn(X, app Phi1 Phi2) .
-   ceq sFresh(X, Phi1 -> Phi2)  = [ 'sFresh-imp sFresh(X, Phi1) sFresh(X, Phi2) ]
+   ceq sFresh(X, Phi1 -> Phi2)  = [[ 'sFresh-imp sFresh(X, Phi1) sFresh(X, Phi2) ]]
                                                                  if     occursIn(X, Phi1 -> Phi2) .
-   ceq sFresh(X, exists Y Phi)  = [ 'bang 'sFresh-exists '- Y '- sFresh(X, Phi) ]
+   ceq sFresh(X, exists Y Phi)  = [[ 'bang 'sFresh-exists '- Y '- sFresh(X, Phi) ]]
                                                                  if     occursIn(X, Phi) .
     eq sFresh(X, mu X Phi)      = 'sFresh-mu-same-var .
-   ceq sFresh(X, mu Y Phi)      = [ 'sFresh-mu sFresh(X, Phi) ]  if     occursIn(X, Phi)
-                                                                     /\ X =/= Y .
+   ceq sFresh(X, mu Y Phi)      = [[ 'sFresh-mu sFresh(X, Phi) ]]
+                                                                 if     occursIn(X, Phi) /\ X =/= Y .
 
     *** propag-sSubst *********************************************************
     op propag-sSubst : Pattern Qid Pattern -> MM0SExpr .
     eq propag-sSubst(Psi, X, Notation) = propag-sSubst(Psi, X, desugar(Notation)) .
    ceq propag-sSubst(Psi, X, Phi) = 'sSubstitution-disjoint if not occursIn(X, Phi) .
     eq propag-sSubst(Psi, X, sVar X) = 'sSubstitution-in-same-sVar .
-    eq propag-sSubst(Psi, X, app Phi1 Phi2) = [ '-sSubst-app propag-sSubst(Psi, X, Phi1) propag-sSubst(Psi, X, Phi2) ] .
-    eq propag-sSubst(Psi, X, Phi1 -> Phi2) = [ '-sSubst-imp propag-sSubst(Psi, X, Phi1) propag-sSubst(Psi, X, Phi2) ] .
-    eq propag-sSubst(Psi, X, exists Y Phi) = [ 'bang '-sSubst-exists '- Y '- '- '- eFresh(Y, Psi) propag-sSubst(Psi, X, Phi) ] .
+    eq propag-sSubst(Psi, X, app Phi1 Phi2) = [[ '-sSubst-app propag-sSubst(Psi, X, Phi1) propag-sSubst(Psi, X, Phi2) ]] .
+    eq propag-sSubst(Psi, X, Phi1 -> Phi2) = [[ '-sSubst-imp propag-sSubst(Psi, X, Phi1) propag-sSubst(Psi, X, Phi2) ]] .
+    eq propag-sSubst(Psi, X, exists Y Phi) = [[ 'bang '-sSubst-exists '- Y '- '- '- eFresh(Y, Psi) propag-sSubst(Psi, X, Phi) ]] .
     eq propag-sSubst(Psi, X, mu X Phi) = 'sSubstitution-in-same-mu .
-   ceq propag-sSubst(Psi, X, mu Y Phi) = [ '-sSubst-mu sFresh(Y, Psi) propag-sSubst(Psi, X, Phi) ] if X =/= Y .
+   ceq propag-sSubst(Psi, X, mu Y Phi) = [[ '-sSubst-mu sFresh(Y, Psi) propag-sSubst(Psi, X, Phi) ]] if X =/= Y .
 
 
     *** pos ******************************************************************
@@ -675,18 +677,18 @@ mod PROOF-GEN is
     eq positivity(X, sVar X) = 'positive-in-same-sVar .
    ceq positivity(X, sVar Y) = 'positive-disjoint if X =/= Y  .
     eq positivity(X, mu X Phi) = 'positive-in-same-mu .
-   ceq positivity(X, mu Y Phi) = [ 'positive-in-mu positivity(X, Phi) ]  if X =/= Y .
-    eq positivity(X, [kleene X Phi]) = 'positive-in-same-mu .
-   ceq positivity(X, [kleene Y Phi]) = [ 'positive-in-mu positivity(X, Phi) ]  if X =/= Y .
-    eq positivity(X, Phi1 \/ Phi2) = [ 'positive-in-or positivity(X, Phi1) positivity(X, Phi2) ] .
+   ceq positivity(X, mu Y Phi) = [[ 'positive-in-mu positivity(X, Phi) ]]  if X =/= Y .
+    eq positivity(X, [[kleene X Phi]]) = 'positive-in-same-mu .
+   ceq positivity(X, [[kleene Y Phi]]) = [[ 'positive-in-mu positivity(X, Phi) ]]  if X =/= Y .
+    eq positivity(X, Phi1 \/ Phi2) = [[ 'positive-in-or positivity(X, Phi1) positivity(X, Phi2) ]] .
     eq positivity(X, epsilon) = 'positive-disjoint .
     eq positivity(X, a) = 'positive-disjoint .
     eq positivity(X, b) = 'positive-disjoint .
-    eq positivity(X, Phi1 . Phi2) = [ 'positive-in-concat positivity(X, Phi1) positivity(X, Phi2) ] .
+    eq positivity(X, Phi1 . Phi2) = [[ 'positive-in-concat positivity(X, Phi1) positivity(X, Phi2) ]] .
 
     *** unfold ***************************************************************
     op unfold-r : Pattern MM0SExpr -> MM0SExpr .
-    eq unfold-r(mu X Phi, MMP) = [ 'unfold-r positivity(X, Phi) [ 'norm-lemma-r propag-sSubst(mu X Phi, X, Phi) MMP ] ] .
+    eq unfold-r(mu X Phi, MMP) = [[ 'unfold-r positivity(X, Phi) [[ 'norm-lemma-r propag-sSubst(mu X Phi, X, Phi) MMP ]] ]] .
 
 
     *** main-goal ************************************************************
@@ -699,7 +701,7 @@ mod PROOF-GEN is
        theorem-fp-implies-regex(Phi)
        pub theorem 'proof-main-goal { all-sVars(Phi) colon SVar }
            colon $ Phi $
-             = quote([ 'rsyl [ 'bang 'top-implies-fp 'X 'CCapbDDx ] 'fp-implies-regex 'domain-words ]) ; .
+             = quote([[ 'rsyl [[ 'bang 'top-implies-fp 'X 'CCapbDDx ]] 'fp-implies-regex 'domain-words ]]) ; .
     op theorem-main-goal-mm0 : Pattern -> MM0Decl .
     eq theorem-main-goal-mm0(Phi)
      =  theorem 'proof-main-goal { all-sVars(Phi) colon SVar } colon $ Phi $ ; .
@@ -722,35 +724,35 @@ mod PROOF-GEN is
 
     op proof-top-implies-fp : Node -> MM0SExpr .
     eq proof-top-implies-fp(N) =
-       [ 'top-implies-fp-init
+       [[ 'top-implies-fp-init
             unfold-r(fp(N), 'orl )
             proof-top-implies-fp((fp(N) . top-letter) -> fp(N), N)
-       ] .
+       ]] .
 
     op proof-top-implies-fp : Pattern Node -> MM0SExpr .
     eq proof-top-implies-fp(Phi, node(< Alpha >, eqEdge(applResult(R, Ctx, Subst), N)))
      = proof-top-implies-fp(Phi, N) .
     eq proof-top-implies-fp(Phi, backlink(< Alpha >))
-     = [ 'bang 'top-implies-fp-leaf 'box '- 'dummy ] .
+     = [[ 'bang 'top-implies-fp-leaf 'box '- 'dummy ]] .
 
    ceq proof-top-implies-fp( ( FpCtximp . top-letter ) -> FpUnf
                            , node(< Phi >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
                                                              rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
                                                              rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
                            )     )
-     = [ 'bang 'top-implies-fp-interior
+     = [[ 'bang 'top-implies-fp-interior
          '- 'box 'dummy '-    '- '- '-
-         [ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfA) unfold-r(substitute[ FpUnf / X ] in FpUnfA, 'orl) ]
-         [ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfB) unfold-r(substitute[ FpUnf / X ] in FpUnfB, 'orl) ]
-         [ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfA)
-           [ 'norm-lemma propag-sSubst([ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy], X, FpCtximpA . top-letter)
-                         proof-top-implies-fp((substitute[ [ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy] / X ] in (FpCtximpA . top-letter)) -> substitute[ FpUnf / X ] in FpUnfA , N_A)
-         ] ]
-         [ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfB)
-           [ 'norm-lemma propag-sSubst([ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy], X, FpCtximpB . top-letter)
-                         proof-top-implies-fp((substitute[ [ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy] / X ] in (FpCtximpB . top-letter)) -> substitute[ FpUnf / X ] in FpUnfB , N_B)
-         ] ]
-       ]
+         [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfA) unfold-r(substitute[ FpUnf / X ] in FpUnfA, 'orl) ]]
+         [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfB) unfold-r(substitute[ FpUnf / X ] in FpUnfB, 'orl) ]]
+         [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfA)
+            [[ 'norm-lemma propag-sSubst([[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy]], X, FpCtximpA . top-letter)
+                         proof-top-implies-fp((substitute[ [[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy]] / X ] in (FpCtximpA . top-letter)) -> substitute[ FpUnf / X ] in FpUnfA , N_A)
+         ]] ]]
+         [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfB)
+            [[ 'norm-lemma propag-sSubst([[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy]], X, FpCtximpB . top-letter)
+                         proof-top-implies-fp((substitute[ [[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy]] / X ] in (FpCtximpB . top-letter)) -> substitute[ FpUnf / X ] in FpUnfB , N_B)
+         ]] ]]
+       ]]
     if mu X (epsilon \/ ((a . FpCtximpA) \/ (b . FpCtximpB))) := FpCtximp
     /\ mu X (epsilon \/ ((a . FpUnfA)    \/ (b . FpUnfB)))   := FpUnf
      .
@@ -772,19 +774,19 @@ mod PROOF-GEN is
     op proof-fp-implies-regex : Node -> MM0SExpr .
     eq proof-fp-implies-regex(node(check-ewp[ epsilon ], none)) = 'id .
     eq proof-fp-implies-regex(backlink(< Alpha >)) = 'fp-implies-regex-leaf .
-    eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [ 'apply-equiv lift-equality-to-context(Ctx, upTerm(S), upTerm(getState(N)), eq-thm(Subst, R)) proof-fp-implies-regex(N) ] .
-    eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [ 'apply-equiv lift-equality-to-context(Ctx, upTerm(S), upTerm(getState(N)), eq-thm(Subst, R)) proof-fp-implies-regex(N) ] .
+    eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [[ 'apply-equiv lift-equality-to-context(Ctx, upTerm(S), upTerm(getState(N)), eq-thm(Subst, R)) proof-fp-implies-regex(N) ]] .
+    eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [[ 'apply-equiv lift-equality-to-context(Ctx, upTerm(S), upTerm(getState(N)), eq-thm(Subst, R)) proof-fp-implies-regex(N) ]] .
     eq proof-fp-implies-regex(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
                                        rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
                                        rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
                              )    )
-     = [ 'fp-implies-regex-interior
+     = [[ 'fp-implies-regex-interior
             positivity(F(Alpha), fp(N_A))
             positivity(F(Alpha), fp(N_B))
             proof-fp-implies-regex(N_EWP)
-            [ 'norm-lemma propag-sSubst(Alpha, qid(str(Alpha)), fp(N_A))  proof-fp-implies-regex(N_A)]
-            [ 'norm-lemma propag-sSubst(Alpha, qid(str(Alpha)), fp(N_B))  proof-fp-implies-regex(N_B)]
-       ]
+            [[ 'norm-lemma propag-sSubst(Alpha, qid(str(Alpha)), fp(N_A))  proof-fp-implies-regex(N_A)]]
+            [[ 'norm-lemma propag-sSubst(Alpha, qid(str(Alpha)), fp(N_B))  proof-fp-implies-regex(N_B)]]
+       ]]
      .
 
    *** Public versions of Lemmas
