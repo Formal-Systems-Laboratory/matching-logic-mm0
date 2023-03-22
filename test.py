@@ -48,13 +48,19 @@ def benchmark(test_name: str, aspect: str) -> _Benchmark:
     return _Benchmark(test_name, aspect)
 
 
-### PyTest configuration & Helpers ##########
+### PyTest Helpers #####################
+
+def regex_to_id(exp: str) -> str:
+    return exp.replace(' ', '') \
+              .replace('*', 'x') \
+              .replace('(', 'C') \
+              .replace(')', 'D') \
 
 @no_type_check
 def slow(*args):
     return pytest.param(*args, marks=pytest.mark.slow)
 
-### Helpers #######################
+### MM0 Helpers #######################
 
 def join(input_file: str, output_file: str) -> None:
     check_call(['mm0-rs', 'join', input_file, output_file])
@@ -110,11 +116,7 @@ def test_mm(mm0_file: str, mm1_file: str) -> None:
 ### Test: proof generated certificates ##########################
 
 @pytest.mark.parametrize('theorem,test_name,regex',
-[   ('fp-implies-regex-pub', 'matches-self-a',             'a ->> a'),
-    ('fp-implies-regex-pub', 'matches-self-aa.aa',         '(a . a) . (a . a) ->> (a . a) . (a . a)'),
-    ('fp-implies-regex-pub', 'matches-self-a+b',           '(a + b) ->> (a + b)'),
-    ('fp-implies-regex-pub', 'matches-self-bbx.bx',        '(( (b . b) * ) . ( b * )) ->> (( (b . b) * ) . ( b * ))'),
-    ('top-implies-fp-pub',   'example-in-paper-1',         '(a . a)* ->> (((a *) . a) + epsilon) '),
+[   ('top-implies-fp-pub',   'example-in-paper-1',         '(a . a)* ->> (((a *) . a) + epsilon) '),
     ('main-goal',            'a-or-b-star',                '(a + b)*'),
     ('top-implies-fp-pub',   'kleene-star-star-1',         '(a *) * ->> (a *)'),
     ('fp-implies-regex-pub', 'kleene-star-star',           '(a *) * ->> (a *)'),
@@ -165,6 +167,17 @@ def test_regex_eq_lr(n: int) -> None:
     test_regex('fp-implies-regex-pub',  'eq-lr-{:03d}-1'.format(n), 'eq-lr({})'.format(n))
     test_regex('top-implies-fp-pub',    'eq-lr-{:03d}-2'.format(n), 'eq-lr({})'.format(n))
 
+@pytest.mark.parametrize('exp', [
+    'a',
+    '(a . a) . (a . a)',
+    '(a + b)',
+    '(( (b . b) * ) . ( b * ))',
+])
+def test_regex_implies_self(exp: str) -> None:
+    id = regex_to_id(exp)
+    test_regex('fp-implies-regex-pub',  'implies-self-{}-1'.format(id), '{} ->> {}'.format(exp, exp))
+    test_regex('top-implies-fp-pub',    'implies-self-{}-2'.format(id), '{} ->> {}'.format(exp, exp))
+
 
 ### Randomized tests using hypothesis
 
@@ -200,9 +213,8 @@ def regex() -> SearchStrategy[str]:
 @given(regex())
 @settings(deadline=None, verbosity=hypothesis.Verbosity.verbose)
 @pytest.mark.slow
-def test_equiv(regex):
-    print(regex)
-    test_regex('fp-implies-regex-pub', 'rand-1', regex + ' ->> ' + regex)
+def test_equiv(exp):
+    test_regex_implies_self(exp)
 
 
 print_benchmarks()
