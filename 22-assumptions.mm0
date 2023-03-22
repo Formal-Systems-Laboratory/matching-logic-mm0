@@ -1,7 +1,7 @@
 import "20-theory-words.mm0";
 
 axiom alpha_rename_ctximp_app {sBox: SVar} {eBox1 eBox2: EVar}
-                              (phi: Pattern sBox eBox1) (psi: Pattern sBox)
+                              (phi: Pattern sBox) (psi: Pattern sBox)
   : $(ctximp_app sBox phi psi eBox1) <-> (ctximp_app sBox phi psi eBox2)$;
 
 --- This file contains unproven theorems as axioms for the theory of words.
