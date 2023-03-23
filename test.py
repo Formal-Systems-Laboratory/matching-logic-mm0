@@ -88,7 +88,6 @@ def test_maude_unit_tests() -> None:
 
 makedirs(test_dir, exist_ok=True)
 last_mm0_file = None
-
 base_mm_tests = []
 for f in sorted((glob('*.mm0') + glob('*.mm1'))):
     if path.splitext(f)[1] == '.mm0':
@@ -162,6 +161,7 @@ def test_regex_eq_lr(n: int) -> None:
     '(a . a) . (a . a)',
     '(a + b)',
     '(( (b . b) * ) . ( b * ))',
+    '( a  /\\ ( a /\\ b ) )',
 ])
 def test_regex_implies_self(exp: str) -> None:
     id = regex_to_id(exp)

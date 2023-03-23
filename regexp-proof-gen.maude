@@ -182,6 +182,17 @@ fmod PATTERN-METAMATH is
 
     op occursIn : Qid Pattern -> Bool .
     eq occursIn(X, phi) = occurs(X, all-sVars(phi)) or occurs(X, all-eVars(phi)) .
+
+    op hasEWP : Pattern -> Bool .
+    eq hasEWP(bot) = false .
+    eq hasEWP(top) = true .
+    eq hasEWP(L:Letter) = false .
+    eq hasEWP(epsilon) = true .
+    eq hasEWP(phi /\ psi) = hasEWP(phi) and hasEWP(psi) .
+    eq hasEWP(phi . psi) = hasEWP(phi) and hasEWP(psi) .
+    eq hasEWP(phi \/ psi) = hasEWP(phi) or hasEWP(psi) .
+    eq hasEWP([[ kleene X phi ]]) = true .
+    eq hasEWP(~ phi) = not hasEWP(phi) .
 endfm
 
 *** Comparing Patterns ******************************************************
@@ -282,8 +293,8 @@ mod ERE-THEOREMS is
     --- Identity and idemoptency of \/
     rl [regex_eq_or_choice_abs] : (~ bot)   \/ Alpha => (~ bot) .
     rl [regex_eq_or_choice_unit] : bot   \/ Alpha => Alpha .
-    rl [regex_eq_or_choice_idem] : Alpha \/ Alpha => Alpha .
-    rl [regex_eq_or_choice_idem_leaf] : Alpha \/ (Alpha \/ Beta) => Alpha \/ Beta .
+    rl [regex_eq_or_choice_idem_leaf] : Alpha \/ Alpha => Alpha .
+    rl [regex_eq_or_choice_idem_node] : Alpha \/ (Alpha \/ Beta) => Alpha \/ Beta .
     rl [regex_eq_or_choice_assoc] : (Alpha \/ Beta) \/ Gamma  => Alpha \/ (Beta \/ Gamma) .
    crl [regex_eq_or_choice_comm_node] : Alpha \/ (Beta \/ Gamma) => Beta \/ (Alpha \/ Gamma) if compare(Alpha, Beta) = GT .
    crl [regex_eq_or_choice_comm_leaf] : Alpha \/ Beta => Beta \/ Alpha if compare(Alpha, Beta) == GT and not isDisjunction(Beta) .
@@ -291,7 +302,7 @@ mod ERE-THEOREMS is
     --- Identity and idemoptency of /\
     rl [regex_eq_and_choice_abs] : bot   /\ Alpha => bot .
     rl [regex_eq_and_choice_unit] : (~ bot)   /\ Alpha => Alpha .
-    rl [regex_eq_and_choice_idem] : Alpha /\ Alpha => Alpha .
+    rl [regex_eq_and_choice_idem_leaf] : Alpha /\ Alpha => Alpha .
     rl [regex_eq_and_choice_idem_node] : Alpha /\ (Alpha /\ Beta) => Alpha /\ Beta .
     rl [regex_eq_and_choice_assoc] : (Alpha /\ Beta) /\ Gamma  => Alpha /\ (Beta /\ Gamma) .
    crl [regex_eq_and_choice_comm_node] : Alpha /\ (Beta /\ Gamma) => Beta /\ (Alpha /\ Gamma) if compare(Alpha, Beta) = GT .
@@ -316,15 +327,8 @@ mod ERE-THEOREMS is
 
     sort State .
     op < _ > : Pattern -> State [ctor] .
-    op < invalid > : -> State [ctor] .
-
-    eq < bot > = < invalid > . --- This should never be reached.
-    rl [der-a]     : < Alpha > => < (derivative a Alpha) > .
-    rl [der-b]     : < Alpha > => < (derivative b Alpha) > .
-    rl [check-ewp] : < Alpha > => check-ewp[ (epsilon /\ Alpha) ] .
-
-    --- We don't want the derivative rules to apply when checking EWS.
-    op check-ewp[ _ ] : Pattern -> State [ctor] .
+   crl [der-a] : < Alpha > => < (derivative a Alpha) > if hasEWP(Alpha) .
+   crl [der-b] : < Alpha > => < (derivative b Alpha) > if hasEWP(Alpha) .
 endm
 
 fmod MM0 is
@@ -440,7 +444,7 @@ mod PROOF-GEN is
 
         applyEq(S, SL, NAT, 'regex_eq_or_choice_abs) or-else
         applyEq(S, SL, NAT, 'regex_eq_or_choice_unit) or-else
-        applyEq(S, SL, NAT, 'regex_eq_or_choice_idem) or-else
+        applyEq(S, SL, NAT, 'regex_eq_or_choice_idem_node) or-else
         applyEq(S, SL, NAT, 'regex_eq_or_choice_idem_leaf) or-else
         applyEq(S, SL, NAT, 'regex_eq_or_choice_assoc) or-else
         applyEq(S, SL, NAT, 'regex_eq_or_choice_comm_node) or-else
@@ -448,7 +452,7 @@ mod PROOF-GEN is
 
         applyEq(S, SL, NAT, 'regex_eq_and_choice_abs) or-else
         applyEq(S, SL, NAT, 'regex_eq_and_choice_unit) or-else
-        applyEq(S, SL, NAT, 'regex_eq_and_choice_idem) or-else
+        applyEq(S, SL, NAT, 'regex_eq_and_choice_idem_node) or-else
         applyEq(S, SL, NAT, 'regex_eq_and_choice_idem_leaf) or-else
         applyEq(S, SL, NAT, 'regex_eq_and_choice_assoc) or-else
         applyEq(S, SL, NAT, 'regex_eq_and_choice_comm_node) or-else
@@ -473,7 +477,6 @@ mod PROOF-GEN is
 
     op applyAllRules : State StateList Nat -> Edges .
     eq applyAllRules(S, SL, NAT) =
-        applyRule(S, SL, NAT, 'check-ewp) ;
         applyRule(S, SL, NAT, 'der-a) ;
         applyRule(S, SL, NAT, 'der-b) [print "rl: " S] .
 
@@ -505,11 +508,6 @@ mod PROOF-GEN is
 
     *** Proof hint generation ************************************************
 
-    op ruleLabelToLetter : Qid -> Pattern .
-    eq ruleLabelToLetter('check-ewp) = epsilon .
-    eq ruleLabelToLetter('der-a) = a .
-    eq ruleLabelToLetter('der-b) = b .
-
     op proofHint : Pattern -> Node .
     eq proofHint(Alpha) = mkProofHint(< Alpha >, empty, 20) .
 
@@ -539,8 +537,7 @@ mod PROOF-GEN is
     op fp : Node -> Pattern .
     eq fp(backlink(< Alpha >)) = sVar F(Alpha) .
     eq fp(node(< Alpha >, eqEdge(EL, N))) = fp(N) .
-    eq fp(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
-                          rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
+    eq fp(node(< Alpha >, rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
                           rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
          )    )
      = mu qid(str(Alpha)) (epsilon \/ ((a . fp(N_A)) \/ (b . fp(N_B)))) [owise] .
@@ -552,8 +549,7 @@ mod PROOF-GEN is
     op der-tree : Node -> Node .
     eq der-tree(backlink(< Alpha >)) = backlink(< Alpha >) .
     eq der-tree(node(< Alpha >, eqEdge(EL, N))) = der-tree(N) .
-    eq der-tree(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
-                                rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
+    eq der-tree(node(< Alpha >, rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
                                 rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
          )    )
      = node(< Alpha >, rlEdge(applResult('der-a,     [], none), der-tree(N_A)) ;
@@ -603,9 +599,6 @@ mod PROOF-GEN is
                                lift-equality-to-context(Ctx, TOrig, TFinal, MMP) ]] .
 
     --- special cases for state ctors
-    eq lift-equality-to-context('check-ewp`[_`][ Ctx ], 'check-ewp`[_`][ TOrig ], 'check-ewp`[_`][ TFinal ], MMP)
-     = lift-equality-to-context(Ctx, TOrig, TFinal, MMP) .
-
     eq lift-equality-to-context('<_>[ Ctx ], '<_>[ TOrig ], '<_>[ TFinal ], MMP)
      = lift-equality-to-context(Ctx, TOrig, TFinal, MMP) .
 
@@ -675,6 +668,32 @@ mod PROOF-GEN is
     op unfold-r : Pattern MM0SExpr -> MM0SExpr .
     eq unfold-r(mu X Phi, MMP) = [[ 'unfold-r positivity(X, Phi) [[ 'norm-lemma-r propag-sSubst(mu X Phi, X, Phi) MMP ]] ]] .
 
+   *** is-letter *************************************************************
+    op is-letter : Letter -> MM0SExpr .
+    eq is-letter(a) = 'orl .
+    eq is-letter(b) = 'orr .
+
+   *** epsilon-implies-ewp ***************************************************
+   --- MetaTheorem:
+   ---  $epsilon -> Phi$ if hasEWP(Phi) .
+
+    op epsilon-implies-ewp : Pattern -> MM0SExpr .
+    eq epsilon-implies-ewp(epsilon) = 'id .
+    eq epsilon-implies-ewp(Phi /\ Psi) = [[ 'iand                   epsilon-implies-ewp(Phi) epsilon-implies-ewp(Psi) ]] .
+    eq epsilon-implies-ewp(Phi .  Psi) = [[ 'epsilon-implies-concat epsilon-implies-ewp(Phi) epsilon-implies-ewp(Psi) ]] .
+   ceq epsilon-implies-ewp(Phi \/ Psi) = [[ 'orld                   epsilon-implies-ewp(Phi) ]] if hasEWP(Phi) .
+   ceq epsilon-implies-ewp(Phi \/ Psi) = [[ 'orrd                   epsilon-implies-ewp(Psi) ]] if not hasEWP(Phi) /\ hasEWP(Psi) .
+    eq epsilon-implies-ewp([[kleene X Alpha]]) = [[ 'bang 'epsilon-implies-kleene X '- positivity(X, Alpha) ]] .
+
+    eq epsilon-implies-ewp(~ bot)          = 'epsilon-implies-top .
+    eq epsilon-implies-ewp(~ L:Letter)     = [[ 'epsilon-implies-not-letter is-letter(L:Letter) ]] .
+   ceq epsilon-implies-ewp(~ (Phi .  Psi)) = [[ 'epsilon-implies-not-concat-l epsilon-implies-ewp(~ Phi) ]] if not hasEWP(Phi) .
+   ceq epsilon-implies-ewp(~ (Phi .  Psi)) = [[ 'epsilon-implies-not-concat-r epsilon-implies-ewp(~ Psi) ]] if hasEWP(Phi) /\ not hasEWP(Psi).
+   ceq epsilon-implies-ewp(~ (Phi /\ Psi)) = [[ 'epsilon-implies-not-and-l    epsilon-implies-ewp(~ Phi) ]] if not hasEWP(Phi) .
+   ceq epsilon-implies-ewp(~ (Phi /\ Psi)) = [[ 'epsilon-implies-not-and-r    epsilon-implies-ewp(~ Psi) ]] if hasEWP(Phi) /\ not hasEWP(Psi).
+    eq epsilon-implies-ewp(~ (Phi \/ Psi)) = [[ 'epsilon-implies-not-or       epsilon-implies-ewp(~ Phi) epsilon-implies-ewp(~ Psi) ]] .
+    eq epsilon-implies-ewp(~ ~ Phi)        = [[ 'rsyl 'dne epsilon-implies-ewp(Phi) ]]  .
+
 
     *** main-goal ************************************************************
     --- Here, we split the proof for a regular expression into
@@ -723,12 +742,11 @@ mod PROOF-GEN is
      = [[ 'bang 'top-implies-fp-leaf 'box '- 'dummy ]] .
 
    ceq proof-top-implies-fp( ( FpCtximp . top-letter ) -> FpUnf
-                           , node(< Phi >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
-                                                             rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
-                                                             rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
-                           )     )
+                           , node(< Phi >, rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
+                                           rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
+                           ) )
      = [[ 'bang 'top-implies-fp-interior
-         '- 'box 'dummy '-    '- '- '-
+         '- 'box 'dummy '- '- '- '-
          [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfA) unfold-r(substitute[ FpUnf / X ] in FpUnfA, 'orl) ]]
          [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfB) unfold-r(substitute[ FpUnf / X ] in FpUnfB, 'orl) ]]
          [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfA)
@@ -759,18 +777,17 @@ mod PROOF-GEN is
              colon $ fp(proofHint(Phi)) -> Phi $ ; .
 
     op proof-fp-implies-regex : Node -> MM0SExpr .
-    eq proof-fp-implies-regex(node(check-ewp[ epsilon ], none)) = 'id .
     eq proof-fp-implies-regex(backlink(< Alpha >)) = 'fp-implies-regex-leaf .
     eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [[ 'apply-equiv lift-equality-to-context(Ctx, upTerm(S), upTerm(getState(N)), eq-thm(Subst, R)) proof-fp-implies-regex(N) ]] .
     eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [[ 'apply-equiv lift-equality-to-context(Ctx, upTerm(S), upTerm(getState(N)), eq-thm(Subst, R)) proof-fp-implies-regex(N) ]] .
-    eq proof-fp-implies-regex(node(< Alpha >, rlEdge(applResult('check-ewp, CtxEWP, Subst_EWP), N_EWP) ;
+    eq proof-fp-implies-regex(node(< Alpha >,
                                        rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
                                        rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
                              )    )
      = [[ 'fp-implies-regex-interior
             positivity(F(Alpha), fp(N_A))
             positivity(F(Alpha), fp(N_B))
-            proof-fp-implies-regex(N_EWP)
+            epsilon-implies-ewp(Alpha)
             [[ 'norm-lemma propag-sSubst(Alpha, qid(str(Alpha)), fp(N_A))  proof-fp-implies-regex(N_A)]]
             [[ 'norm-lemma propag-sSubst(Alpha, qid(str(Alpha)), fp(N_B))  proof-fp-implies-regex(N_B)]]
        ]]
