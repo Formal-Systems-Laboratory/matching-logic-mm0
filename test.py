@@ -179,6 +179,12 @@ from hypothesis.strategies import composite, just, recursive, SearchStrategy, Dr
 
 def regex() -> SearchStrategy[str]:
 
+    def epsilon() -> SearchStrategy[str]:
+        return just('epsilon')
+
+    def bot() -> SearchStrategy[str]:
+        return just('bot')
+
     def letters() -> SearchStrategy[str]:
         return just('a') | just('b')
 
@@ -198,7 +204,7 @@ def regex() -> SearchStrategy[str]:
     def plus(draw: DrawFn, arg: SearchStrategy[str]) -> str:
         return '( ' + draw(arg) + ' + ' + draw(arg) + ' )'
 
-    return recursive(letters(),
+    return recursive(bot() | epsilon() | letters(),
                      lambda sub: concat(sub) | kleene(sub) | plus(sub))
 
 @given(regex())
