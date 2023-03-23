@@ -634,7 +634,7 @@ theorem orass: $ a \/ b \/ c <-> a \/ (b \/ c) $ = '(bitr orcomb @ bitr or12 @ i
 theorem oridm: $ a \/ a <-> a $ = '(ibii (eor id id) orl);
 theorem notan2: $ ~(a /\ b) <-> a -> ~b $ = '(bicom notnot);
 theorem notan: $ ~(a /\ b) <-> (~a \/ ~b) $ = '(bitr notan2 (imeq1i notnot));
--- theorem notor: $ ~(a \/ b) <-> (~a /\ ~b) $ = '(con1b (bitr4 notan (oreqi notnot notnot)));
+theorem notor: $ ~(a \/ b) <-> (~a /\ ~b) $ = '(con1b (bitr4 notan (oreqi notnot notnot)));
 theorem iman: $ a -> b <-> ~(a /\ ~b) $ = '(bitr4 (imeq2i notnot) notan2);
 theorem imor: $ ((a \/ b) -> c) <-> ((a -> c) /\ (b -> c)) $ =
 '(ibii (iand (imim1i orl) (imim1i orr)) (curry eor));
@@ -669,7 +669,7 @@ theorem top_and: $ phi -> top /\ phi $ = '(com12 bot_or);
 
 theorem imp_to_or (h: $(~a \/ b) -> c$): $(a -> b) -> c$  = '(rsyl con3 (rsyl orcom h)) ;
 
-theorem not_distr_or: $ ~(a \/ b) <-> ~a /\ ~b $ = '(con3b @ oreq2a @ prop_1 notnot);
+theorem not_distr_or: $ ~(a \/ b) <-> ~a /\ ~b $ = 'notor;
 theorem and_distr: $ a /\ (b /\ c) <-> (a /\ b) /\ (a /\ c) $ =
   '(ibii
     (   rsyl (anim1 @ anr anidm)
