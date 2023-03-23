@@ -55,6 +55,8 @@ def regex_to_id(exp: str) -> str:
               .replace('*', 'x') \
               .replace('(', 'C') \
               .replace(')', 'D') \
+              .replace('/\\', '@') \
+              .replace('\\/', '+') \
 
 @no_type_check
 def slow(*args):
