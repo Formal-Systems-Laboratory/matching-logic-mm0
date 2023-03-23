@@ -13,20 +13,21 @@ theorem functional_b_concat {.w x v: EVar} :
   $ exists x (eVar x == b . eVar v) $ =
   (functional_subst_implicit 'w $exists x (eVar x == (eVar w . eVar v))$ 'functional_concat '(! functional_b k));
 
+theorem regex_eq_eps_concat_l: $ epsilon . Alpha <-> Alpha $ =
+  '(bitr (cong_of_equiv_concat_r @ bicom lemma_62) @
+    bitr (norm (norm_equiv appCtxRVar @ norm_exists appCtxRVar) (! exists_appCtx x box1)) @
+    bitr (cong_of_equiv_exists @
+      bitr (norm (norm_equiv appCtxRVar @ norm_and_r appCtxRVar) (! lemma_60_b _ box2)) @
+      cong_of_equiv_and_r @ corollary_57_floor (! identity_right_e x))
+    (! lemma_62 _ x));
+theorem regex_eq_eps_concat_r: $ Alpha . epsilon <-> Alpha $ =
+  '(bitr (cong_of_equiv_concat_l @ bicom lemma_62) @
+    bitr (norm (norm_equiv appCtxLRVar @ norm_exists appCtxLRVar) (! exists_appCtx x box1)) @
+    bitr (cong_of_equiv_exists @
+      bitr (norm (norm_equiv appCtxLRVar @ norm_and_r appCtxLRVar) (! lemma_60_b _ box2)) @
+      cong_of_equiv_and_r @ corollary_57_floor (! identity_left_e x))
+    (! lemma_62 _ x));
 
---- Proving the Empty Word Property
------------------------------------
-
-theorem epsilon_implies_kleene {X: SVar} (phi: Pattern X)
-  (h: $ _Positive X phi $):
-  $ epsilon -> kleene X phi $ =
-  '(rsyl orl (norm (norm_imp_l
-    ,(propag_s_subst 'X $epsilon \/ phi . sVar X$)
-    ) @ pre_fixpoint @ positive_in_kleene_r_body h));
-theorem regex_eq_ewp_bot:
-  $ (epsilon /\ bot) <-> bot $ = '(ibii anr absurdum);
-theorem regex_eq_ewp_epsilon:
-  $ epsilon /\ epsilon <-> epsilon $ = 'anidm;
 theorem regex_eq_ewp_ab
   (h: $ letter -> top_letter $):
   $ epsilon /\ letter <-> bot $
@@ -38,6 +39,71 @@ theorem regex_eq_ewp_ab
       ) (exists_framing eq_sym (! functional_epsilon x))
       (framing_def (con3 @ imim2i @ syl h dne) @ dne no_confusion_ae_e))
     absurdum);
+
+--- Proving the Empty Word Property
+-----------------------------------
+
+theorem epsilon_implies_top :
+  $ epsilon -> top $
+= '(con2 absurdum);
+
+theorem epsilon_implies_kleene {X: SVar} (phi: Pattern X)
+  (h: $ _Positive X phi $):
+  $ epsilon -> kleene X phi $ =
+  '(rsyl orl (norm (norm_imp_l
+    ,(propag_s_subst 'X $epsilon \/ phi . sVar X$)
+    ) @ pre_fixpoint @ positive_in_kleene_r_body h));
+
+theorem epsilon_implies_concat (phi psi : Pattern)
+    (h1: $epsilon -> phi$)
+    (h2: $epsilon -> psi$)
+  : $epsilon -> (phi . psi)$
+= '( rsyl (bi1i @ bicom regex_eq_eps_concat_r)
+   @ rsyl (framing_concat_l h1)
+   @ rsyl (framing_concat_r h2)
+     id);
+
+theorem epsilon_implies_not_letter (letter : Pattern)
+    (h: $letter -> top_letter$)
+  : $epsilon -> ~ letter$
+= '(exp (bi1i @ regex_eq_ewp_ab h))
+  ;
+
+theorem epsilon_implies_not_and_l (phi psi : Pattern)
+    (h: $epsilon -> ~ phi$)
+  : $epsilon -> ~ (phi /\ psi)$
+= '(rsyl (orld h) (bi1i @ bicom notan));
+theorem  epsilon_implies_not_and_r (phi psi : Pattern)
+    (h: $epsilon -> ~ psi$)
+  : $epsilon -> ~ (phi /\ psi)$
+= '(rsyl (orrd h) (bi1i @ bicom notan));
+
+theorem epsilon_implies_not_or (phi psi : Pattern)
+    (h1: $epsilon -> ~ phi$)
+    (h2: $epsilon -> ~ psi$)
+  : $epsilon -> ~ (phi \/ psi)$
+= '(rsyl (iand h1 h2) (bi1i @ bicom notor));
+
+theorem epsilon_implies_not_concat_l (phi psi : Pattern)
+    (h: $epsilon -> ~ phi$)
+  : $epsilon -> ~ (phi . psi)$
+= '( exp
+   @ rsyl (bi1i @ regex_eq_ewp_concat)
+   @ anwl
+   @ curry h );
+theorem epsilon_implies_not_concat_r (phi psi : Pattern)
+    (h: $epsilon -> ~ psi$)
+  : $epsilon -> ~ (phi . psi)$
+= '( exp
+   @ rsyl (bi1i @ regex_eq_ewp_concat)
+   @ anwr
+   @ curry h );
+
+
+theorem regex_eq_ewp_bot:
+  $ (epsilon /\ bot) <-> bot $ = '(ibii anr absurdum);
+theorem regex_eq_ewp_epsilon:
+  $ epsilon /\ epsilon <-> epsilon $ = 'anidm;
 theorem regex_eq_ewp_a:
   $ epsilon /\ a <-> bot $ = '(regex_eq_ewp_ab orl);
 theorem regex_eq_ewp_b:
@@ -77,8 +143,8 @@ theorem regex_eq_ewp_not_not: $ (epsilon /\ ~(~ Alpha)) <-> (epsilon /\ Alpha) $
 --- Identity and idemoptency of \/
 theorem regex_eq_or_choice_abs: $ top \/ Alpha <-> top $ = '(ibii imp_top @ a1i top_or);
 theorem regex_eq_or_choice_unit: $ bot \/ Alpha <-> Alpha $ = '(ibii bot_or prop_1);
-theorem regex_eq_or_choice_idem: $ Alpha \/ Alpha <-> Alpha $ = 'oridm;
-theorem regex_eq_or_choice_idem_leaf: $ Alpha \/ (Alpha \/ Beta) <-> Alpha \/ Beta$ = '(ibii (eori orl id) orr);
+theorem regex_eq_or_choice_idem_node: $ Alpha \/ (Alpha \/ Beta) <-> Alpha \/ Beta$ = '(ibii (eori orl id) orr);
+theorem regex_eq_or_choice_idem_leaf: $ Alpha \/ Alpha <-> Alpha $ = 'oridm;
 theorem regex_eq_or_choice_assoc: $ (Alpha \/ Beta) \/ Gamma <-> Alpha \/ (Beta \/ Gamma) $ = 'orass;
 theorem regex_eq_or_choice_comm_node: $ Alpha \/ (Beta \/ Gamma) <-> Beta \/ (Alpha \/ Gamma) $ = 'or12;
 theorem regex_eq_or_choice_comm_leaf: $ Alpha \/ Beta <-> Beta \/ Alpha $ = 'orcomb;
@@ -86,8 +152,8 @@ theorem regex_eq_or_choice_comm_leaf: $ Alpha \/ Beta <-> Beta \/ Alpha $ = 'orc
 --- Identity and idemoptency of /\
 theorem regex_eq_and_choice_abs: $ bot /\ Alpha <-> bot $ = '(ibii anl absurdum);
 theorem regex_eq_and_choice_unit: $ top /\ Alpha <-> Alpha $ = '(ibii anr top_and);
-theorem regex_eq_and_choice_idem: $ Alpha /\ Alpha <-> Alpha $ = 'anidm;
-theorem regex_eq_and_choice_idem_leaf: $ Alpha /\ (Alpha /\ Beta) <-> Alpha /\ Beta$ = '(bicom @ bian11i @ bicom anidm);
+theorem regex_eq_and_choice_idem_node: $ Alpha /\ (Alpha /\ Beta) <-> Alpha /\ Beta$ = '(bicom @ bian11i @ bicom anidm);
+theorem regex_eq_and_choice_idem_leaf: $ Alpha /\ Alpha <-> Alpha $ = 'anidm;
 theorem regex_eq_and_choice_assoc: $ (Alpha /\ Beta) /\ Gamma <-> Alpha /\ (Beta /\ Gamma) $ = 'anass;
 theorem regex_eq_and_choice_comm_node: $ Alpha /\ (Beta /\ Gamma) <-> Beta /\ (Alpha /\ Gamma) $ = 'anlass;
 theorem regex_eq_and_choice_comm_leaf: $ Alpha /\ Beta <-> Beta /\ Alpha $ = 'ancomb;
@@ -96,20 +162,6 @@ theorem regex_eq_bot_concat_l: $ bot . Alpha <-> bot $ =
   '(ibii (norm (norm_not appCtxLRVar) (! propag_bot box)) absurdum);
 theorem regex_eq_bot_concat_r: $ Alpha . bot <-> bot $ =
   '(ibii (norm (norm_not appCtxRVar) (! propag_bot box)) absurdum);
-theorem regex_eq_eps_concat_l: $ epsilon . Alpha <-> Alpha $ =
-  '(bitr (cong_of_equiv_concat_r @ bicom lemma_62) @
-    bitr (norm (norm_equiv appCtxRVar @ norm_exists appCtxRVar) (! exists_appCtx x box1)) @
-    bitr (cong_of_equiv_exists @
-      bitr (norm (norm_equiv appCtxRVar @ norm_and_r appCtxRVar) (! lemma_60_b _ box2)) @
-      cong_of_equiv_and_r @ corollary_57_floor (! identity_right_e x))
-    (! lemma_62 _ x));
-theorem regex_eq_eps_concat_r: $ Alpha . epsilon <-> Alpha $ =
-  '(bitr (cong_of_equiv_concat_l @ bicom lemma_62) @
-    bitr (norm (norm_equiv appCtxLRVar @ norm_exists appCtxLRVar) (! exists_appCtx x box1)) @
-    bitr (cong_of_equiv_exists @
-      bitr (norm (norm_equiv appCtxLRVar @ norm_and_r appCtxLRVar) (! lemma_60_b _ box2)) @
-      cong_of_equiv_and_r @ corollary_57_floor (! identity_left_e x))
-    (! lemma_62 _ x));
 theorem regex_eq_double_neg: $ ~ (~ Alpha) <-> Alpha $ = '(bicom notnot);
 theorem regex_eq_bot_kleene: $ (kleene X bot) <-> epsilon $ = '(ibii
   (rsyl (mu_framing (positive_in_or positive_disjoint @ positive_in_concat positive_disjoint positive_in_same_sVar) positive_disjoint (rsyl (orim2 @ norm (norm_imp_l appCtxLRVar) (! propag_bot box)) dne)) (KT positive_disjoint @ norm (norm_sym @ norm_imp_l sSubstitution_disjoint) id))
@@ -314,7 +366,7 @@ theorem fp_implies_regex_leaf :
 theorem fp_implies_regex_interior {X: SVar} (phi_a phi_b: Pattern X)
     (posa: $ _Positive X phi_a $)
     (posb: $ _Positive X phi_b $)
-    (he: $epsilon -> epsilon /\ rho$)
+    (he: $epsilon -> rho$)
     (ha: $s[ rho / X ] phi_a -> (derivative a rho)$)
     (hb: $s[ rho / X ] phi_b -> (derivative b rho)$):
     ----------------------------------------------
@@ -323,6 +375,6 @@ theorem fp_implies_regex_interior {X: SVar} (phi_a phi_b: Pattern X)
       (positive_in_or positive_disjoint @ positive_in_or (positive_in_concat positive_disjoint posa) (positive_in_concat positive_disjoint posb)) @
       apply_equiv (corollary_57_floor der_equality) (norm
         (norm_imp_l @ norm_sym @ _sSubst_or sSubstitution_disjoint @ _sSubst_or (sSubst_concat_r norm_refl) (sSubst_concat_r norm_refl))
-        (orim he @ orim (framing_concat_r ha) (framing_concat_r hb))
+        (orim (iand id he) @ orim (framing_concat_r ha) (framing_concat_r hb))
       ));
 
