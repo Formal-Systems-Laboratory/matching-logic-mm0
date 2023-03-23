@@ -233,7 +233,7 @@ theorem regex_eq_eps_kleene {X: SVar}: $ (kleene X epsilon) <-> epsilon $ =
 
 theorem der_in_ctx_forward : $w1 . (derivative w1 w2) -> w2$
  = '(norm_lemma (norm_sym @ norm_trans appCtxR (norm_app norm_refl appCtxVar))
-                (! ctximp_in_ctx_forward dummy1 _ dummy _ )
+                (! ctximp_in_ctx_forward sBox eBox _ _ )
     );
 
 
@@ -504,6 +504,9 @@ theorem top_implies_fp_init {X: SVar} (phi: Pattern)
   : $top_word X -> phi$
 = '( rsyl inductive_domain_r_implies_l @ kt_top_word_l he hl );
 
+theorem top_implies_fp_leaf {box: SVar} (phi : Pattern box) {dummy: EVar}
+  : $( ctximp_app box (sVar box . top_letter) phi dummy) . top_letter -> phi $
+= '(norm (norm_imp appctx_concat_l norm_refl) ctximp_in_ctx_forward);
 
 --- fp-implies-alpha
 --------------------

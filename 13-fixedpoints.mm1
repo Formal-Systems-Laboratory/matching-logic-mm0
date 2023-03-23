@@ -24,8 +24,8 @@ theorem propag_floor (phi psi ctx: Pattern box):
 --- Appendix I: Notations and Proofs about Recursive Symbols
 ------------------------------------------------------------
 
-theorem ctximp_in_ctx_forward {box: SVar} (ctx: Pattern box)
-: $app[ (ctximp_app box ctx psi dummy) / box ] ctx -> psi$
+theorem ctximp_in_ctx_forward {sBox: SVar} {eBox: EVar} (ctx psi: Pattern sBox)
+: $app[ (ctximp_app sBox ctx psi eBox) / sBox ] ctx -> psi$
  = '(rsyl (propag_exists eFresh_disjoint) @ exists_generalization eFresh_disjoint @ rsyl propag_floor @ impcom @ rsyl corollary_57_floor id );
 
 theorem wrap_lemma {x: EVar} (phi psi: Pattern x)
