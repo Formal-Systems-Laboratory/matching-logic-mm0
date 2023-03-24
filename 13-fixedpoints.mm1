@@ -41,12 +41,6 @@ theorem unwrap_lemma {x y: EVar} {box: SVar} (ctx phi: Pattern box):
   '(curry @ rsyl membership_var_forward @ syl (imim1i mem_floor_forward) @
   con3d @ norm (norm_imp_r @ norm_imp defNorm defNorm) (! lemma_14 box2 _ _ _ _ @ con3d @ rsyl eq_to_framing imim1));
 
--- theorem appCtx_ceil_1:
---   $ app[ phi /\ |^ psi ^| / box ] ctx -> app[ phi / box ] ctx /\ |^ psi ^| $ =
---   '(iand (framing anl) (rsyl _ (norm (norm_imp _ norm_refl) lemma_56)));
--- theorem appCtx_ceil_2 {box: SVar} (ctx: Pattern box) (phi psi: Pattern):
---   $ app[ phi / box ] ctx /\ |^ psi ^| -> app[ phi /\ |^ psi ^| / box ] ctx $;
-
 --- lemma 91 (Specialized to Application contexts)
 --- TODO: review variable binding
 --- TODO: Introduce notation
