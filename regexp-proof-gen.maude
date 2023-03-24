@@ -49,14 +49,14 @@ fmod PATTERN-METAMATH is
     *** Definedness *************************************
     op ceil : Pattern -> Notation [ctor] .
     op floor : Pattern -> Notation [ctor] .
-    op _ C= _ : Pattern Pattern -> Notation .
+    op _ C- _ : Pattern Pattern -> Notation .
     op [[ ctximp-app _ _ _ _ ]] : Qid Pattern Pattern Qid -> Notation .
 
     eq desugar(ceil(phi)) = app (sym 'defSym) phi .
     eq desugar(floor(phi)) = ~ ceil(~ phi) .
-    eq desugar(phi C= psi) = floor(phi -> psi) .
+    eq desugar(phi C- psi) = floor(phi -> psi) .
     eq desugar([[ ctximp-app X ctx phi x ]])
-     =  exists x (eVar x /\ ((app[ eVar x / X ] ctx) C= phi)) .
+     =  exists x (eVar x /\ ((app[ eVar x / X ] ctx) C- phi)) .
 
     *** ERE *********************************************
     op epsilon      :                 -> Notation [ctor] .

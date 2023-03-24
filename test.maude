@@ -24,8 +24,8 @@ mod TEST is
     op unit-tests : -> TestResult .
     eq unit-tests
      =  test 'true-is-true @ true ?= true ;
-        test 'occurs-in-subset-1        @ occursIn('nCzD, sVar 'X C= sVar 'Y)        ?= false ;
-        test 'occurs-in-subset-2        @ occursIn('nCzD, sVar 'X C= sVar 'nCzD)     ?= true ;
+        test 'occurs-in-subset-1        @ occursIn('nCzD, sVar 'X C- sVar 'Y)        ?= false ;
+        test 'occurs-in-subset-2        @ occursIn('nCzD, sVar 'X C- sVar 'nCzD)     ?= true ;
         test 'occurs-in-mu-1            @ occursIn('X, mu 'X (epsilon \/ (a . sVar 'Y \/ b . (mu 'Z (epsilon \/ (a . sVar 'Z \/ b . sVar 'Z))))))
                                                                                      ?= true ;
         test 'occurs-in-mu-1            @ occursIn('X, mu 'Y (epsilon \/ (a . sVar 'Y \/ b . (mu 'Z (epsilon \/ (a . sVar 'X \/ b . sVar 'Z))))))
