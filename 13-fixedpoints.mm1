@@ -36,7 +36,7 @@ theorem wrap_lemma {x: EVar} (phi psi: Pattern x)
     (norm_trans appCtxR @ norm_app norm_refl @ norm_trans appCtxR @ norm_app norm_refl appCtxVar)
     norm_refl) (! lemma_56 box)) (con2 @ dne singletonDef)));
 
-theorem unwrap_lemma {x y: EVar} {box: SVar} (ctx: Pattern box) (phi: Pattern):
+theorem unwrap_lemma {x y: EVar} {box: SVar} (ctx phi: Pattern box):
   $ ((y in eVar x) /\ y in |_ app[ eVar x / box ] ctx -> phi _|) -> |_ (app[ eVar y / box ] ctx) -> phi _| $ =
   '(curry @ rsyl membership_var_forward @ syl (imim1i mem_floor_forward) @
   con3d @ norm (norm_imp_r @ norm_imp defNorm defNorm) (! lemma_14 box2 _ _ _ _ @ con3d @ rsyl eq_to_framing imim1));
