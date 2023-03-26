@@ -366,6 +366,27 @@ theorem regex_eq_der_neg_wrt_b: $ (derivative b (~ Alpha)) <-> ~ (derivative b A
           bicom @ cong_of_equiv_not ,(der_transformer 'x 'y 'b $Alpha$)) @
     bicom @ cong_of_equiv_not (! der_expand d1));
 
+theorem assoc_concat (Alpha Beta Gamma: Pattern) : $ (Alpha . Beta) . Gamma <-> Alpha . (Beta . Gamma) $ =
+  (named '(
+    --- Alpha
+    norm (norm_equiv appctx_concat_l_l appctx_concat_l) @
+    bitr appCtx_pointwise @ bitr2 appCtx_pointwise @ bicom @
+    cong_of_equiv_exists @ cong_of_equiv_and_l @
+    norm (norm_sym @ norm_equiv appctx_concat_l_l appctx_concat_l) @
+    --- Beta
+    norm (norm_equiv appctx_concat_l_r appctx_concat_r_l) @
+    bitr appCtx_pointwise @ bitr2 appCtx_pointwise @ bicom @
+    cong_of_equiv_exists @ cong_of_equiv_and_l @
+    norm (norm_sym @ norm_equiv appctx_concat_l_r appctx_concat_r_l) @
+    --- Gamma
+    norm (norm_equiv appctx_concat_r appctx_concat_r_r) @
+    bitr appCtx_pointwise @ bitr2 appCtx_pointwise @ bicom @
+    cong_of_equiv_exists @ cong_of_equiv_and_l @
+    norm (norm_sym @ norm_equiv appctx_concat_r appctx_concat_r_r) @
+    --- associativity axiom on eVars
+    eq_to_intro_bi assoc_concat_e
+  ));
+
 theorem inductive_domain_l_implies_r { X : SVar }
   : $(top_word_l X) -> (top_word_r X)$
   = '( kt_top_word_l
@@ -383,7 +404,7 @@ theorem inductive_domain_l_implies_r { X : SVar }
                     @ syl (bi2i (! alpha_rename_ctximp_app sBox eBox1 eBox2))
                     (wrap ( norm ( norm_sym  (norm_imp (! appctx_concat_l _) norm_refl) )
                            @ unfold_r_top_word_r @ orrd
-                           @ sylbir (bicom regex_eq_concat_assoc) @ framing_concat_r
+                           @ sylbir (bicom assoc_concat) @ framing_concat_r
                            @ norm (norm_imp (norm_trans appctx_concat_l norm_refl) norm_refl)
                            @ ctximp_in_ctx_forward
                           ) )
@@ -405,7 +426,7 @@ theorem inductive_domain_r_implies_l { X : SVar }
                     @ syl (bi2i (! alpha_rename_ctximp_app sBox eBox1 eBox2))
                     (wrap @ norm ( norm_sym  (norm_imp appctx_concat_r norm_refl) )
                           @ unfold_r_top_word_l @ orrd
-                          @ sylbir regex_eq_concat_assoc @ framing_concat_l
+                          @ sylbir assoc_concat @ framing_concat_l
                           @ norm (norm_imp (norm_trans appctx_concat_r norm_refl) norm_refl)
                           @ ctximp_in_ctx_forward
                     )
@@ -448,24 +469,3 @@ theorem fp_implies_regex_interior {X: SVar} (phi_a phi_b: Pattern X)
         (norm_imp_l @ norm_sym @ _sSubst_or sSubstitution_disjoint @ _sSubst_or (sSubst_concat_r norm_refl) (sSubst_concat_r norm_refl))
         (orim (iand id he) @ orim (framing_concat_r ha) (framing_concat_r hb))
       ));
-
-theorem assoc_concat (Alpha Beta Gamma: Pattern) : $ (Alpha . Beta) . Gamma <-> Alpha . (Beta . Gamma) $ =
-  (named '(
-    --- Alpha
-    norm (norm_equiv appctx_concat_l_l appctx_concat_l) @
-    bitr appCtx_pointwise @ bitr2 appCtx_pointwise @ bicom @
-    cong_of_equiv_exists @ cong_of_equiv_and_l @
-    norm (norm_sym @ norm_equiv appctx_concat_l_l appctx_concat_l) @
-    --- Beta
-    norm (norm_equiv appctx_concat_l_r appctx_concat_r_l) @
-    bitr appCtx_pointwise @ bitr2 appCtx_pointwise @ bicom @
-    cong_of_equiv_exists @ cong_of_equiv_and_l @
-    norm (norm_sym @ norm_equiv appctx_concat_l_r appctx_concat_r_l) @
-    --- Gamma
-    norm (norm_equiv appctx_concat_r appctx_concat_r_r) @
-    bitr appCtx_pointwise @ bitr2 appCtx_pointwise @ bicom @
-    cong_of_equiv_exists @ cong_of_equiv_and_l @
-    norm (norm_sym @ norm_equiv appctx_concat_r appctx_concat_r_r) @
-    --- associativity axiom on eVars
-    eq_to_intro_bi assoc_concat_e
-  ));
