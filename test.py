@@ -164,6 +164,7 @@ def test_regex_eq_lr(n: int) -> None:
     '(a + b)',
     '(( (b . b) * ) . ( b * ))',
     '( a  /\\ ( a /\\ b ) )',
+    '( (bot . bot) * )',
 ])
 def test_regex_implies_self(exp: str) -> None:
     id = regex_to_id(exp)
