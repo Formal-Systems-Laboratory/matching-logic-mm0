@@ -54,10 +54,10 @@ theorem norm_concat
 : $ Norm (phi1 . psi1) (phi2 . psi2)$
 = '(norm_app (norm_app norm_refl h1) h2);
 
-theorem appctx_concat_l (phi psi : Pattern box)
+theorem appctx_concat_l (phi: Pattern box) (psi: Pattern)
 : $ Norm (app[ phi / box ] (sVar box . psi)) (phi . psi)$
 = '(norm_trans appCtxL @ norm_app (norm_trans appCtxR @ norm_app norm_refl appCtxVar) norm_refl);
-theorem appctx_concat_r (phi psi : Pattern box)
+theorem appctx_concat_r (psi: Pattern box) (phi: Pattern)
 : $ Norm (app[ psi / box ] (phi . sVar box)) (phi . psi)$
 = '(norm_trans appCtxR @ norm_app norm_refl appCtxVar);
 theorem propag_or_concat : $(phi1 \/ phi2) . psi ->  (phi1 . psi) \/ (phi2 . psi)$
