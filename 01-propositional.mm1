@@ -324,6 +324,22 @@ do {
   --| viewed as a cross-check of the axiom or the evaluator, depending on your
   --| point of view.
   (def (eval-check a) @ match (eval @ nth 4 @ get-decl a) [#t])
+
+  --| `(named pf)` wraps a proof script `pf`, runs it, then gathers all
+  --| unassigned metavariables and assigns them to dummies.
+  --| `(named x1 ... xn pf)` is the same but names the first `n` variables `x1,...,xn`.
+  --| This is commonly used for proofs where we don't care to name the
+  --| dummy variables.
+  (def named
+    (def (assign-mvar m x) @ match x ['_] [_ (set! m (dummy! x (mvar-sort m)))])
+    @ match-fn*
+      [((? atom? d) es) (refine es) (scan (get-mvars) (list d) assign-mvar)]
+      [(ds es) (refine es) (scan (get-mvars) ds assign-mvar)]
+      [(es) (refine es)
+        (def n (ref! 1))
+        (scan (get-mvars) @ fn (v)
+          (assign-mvar v (atom-app "a" n)) (set! n {n + 1}))
+        (if {n = 1} (display "unnecessary (named)"))])
 };
 
 -- configuration
