@@ -28,11 +28,8 @@ axiom regex_eq_der_same_a_wrt_a  :
 axiom regex_eq_der_same_a_wrt_b  :
   $ (derivative b b) <-> epsilon $;
 
-axiom regex_eq_concat_assoc (Alpha Beta Gamma: Pattern) : $ (Alpha . Beta) . Gamma <-> Alpha . (Beta . Gamma) $;
-
 --- Theorems that reduce the size of the automata/proof
 axiom regex_eq_double_kleene {X: SVar} (Alpha: Pattern X): $ (kleene X (kleene X Alpha)) <-> (kleene X Alpha) $;
-
 
 --- EWP related simplifications
 axiom regex_eq_ewp_concat (Alpha Beta: Pattern):
