@@ -449,3 +449,23 @@ theorem fp_implies_regex_interior {X: SVar} (phi_a phi_b: Pattern X)
         (orim (iand id he) @ orim (framing_concat_r ha) (framing_concat_r hb))
       ));
 
+theorem assoc_concat (Alpha Beta Gamma: Pattern) : $ (Alpha . Beta) . Gamma <-> Alpha . (Beta . Gamma) $ =
+  (named '(
+    --- Alpha
+    norm (norm_equiv appctx_concat_l_l appctx_concat_l) @
+    bitr appCtx_pointwise @ bitr2 appCtx_pointwise @ bicom @
+    cong_of_equiv_exists @ cong_of_equiv_and_l @
+    norm (norm_sym @ norm_equiv appctx_concat_l_l appctx_concat_l) @
+    --- Beta
+    norm (norm_equiv appctx_concat_l_r appctx_concat_r_l) @
+    bitr appCtx_pointwise @ bitr2 appCtx_pointwise @ bicom @
+    cong_of_equiv_exists @ cong_of_equiv_and_l @
+    norm (norm_sym @ norm_equiv appctx_concat_l_r appctx_concat_r_l) @
+    --- Gamma
+    norm (norm_equiv appctx_concat_r appctx_concat_r_r) @
+    bitr appCtx_pointwise @ bitr2 appCtx_pointwise @ bicom @
+    cong_of_equiv_exists @ cong_of_equiv_and_l @
+    norm (norm_sym @ norm_equiv appctx_concat_r appctx_concat_r_r) @
+    --- associativity axiom on eVars
+    eq_to_intro_bi assoc_concat_e
+  ));
