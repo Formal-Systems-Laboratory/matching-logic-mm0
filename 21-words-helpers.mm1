@@ -53,13 +53,34 @@ theorem norm_concat
   (h2: $Norm psi1 psi2$)
 : $ Norm (phi1 . psi1) (phi2 . psi2)$
 = '(norm_app (norm_app norm_refl h1) h2);
+theorem norm_concat_l
+  (h: $Norm phi1 phi2$)
+: $ Norm (phi1 . psi) (phi2 . psi)$
+= '(norm_app (norm_app norm_refl h) norm_refl);
+theorem norm_concat_r
+  (h: $Norm psi1 psi2$)
+: $ Norm (phi . psi1) (phi . psi2)$
+= '(norm_app norm_refl h);
 
-theorem appctx_concat_l (phi: Pattern box) (psi: Pattern)
-: $ Norm (app[ phi / box ] (sVar box . psi)) (phi . psi)$
-= '(norm_trans appCtxL @ norm_app (norm_trans appCtxR @ norm_app norm_refl appCtxVar) norm_refl);
-theorem appctx_concat_r (psi: Pattern box) (phi: Pattern)
-: $ Norm (app[ psi / box ] (phi . sVar box)) (phi . psi)$
-= '(norm_trans appCtxR @ norm_app norm_refl appCtxVar);
+theorem appctx_concat_l {box: SVar} (phi: Pattern box) (psi: Pattern):
+  $ Norm (app[ phi / box ] (sVar box . psi)) (phi . psi) $ =
+  '(norm_trans appCtxL @ norm_app (norm_trans appCtxR @ norm_app norm_refl appCtxVar) norm_refl);
+theorem appctx_concat_r {box: SVar} (psi: Pattern box) (phi: Pattern):
+  $ Norm (app[ psi / box ] (phi . sVar box)) (phi . psi) $ =
+  '(norm_trans appCtxR @ norm_app norm_refl appCtxVar);
+theorem appctx_concat_l_l {box: SVar} (phi: Pattern box) (rho psi: Pattern):
+  $ Norm (app[ phi / box ] ((sVar box . psi) . rho)) ((phi . psi) . rho) $ =
+  '(norm_trans appCtxLR @ norm_concat_l appctx_concat_l);
+theorem appctx_concat_l_r {box: SVar} (phi: Pattern box) (rho psi: Pattern):
+  $ Norm (app[ phi / box ] ((psi . sVar box) . rho)) ((psi . phi) . rho) $ =
+  '(norm_trans appCtxLR @ norm_concat_l appctx_concat_r);
+theorem appctx_concat_r_l {box: SVar} (phi: Pattern box) (rho psi: Pattern):
+  $ Norm (app[ phi / box ] (rho . (sVar box . psi))) (rho . (phi . psi)) $ =
+  '(norm_trans appCtxR @ norm_concat_r appctx_concat_l);
+theorem appctx_concat_r_r {box: SVar} (phi: Pattern box) (rho psi: Pattern):
+  $ Norm (app[ phi / box ] (rho . (psi . sVar box))) (rho . (psi . phi)) $ =
+  '(norm_trans appCtxR @ norm_concat_r appctx_concat_r);
+
 theorem propag_or_concat : $(phi1 \/ phi2) . psi ->  (phi1 . psi) \/ (phi2 . psi)$
 = '(norm (norm_imp appctx_concat_l (norm_or appctx_concat_l appctx_concat_l)) (! propag_or dummy) );
 

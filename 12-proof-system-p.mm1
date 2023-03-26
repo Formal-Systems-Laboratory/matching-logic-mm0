@@ -63,13 +63,16 @@ theorem propag_and_floor: $|_ phi /\ psi _| <-> |_ phi _| /\ |_ psi _|$ =
     (rsyl (anr notor) @ rsyl (con3 propag_or_def) @ con3 @ framing_def @ anl notan)
   );
 
+theorem appCtxLR {box: SVar} (phi2 phi3: Pattern) (phi1 phi4: Pattern box):
+  $ Norm (app[ phi1 / box ] (app (app phi3 phi4) phi2)) (app (app phi3 (app[ phi1 / box ] phi4)) phi2) $ =
+  '(norm_trans appCtxL @ norm_app_l appCtxR);
 theorem appCtxLVar {box: SVar} (phi1 phi2: Pattern):
   $ Norm (app[ phi1 / box ] (app (sVar box) phi2)) (app phi1 phi2) $ =
   '(norm_trans appCtxL @ norm_app appCtxVar norm_refl);
 theorem appCtxRVar {box: SVar} (phi1 phi2: Pattern):
   $ Norm (app[ phi2 / box ] (app phi1 (sVar box))) (app phi1 phi2) $ =
   '(norm_trans appCtxR @ norm_app norm_refl appCtxVar);
-theorem appCtxLRVar {box: SVar} (phi1 phi2: Pattern):
+theorem appCtxLRVar {box: SVar} (phi1 phi2 phi3: Pattern):
   $ Norm (app[ phi1 / box ] (app (app phi3 (sVar box)) phi2)) (app (app phi3 phi1) phi2) $ =
   '(norm_trans appCtxL @ norm_app appCtxRVar norm_refl);
 
@@ -453,6 +456,13 @@ theorem lemma_14 {box: SVar} (ctx: Pattern box) (psi phi1 phi2: Pattern)
     (syl propag_or @ framing @ syl (imim2 dne) @ con3d @ com12 h)
     (imim2 @ norm (norm_imp_l @ norm_trans appCtxNested @ norm_ctxApp_pt norm_refl defNorm) (! lemma_56 box2))
   );
+
+theorem appCtx_pointwise {box: SVar} (ctx: Pattern box) (phi: Pattern):
+  $ app[ phi / box ] ctx <-> exists x ((app[ eVar x / box ] ctx) /\ x in phi ) $ =
+  '(bitr (cong_of_equiv_appCtx (bicom lemma_62)) @
+    bitr exists_appCtx @
+    bitr (cong_of_equiv_exists @ lemma_60_b) @
+    cong_of_equiv_exists ancomb);
 
 -- Equality reasoning
 
