@@ -190,9 +190,8 @@ theorem lemma_46_floor
   (h: $phi$)
 : $|_ phi _|$
 = '(norm (norm_not @ ! defNorm box) @ lemma_46 h);
-theorem subset_to_imp  (h: $ phi -> psi $): $ phi C_ psi $ = '(lemma_46_floor h);
+theorem imp_to_subset  (h: $ phi -> psi $): $ phi C_ psi $ = '(lemma_46_floor h);
 theorem equiv_to_eq  (h: $ phi <-> psi $): $ phi == psi $ = '(lemma_46_floor h);
-
 theorem eq_imp_subset: $ (phi == psi) -> (phi C_ psi) $ = '(framing_floor anl);
 
 theorem eq_refl: $ phi == phi $ = '(equiv_to_eq biid);
@@ -745,7 +744,7 @@ theorem membership_sym_reverse {x y: EVar} {box: SVar} (ctx: Pattern box x) (phi
 = '(eq_to_intro_rev membership_sym);
 
 --- lemma 59
--- theorem functional_subst {x: EVar} {y: EVar} (phi1: Pattern x y) (phi2: Pattern x):
+-- theorem func_subst_explicit {x: EVar} {y: EVar} (phi1: Pattern x y) (phi2: Pattern x):
 --   $ (forall x phi1) /\ (exists y phi2 == eVar y) -> e[ phi2 / x ] phi1 $ =
 --   '();
 
@@ -791,6 +790,8 @@ theorem floor_ceil_ceil: $ |_ |^ phi ^| _| <-> |^ phi ^| $ =
     corollary_57_floor
     (rsyl (framing_def notnot1) (rsyl (con2 @ anl ceil_floor_floor) @ framing_floor @ framing_def dne)));
 
+theorem simple_eq_subst: $ phi /\ (phi == psi) -> psi $ = '(rsyl ancom @ curry eq_to_intro);
+
 do {
   (def (cong_of_equiv_eVar_propag x equiv_pf ctx) @ match ctx
     [$eVar ,y$ (if (== x y) equiv_pf 'biid)]
@@ -815,34 +816,38 @@ do {
     [_ 'biid]
   )
 
-  (def (functional_subst_helper x ctx) @ match ctx
+  (def (func_subst_explicit_helper x ctx) @ match ctx
     [$eVar ,y$ (if (== x y) 'eq_to_intro_bi 'eq_to_id_bi)]
-    [$exists ,y ,psi$ (if (== x y) 'eq_to_id_bi '(eq_to_exists_bi ,(functional_subst_helper x psi)))]
-    [$forall ,y ,psi$ (if (== x y) 'eq_to_id_bi '(eq_to_forall_bi ,(functional_subst_helper x psi)))]
-    [$_in ,y ,psi$ (if (== x y) '(eq_to_gen_mem_bi eq_to_intro_bi ,(functional_subst_helper x psi)) '(eq_to_mem_bi ,(functional_subst_helper x psi)))]
-    [$imp ,phi1 ,phi2$     '(eq_to_imp_bi    ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
-    [$app ,phi1 ,phi2$     '(eq_to_app_bi    ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
-    [$not ,psi$            '(eq_to_not_bi    ,(functional_subst_helper x psi))]
-    [$or ,phi1 ,phi2$      '(eq_to_or_bi     ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
-    [$and ,phi1 ,phi2$     '(eq_to_and_bi    ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
-    [$_ceil ,psi$          '(eq_to_def_bi    ,(functional_subst_helper x psi))]
-    [$_floor ,psi$         '(eq_to_floor_bi  ,(functional_subst_helper x psi))]
-    [$_subset ,phi1 ,phi2$ '(eq_to_subset_bi ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
-    [$equiv ,phi1 ,phi2$   '(eq_to_equiv_bi  ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
-    [$_eq ,phi1 ,phi2$     '(eq_to_eq_bi     ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
+    [$exists ,y ,psi$ (if (== x y) 'eq_to_id_bi '(eq_to_exists_bi ,(func_subst_explicit_helper x psi)))]
+    [$forall ,y ,psi$ (if (== x y) 'eq_to_id_bi '(eq_to_forall_bi ,(func_subst_explicit_helper x psi)))]
+    [$_in ,y ,psi$ (if (== x y) '(eq_to_gen_mem_bi eq_to_intro_bi ,(func_subst_explicit_helper x psi)) '(eq_to_mem_bi ,(func_subst_explicit_helper x psi)))]
+    [$imp ,phi1 ,phi2$     '(eq_to_imp_bi    ,(func_subst_explicit_helper x phi1) ,(func_subst_explicit_helper x phi2))]
+    [$app ,phi1 ,phi2$     '(eq_to_app_bi    ,(func_subst_explicit_helper x phi1) ,(func_subst_explicit_helper x phi2))]
+    [$not ,psi$            '(eq_to_not_bi    ,(func_subst_explicit_helper x psi))]
+    [$or ,phi1 ,phi2$      '(eq_to_or_bi     ,(func_subst_explicit_helper x phi1) ,(func_subst_explicit_helper x phi2))]
+    [$and ,phi1 ,phi2$     '(eq_to_and_bi    ,(func_subst_explicit_helper x phi1) ,(func_subst_explicit_helper x phi2))]
+    [$_ceil ,psi$          '(eq_to_def_bi    ,(func_subst_explicit_helper x psi))]
+    [$_floor ,psi$         '(eq_to_floor_bi  ,(func_subst_explicit_helper x psi))]
+    [$_subset ,phi1 ,phi2$ '(eq_to_subset_bi ,(func_subst_explicit_helper x phi1) ,(func_subst_explicit_helper x phi2))]
+    [$equiv ,phi1 ,phi2$   '(eq_to_equiv_bi  ,(func_subst_explicit_helper x phi1) ,(func_subst_explicit_helper x phi2))]
+    [$_eq ,phi1 ,phi2$     '(eq_to_eq_bi     ,(func_subst_explicit_helper x phi1) ,(func_subst_explicit_helper x phi2))]
 
-    [$nnimp ,phi1 ,phi2$   '(eq_to_nnimp_bi  ,(functional_subst_helper x phi1) ,(functional_subst_helper X phi2))]
-    [$concat ,phi1 ,phi2$  '(eq_to_concat_bi ,(functional_subst_helper x phi1) ,(functional_subst_helper x phi2))]
+    [$nnimp ,phi1 ,phi2$   '(eq_to_nnimp_bi  ,(func_subst_explicit_helper x phi1) ,(func_subst_explicit_helper X phi2))]
+    [$concat ,phi1 ,phi2$  '(eq_to_concat_bi ,(func_subst_explicit_helper x phi1) ,(func_subst_explicit_helper x phi2))]
 
     [_ 'eq_to_id_bi]
   )
 
-  (def (functional_subst x y phi1 forall_x_phi1 func_phi2) '(
-    exists_generalization_strict (mp (com12 @ syl anl ,(functional_subst_helper x phi1)) (norm ,(propag_e_subst x phi1) (! var_subst ,x ,y ,phi1 ,forall_x_phi1))) ,func_phi2
+  (def (func_subst_explicit x y phi1 forall_x_phi1 func_phi2) '(
+    exists_generalization_strict (mp (com12 @ syl anl ,(func_subst_explicit_helper x phi1)) (norm ,(propag_e_subst x phi1) (! var_subst ,x ,y ,phi1 ,forall_x_phi1))) ,func_phi2
   ))
 
-  (def (functional_subst_implicit x phi1 phi1_pf func_phi2) '(
-    exists_generalization_strict (mp (com12 @ syl anl ,(functional_subst_helper x phi1)) ,phi1_pf) ,func_phi2
+  (def (func_subst x phi1 phi1_pf func_phi2) '(
+    exists_generalization_strict (mp (com12 @ syl anl ,(func_subst_explicit_helper x phi1)) ,phi1_pf) ,func_phi2
+  ))
+
+  (def (func_subst_fresh fre x phi1 phi1_pf func_phi2) '(
+    exists_generalization ,fre (mp (com12 @ syl anl ,(func_subst_explicit_helper x phi1)) ,phi1_pf) ,func_phi2
   ))
 
   (def (propag_mem x ctx) @ match ctx
@@ -869,17 +874,17 @@ do {
   )
 };
 
-theorem functional_subst_test_1 {x y: EVar} (phi: Pattern)
+theorem func_subst_explicit_test_1 {x y: EVar} (phi: Pattern)
   (h1: $ forall x (|^ eVar x ^|) $)
   (h2: $ exists y (eVar y == phi) $):
   $ |^ phi ^| $ =
-  (functional_subst 'x 'y $|^ eVar x ^|$ 'h1 'h2);
+  (func_subst_explicit 'x 'y $|^ eVar x ^|$ 'h1 'h2);
 
-theorem functional_subst_implicit_test_1 {x: EVar} (phi: Pattern)
+theorem func_subst_test_1 {x: EVar} (phi: Pattern)
   (h1: $ (~ eVar x) $)
   (h2: $ exists x (eVar x == phi) $):
   $ (~ phi) $ =
-  (functional_subst_implicit 'x $(~ eVar x)$ 'h1 'h2);
+  (func_subst 'x $(~ eVar x)$ 'h1 'h2);
 
 theorem propag_mem_test_01 {x: EVar}:
   $ (x in ~ top) <-> (~ (x in top)) $ =
