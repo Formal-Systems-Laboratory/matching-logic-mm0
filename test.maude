@@ -19,7 +19,8 @@ mod TEST is
     *** NOTE: MAKE SURE YOU DEFINE AN EQUATION BELOW FOR ANY SORT YOU USE! ***
     **************************************************************************
     eq test TestName @ Expected:Bool    ?= Expected:Bool    ; = passed .
-    eq test TestName @ Expected:Pattern ?= Expected:Pattern ; = passed .
+    eq test TestName @ Expected:PatternList ?= Expected:PatternList ; = passed .
+    eq test TestName @ Expected:MM0Decl ?= Expected:MM0Decl ; = passed .
 
     op unit-tests : -> TestResult .
     eq unit-tests
@@ -30,6 +31,7 @@ mod TEST is
                                                                                      ?= true ;
         test 'occurs-in-mu-1            @ occursIn('X, mu 'Y (epsilon \/ (a . sVar 'Y \/ b . (mu 'Z (epsilon \/ (a . sVar 'X \/ b . sVar 'Z))))))
                                                                                      ?= true ;
+        test 'metavars-notation         @ metaVars(desugar([[ ctximp-app 'Y PHI PSI 'z ]])) ?= PHI PSI ;
         test 's-subst                   @ substitute[sVar 'Z / 'X] in mu 'Y sVar 'X  ?= mu 'Y sVar 'Z ;
         test 's-subst-no-desugar-1      @ substitute[ mu 'ZZ sVar 'Phi / 'ZZ ]
                                             in [[ ctximp-app 'box (sVar 'box . top-letter) (sVar 'Rho) 'dummy ]]
@@ -37,6 +39,6 @@ mod TEST is
         test 's-subst-no-desugar-2      @ substitute[ mu 'ZZ sVar 'Phi / 'ZZ ]
                                             in [[ ctximp-app 'ZZ (sVar 'box . top-letter) (sVar 'Rho) 'dummy ]]
                                           ?=   [[ ctximp-app 'ZZ (sVar 'box . top-letter) (sVar 'Rho) 'dummy ]] ;
-
+        test 'occurs-in-metavars @ occursIn('x, desugar([[ ctximp-app 'Y PHI PSI 'z ]])) ?= true ;
      .
 endm

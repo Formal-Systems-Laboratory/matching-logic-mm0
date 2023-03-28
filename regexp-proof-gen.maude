@@ -16,22 +16,41 @@ fmod PATTERN-METAMATH is
     op app[ _ / _ ] _ : Pattern Qid Pattern -> Pattern [ctor] .
 
     *** Meta variables *************************
+    sorts MetaVar .
+    subsort MetaVar < Pattern .
+    ops PHI PHI1 PHI2 : -> MetaVar .
+    ops PSI PSI1 PSI2 : -> MetaVar .
+
+   --- TODO: Implement at metalevel
+    op name : MetaVar -> Qid .
+    eq name(PHI) = 'PHI .
+    eq name(PHI1) = 'PHI1 .
+    eq name(PHI2) = 'PHI2 .
+    eq name(PSI) = 'PSI .
+    eq name(PSI1) = 'PSI1 .
+    eq name(PSI2) = 'PSI2 .
+
+    *** Maude variables *************************
     vars phi phi1 phi2 psi psi1 psi2 : Pattern .
     vars ctx : Pattern .
     vars x y X Y Q : Qid .
     vars QL QL1 QL2 : QidList .
     vars N : Nat .
     vars Notation : Notation .
+    vars MetaVar : MetaVar .
 
     *** Notation ****************************************
-    --- The desugar operation is defined over Notation,
-    --- and allows us to replace a single notation with
-    --- its definition. Note that this isn't intended to
-    --- completely elemenate notation from a pattern
-    --- but to merely remove one layer of sugar.
     sort Notation .
     subsort Notation < Pattern .
+
+   --- The desugar operation allows us to replace a single notation with
+   --- its definition. Note that this isn't intended to
+   --- completely eliminate notation from a pattern
+   --- but to merely remove one layer of sugar.
     op desugar : Notation -> Pattern .
+
+   --- Each sugar is given a name for generating their lemmas.
+    op name : Notation -> Qid .
 
     *** Standard sugar **********************************
     op ~ _          : Pattern         -> Notation [ctor] .
@@ -40,23 +59,24 @@ fmod PATTERN-METAMATH is
     op nu _ _       : Qid Pattern     -> Notation [ctor] .
     op forall _ _   : Qid Pattern     -> Notation [ctor] .
 
-    eq desugar(~ phi) = phi -> bot .
-    eq desugar(phi \/ psi) = ~ phi -> psi .
-    eq desugar(phi /\ psi) = ~ (phi -> ~ psi) .
-    eq desugar(nu X phi) = ~ (mu X substitute [ ~ sVar X / X ] in ~ phi) .
-    eq desugar(forall x phi) = ~ (exists x ~ phi) .
+    eq name(~ phi) = 'not .              eq desugar(~ phi) = phi -> bot .
+    eq name(phi \/ psi) = 'or .          eq desugar(phi \/ psi) = ~ phi -> psi .
+    eq name(phi /\ psi) = 'and .         eq desugar(phi /\ psi) = ~ (phi -> ~ psi) .
+    eq name(nu X phi) = 'nu .            eq desugar(nu X phi) = ~ (mu X substitute [ ~ sVar X / X ] in ~ phi) .
+    eq name(forall x phi) = 'forall .    eq desugar(forall x phi) = ~ (exists x ~ phi) .
 
     *** Definedness *************************************
-    op ceil : Pattern -> Notation [ctor] .
-    op floor : Pattern -> Notation [ctor] .
+    op [[ -ceil _ ]] : Pattern -> Notation [ctor] .
+    op [[ -floor _ ]] : Pattern -> Notation [ctor] .
     op _ C- _ : Pattern Pattern -> Notation .
     op [[ ctximp-app _ _ _ _ ]] : Qid Pattern Pattern Qid -> Notation .
 
-    eq desugar(ceil(phi)) = app (sym 'defSym) phi .
-    eq desugar(floor(phi)) = ~ ceil(~ phi) .
-    eq desugar(phi C- psi) = floor(phi -> psi) .
+    eq name([[ -ceil phi ]]) = 'ceil .       eq desugar([[ -ceil phi ]]) = app (sym 'defSym) phi .
+    eq name([[ -floor phi ]]) = 'floor .    eq desugar([[ -floor phi ]]) = ~ [[ -ceil ~ phi ]] .
+    eq name(phi C- psi) = 'subset .         eq desugar(phi C- psi) = [[ -floor phi -> psi ]] .
+    eq name([[ ctximp-app X ctx phi x ]]) = 'ctximp-app .
     eq desugar([[ ctximp-app X ctx phi x ]])
-     =  exists x (eVar x /\ ((app[ eVar x / X ] ctx) C- phi)) .
+     = exists x (eVar x /\ ((app[ eVar x / X ] ctx) C- phi)) .
 
     *** ERE *********************************************
     op epsilon      :                 -> Notation [ctor] .
@@ -66,19 +86,19 @@ fmod PATTERN-METAMATH is
     subsort Letter < Notation .
     op a            :                 -> Letter [ctor] .
     op b            :                 -> Letter [ctor] .
-    op [[ kleene _ _ ]] : Qid Pattern   -> Notation [ctor prec 25] .
+    op [[ kleene _ _ ]] : Qid Pattern -> Notation [ctor prec 25] .
     op top-letter   :                 -> Notation [ctor] .
     op kleene _ _   : Qid Pattern     -> Notation [ctor prec 25] .
     op top-word _   : Qid             -> Notation [ctor] .
     op _ . _        : Pattern Pattern -> Notation [ctor prec 28] .
 
-    eq desugar(epsilon) = sym 'epsilon-symbol .
-    eq desugar(a) = sym 'a-symbol .
-    eq desugar(b) = sym 'b-symbol .
-    eq desugar(top-letter) = a \/ b .
-    eq desugar([[ kleene X phi ]]) = mu X (epsilon \/ (phi . sVar X)) .
-    eq desugar(top-word X) = [[ kleene X top-letter ]] .
-    eq desugar(phi . psi) = ( app ( app ( sym 'concat-symbol ) phi ) psi ) .
+    eq name(epsilon) = 'eps .               eq desugar(epsilon) = sym 'epsilon-symbol .
+    eq name(a) = 'a .                       eq desugar(a) = sym 'a-symbol .
+    eq name(b) = 'b .                       eq desugar(b) = sym 'b-symbol .
+    eq name(top-letter) = 'top-letter .     eq desugar(top-letter) = a \/ b .
+    eq name([[ kleene X phi ]]) = 'kleene . eq desugar([[ kleene X phi ]]) = mu X (epsilon \/ (phi . sVar X)) .
+    eq name(top-word X) = 'top-word .       eq desugar(top-word X) = [[ kleene X top-letter ]] .
+    eq name(phi . psi) = 'concat .          eq desugar(phi . psi) = ( app ( app ( sym 'concat-symbol ) phi ) psi ) .
 
     op (derivative _ _) : Pattern Pattern -> Pattern [ctor] .
 
@@ -162,6 +182,7 @@ fmod PATTERN-METAMATH is
     eq all-sVars(app phi psi) = all-sVars(phi) minus(all-sVars(psi), all-sVars(phi)) .
     eq all-sVars(mu X phi) = X minus(all-sVars(phi), X) .
     eq all-sVars(exists X phi) = all-sVars(phi) .
+    eq all-sVars(MetaVar) = nil .
 
     op all-eVars : Pattern -> QidList .
     eq all-eVars(Notation) = all-eVars(desugar(Notation)) .
@@ -174,14 +195,12 @@ fmod PATTERN-METAMATH is
     eq all-eVars(app phi psi) = all-eVars(phi) minus(all-eVars(psi), all-eVars(phi)) .
     eq all-eVars(mu X phi) = all-eVars(phi) .
     eq all-eVars(exists X phi) = X minus(all-eVars(phi), X) .
+    eq all-eVars(MetaVar) = nil .
 
     op minus : QidList QidList -> QidList .
     eq minus(nil, QL) = nil .
    ceq minus(Q QL1, QL2) =   minus(QL1, QL2) if     occurs(Q, QL2) .
    ceq minus(Q QL1, QL2) = Q minus(QL1, QL2) if not occurs(Q, QL2) .
-
-    op occursIn : Qid Pattern -> Bool .
-    eq occursIn(X, phi) = occurs(X, all-sVars(phi)) or occurs(X, all-eVars(phi)) .
 
     op hasEWP : Pattern -> Bool .
     eq hasEWP(bot) = false .
@@ -193,6 +212,48 @@ fmod PATTERN-METAMATH is
     eq hasEWP(phi \/ psi) = hasEWP(phi) or hasEWP(psi) .
     eq hasEWP([[ kleene X phi ]]) = true .
     eq hasEWP(~ phi) = not hasEWP(phi) .
+endfm
+
+view Pattern from TRIV to PATTERN-METAMATH is
+    sort Elt to Pattern .
+endv
+
+fmod PATTERN-LIST is
+    protecting LIST{Pattern} * (sort NeList{Pattern} to NePatternList, sort List{Pattern} to PatternList) .
+
+    *** Maude variables *************************
+    vars phi phi1 phi2 psi psi1 psi2 : Pattern .
+    vars ctx : Pattern .
+    vars P : Pattern .
+    vars Ps Ps1 Ps2 : PatternList .
+    vars x y X Y Q : Qid .
+    vars QL QL1 QL2 : QidList .
+    vars N : Nat .
+    vars Notation : Notation .
+    vars MetaVar : MetaVar .
+
+    op minus : PatternList PatternList -> PatternList .
+    eq minus(nil, Ps) = nil .
+   ceq minus(P Ps1, Ps2) =   minus(Ps1, Ps2) if     occurs(P, Ps2) .
+   ceq minus(P Ps1, Ps2) = P minus(Ps1, Ps2) if not occurs(P, Ps2) .
+
+    op metaVars : Pattern -> PatternList .
+    eq metaVars(Notation) = metaVars(desugar(Notation)) .
+    eq metaVars(bot) = nil .
+    eq metaVars(sVar X) = nil .
+    eq metaVars(eVar X) = nil .
+    eq metaVars(sym  X) = nil .
+    eq metaVars(phi -> psi)  = metaVars(phi) minus(metaVars(psi), metaVars(phi)) .
+    eq metaVars(app[ phi / X ] psi) = metaVars(phi) minus(metaVars(psi), metaVars(phi)) .
+    eq metaVars(app phi psi) = metaVars(phi) minus(metaVars(psi), metaVars(phi)) .
+    eq metaVars(mu X phi) = metaVars(phi) .
+    eq metaVars(exists X phi) = metaVars(phi) .
+    eq metaVars(MetaVar) = MetaVar .
+
+    op occursIn : Qid Pattern -> Bool .
+   ceq occursIn(X, phi) = true if metaVars(phi) =/= nil .
+   ceq occursIn(X, phi) = (occurs(X, all-sVars(phi)) or occurs(X, all-eVars(phi))) if metaVars(phi) == nil .
+
 endfm
 
 *** Comparing Patterns ******************************************************
@@ -333,7 +394,7 @@ endm
 
 fmod MM0 is
     protecting QID-LIST .
-    protecting PATTERN-METAMATH .
+    protecting PATTERN-LIST .
     sort MM0SExpr NeMM0SExprList MM0SExprList .
     subsort Qid < MM0SExpr < NeMM0SExprList < MM0SExprList .
     subsort NeQidList < NeMM0SExprList .
@@ -346,14 +407,23 @@ fmod MM0 is
     op _ _ : NeMM0SExprList MM0SExprList -> NeMM0SExprList [ctor ditto].
     op _ _ : MM0SExprList NeMM0SExprList -> NeMM0SExprList [ctor ditto].
 
-    sort MM0Decl MM0Binder .
+    sort MM0Provable .
+    subsort Pattern < MM0Provable .
+    op -eFresh _ _ : Qid Pattern -> MM0Provable .
+
+    op nil : -> MM0Decl .
     op _ _ : MM0Decl MM0Decl -> MM0Decl [ctor assoc format(d n d)] .
-    op theorem _ _ colon $ _ $           ; : Qid MM0Binder Pattern          -> MM0Decl .
-    op theorem _ _ colon $ _ $ = quote _ ; : Qid MM0Binder Pattern MM0SExpr -> MM0Decl .
+    op theorem _ space _ colon $ _ $           ; : Qid MM0Binder MM0Provable          -> MM0Decl .
+    op theorem _ space _ colon $ _ $ = quote _ ; : Qid MM0Binder MM0Provable MM0SExpr -> MM0Decl .
     op pub _ : MM0Decl -> MM0Decl .
+
+    sort MM0Decl MM0Binder .
     op no-binders : -> MM0Binder [ctor] .
+    op _ _ : MM0Binder MM0Binder -> MM0Binder [ctor assoc format(d n d)] .
     op { _ colon SVar } : QidList -> MM0Binder [ctor] .
     eq { nil colon SVar } = no-binders .
+    op [[ _ colon Pattern _ ]] : QidList QidList -> MM0Binder [ctor] .
+    op [[ _ colon $ _ $ ]] : QidList MM0Provable -> MM0Binder [ctor] .
 endfm
 
 --- Manually performs a search, and returns the search graph as a tree with backlinks.
@@ -381,6 +451,7 @@ mod PROOF-GEN is
     vars Es : NeEdges . vars Es? : Edges .
     vars T T1 T2 : Term . vars TL TL' : TermList .
     vars P : Pattern .
+    vars Ps : NePatternList .
     vars S : State . vars SL SL' : StateList .
     vars X Y Z R Q : Qid . vars Result : Result4Tuple .
     vars Es1 Es2 : NeEdges .
@@ -505,6 +576,7 @@ mod PROOF-GEN is
     vars Psi   Psi1   Psi2   : Pattern .
     vars A B A1 A2 : Letter .
     vars Notation : Notation .
+    vars MetaVar : MetaVar .
 
     *** Proof hint generation ************************************************
 
@@ -556,6 +628,14 @@ mod PROOF-GEN is
                        rlEdge(applResult('der-b,     [], none), der-tree(N_B))
            )    [owise] .
 
+    op getArgs : Notation -> PatternList .
+    eq getArgs(~ Phi) = Phi .
+    eq getArgs([[ ctximp-app X Phi Psi Y ]]) = Phi Psi .
+    eq getArgs(Phi /\ Psi) = Phi Psi .
+    eq getArgs(app[ Phi / X ] Psi) = Phi Psi .
+    eq getArgs(Phi C- Psi) = Phi Psi .
+    eq getArgs([[ -floor Phi ]]) = Phi .
+    eq getArgs([[ -ceil  Phi ]]) = Phi .
 
     *** Metamath proofs ******************************************************
 
@@ -611,18 +691,24 @@ mod PROOF-GEN is
 
     *** eFresh ****************************************************************
     op eFresh : Qid Pattern -> MM0SExpr .
-    eq eFresh(X, Notation)      = eFresh(X, desugar(Notation))   .
+    op eFresh : Qid NePatternList -> MM0SExprList .
+
    ceq eFresh(X, Phi)           = 'eFresh-disjoint               if not occursIn(X, Phi) .
-   ceq eFresh(X, app Phi1 Phi2) = [[ 'eFresh-app eFresh(X, Phi1) eFresh(X, Phi2) ]]
-                                                                 if     occursIn(X, app Phi1 Phi2) .
-   ceq eFresh(X, Phi1 -> Phi2)  = [[ 'eFresh-imp eFresh(X, Phi1) eFresh(X, Phi2) ]]
-                                                                 if     occursIn(X, Phi1 -> Phi2) .
+
+   ceq eFresh(X, app Phi1 Phi2) = [[ 'eFresh-app eFresh(X, Phi1) eFresh(X, Phi2) ]] if     occursIn(X, app Phi1 Phi2) .
+   ceq eFresh(X, app[ Phi2 / Y ] Phi1)
+                                = [[ 'eFresh-appCtx eFresh(X, Phi1) eFresh(X, Phi2) ]] if     occursIn(X, app Phi1 Phi2) /\ X =/= Y .
+   ceq eFresh(X, Phi1 -> Phi2)  = [[ 'eFresh-imp eFresh(X, Phi1) eFresh(X, Phi2) ]] if     occursIn(X, Phi1 -> Phi2) .
     eq eFresh(X, exists X Phi)  = 'eFresh-exists-same-var .
-   ceq eFresh(X, exists Y Phi)  = [[ 'bang 'eFresh-exists '- Y '- eFresh(X, Phi) ]]
-                                                                 if     occursIn(X, Phi)
-                                                                     /\ X =/= Y .
-   ceq eFresh(X, mu Y Phi)      = [[ 'eFresh-mu eFresh(X, Phi) ]]
-                                                                 if     occursIn(X, Phi) .
+   ceq eFresh(X, exists Y Phi)  = [[ 'bang 'eFresh-exists '- Y '- eFresh(X, Phi) ]] if     occursIn(X, Phi) /\ X =/= Y .
+   ceq eFresh(X, mu Y Phi)      = [[ 'eFresh-mu eFresh(X, Phi) ]]                   if     occursIn(X, Phi) .
+    eq eFresh(X, MetaVar)       = qid("ef-" + string(name(MetaVar))) .
+
+    eq eFresh(X, P Ps) = eFresh(X, P) eFresh(X, Ps) .
+
+    --- Special cases
+    eq eFresh(X, [[ ctximp-app Y Phi Psi X ]]) = 'eFresh-exists-same-var .
+    eq eFresh(X, Notation)      = [[ qid("eFresh-" + string(name(Notation))) eFresh(X, getArgs(Notation)) ]] [owise] .
 
     *** sFresh ****************************************************************
     op sFresh : Qid Pattern -> MM0SExpr .
@@ -700,14 +786,14 @@ mod PROOF-GEN is
     eq theorem-main-goal(Phi)
      = theorem-top-implies-fp(Phi)
        theorem-fp-implies-regex(Phi)
-       pub theorem 'proof-main-goal { all-sVars(Phi) colon SVar }
+       pub theorem 'proof-main-goal space { all-sVars(Phi) colon SVar }
            colon $ Phi $
              = quote([[ 'rsyl [[ 'bang 'top-implies-fp all-sVars((top-word 'X) -> fp(proofHint(Phi))) ]]
                               [[ 'bang 'fp-implies-regex all-sVars(fp(proofHint(Phi)) -> Phi) ]]
                         'domain-words ]]) ; .
     op theorem-main-goal-mm0 : Pattern -> MM0Decl .
     eq theorem-main-goal-mm0(Phi)
-     =  theorem 'proof-main-goal { all-sVars(Phi) colon SVar } colon $ Phi $ ; .
+     =  theorem 'proof-main-goal space { all-sVars(Phi) colon SVar } colon $ Phi $ ; .
 
 
     *** top-implies-fp *******************************************************
@@ -715,13 +801,13 @@ mod PROOF-GEN is
 
     op theorem-top-implies-fp : Pattern -> MM0Decl .
     eq theorem-top-implies-fp(Phi)
-     = theorem 'top-implies-fp
+     = theorem 'top-implies-fp space
              { all-sVars((top-word 'X) -> fp(proofHint(Phi))) colon SVar }
              colon $ (top-word 'X) -> fp(proofHint(Phi)) $
                  = quote(proof-top-implies-fp(proofHint(Phi))) ; .
     op theorem-top-implies-fp-mm0 : Pattern -> MM0Decl .
     eq theorem-top-implies-fp-mm0(Phi)
-     = theorem 'top-implies-fp
+     = theorem 'top-implies-fp space
              { all-sVars((top-word 'X) -> fp(proofHint(Phi))) colon SVar }
              colon $ (top-word 'X) -> fp(proofHint(Phi)) $ ; .
 
@@ -763,13 +849,13 @@ mod PROOF-GEN is
     *** fp-implies-regex ************************************************************
     op theorem-fp-implies-regex : Pattern -> MM0Decl .
     eq theorem-fp-implies-regex(Phi)
-     = theorem 'fp-implies-regex
+     = theorem 'fp-implies-regex space
              { all-sVars(fp(proofHint(Phi)) -> Phi) colon SVar }
              colon $ fp(proofHint(Phi)) -> Phi $
                  = quote(proof-fp-implies-regex(proofHint(Phi))) ; .
     op theorem-fp-implies-regex-mm0 : Pattern -> MM0Decl .
     eq theorem-fp-implies-regex-mm0(Phi)
-     = theorem 'fp-implies-regex
+     = theorem 'fp-implies-regex space
              { all-sVars(fp(proofHint(Phi)) -> Phi) colon SVar }
              colon $ fp(proofHint(Phi)) -> Phi $ ; .
 

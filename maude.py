@@ -7,7 +7,7 @@ def check_maude_version() -> None:
     assert actual_version >=  expected_version, "Expected Maude version '{}' or greater in PATH, got '{}'".format(expected_version, actual_version)
 
 def reduce_in_module(src: str, module: str, expected_sort: str, term: str) -> str:
-    command = ['maude', '-no-banner', '-no-wrap', '-batch', src]
+    command = ['maude', '-no-banner', '-no-wrap', '-batch', '-print-to-stderr', src]
     input = 'reduce in {0} : {1} . \n'.format(module, term)
     process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     output_str, err_output_str = process.communicate(input=input)
