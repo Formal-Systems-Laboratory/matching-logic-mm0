@@ -231,27 +231,19 @@ theorem regex_eq_eps_kleene {X: SVar}: $ (kleene X epsilon) <-> epsilon $ =
 --- Derivatives: "Semantic" theorems
 ------------------------------------
 
---- The following theorems lift ctximp_in_ctx to derivatives.
-theorem der_in_ctx_reverse
-  : $w2 -> w1 . (derivative w1 w2)$
-= '(norm_lemma_r (norm_sym appctx_concat_r ) (! ctximp_in_ctx_reverse box dummy ));
 theorem der_in_ctx_forward : $w1 . (derivative w1 w2) -> w2$
  = '(norm_lemma (norm_sym @ norm_trans appCtxR (norm_app norm_refl appCtxVar))
                 (! ctximp_in_ctx_forward dummy1 _ dummy _ )
     );
 
+theorem der_equality_reverse:
+    $(epsilon /\ phi) \/ ((a . (derivative a phi)) \/ (b . (derivative b phi))) -> phi$
+= '(eori anr @ eori der_in_ctx_forward der_in_ctx_forward);
+
 --- main theorem for deriviatives
 theorem der_equality:
     $phi == (epsilon /\ phi) \/ ((a . (derivative a phi)) \/ (b . (derivative b phi)))$
-= '(equiv_to_eq @ ibii
-    (mp (! unfold_l_top_word_r X _ @ eori (exp @ orld id)
-                                    (rsyl propag_or_concat @ eori
-                                      (exp @ orrd @ orld @ rsyl (anwr id) der_in_ctx_reverse)
-                                      (exp @ orrd @ orrd @ rsyl (anwr id) der_in_ctx_reverse)
-                                    ))
-        domain_words)
-    (eori anr @ eori der_in_ctx_forward der_in_ctx_forward)
-  ) ;
+= '(equiv_to_eq @ ibii der_equality_forward der_equality_reverse) ;
 
 
 --- Derivatives: Syntactic Simplifications
