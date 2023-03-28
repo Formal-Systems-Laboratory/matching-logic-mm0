@@ -38,6 +38,26 @@ theorem norm_ctximp_app (phi1: Pattern sBox) (phi2: Pattern)
   $ Norm (ctximp_app sBox phi1 psi1 eBox) (ctximp_app sBox phi2 psi2 eBox) $ =
   '(norm_exists @ norm_and_r @ norm_subset (norm_ctxApp_pt h1 norm_refl) h2);
 
+theorem eFresh_ceil
+    (ef1 : $ _eFresh x phi $)
+    : $ _eFresh x (_ceil phi) $
+= '(eFresh_app eFresh_disjoint ef1);
+theorem eFresh_floor
+    (ef1 : $ _eFresh x phi $)
+    : $ _eFresh x (_floor phi) $
+= '(eFresh_not (eFresh_ceil (eFresh_not ef1))) ;
+theorem eFresh_subset
+    (ef1 : $ _eFresh x phi $)
+    (ef2 : $ _eFresh x psi $)
+    : $ _eFresh x (phi C_ psi) $
+= '(eFresh_floor (eFresh_imp ef1 ef2)) ;
+theorem eFresh_ctximp_app
+    (phi : Pattern z)
+    (ef1 : $ _eFresh x phi $)
+    (ef2 : $ _eFresh x psi $)
+    : $ _eFresh x (ctximp_app Y phi psi z) $
+= '(! eFresh_exists _ z _ (eFresh_and eFresh_disjoint (eFresh_subset (eFresh_appCtx ef1 eFresh_disjoint) ef2))) ;
+
 --- High level versions of axioms
 ---------------------------------
 
