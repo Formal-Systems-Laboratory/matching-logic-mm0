@@ -236,6 +236,20 @@ theorem der_in_ctx_forward : $w1 . (derivative w1 w2) -> w2$
                 (! ctximp_in_ctx_forward dummy1 _ dummy _ )
     );
 
+
+theorem der_equality_forward (phi: Pattern):
+    $phi -> (epsilon /\ phi) \/ ((a . (derivative a phi)) \/ (b . (derivative b phi)))$
+= '(mpcom (! domain_words X)
+   @ unfold_l_top_word_r
+   @ expcom
+   @ rsyl (bi1i andi)
+   @ eori (orld ancom)
+          (orrd @ impcom
+                @ rsyl propag_or_concat
+                @ eori (exp @ orld der_equality_forward_lemma)
+                       (exp @ orrd der_equality_forward_lemma)
+          )
+   );
 theorem der_equality_reverse:
     $(epsilon /\ phi) \/ ((a . (derivative a phi)) \/ (b . (derivative b phi))) -> phi$
 = '(eori anr @ eori der_in_ctx_forward der_in_ctx_forward);

@@ -7,9 +7,8 @@ axiom alpha_rename_ctximp_app {sBox: SVar} {eBox1 eBox2: EVar}
                               (phi: Pattern sBox) (psi: Pattern sBox)
   : $(ctximp_app sBox phi psi eBox1) <-> (ctximp_app sBox phi psi eBox2)$;
 
-
-axiom der_equality_forward (phi: Pattern):
-    $phi -> (epsilon /\ phi) \/ ((a . (derivative a phi)) \/ (b . (derivative b phi)))$;
+--- NB: This probably generalizes to any contextual implication.
+axiom der_equality_forward_lemma (l phi psi: Pattern): $(l . psi) /\ phi -> l . derivative l phi$;
 
 --- Derivative simplifications
 axiom regex_eq_der_kleene_wrt_a  {X: SVar} (Alpha: Pattern X):
