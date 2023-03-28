@@ -1,18 +1,15 @@
 import "20-theory-words.mm0";
 
+--- This file contains unproven theorems as axioms for the theory of words.
+--- As we prove them, we shall move them to an appropriate file.
+
 axiom alpha_rename_ctximp_app {sBox: SVar} {eBox1 eBox2: EVar}
                               (phi: Pattern sBox) (psi: Pattern sBox)
   : $(ctximp_app sBox phi psi eBox1) <-> (ctximp_app sBox phi psi eBox2)$;
 
---- This file contains unproven theorems as axioms for the theory of words.
---- As we prove them, we shall move them to an appropriate file.
 
---- The following theorem can likely only be proved as a metatheorem, as we need
---- to induct on the context ctx. We should replace this a concrete proof for
---- derivatives.
-axiom ctximp_in_ctx_reverse {box: SVar} {dummy: EVar} (ctx psi: Pattern box)
-: $psi -> app[ (ctximp_app box ctx psi dummy) / box ] ctx$;
-
+axiom der_equality_forward (phi: Pattern):
+    $phi -> (epsilon /\ phi) \/ ((a . (derivative a phi)) \/ (b . (derivative b phi)))$;
 
 --- Derivative simplifications
 axiom regex_eq_der_kleene_wrt_a  {X: SVar} (Alpha: Pattern X):
