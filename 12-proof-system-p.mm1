@@ -727,21 +727,28 @@ theorem lemma_in_in_same_var {x: EVar} (phi: Pattern x):
   $ (x in (x in phi)) <-> x in phi $ =
   '(ibii lemma_in_in_forward_same_var lemma_in_in_reverse_same_var);
 
-theorem membership_sym {x y: EVar} {box: SVar} (ctx: Pattern box x) (phi: Pattern x):
-  $ (x in app[ phi / box ] ctx) == exists y ((y in phi) /\ (x in app[ eVar y / box ] ctx)) $ =
-  '(equiv_to_eq @
-    bitr (cong_of_equiv_mem @ cong_of_equiv_appCtx @ bicom lemma_62) @
+theorem membership_appCtx {x y: EVar} {box: SVar} (ctx: Pattern box x) (phi: Pattern x):
+  $ (x in app[ phi / box ] ctx) <-> exists y ((y in phi) /\ (x in app[ eVar y / box ] ctx)) $ =
+  '(bitr (cong_of_equiv_mem @ cong_of_equiv_appCtx @ bicom lemma_62) @
     bitr (cong_of_equiv_mem exists_appCtx) @
     bitr (cong_of_equiv_mem @ cong_of_equiv_exists lemma_60_b) @
     bitr (corollary_57_floor membership_exists) @
     bitr (cong_of_equiv_exists membership_and_bi)
          (cong_of_equiv_exists @ cong_of_equiv_and_l lemma_in_in));
-theorem membership_sym_forward {x y: EVar} {box: SVar} (ctx: Pattern box x) (phi: Pattern x):
+theorem membership_appCtx_forward {x y: EVar} {box: SVar} (ctx: Pattern box x) (phi: Pattern x):
   $ (x in app[ phi / box ] ctx) -> exists y ((y in phi) /\ (x in app[ eVar y / box ] ctx)) $
-= '(eq_to_intro membership_sym);
-theorem membership_sym_reverse {x y: EVar} {box: SVar} (ctx: Pattern box x) (phi: Pattern x):
+= '(anl membership_appCtx);
+theorem membership_appCtx_reverse {x y: EVar} {box: SVar} (ctx: Pattern box x) (phi: Pattern x):
   $ exists y ((y in phi) /\ (x in app[ eVar y / box ] ctx)) -> (x in app[ phi / box ] ctx) $
-= '(eq_to_intro_rev membership_sym);
+= '(anr membership_appCtx);
+
+theorem membership_app {x y: EVar} (phi psi: Pattern x):
+  $ (x in app phi psi) <-> exists y ((y in psi) /\ (x in app phi (eVar y))) $ =
+  (named '(norm (norm_equiv (norm_mem appCtxRVar) @ norm_exists @ norm_and_r @ norm_mem appCtxRVar) membership_appCtx));
+theorem membership_app2 {x y z: EVar} (phi psi: Pattern x):
+  $ (x in app (app phi psi) rho) <-> exists y (exists z ((y in psi) /\ ((z in rho) /\ (x in app (app phi (eVar y)) (eVar z))))) $ =
+  (named '(bitr (norm (norm_equiv (norm_mem appCtxLRVar) @ norm_exists @ norm_and_r @ norm_mem appCtxLRVar) membership_appCtx) @
+    cong_of_equiv_exists @ bitr (cong_of_equiv_and_r membership_app) (bicom and_exists_strict)));
 
 --- lemma 59
 -- theorem func_subst_explicit {x: EVar} {y: EVar} (phi1: Pattern x y) (phi2: Pattern x):
@@ -762,7 +769,7 @@ theorem floor_imp_mem {x: EVar} (phi: Pattern x): $ |_ phi _| -> x in phi $ =
 theorem mem_floor_forward {x: EVar} (phi: Pattern x):
   $ (x in |_ phi _|) -> |_ phi _| $ =
   '(con2 @ syl (rsyl notnot1 @ con3 membership_not_forward) @
-    syl (norm (norm_imp_r @ norm_mem defNorm) @ eq_to_intro_rev membership_sym) @
+    syl (norm (norm_imp_r @ norm_mem defNorm) membership_appCtx_reverse) @
     rsyl (anl lemma_ceil_exists_membership) @ exists_framing @ iand id @ a1i @
     framing_def (iand id (a1i @ norm (norm_sym (! defNorm box)) (! definedness y))) definedness);
 theorem mem_floor_reverse {x: EVar} (phi: Pattern x):
@@ -861,14 +868,14 @@ do {
     [$or ,phi1 ,phi2$      '(bitr membership_or_bi    @ cong_of_equiv_or    ,(propag_mem x phi1) ,(propag_mem x phi2))]
     [$and ,phi1 ,phi2$     '(bitr membership_and_bi   @ cong_of_equiv_and   ,(propag_mem x phi1) ,(propag_mem x phi2))]
     [$equiv ,phi1 ,phi2$   '(bitr membership_equiv_bi @ cong_of_equiv_equiv ,(propag_mem x phi1) ,(propag_mem x phi2))]
-    -- [$app ,phi1 ,phi2$     '(membership_app    ,(propag_mem x phi1) ,(propag_mem x phi2))]
+    [$app ,phi1 ,phi2$     '(bitr membership_app      @ cong_of_equiv_exists @ cong_of_equiv_and_l ,(propag_mem #undef phi2))]
     [$_ceil ,psi$          'mem_def]
     [$_floor ,psi$         'mem_floor]
     [$_subset ,phi1 ,phi2$ 'mem_floor]
     [$_eq ,phi1 ,phi2$     'mem_floor]
 
     -- [$nnimp ,phi1 ,phi2$   '(membership_nnimp  ,(propag_mem x phi1) ,(propag_mem X phi2))]
-    -- [$concat ,phi1 ,phi2$  '(membership_concat ,(propag_mem x phi1) ,(propag_mem x phi2))]
+    [$concat ,phi1 ,phi2$  '(bitr membership_app2 @ cong_of_equiv_exists @ cong_of_equiv_exists @ cong_of_equiv_and ,(propag_mem #undef phi1) @ cong_of_equiv_and_l ,(propag_mem #undef phi2))]
   
     [_ 'biid]
   )
