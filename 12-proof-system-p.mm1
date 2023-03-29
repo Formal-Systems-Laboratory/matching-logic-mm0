@@ -915,3 +915,7 @@ theorem propag_mem_test_02 {x y: EVar}:
 theorem propag_mem_test_11 {x y: EVar} (phi: Pattern x):
   $ (x in (~ ((phi /\ (eVar y \/ (exists y (phi /\ y in phi)) \/ |^ phi ^|)) <-> eVar x))) <-> (~ ((x in phi /\ ((eVar x == eVar y) \/ (exists y ((x in phi) /\ y in phi)) \/ |^ phi ^|)) <-> top)) $ =
   (propag_mem 'x $~ ((phi /\ (eVar y \/ (exists y (phi /\ y in phi)) \/ |^ phi ^|)) <-> eVar x)$);
+
+theorem propag_mem_test_12 {x y z: EVar}:
+  $ (x in ~(app (sym defSym) (bot -> eVar y))) <-> ~(exists z (((z in bot) -> (eVar z == eVar y)) /\ (x in app (sym defSym) (eVar z)))) $ =
+  (propag_mem 'x $~(app (sym defSym) (bot -> eVar y))$);
