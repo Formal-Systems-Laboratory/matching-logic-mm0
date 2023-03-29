@@ -799,6 +799,17 @@ theorem floor_ceil_ceil: $ |_ |^ phi ^| _| <-> |^ phi ^| $ =
 
 theorem simple_eq_subst: $ phi /\ (phi == psi) -> psi $ = '(rsyl ancom @ curry eq_to_intro);
 
+theorem alpha_exists {x y: EVar} (phi: Pattern x):
+  $ (exists x phi) <-> exists y (e[ eVar y / x ] phi) $ =
+  '(ibii
+    (exists_generalization
+      (eFresh_exists @ eFresh_eSubst_same_var eFresh_disjoint) @
+      syl exists_intro @ norm
+        (norm_sym @ norm_imp_r @ norm_trans eSubstitution_in_eSubst @
+          norm_trans (norm_evSubst_pt norm_refl eSubstitution_in_same_eVar) @ norm_trans eSubstitution_trivial eSubstitution_disjoint)
+        id)
+    (exists_generalization_strict exists_intro));
+
 do {
   (def (cong_of_equiv_eVar_propag x equiv_pf ctx) @ match ctx
     [$eVar ,y$ (if (== x y) equiv_pf 'biid)]
