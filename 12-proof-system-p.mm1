@@ -806,7 +806,7 @@ theorem alpha_exists {x y: EVar} (phi: Pattern x):
       (eFresh_exists @ eFresh_eSubst_same_var eFresh_disjoint) @
       syl exists_intro @ norm
         (norm_sym @ norm_imp_r @ norm_trans eSubstitution_in_eSubst @
-          norm_trans (norm_evSubst_pt norm_refl eSubstitution_in_same_eVar) @ norm_trans eSubstitution_trivial eSubstitution_disjoint)
+          norm_trans (norm_evSubst_pt norm_refl eSubstitution_in_same_eVar) @ norm_trans eSubstitution_id eSubstitution_disjoint)
         id)
     (exists_generalization_strict exists_intro));
 
