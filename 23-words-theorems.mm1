@@ -461,7 +461,7 @@ theorem inductive_domain_l_implies_r { X : SVar }
                             @ unfold_r_top_word_r orl)
                           )
                     )
-                    @ syl (bi2i (! alpha_rename_ctximp_app sBox eBox1 eBox2))
+                    @ syl (bi2i (! alpha_ctximp_app sBox eBox1 eBox2))
                     (wrap ( norm ( norm_sym  (norm_imp (! appctx_concat_l _) norm_refl) )
                            @ unfold_r_top_word_r @ orrd
                            @ sylbir (bicom assoc_concat) @ framing_concat_r
@@ -483,7 +483,7 @@ theorem inductive_domain_r_implies_l { X : SVar }
                           @ framing_concat_l
                           @ unfold_r_top_word_l orl
                     )
-                    @ syl (bi2i (! alpha_rename_ctximp_app sBox eBox1 eBox2))
+                    @ syl (bi2i (! alpha_ctximp_app sBox eBox1 eBox2))
                     (wrap @ norm ( norm_sym  (norm_imp appctx_concat_r norm_refl) )
                           @ unfold_r_top_word_l @ orrd
                           @ sylbir assoc_concat @ framing_concat_l

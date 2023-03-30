@@ -168,33 +168,34 @@ do {
     [$sym ,S$  'eSubstitution_disjoint]
     [$sVar ,X$ 'eSubstitution_disjoint]
     [$eVar ,y$ (if (== x y) 'eSubstitution_in_same_eVar 'eSubstitution_disjoint)]
-    [$imp ,phi1 ,phi2$     '(_eSubst_imp             ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
-    [$app ,phi1 ,phi2$     '(_eSubst_app             ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
+    [$imp ,phi1 ,phi2$       '(_eSubst_imp             ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
+    [$app ,phi1 ,phi2$       '(_eSubst_app             ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
     [$exists ,y ,psi$ (if (== x y) 'eSubstitution_in_same_exists '(_eSubst_exists ,(propag_e_subst_adv x psi wo_x)))]
     [$forall ,y ,psi$ (if (== x y) '(_eSubst_not eSubstitution_in_same_exists) '(_eSubst_not (_eSubst_exists (_eSubst_not ,(propag_e_subst_adv x psi wo_x)))))]
-    [$mu ,Y ,psi$          '(_eSubst_mu              ,(propag_e_subst_adv x psi wo_x))]
-    [$not ,psi$            '(_eSubst_not             ,(propag_e_subst_adv x psi wo_x))]
-    [$or ,phi1 ,phi2$      '(_eSubst_or              ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
-    [$and ,phi1 ,phi2$     '(_eSubst_and             ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
-    [$_ceil  ,phi$         '(_eSubst_ceil            ,(propag_e_subst_adv x phi wo_x))]
-    [$_floor ,phi$         '(_eSubst_floor           ,(propag_e_subst_adv x phi wo_x))]
-    [$_subset ,phi1 ,phi2$ '(_eSubst_subset          ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
-    [$equiv ,phi1 ,phi2$   '(_eSubst_equiv           ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
-    [$_eq ,phi1 ,phi2$     '(_eSubst_eq              ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
+    [$mu ,X ,psi$            '(_eSubst_mu              ,(propag_e_subst_adv x psi wo_x))]
+    [$not ,psi$              '(_eSubst_not             ,(propag_e_subst_adv x psi wo_x))]
+    [$or ,phi1 ,phi2$        '(_eSubst_or              ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
+    [$and ,phi1 ,phi2$       '(_eSubst_and             ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
+    [$_ceil  ,phi$           '(_eSubst_ceil            ,(propag_e_subst_adv x phi wo_x))]
+    [$_floor ,phi$           '(_eSubst_floor           ,(propag_e_subst_adv x phi wo_x))]
+    [$_subset ,phi1 ,phi2$   '(_eSubst_subset          ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
+    [$equiv ,phi1 ,phi2$     '(_eSubst_equiv           ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
+    [$_eq ,phi1 ,phi2$       '(_eSubst_eq              ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
+    [$evSubst ,y ,phi ,psi$  (if (== x y)
+                             '(_eSubst_eSubst_same_var ,(propag_e_subst_adv x psi wo_x))
+                             '(_eSubst_eSubst          ,(propag_e_subst_adv x phi wo_x) ,(propag_e_subst_adv x psi wo_x)))]
+    [$svSubst ,X ,phi ,psi$  '(_eSubst_sSubst          ,(propag_e_subst_adv x phi wo_x) ,(propag_e_subst_adv x psi wo_x))]
+    [$ctxApp ,box ,ctx ,psi$ '(_eSubst_ctxApp          ,(propag_e_subst_adv x ctx wo_x) ,(propag_e_subst_adv x psi wo_x))]
 
     [$epsilon$     'eSubstitution_disjoint]
     [$top_letter$  'eSubstitution_disjoint]
     [$a$           'eSubstitution_disjoint]
     [$b$           'eSubstitution_disjoint]
-    [$concat ,psi1 ,psi2$ '(_eSubst_concat          ,(propag_e_subst_adv x psi1 wo_x) ,(propag_e_subst_adv x psi2 wo_x))]
     [$top_word ,Y$ 'eSubstitution_disjoint]
-    [$kleene ,Y ,psi$ '(_eSubst_mu @ _eSubst_or eSubstitution_disjoint @ sSubst_concat ,(propag_e_subst_adv x psi wo_x) eSubstitution_disjoint)]
-    [$nnimp ,phi1 ,phi2$  '(_eSubst_nnimp           ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
+    [$concat ,psi1 ,psi2$    '(_eSubst_concat          ,(propag_e_subst_adv x psi1 wo_x) ,(propag_e_subst_adv x psi2 wo_x))]
+    [$nnimp ,phi1 ,phi2$     '(_eSubst_nnimp           ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
+    [$kleene ,Y ,psi$        '(_eSubst_mu @ _eSubst_or eSubstitution_disjoint @ sSubst_concat ,(propag_e_subst_adv x psi wo_x) eSubstitution_disjoint)]
     [_             'norm_refl]
-    -- [('e[ phi2 / y] psi) '()]
-    -- [('s[ phi2 / X] psi) '()]
-    -- [('app[ phi2 / box] psi) '()]
-    -- equiv forall
   )
 
   (def (propag_e_subst x ctx) @ propag_e_subst_adv x ctx (atom-map!))
@@ -215,7 +216,7 @@ do {
     [$or ,phi1 ,phi2$     '(_sSubst_or              ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
     [$and ,phi1 ,phi2$    '(_sSubst_and             ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
     [$svSubst ,Y ,psi1 ,psi2$ (if (== X Y)
-                          '(_eSubst_eSubst_same_var ,(propag_s_subst X psi1) ,(propag_s_subst X psi2))
+                          '(_sSubst_sSubst_same_var ,(propag_s_subst X psi1) ,(propag_s_subst X psi2))
                           (error "not implemented"))]
 
     [$epsilon$    'sSubstitution_disjoint]
@@ -294,17 +295,17 @@ theorem _sSubst_exists_disjoint {X: SVar} {x: EVar} (psi rho: Pattern X x) (phi:
   $ Norm (s[ phi / X ] (exists x psi)) (exists x rho) $ =
   '(_sSubst_exists eFresh_disjoint h);
 
-theorem _eSubst_exists {x y: EVar} (psi rho: Pattern x y) (phi: Pattern x)
-  (h: $ Norm (e[ phi / x ] psi) rho $):
-  $ Norm (e[ phi / x ] (exists y psi)) (exists y rho) $ =
-  '(norm_trans eSubstitution_in_exists (norm_exists h));
-
-theorem _eSubst_eSubst_same_var {X: SVar} (phi1 phi2 phi3 psi1 psi2: Pattern X)
+theorem _sSubst_sSubst_same_var {X: SVar} (phi1 phi2 phi3 psi1 psi2: Pattern X)
   (h1: $ Norm (s[ psi1 / X ] phi3) psi2 $)
   (h2: $ Norm (s[ phi1 / X ] phi2) psi1 $):
   $ Norm (s[ phi1 / X ] (s[ phi2 / X ] phi3)) psi2 $ =
   '(norm_trans sSubstitution_in_sSubst_same_var @ norm_trans (norm_svSubst_pt norm_refl h2) h1);
 
+
+theorem _eSubst_exists {x y: EVar} (psi rho: Pattern x y) (phi: Pattern x)
+  (h: $ Norm (e[ phi / x ] psi) rho $):
+  $ Norm (e[ phi / x ] (exists y psi)) (exists y rho) $ =
+  '(norm_trans eSubstitution_in_exists (norm_exists h));
 
 theorem _eSubst_app {x: EVar} (phi phi1 phi2 psi1 psi2: Pattern x)
   (h1: $ Norm (e[ phi / x ] phi1) psi1 $)
@@ -345,6 +346,30 @@ theorem _eSubst_equiv {x: EVar} (phi phi1 phi2 psi1 psi2: Pattern x)
   (h2: $ Norm (e[ phi / x ] phi2) psi2 $):
   $ Norm (e[ phi / x ] (phi1 <-> phi2)) (psi1 <-> psi2) $ =
   '(_eSubst_and (_eSubst_imp h1 h2) (_eSubst_imp h2 h1));
+
+theorem _eSubst_eSubst {x y: EVar} (phi1 phi2 psi rho1 rho2: Pattern x y)
+  (h1: $ Norm (e[ phi1 / x ] psi) rho1 $)
+  (h2: $ Norm (e[ phi1 / x ] phi2) rho2 $):
+  $ Norm (e[ phi1 / x ] (e[ phi2 / y ] psi)) (e[ rho2 / y ] rho1) $ =
+  '(norm_trans eSubstitution_in_eSubst @ norm_evSubst_pt h1 h2);
+
+theorem _eSubst_eSubst_same_var {x: EVar} (phi1 phi2 psi rho: Pattern x)
+  (h: $ Norm (e[ phi1 / x ] phi2) rho $):
+  $ Norm (e[ phi1 / x ] (e[ phi2 / x ] psi)) (e[ rho / x ] psi) $ =
+  '(norm_trans eSubstitution_in_eSubst_same_var @ norm_evSubst_pt norm_refl h);
+
+theorem _eSubst_sSubst {X: SVar} {x: EVar} (phi1 phi2 psi rho1 rho2: Pattern x X)
+  (h1: $ Norm (e[ phi1 / x ] psi) rho1 $)
+  (h2: $ Norm (e[ phi1 / x ] phi2) rho2 $):
+  $ Norm (e[ phi1 / x ] (s[ phi2 / X ] psi)) (s[ rho2 / X ] rho1) $ =
+  '(norm_trans eSubstitution_in_sSubst @ norm_svSubst_pt h1 h2);
+
+theorem _eSubst_ctxApp {box: SVar} {x: EVar} (phi1 phi2 psi rho1 rho2: Pattern x box)
+  (h1: $ Norm (e[ phi1 / x ] psi) rho1 $)
+  (h2: $ Norm (e[ phi1 / x ] phi2) rho2 $):
+  $ Norm (e[ phi1 / x ] (app[ phi2 / box ] psi)) (app[ rho2 / box ] rho1) $ =
+  '(norm_trans eSubstitution_in_appCtx @ norm_ctxApp_pt h1 h2);
+
 
 theorem example_1 {X: SVar} (phi: Pattern):
   $ Norm (s[ phi / X ] (sVar X)) phi $ =
