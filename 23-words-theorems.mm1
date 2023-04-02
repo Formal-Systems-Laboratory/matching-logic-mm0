@@ -108,6 +108,14 @@ theorem epsilon_and_concat: $ ((epsilon /\ phi) . psi) <-> |^ epsilon /\ phi ^| 
             ,(func_subst_explicit_helper 'x $x in phi /\ z in (eVar x . psi)$)) @
             anim2 @ anim2 @ framing_in @ anr id_concat_l) functional_epsilon)));
 
+theorem kleene_monotone {X : SVar} (phi: Pattern X)
+  (X_fresh: $ _sFresh X phi $)
+  (X_pos: $ _Positive X phi $):
+  $ phi -> kleene X phi $ =
+  (named '(syl (anr @ unfold_kleene X_fresh X_pos) @ orrd @ syl
+    (framing_concat_r @ anr @ unfold_kleene X_fresh X_pos) @
+    rsyl (anr regex_eq_eps_concat_r) @ rsyl orl @ anr ,(or_appCtx_subst 'appctx_concat_r)));
+
 --- Proving the Empty Word Property
 -----------------------------------
 
