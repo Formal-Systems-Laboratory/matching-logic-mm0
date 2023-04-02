@@ -572,13 +572,19 @@ mod PROOF-GEN is
     eq cong-thm('~_, LR) = 'not .
     eq cong-thm('`[`[kleene__`]`], LR) = 'kleene .
 
-    op eq-thm : Substitution Qid -> MM0SExpr .
-    eq eq-thm('X:Qid <- T1 ; 'Alpha:Pattern <- T2, 'regex_eq_ewp_kleene)
-     = [[ 'regex_eq_ewp_kleene positivity(downTerm(T1, 'bad-down-term), downTerm(T2, sVar 'bad-down-term-alpha)) ]] .
-    eq eq-thm('X:Qid <- T1 ; 'Alpha:Pattern <- T2, 'regex_eq_ewp_not_kleene)
-     = [[ 'regex_eq_ewp_not_kleene positivity(downTerm(T1, 'bad-down-term), downTerm(T2, sVar 'bad-down-term-alpha)) ]] .
-    eq eq-thm('A:Letter <- Q ; Subst , R) = qid(string(R) + "-wrt-" + string(getName(Q))) .
-    eq eq-thm(                 Subst , R) = R [owise] .
+
+   --- Returns the theorem corresponding to the application of a rule.
+    op theorem-for-equivalence : Substitution Qid -> MM0SExpr .
+   --- Special cases:
+    eq theorem-for-equivalence('X:Qid <- T1 ; 'Alpha:Pattern <- T2, 'regex_eq_ewp_kleene) =     [[ 'regex_eq_ewp_kleene positivity(downTerm(T1, 'bad-down-term), downTerm(T2, sVar 'bad-down-term-alpha)) ]] .
+    eq theorem-for-equivalence('X:Qid <- T1 ; 'Alpha:Pattern <- T2, 'regex_eq_ewp_not_kleene) = [[ 'regex_eq_ewp_not_kleene positivity(downTerm(T1, 'bad-down-term), downTerm(T2, sVar 'bad-down-term-alpha)) ]] .
+    eq theorem-for-equivalence('X:Qid <- T1 ; 'Alpha:Pattern <- T2 ; 'A:Letter <- Q
+                                                                  , 'regex_eq_der_kleene) =     [[ qid("regex_eq_der_kleene_wrt_" + string(getName(Q)))
+                                                                                                                            sFresh(downTerm(T1, 'bad-down-term), downTerm(T2, sVar 'bad-down-term-alpha))
+                                                                                                                            positivity(downTerm(T1, 'bad-down-term), downTerm(T2, sVar 'bad-down-term-alpha)) ]] .
+
+    eq theorem-for-equivalence('A:Letter <- Q ; Subst , R) = qid(string(R) + "-wrt-" + string(getName(Q))) .
+    eq theorem-for-equivalence(                 Subst , R) = R [owise] .
 
 
     op cong-of-equiv _ _ : Qid MM0SExpr -> MM0SExpr .
@@ -778,8 +784,8 @@ mod PROOF-GEN is
 
     op proof-fp-implies-regex : Node -> MM0SExpr .
     eq proof-fp-implies-regex(backlink(< Alpha >)) = 'fp-implies-regex-leaf .
-    eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [[ 'apply-equiv lift-equality-to-context(Ctx, upTerm(S), upTerm(getState(N)), eq-thm(Subst, R)) proof-fp-implies-regex(N) ]] .
-    eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [[ 'apply-equiv lift-equality-to-context(Ctx, upTerm(S), upTerm(getState(N)), eq-thm(Subst, R)) proof-fp-implies-regex(N) ]] .
+    eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [[ 'apply-equiv lift-equality-to-context(Ctx, upTerm(S), upTerm(getState(N)), theorem-for-equivalence(Subst, R)) proof-fp-implies-regex(N) ]] .
+    eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [[ 'apply-equiv lift-equality-to-context(Ctx, upTerm(S), upTerm(getState(N)), theorem-for-equivalence(Subst, R)) proof-fp-implies-regex(N) ]] .
     eq proof-fp-implies-regex(node(< Alpha >,
                                        rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
                                        rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
