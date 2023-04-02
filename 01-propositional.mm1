@@ -737,6 +737,14 @@ theorem Fprop: $ (a -> b) -> (c -> d) -> (b -> d -> e) -> (a -> c -> e) $ =
 
 theorem an_top_bi_l: $ phi /\ top <-> phi $ = '(ibii anl @ syl ancom top_and);
 theorem an_top_bi_r: $ top /\ phi <-> phi $ = '(ibii anr top_and);
+theorem an_bot_bi_l: $ phi /\ bot <-> bot $ = '(ibii anr absurdum);
+theorem an_bot_bi_r: $ bot /\ phi <-> bot $ = '(ibii anl absurdum);
 
 theorem or_bot_bi_l: $ phi \/ bot <-> phi $ = '(ibii (eori id absurdum) orl);
 theorem or_bot_bi_r: $ bot \/ phi <-> phi $ = '(ibii (eori absurdum id) orr);
+
+theorem or_or_not_an: $ a \/ b <-> a \/ (~a /\ b) $ =
+  '(bitr (bitr (bicom an_top_bi_r) @ aneq1i @ ibii (a1i em) imp_top) @ bicom ordi);
+
+theorem absurd_an: $~a /\ a <-> bot$ = '(ibii (impcom mpcom) absurdum);
+theorem absurd_an_r: $a /\ ~a <-> bot$ = '(ibii (curry mpcom) absurdum);

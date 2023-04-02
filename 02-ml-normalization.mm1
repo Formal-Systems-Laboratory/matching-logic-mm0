@@ -31,6 +31,8 @@ theorem eFresh_not {x: EVar} (phi: Pattern x)
   (h: $ _eFresh x phi $):
   $ _eFresh x (~ phi) $ =
   '(eFresh_imp h eFresh_disjoint);
+theorem eSubstitution_disjoint {x: EVar} (phi: Pattern) (psi: Pattern x): $ Norm (e[ psi / x ]  phi) phi $ = '(eSubstitution_fresh eFresh_disjoint);
+theorem sSubstitution_disjoint {X: SVar} (phi: Pattern) (psi: Pattern X): $ Norm (s[ psi / X ]  phi) phi $ = '(sSubstitution_fresh sFresh_disjoint);
 theorem eSubstitution_in_not {x: EVar} (psi phi: Pattern x):
   $ Norm (e[ psi / x ] ~phi) (~e[ psi / x ] phi) $ =
   '(norm_trans eSubstitution_in_imp @ norm_imp norm_refl eSubstitution_disjoint);
@@ -44,6 +46,14 @@ theorem norm_or (phi psi phi2 psi2: Pattern)
   (h2: $ Norm psi psi2 $):
   $ Norm (phi \/ psi) (phi2 \/ psi2) $ =
   '(norm_imp (norm_not h1) h2);
+theorem norm_or_l (phi psi phi2: Pattern)
+  (h1: $ Norm phi phi2 $):
+  $ Norm (phi \/ psi) (phi2 \/ psi) $ =
+  '(norm_imp (norm_not h1) norm_refl);
+theorem norm_or_r (phi psi psi2: Pattern)
+  (h2: $ Norm psi psi2 $):
+  $ Norm (phi \/ psi) (phi \/ psi2) $ =
+  '(norm_imp (norm_not norm_refl) h2);
 theorem eFresh_or {x: EVar} (phi1 phi2: Pattern x)
   (h1: $ _eFresh x phi1 $)
   (h2: $ _eFresh x phi2 $):
@@ -200,35 +210,35 @@ do {
 
   (def (propag_e_subst x ctx) @ propag_e_subst_adv x ctx (atom-map!))
 
-  (def (propag_s_subst X ctx) @ match ctx
+  (def (propag_s_subst_adv X ctx wo_X) @ if (not (== (lookup wo_X ctx) #undef)) 'sSubstitution_disjoint @ match ctx
     [$bot$     'sSubstitution_disjoint]
     [$top$     'sSubstitution_disjoint]
     [$sym ,S$  'sSubstitution_disjoint]
     [$eVar ,x$ 'sSubstitution_disjoint]
     [$sVar ,Y$ (if (== X Y) 'sSubstitution_in_same_sVar 'sSubstitution_disjoint)]
-    [$imp ,phi1 ,phi2$    '(_sSubst_imp             ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
-    [$app ,phi1 ,phi2$    '(_sSubst_app             ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
-    [$exists ,y ,psi$     '(_sSubst_exists_disjoint          ,(propag_s_subst X psi))]
+    [$imp ,phi1 ,phi2$    '(_sSubst_imp             ,(propag_s_subst_adv X phi1 wo_X) ,(propag_s_subst_adv X phi2 wo_X))]
+    [$app ,phi1 ,phi2$    '(_sSubst_app             ,(propag_s_subst_adv X phi1 wo_X) ,(propag_s_subst_adv X phi2 wo_X))]
+    [$exists ,y ,psi$     '(_sSubst_exists_disjoint          ,(propag_s_subst_adv X psi wo_X))]
     [$mu ,Y ,psi$ (if (== X Y) 
                           'sSubstitution_in_same_mu 
-                          '(_sSubst_mu_disjoint     ,(propag_s_subst X psi)))]
-    [$not ,psi$           '(_sSubst_not             ,(propag_s_subst X psi))]
-    [$or ,phi1 ,phi2$     '(_sSubst_or              ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
-    [$and ,phi1 ,phi2$    '(_sSubst_and             ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
+                          '(_sSubst_mu_disjoint     ,(propag_s_subst_adv X psi wo_X)))]
+    [$not ,psi$           '(_sSubst_not             ,(propag_s_subst_adv X psi wo_X))]
+    [$or ,phi1 ,phi2$     '(_sSubst_or              ,(propag_s_subst_adv X phi1 wo_X) ,(propag_s_subst_adv X phi2 wo_X))]
+    [$and ,phi1 ,phi2$    '(_sSubst_and             ,(propag_s_subst_adv X phi1 wo_X) ,(propag_s_subst_adv X phi2 wo_X))]
     [$svSubst ,Y ,psi1 ,psi2$ (if (== X Y)
-                          '(_sSubst_sSubst_same_var ,(propag_s_subst X psi1) ,(propag_s_subst X psi2))
+                          '(_sSubst_sSubst_same_var ,(propag_s_subst_adv X psi1 wo_X) ,(propag_s_subst_adv X psi2 wo_X))
                           (error "not implemented"))]
 
     [$epsilon$    'sSubstitution_disjoint]
     [$top_letter$ 'sSubstitution_disjoint]
     [$a$          'sSubstitution_disjoint]
     [$b$          'sSubstitution_disjoint]
-    [$concat ,psi1 ,psi2$ '(sSubst_concat          ,(propag_s_subst X psi1) ,(propag_s_subst X psi2))]
+    [$concat ,psi1 ,psi2$ '(sSubst_concat          ,(propag_s_subst_adv X psi1 wo_X) ,(propag_s_subst_adv X psi2 wo_X))]
     [$top_word ,Y$    (if (== X Y) 'sSubstitution_in_same_mu 'sSubstitution_disjoint)]
     [$kleene ,Y ,psi$ (if (== X Y)
                           'sSubstitution_in_same_mu
-                          '(_sSubst_mu_disjoint @ _sSubst_or sSubstitution_disjoint @ sSubst_concat ,(propag_s_subst X psi) sSubstitution_disjoint))]
-    [$nnimp ,phi1 ,phi2$  '(_sSubst_nnimp           ,(propag_s_subst X phi1) ,(propag_s_subst X phi2))]
+                          '(_sSubst_mu_disjoint @ _sSubst_or sSubstitution_disjoint @ sSubst_concat ,(propag_s_subst_adv X psi wo_X) sSubstitution_disjoint))]
+    [$nnimp ,phi1 ,phi2$  '(_sSubst_nnimp           ,(propag_s_subst_adv X phi1 wo_X) ,(propag_s_subst_adv X phi2 wo_X))]
     [_            'norm_refl]
     -- [('e[ phi2 / y] psi) '()]
     -- [('s[ phi2 / X] psi) '()]
@@ -236,6 +246,7 @@ do {
     -- equiv forall
   )
 
+  (def (propag_s_subst X ctx) @ propag_s_subst_adv X ctx (atom-map!))
 
   (def (propag_e_subst_auto refine g) @ match g @ $ Norm (e[ ,phi_o / ,x_o ] ,ctx_o) ,res $ @ refine g (propag_e_subst x_o ctx_o))
   (def (propag_s_subst_auto refine g) @ match g @ $ Norm (s[ ,phi_o / ,X_o ] ,ctx_o) ,res $ @ refine g (propag_s_subst X_o ctx_o))

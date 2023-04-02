@@ -592,6 +592,36 @@ theorem regex_eq_der_concat_wrt_b (Alpha Beta: Pattern) :
           rsyl (curry concat_subset) @ framing_subset (anr id_concat_l) id))
     )));
 
+theorem regex_eq_der_kleene_wrt_a {X: SVar} (Alpha: Pattern X)
+  (X_fresh: $ _sFresh X Alpha $)
+  (X_pos: $ _Positive X Alpha $):
+  $ (derivative a (kleene X Alpha)) <-> ((derivative a Alpha) . (kleene X Alpha)) $ =
+  (named '(bitr (cong_of_equiv_der_r @ bitr (unfold_kleene X_fresh X_pos) or_or_not_an) @
+    bitr regex_eq_der_choice_wrt_a @
+    bitr (cong_of_equiv_or_l regex_eq_der_epsilon_wrt_a) @
+    bitr or_bot_bi_r @
+    bitr (cong_of_equiv_der_r regex_eq_der_kleene_lemma) @
+    bitr regex_eq_der_concat_wrt_a @
+    bitr (cong_of_equiv_or
+      (cong_of_equiv_concat_l (bitr regex_eq_der_conj_wrt_a @ bitr (cong_of_equiv_and_l @ bitr regex_eq_der_neg_wrt_a @ cong_of_equiv_not regex_eq_der_epsilon_wrt_a) an_top_bi_r))
+      (bitr (cong_of_equiv_concat_l @ bitr (bicom anass) @ bitr (cong_of_equiv_and_l absurd_an_r) an_bot_bi_r) (ibii (norm (norm_imp_l appctx_concat_l) propag_bot) absurdum))) @
+    or_bot_bi_l));
+
+theorem regex_eq_der_kleene_wrt_b {X: SVar} (Alpha: Pattern X)
+  (X_fresh: $ _sFresh X Alpha $)
+  (X_pos: $ _Positive X Alpha $):
+  $ (derivative b (kleene X Alpha)) <-> ((derivative b Alpha) . (kleene X Alpha)) $ =
+  (named '(bitr (cong_of_equiv_der_r @ bitr (unfold_kleene X_fresh X_pos) or_or_not_an) @
+    bitr regex_eq_der_choice_wrt_b @
+    bitr (cong_of_equiv_or_l regex_eq_der_epsilon_wrt_b) @
+    bitr or_bot_bi_r @
+    bitr (cong_of_equiv_der_r regex_eq_der_kleene_lemma) @
+    bitr regex_eq_der_concat_wrt_b @
+    bitr (cong_of_equiv_or
+      (cong_of_equiv_concat_l (bitr regex_eq_der_conj_wrt_b @ bitr (cong_of_equiv_and_l @ bitr regex_eq_der_neg_wrt_b @ cong_of_equiv_not regex_eq_der_epsilon_wrt_b) an_top_bi_r))
+      (bitr (cong_of_equiv_concat_l @ bitr (bicom anass) @ bitr (cong_of_equiv_and_l absurd_an_r) an_bot_bi_r) (ibii (norm (norm_imp_l appctx_concat_l) propag_bot) absurdum))) @
+    or_bot_bi_l));
+
 theorem inductive_domain_l_implies_r { X : SVar }
   : $(top_word_l X) -> (top_word_r X)$
   = '( kt_top_word_l
