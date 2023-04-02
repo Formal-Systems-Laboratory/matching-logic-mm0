@@ -30,7 +30,12 @@ theorem norm_subset (phi1 phi2: Pattern)
   (h1: $ Norm phi1 phi2 $)
   (h2: $ Norm psi1 psi2 $):
   $ Norm (phi1 C_ psi1) (phi2 C_ psi2) $
-  = '(norm_floor @ norm_imp h1 h2 );
+  = '(norm_floor @ norm_imp h1 h2);
+theorem norm_eq (phi1 phi2: Pattern)
+  (h1: $ Norm phi1 phi2 $)
+  (h2: $ Norm psi1 psi2 $):
+  $ Norm (phi1 == psi1) (phi2 == psi2) $
+  = '(norm_floor @ norm_equiv h1 h2);
 
 theorem norm_ctximp_app (phi1: Pattern sBox) (phi2: Pattern)
   (h1: $ Norm phi1 phi2 $)
@@ -47,6 +52,12 @@ theorem framing_def (h: $ phi1 -> phi2 $):
 theorem framing_floor (h: $ phi1 -> phi2 $):
   $ |_ phi1 _| -> |_ phi2 _| $ =
   '(con3 @ framing_def @ con3 h);
+
+theorem framing_subset
+  (h1: $ phi2 -> phi1 $)
+  (h2: $ psi1 -> psi2 $):
+  $ (phi1 C_ psi1) -> (phi2 C_ psi2) $ =
+  '(framing_floor @ imim h1 h2);
 
 
 theorem propag_bot {box: SVar} (ctx: Pattern box):

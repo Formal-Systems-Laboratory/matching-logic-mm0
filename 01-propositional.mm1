@@ -510,6 +510,7 @@ theorem bitr: $ (a <-> b) -> (b <-> c) -> (a <-> c) $ = '(exp (bitrd anl anr));
 theorem bitr2: $ (a <-> b) -> (b <-> c) -> (c <-> a) $ = '(exp (bitr2d anl anr));
 theorem bitr3: $ (b <-> a) -> (b <-> c) -> (a <-> c) $ = '(exp (bitr3d anl anr));
 theorem bitr4: $ (a <-> b) -> (c <-> b) -> (a <-> c) $ = '(exp (bitr4d anl anr));
+theorem bisylr: $ (c <-> b) -> (a <-> b) -> (a <-> c) $ = '(rsyl bicom @ com23 id bitr);
 theorem sylib (h1: $ b <-> c $) (h2: $ a -> b $): $ a -> c $ = '(syl (bi1i h1) h2);
 theorem sylibr (h1: $ c <-> b $) (h2: $ a -> b $): $ a -> c $ = '(syl (bi2i h1) h2);
 theorem sylbi (h1: $ a <-> b $) (h2: $ b -> c $): $ a -> c $ = '(syl h2 (bi1i h1));
@@ -727,3 +728,15 @@ theorem lemma_60_helper_1: $ a -> (a /\ ~b) \/ (a /\ b) $ =
 
 theorem lemma_60_helper_2: $ a -> ~b \/ (a /\ b) $ =
   '(syl (imim1i dne) ian);
+
+theorem bisquare (h1: $a <-> b$) (h2: $d <-> c$) (h3: $b <-> c$): $a <-> d$ =
+  '(bitr h1 @ bisylr h2 h3);
+
+theorem Fprop: $ (a -> b) -> (c -> d) -> (b -> d -> e) -> (a -> c -> e) $ =
+  '(syl (anl impexp) @ com12 @ imim2d @ curry @ imim2d imim1);
+
+theorem an_top_bi_l: $ phi /\ top <-> phi $ = '(ibii anl @ syl ancom top_and);
+theorem an_top_bi_r: $ top /\ phi <-> phi $ = '(ibii anr top_and);
+
+theorem or_bot_bi_l: $ phi \/ bot <-> phi $ = '(ibii (eori id absurdum) orl);
+theorem or_bot_bi_r: $ bot \/ phi <-> phi $ = '(ibii (eori absurdum id) orr);

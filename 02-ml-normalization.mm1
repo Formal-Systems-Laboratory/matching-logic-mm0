@@ -370,6 +370,8 @@ theorem _eSubst_ctxApp {box: SVar} {x: EVar} (phi1 phi2 psi rho1 rho2: Pattern x
   $ Norm (e[ phi1 / x ] (app[ phi2 / box ] psi)) (app[ rho2 / box ] rho1) $ =
   '(norm_trans eSubstitution_in_appCtx @ norm_ctxApp_pt h1 h2);
 
+--- Tests for LISP based tactic -------------------------------------
+---------------------------------------------------------------------
 
 theorem example_1 {X: SVar} (phi: Pattern):
   $ Norm (s[ phi / X ] (sVar X)) phi $ =
@@ -378,9 +380,6 @@ theorem example_1 {X: SVar} (phi: Pattern):
 -- theorem example_1_e {x: EVar} (phi: Pattern):
 --   $ Norm (e[ phi / x ] (eVar x)) phi $ =
 --   propag_e_subst_auto;
-
---- Tests for LISP based tactic -------------------------------------
----------------------------------------------------------------------
 
 theorem example_2 {X: SVar} (phi: Pattern):
   $ Norm (s[ phi / X ] (app bot (sVar X))) (app bot phi) $ =
