@@ -150,7 +150,7 @@ axiom sFresh_appCtx_box {box: SVar} (ctx psi: Pattern box):
 term Norm: Pattern > Pattern > Normalization;
 
 axiom eSubstitution_id {x: EVar} (phi: Pattern x): $ Norm (e[ eVar x / x ] phi) phi $;
-axiom eSubstitution_disjoint {x: EVar} (phi: Pattern) (psi: Pattern x): $ Norm (e[ psi / x ] phi) phi $;
+axiom eSubstitution_fresh {x: EVar} (phi psi: Pattern x): $ _eFresh x phi $ > $ Norm (e[ psi / x ]  phi) phi $;
 axiom eSubstitution_in_same_eVar {x: EVar} (psi: Pattern x): $ Norm (e[ psi / x ] eVar x) psi $;
 axiom eSubstitution_in_imp {x: EVar} (psi phi1 phi2: Pattern x):
   $ Norm (e[ psi / x ] (phi1 -> phi2)) ((e[ psi / x ] phi1) -> e[ psi / x ] phi2) $;
@@ -175,7 +175,7 @@ axiom eSubstitution_in_appCtx {x: EVar} {box: SVar} (psi1 psi2 phi: Pattern x bo
   $ Norm (e[ psi1 / x ] app[ psi2 / box ] phi) (app[ (e[ psi1 / x ] psi2) / box ] e[ psi1 / x ] phi) $;
 
 axiom sSubstitution_id {X: SVar} (phi: Pattern X): $ Norm (s[ sVar X / X ] phi) phi $;
-axiom sSubstitution_disjoint {X: SVar} (phi: Pattern) (psi: Pattern X): $ Norm (s[ psi / X ]  phi) phi $;
+axiom sSubstitution_fresh {X: SVar} (phi psi: Pattern X): $ _sFresh X phi $ > $ Norm (s[ psi / X ]  phi) phi $;
 axiom sSubstitution_in_same_sVar {X: SVar} (psi: Pattern X): $ Norm (s[ psi / X ] sVar X) psi $;
 axiom sSubstitution_in_imp {X: SVar} (psi phi1 phi2: Pattern X):
   $ Norm (s[ psi / X ] (phi1 -> phi2)) ((s[ psi / X ] phi1) -> (s[ psi / X ] phi2)) $;

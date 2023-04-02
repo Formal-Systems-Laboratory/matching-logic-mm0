@@ -141,6 +141,19 @@ theorem unfold_r_top_word_r {X : SVar} (phi: Pattern X) (h: $phi -> epsilon \/ t
 theorem unfold_l_top_word_r {X : SVar} (phi: Pattern X) (h: $(epsilon \/ top_letter . top_word_r X) -> phi$) : $top_word_r X -> phi$ = '(syl h  lemma_83_top_word_r_reverse);
 
 
+theorem unfold_kleene_lemma {X : SVar} (phi: Pattern X)
+  (X_fresh: $ _sFresh X phi $)
+  (X_pos: $ _Positive X phi $):
+  $ epsilon \/ (phi . kleene X phi) -> kleene X phi $ =
+  '(norm (norm_imp_l @ norm_trans ,(propag_s_subst 'Y $epsilon \/ (phi . sVar Y)$) @ norm_or_r @ norm_concat_l @ sSubstitution_fresh X_fresh) @ pre_fixpoint (positive_in_kleene_r_body X_pos));
+
+theorem unfold_kleene {X : SVar} (phi: Pattern X)
+  (X_fresh: $ _sFresh X phi $)
+  (X_pos: $ _Positive X phi $):
+  $ kleene X phi <-> epsilon \/ (phi . kleene X phi) $ =
+  (named '(ibii (KT (positive_in_kleene_r_body X_pos) @ norm (norm_sym @ norm_imp_l @ norm_trans ,(propag_s_subst 'Y $epsilon \/ (phi . sVar Y)$) @ norm_or_r @ norm_concat_l @ sSubstitution_fresh X_fresh) @
+    orim2 ,(framing_subst '(unfold_kleene_lemma X_fresh X_pos) 'appctx_concat_r)) @ unfold_kleene_lemma X_fresh X_pos));
+
 theorem _sSubst_nnimp {X: SVar} (phi phi1 phi2 psi1 psi2: Pattern X)
   (h1: $ Norm (s[ phi / X ] phi1) psi1 $)
   (h2: $ Norm (s[ phi / X ] phi2) psi2 $):
