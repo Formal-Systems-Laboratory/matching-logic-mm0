@@ -39,6 +39,15 @@ theorem eSubstitution_in_same_exists {x: EVar} (psi phi: Pattern x):
 theorem sSubstitution_in_same_mu {X: SVar} (psi phi: Pattern X):
   $ Norm (s[ psi / X ] mu X phi) (mu X phi) $ =
   '(sSubstitution_fresh sFresh_mu_same_var);
+theorem appCtxL_strict {box: SVar} (phi1 ctx: Pattern box) (phi2: Pattern):
+  $ Norm (app[ phi1 / box ] (app ctx phi2)) (app (app[ phi1 / box ] ctx) phi2) $ =
+  '(appCtxL sFresh_disjoint);
+theorem appCtxR_strict {box: SVar} (phi2 ctx: Pattern box) (phi1: Pattern):
+  $ Norm (app[ phi2 / box ] (app phi1 ctx)) (app phi1 (app[ phi2 / box ] ctx)) $ =
+  '(appCtxR sFresh_disjoint);
+theorem appCtxNested_strict {box1 box2: SVar} (ctx2 phi: Pattern box1 box2) (ctx1: Pattern box1):
+  $ Norm (app[ phi / box2 ] app[ ctx2 / box1 ] ctx1) (app[ app[ phi / box2 ] ctx2 / box1 ] ctx1) $ =
+  '(appCtxNested sFresh_disjoint);
 theorem eSubstitution_in_not {x: EVar} (psi phi: Pattern x):
   $ Norm (e[ psi / x ] ~phi) (~e[ psi / x ] phi) $ =
   '(norm_trans eSubstitution_in_imp @ norm_imp norm_refl eSubstitution_disjoint);
@@ -80,11 +89,13 @@ theorem norm_and_r (phi psi psi2: Pattern)
   (h: $ Norm psi psi2 $):
   $ Norm (phi /\ psi) (phi /\ psi2) $ =
   '(norm_and norm_refl h);
+
 theorem eFresh_and {x: EVar} (phi1 phi2: Pattern x)
   (h1: $ _eFresh x phi1 $)
   (h2: $ _eFresh x phi2 $):
   $ _eFresh x (phi1 /\ phi2) $ =
   '(eFresh_not @ eFresh_imp h1 @ eFresh_not h2);
+
 theorem eSubstitution_in_and {x: EVar} (psi phi1 phi2: Pattern x):
   $ Norm (e[ psi / x ] (phi1 /\ phi2)) ((e[ psi / x ] phi1) /\ e[ psi / x ] phi2) $ =
   '(norm_trans eSubstitution_in_not @ norm_not @ norm_trans eSubstitution_in_imp @ norm_imp_r eSubstitution_in_not);
@@ -92,6 +103,9 @@ theorem sSubstitution_in_and {X: SVar} (psi phi1 phi2: Pattern X):
   $ Norm (s[ psi / X ] (phi1 /\ phi2)) ((s[ psi / X ] phi1) /\ s[ psi / X ] phi2) $ =
   '(norm_trans sSubstitution_in_not @ norm_not @ norm_trans sSubstitution_in_imp @ norm_imp_r sSubstitution_in_not);
 
+
+theorem positive_disjoint {X: SVar} (phi: Pattern): $ _Positive X phi $ = '(positive_fresh sFresh_disjoint);
+theorem negative_disjoint {X: SVar} (phi: Pattern): $ _Negative X phi $ = '(negative_fresh sFresh_disjoint);
 
 theorem norm_equiv (phi psi phi2 psi2: Pattern)
   (h1: $ Norm phi phi2 $)
@@ -322,7 +336,7 @@ theorem _sSubst_sSubst_same_var {X: SVar} (phi1 phi2 phi3 psi1 psi2: Pattern X)
 theorem _eSubst_exists {x y: EVar} (psi rho: Pattern x y) (phi: Pattern x)
   (h: $ Norm (e[ phi / x ] psi) rho $):
   $ Norm (e[ phi / x ] (exists y psi)) (exists y rho) $ =
-  '(norm_trans eSubstitution_in_exists (norm_exists h));
+  '(norm_trans (eSubstitution_in_exists eFresh_disjoint) (norm_exists h));
 
 theorem _eSubst_app {x: EVar} (phi phi1 phi2 psi1 psi2: Pattern x)
   (h1: $ Norm (e[ phi / x ] phi1) psi1 $)
@@ -339,7 +353,7 @@ theorem _eSubst_imp {x: EVar} (phi phi1 phi2 psi1 psi2: Pattern x)
 theorem _eSubst_mu {x: EVar} {X: SVar} (psi rho: Pattern x X) (phi: Pattern x)
   (h : $ Norm (e[ phi / x ] psi) rho $):
   $ Norm (e[ phi / x ] (mu X psi)) (mu X rho) $ =
-  '(norm_trans eSubstitution_in_mu (norm_mu h));
+  '(norm_trans (eSubstitution_in_mu sFresh_disjoint) (norm_mu h));
 
 theorem _eSubst_not {x: EVar} (phi psi rho: Pattern x)
   (h: $ Norm (e[ phi / x ] psi) rho $):

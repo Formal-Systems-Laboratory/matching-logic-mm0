@@ -39,7 +39,7 @@ theorem wrap_lemma {x: EVar} (phi psi: Pattern x)
   $ (x in phi) -> |_ psi _| $ =
   '(syl (con3 @ framing_def @ con3 h) @ con2 @ rsyl (framing_def membership_not_reverse)
   (rsyl (norm (norm_imp
-    (norm_trans appCtxR @ norm_app norm_refl @ norm_trans appCtxR @ norm_app norm_refl appCtxVar)
+    (norm_trans appCtxR_strict @ norm_app norm_refl @ norm_trans appCtxR_strict @ norm_app norm_refl appCtxVar)
     norm_refl) (! lemma_56 box)) (con2 @ dne singletonDef)));
 
 theorem unwrap_lemma {x y: EVar} {box: SVar} (ctx phi: Pattern box):

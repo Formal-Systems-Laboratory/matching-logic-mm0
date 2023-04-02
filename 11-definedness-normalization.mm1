@@ -8,10 +8,10 @@ import "10-theory-definedness.mm0";
 
 theorem defNorm {box: SVar} (phi: Pattern):
   $ Norm (app[ phi / box ] (|^ sVar box ^|)) (|^ phi ^|) $ =
-  '(norm_trans appCtxR @ norm_app norm_refl appCtxVar);
+  '(norm_trans appCtxR_strict @ norm_app norm_refl appCtxVar);
 theorem defNorm2 {box: SVar} (phi: Pattern):
   $ Norm (app[ phi / box ] (|^ |^ sVar box ^| ^|)) (|^ (|^ phi ^|) ^|) $ =
-  '(norm_trans appCtxR @ norm_app norm_refl defNorm);
+  '(norm_trans appCtxR_strict @ norm_app norm_refl defNorm);
 theorem singletonDef {x: EVar} (phi: Pattern x):
   $ ~(|^ eVar x /\ phi ^| /\ |^ eVar x /\ ~phi ^|) $ =
   '(singleton_norm (! defNorm box1) (! defNorm box2));
