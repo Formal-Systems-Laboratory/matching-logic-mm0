@@ -109,11 +109,10 @@ theorem epsilon_and_concat: $ ((epsilon /\ phi) . psi) <-> |^ epsilon /\ phi ^| 
             anim2 @ anim2 @ framing_in @ anr id_concat_l) functional_epsilon)));
 
 theorem kleene_monotone {X : SVar} (phi: Pattern X)
-  (X_fresh: $ _sFresh X phi $)
-  (X_pos: $ _Positive X phi $):
+  (X_fresh: $ _sFresh X phi $):
   $ phi -> kleene X phi $ =
-  (named '(syl (anr @ unfold_kleene X_fresh X_pos) @ orrd @ syl
-    (framing_concat_r @ anr @ unfold_kleene X_fresh X_pos) @
+  (named '(syl (anr @ unfold_kleene X_fresh) @ orrd @ syl
+    (framing_concat_r @ anr @ unfold_kleene X_fresh) @
     rsyl (anr regex_eq_eps_concat_r) @ rsyl orl @ anr ,(or_appCtx_subst 'appctx_concat_r)));
 
 --- Proving the Empty Word Property
@@ -257,7 +256,7 @@ theorem der_expand (l: Pattern) (phi: Pattern):
   '(norm (norm_equiv_r @ norm_exists @ norm_and_r @ norm_floor @ norm_imp_l (! appCtxRVar box _ _)) biid);
 
 theorem der_in_ctx_forward : $w1 . (derivative w1 w2) -> w2$
- = '(norm_lemma (norm_sym @ norm_trans appCtxR (norm_app norm_refl appCtxVar))
+ = '(norm_lemma (norm_sym @ norm_trans appCtxR_strict (norm_app norm_refl appCtxVar))
                 (! ctximp_in_ctx_forward sBox eBox _ _ )
     );
 
@@ -356,7 +355,7 @@ theorem regex_eq_der_bot
   $ (derivative A bot) -> bot $
   = '(exists_generalization_strict @ con3 anr @ notnot1 @ framing_def notnot1 @
     exists_generalization_strict (com12
-      (eq_to_def @ norm (norm_imp_r @ norm_imp_r @ norm_sym @ norm_trans appCtxR @ norm_app norm_refl (! appCtxVar box)) @ eq_to_app_l @ eq_to_app_r eq_to_intro)
+      (eq_to_def @ norm (norm_imp_r @ norm_imp_r @ norm_sym @ norm_trans appCtxR_strict @ norm_app norm_refl (! appCtxVar box)) @ eq_to_app_l @ eq_to_app_r eq_to_intro)
       (exists_generalization_strict (com12 (eq_to_def eq_to_intro) definedness)
           (! functional_concat x v1 x1))
         ) h
@@ -601,14 +600,13 @@ theorem regex_eq_der_concat_wrt_b (Alpha Beta: Pattern) :
     )));
 
 theorem regex_eq_der_kleene_wrt_a {X: SVar} (Alpha: Pattern X)
-  (X_fresh: $ _sFresh X Alpha $)
-  (X_pos: $ _Positive X Alpha $):
+  (X_fresh: $ _sFresh X Alpha $):
   $ (derivative a (kleene X Alpha)) <-> ((derivative a Alpha) . (kleene X Alpha)) $ =
-  (named '(bitr (cong_of_equiv_der_r @ bitr (unfold_kleene X_fresh X_pos) or_or_not_an) @
+  (named '(bitr (cong_of_equiv_der_r @ bitr (unfold_kleene X_fresh) or_or_not_an) @
     bitr regex_eq_der_choice_wrt_a @
     bitr (cong_of_equiv_or_l regex_eq_der_epsilon_wrt_a) @
     bitr or_bot_bi_r @
-    bitr (cong_of_equiv_der_r regex_eq_der_kleene_lemma) @
+    bitr (cong_of_equiv_der_r @ regex_eq_der_kleene_lemma X_fresh) @
     bitr regex_eq_der_concat_wrt_a @
     bitr (cong_of_equiv_or
       (cong_of_equiv_concat_l (bitr regex_eq_der_conj_wrt_a @ bitr (cong_of_equiv_and_l @ bitr regex_eq_der_neg_wrt_a @ cong_of_equiv_not regex_eq_der_epsilon_wrt_a) an_top_bi_r))
@@ -616,14 +614,13 @@ theorem regex_eq_der_kleene_wrt_a {X: SVar} (Alpha: Pattern X)
     or_bot_bi_l));
 
 theorem regex_eq_der_kleene_wrt_b {X: SVar} (Alpha: Pattern X)
-  (X_fresh: $ _sFresh X Alpha $)
-  (X_pos: $ _Positive X Alpha $):
+  (X_fresh: $ _sFresh X Alpha $):
   $ (derivative b (kleene X Alpha)) <-> ((derivative b Alpha) . (kleene X Alpha)) $ =
-  (named '(bitr (cong_of_equiv_der_r @ bitr (unfold_kleene X_fresh X_pos) or_or_not_an) @
+  (named '(bitr (cong_of_equiv_der_r @ bitr (unfold_kleene X_fresh) or_or_not_an) @
     bitr regex_eq_der_choice_wrt_b @
     bitr (cong_of_equiv_or_l regex_eq_der_epsilon_wrt_b) @
     bitr or_bot_bi_r @
-    bitr (cong_of_equiv_der_r regex_eq_der_kleene_lemma) @
+    bitr (cong_of_equiv_der_r @ regex_eq_der_kleene_lemma X_fresh) @
     bitr regex_eq_der_concat_wrt_b @
     bitr (cong_of_equiv_or
       (cong_of_equiv_concat_l (bitr regex_eq_der_conj_wrt_b @ bitr (cong_of_equiv_and_l @ bitr regex_eq_der_neg_wrt_b @ cong_of_equiv_not regex_eq_der_epsilon_wrt_b) an_top_bi_r))

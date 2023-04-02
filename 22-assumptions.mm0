@@ -3,10 +3,10 @@ import "20-theory-words.mm0";
 --- This file contains unproven theorems as axioms for the theory of words.
 --- As we prove them, we shall move them to an appropriate file.
 
-axiom regex_eq_der_kleene_lemma {X: SVar} (Alpha: Pattern X): $ ~epsilon /\ Alpha . kleene X Alpha <-> (~epsilon /\ Alpha) . kleene X Alpha $;
+axiom regex_eq_der_kleene_lemma {X: SVar} (Alpha: Pattern X) (h: $ _sFresh X Alpha $): $ ~epsilon /\ Alpha . kleene X Alpha <-> (~epsilon /\ Alpha) . kleene X Alpha $;
 
 --- Theorems that reduce the size of the automata/proof
-axiom regex_eq_double_kleene {X: SVar} (Alpha: Pattern X): $ (kleene X (kleene X Alpha)) <-> (kleene X Alpha) $;
+axiom regex_eq_double_kleene {X: SVar} (Alpha: Pattern X) (h: $ _sFresh X Alpha $): $ (kleene X (kleene X Alpha)) <-> (kleene X Alpha) $;
 
 --- EWP related simplifications
 axiom regex_eq_ewp_concat (Alpha Beta: Pattern):
