@@ -163,3 +163,8 @@ theorem eq_to_nnimp_bi
   $ (phi1 == phi2) -> ((psi1 ->> rho1) <-> (psi2 ->> rho2)) $ =
   '(eq_to_imp_bi (eq_to_not_bi @ eq_to_not_bi h1) h2);
 
+
+do {
+  (def (func_subst_eps x phi1) (func_subst_thm 'functional_epsilon x phi1))
+  (def (func_subst_concat x phi1) (func_subst_thm 'functional_concat x phi1))
+};

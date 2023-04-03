@@ -6,9 +6,9 @@ import "22-assumptions.mm0";
 ------------------------------------------
 
 theorem def_a: $|^ a ^|$ =
-  (func_subst 'w $|^ eVar w ^|$ 'definedness '(! functional_a w));
+  (named @ func_subst_thm 'functional_a 'x 'definedness);
 theorem def_b: $|^ b ^|$ =
-  (func_subst 'w $|^ eVar w ^|$ 'definedness '(! functional_b w));
+  (named @ func_subst_thm 'functional_b 'x 'definedness);
 
 theorem a_in_top_letter: $|^ a /\ top_letter ^|$ =
   '(framing_def (iand id orl) def_a);
@@ -159,21 +159,6 @@ theorem epsilon_implies_not_or (phi psi : Pattern)
   : $epsilon -> ~ (phi \/ psi)$
 = '(rsyl (iand h1 h2) (bi1i @ bicom notor));
 
-theorem epsilon_implies_not_concat_l (phi psi : Pattern)
-    (h: $epsilon -> ~ phi$)
-  : $epsilon -> ~ (phi . psi)$
-= '( exp
-   @ rsyl (bi1i @ regex_eq_ewp_concat)
-   @ anwl
-   @ curry h );
-theorem epsilon_implies_not_concat_r (phi psi : Pattern)
-    (h: $epsilon -> ~ psi$)
-  : $epsilon -> ~ (phi . psi)$
-= '( exp
-   @ rsyl (bi1i @ regex_eq_ewp_concat)
-   @ anwr
-   @ curry h );
-
 
 theorem regex_eq_ewp_bot:
   $ (epsilon /\ bot) <-> bot $ = '(ibii anr absurdum);
@@ -211,7 +196,76 @@ theorem regex_eq_ewp_not_kleene {X: SVar} (Alpha: Pattern X)
 theorem regex_eq_ewp_not_not: $ (epsilon /\ ~(~ Alpha)) <-> (epsilon /\ Alpha) $ =
   '(cong_of_equiv_and_r @ bicom notnot);
 
+--- EWP related simplifications
+theorem regex_eq_ewp_concat (Alpha Beta: Pattern):
+  $ epsilon /\ (Alpha . Beta) <-> (epsilon /\ Alpha) /\ (epsilon /\ Beta) $ =
+  (named '(membership_elim_implicit @ mp (anr
+      ,(propag_mem 'x $epsilon /\ (Alpha . Beta) <-> (epsilon /\ Alpha) /\ (epsilon /\ Beta)$)
+    ) @ ibii
+      (curry @ mp
+        ,(func_subst_imp_to_var 'x $(exists y (y in Alpha /\ exists z (z in Beta /\ x in (eVar y . eVar z)))) -> ((eVar x == epsilon) /\ (x in Alpha)) /\ ((eVar x == epsilon) /\ (x in Beta))$)
+        @ rsyl (exists_framing @ anim2 @ syl (anim2 @ anr ,(func_subst_eps 'x 'membership_expand)) @ syl and_exists_disjoint_forwards @ exists_framing @ syl (anl anlass) @ anim2 @
+            rsyl (anl ,(membership_var_func_subst 'functional_epsilon 'functional_concat)) no_confusion_ec_e)
+        @ rsyl (exists_framing @ anr anass)
+        @ rsyl (anl and_exists_disjoint_r)
+        @ rsyl (anim1 @ anr ,(func_subst_eps 'x 'membership_expand))
+        @ anim (iand (a1i eq_refl) id) (iand (a1i eq_refl) id))
+      (rsyl (anl anass) @ curry @ mp
+        ,(func_subst_imp_to_var 'x $(x in Alpha) /\ ((eVar x == epsilon) /\ (x in Beta)) -> (eVar x == epsilon) /\ (exists y (y in Alpha /\ exists z (z in Beta /\ x in (eVar y . eVar z))))$)
+        @ rsyl (anim2 anr)
+        @ iand (a1i eq_refl)
+        @ syl (anl ,(func_subst_eps 'x 'membership_app2))
+        @ rsyl (anim ,(func_subst_eps 'x 'eVar_in_subset_forward) ,(func_subst_eps 'x 'eVar_in_subset_forward))
+        @ rsyl (curry concat_subset)
+        @ rsyl (framing_subset (anr id_concat_l) id)
+        ,(func_subst_eps 'x 'eVar_in_subset_reverse))));
+theorem regex_eq_ewp_not_concat (Alpha Beta: Pattern):
+  $ (epsilon /\ ~(Alpha . Beta)) <-> ((epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta)) $ =
+  (named '(membership_elim_implicit @ mp (anr
+      ,(propag_mem 'x $epsilon /\ ~(Alpha . Beta) <-> (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta)$)
+    ) @ ibii
+      (curry @ mp
+        ,(func_subst_imp_to_var 'x $(~ (exists y (y in Alpha /\ exists z (z in Beta /\ x in (eVar y . eVar z))))) -> ((eVar x == epsilon) /\ (~ (x in Alpha))) \/ ((eVar x == epsilon) /\ (~ (x in Beta)))$)
+        @ con1
+        @ rsyl (anl notor)
+        @ rsyl (anim
+          (rsyl (anl notan) @ eori (syl absurdum @ notnot1 eq_refl) dne)
+          (rsyl (anl notan) @ eori (syl absurdum @ notnot1 eq_refl) dne))
+        @ syl (anl ,(func_subst_eps 'x 'membership_app2))
+        @ rsyl (anim ,(func_subst_eps 'x 'eVar_in_subset_forward) ,(func_subst_eps 'x 'eVar_in_subset_forward))
+        @ rsyl (curry concat_subset)
+        @ rsyl (framing_subset (anr id_concat_l) id)
+        ,(func_subst_eps 'x 'eVar_in_subset_reverse))
+      (rsyl (anr andi) @ curry @ mp
+        ,(func_subst_imp_to_var 'x $(~ (x in Alpha)) \/ (~ (x in Beta)) -> (eVar x == epsilon) /\ ~(exists y (y in Alpha /\ exists z (z in Beta /\ x in (eVar y . eVar z))))$)
+        @ rsyl (anr notan)
+        @ con1
+        @ rsyl (anl notan)
+        @ eori (syl absurdum @ notnot1 eq_refl)
+        @ rsyl dne
+        @ rsyl (exists_framing @ anim2 @ syl (anim2 @ anr ,(func_subst_eps 'x 'membership_expand)) @ syl and_exists_disjoint_forwards @ exists_framing @ syl (anl anlass) @ anim2 @
+            rsyl (anl ,(membership_var_func_subst 'functional_epsilon 'functional_concat)) no_confusion_ec_e)
+        @ rsyl (exists_framing @ anr anass)
+        @ rsyl (anl and_exists_disjoint_r)
+        @ rsyl (anim1 @ anr ,(func_subst_eps 'x 'membership_expand))
+        @ anim id id)));
 
+
+
+theorem epsilon_implies_not_concat_l (phi psi : Pattern)
+    (h: $epsilon -> ~ phi$)
+  : $epsilon -> ~ (phi . psi)$
+= '( exp
+   @ rsyl (bi1i @ regex_eq_ewp_concat)
+   @ anwl
+   @ curry h );
+theorem epsilon_implies_not_concat_r (phi psi : Pattern)
+    (h: $epsilon -> ~ psi$)
+  : $epsilon -> ~ (phi . psi)$
+= '( exp
+   @ rsyl (bi1i @ regex_eq_ewp_concat)
+   @ anwr
+   @ curry h );
 --- Simplifications used in generated proofs
 --------------------------------------------
 
