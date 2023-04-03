@@ -3,6 +3,12 @@ import "20-theory-words.mm0";
 import "13-fixedpoints.mm1";
 
 --- Helpers for concat
+theorem eFresh_concat {x: EVar} (phi psi: Pattern x)
+  (fresh1: $ _eFresh x phi $)
+  (fresh2: $ _eFresh x psi $):
+  $ _eFresh x (phi . psi) $ =
+  '(eFresh_app (eFresh_app eFresh_disjoint fresh1) fresh2);
+
 theorem positive_in_concat {X: SVar} (phi1 phi2: Pattern X)
   (h1: $ _Positive X phi1 $) (h2: $ _Positive X phi2 $): $ _Positive X (phi1 . phi2) $
   = '(positive_in_app (positive_in_app positive_disjoint h1) h2);

@@ -266,6 +266,7 @@ theorem epsilon_implies_not_concat_r (phi psi : Pattern)
    @ rsyl (bi1i @ regex_eq_ewp_concat)
    @ anwr
    @ curry h );
+
 --- Simplifications used in generated proofs
 --------------------------------------------
 
@@ -301,6 +302,31 @@ theorem regex_eq_eps_kleene {X: SVar}: $ (kleene X epsilon) <-> epsilon $ =
     (KT (positive_in_kleene_r_body positive_disjoint) @ norm (norm_sym @ norm_imp_l ,(propag_s_subst 'Y $epsilon \/ (epsilon . sVar Y)$)) @ eori id @ eq_to_intro ,(func_subst 'u $(eVar u) . epsilon == (eVar u)$ 'identity_right_e '(! functional_epsilon w)))
     (imim1i orl @ norm (norm_imp_l ,(propag_s_subst 'Y $epsilon \/ (epsilon . sVar Y)$)) @ pre_fixpoint (positive_in_kleene_r_body positive_disjoint))
   );
+
+theorem regex_eq_double_kleene_lemma {X: SVar} (Alpha: Pattern X) (h: $ _sFresh X Alpha $):
+  $ (kleene X Alpha) . (kleene X Alpha) -> (kleene X Alpha) $ =
+  (named '(norm (norm_imp_l appctx_concat_l)
+                @ unwrap
+                @ KT (positive_in_kleene_r_body @ positive_fresh h)
+                @ norm (norm_imp_l @ norm_sym @ _sSubst_or sSubstitution_disjoint (sSubst_concat (sSubstitution_fresh h) sSubstitution_in_same_sVar) )
+                @ eori (wrap @ norm (norm_imp_l @ norm_sym appctx_concat_l ) @ bi1i id_concat_l)
+                       ( wrap_fresh (eFresh_concat eFresh_disjoint eFresh_ctximp_same_var)
+                       @ norm (norm_imp_l @ norm_sym @ appctx_concat_l)
+                       @ rsyl (bi1i assoc_concat)
+                       @ norm (norm_imp_l @ norm_concat_r appctx_concat_l)
+                       @ rsyl (framing_concat_r ctximp_in_ctx_forward)
+                       @ unfold_r (positive_in_kleene_r_body @ positive_fresh h)
+                       @ norm (norm_imp_r @ norm_sym @ _sSubst_or sSubstitution_disjoint @ sSubst_concat (sSubstitution_fresh h) sSubstitution_in_same_sVar)
+                       @ orr
+                       )));
+
+theorem regex_eq_double_kleene {X: SVar} (Alpha: Pattern X) (h: $ _sFresh X Alpha $):
+  $ (kleene X (kleene X Alpha)) <-> (kleene X Alpha) $ =
+  '(ibii
+    (KT (positive_in_kleene_r_body @ positive_fresh sFresh_mu_same_var)
+      @ norm (norm_sym @ norm_imp_l ,(propag_s_subst 'X $epsilon \/ kleene X Alpha . sVar X$))
+      @ eori (epsilon_implies_kleene @ positive_fresh h) @ regex_eq_double_kleene_lemma h)
+    @ kleene_monotone sFresh_mu_same_var);
 
 --- Derivatives: "Semantic" theorems
 ------------------------------------
