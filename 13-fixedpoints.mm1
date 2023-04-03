@@ -24,7 +24,7 @@ theorem alpha_ctximp_app {sBox: SVar} {eBox1 eBox2: EVar} (phi psi: Pattern sBox
   '(norm
     (norm_equiv_r @ norm_exists
       ,(propag_e_subst_adv 'eBox1 $(eVar eBox1 /\ (app[ eVar eBox1 / sBox ] phi C_ psi))$ (atom-map! '[phi #t] '[psi #t])))
-    alpha_exists);
+    alpha_exists_disjoint);
 
 
 --- Appendix I: Notations and Proofs about Recursive Symbols
@@ -67,3 +67,12 @@ theorem wrap {sBox: SVar} (ctx phi psi: Pattern sBox) {eBox: EVar}
   '(rsyl lemma_62_b_reverse @ exists_framing @ anim id
     (wrap_lemma @ expcom @ rsyl exists_intro_same_var (imim1i (rsyl (exists_framing lemma_60_reverse) prop_43_exists) (rsyl (framing (rsyl (exists_framing ancom) lemma_62_forward)) h)))
   );
+
+theorem wrap_fresh {eBox: EVar} {sBox: SVar} (ctx psi: Pattern sBox) (phi: Pattern eBox sBox)
+  (eBox_fresh: $ _eFresh eBox phi $)
+  (h: $ (app[ phi / sBox ] ctx) -> psi $):
+  $ phi -> (ctximp_app sBox ctx psi eBox) $ =
+  (named '(rsyl (syl (norm (norm_imp_r @ norm_exists ,(propag_e_subst 'x $eVar x /\ x in phi$)) @ anl @ alpha_exists (eFresh_and_r @ eFresh_mem eBox_fresh)) lemma_62_b_reverse) @ exists_framing @ anim id
+    @ norm (norm_sym @ norm_imp_l @ _eSubst_mem_same_var eSubstitution_disjoint) (wrap_lemma @ expcom @ rsyl exists_intro_same_var (imim1i (rsyl (exists_framing lemma_60_reverse) prop_43_exists)
+      (rsyl (framing (rsyl (exists_framing ancom) @ rsyl (norm (norm_imp_r @ norm_exists @ _eSubst_and (_eSubst_mem_same_var @ eSubstitution_fresh eBox_fresh) eSubstitution_in_same_eVar) @ anl @ alpha_exists eFresh_disjoint) lemma_62_forward)) h)))
+  ));

@@ -10,6 +10,26 @@ theorem positive_in_or {X: SVar} (phi1 phi2: Pattern X)
   $ _Positive X (phi1 \/ phi2) $ =
   '(positive_in_imp (negative_in_not h1) h2);
 
+theorem eFresh_ceil {x: EVar} (phi: Pattern x)
+  (h: $ _eFresh x phi $):
+  $ _eFresh x (|^ phi ^|) $ =
+  '(eFresh_app eFresh_disjoint h);
+theorem eFresh_mem {x y: EVar} (phi: Pattern x y)
+  (h: $ _eFresh x phi $):
+  $ _eFresh x (y in phi) $ =
+  '(eFresh_ceil @ eFresh_and_r h);
+theorem eFresh_ctximp_same_var {x: EVar} {box: SVar} (ctx phi: Pattern x box):
+  $ _eFresh x (ctximp_app box ctx phi x) $ =
+  '(eFresh_exists_same_var);
+
+theorem sFresh_ceil {X: SVar} (phi: Pattern X)
+  (h: $ _sFresh X phi $):
+  $ _sFresh X (|^ phi ^|) $ =
+  '(sFresh_app sFresh_disjoint h);
+theorem sFresh_mem {X: SVar} {y: EVar} (phi: Pattern X y)
+  (h: $ _sFresh X phi $):
+  $ _sFresh X (y in phi) $ =
+  '(sFresh_ceil @ sFresh_and_r h);
 
 theorem _eSubst_ceil {x: EVar} (phi psi rho: Pattern x)
   (h: $ Norm (e[ phi / x ] psi) rho $):
@@ -19,6 +39,10 @@ theorem _eSubst_floor {x: EVar} (phi psi rho: Pattern x)
   (h: $ Norm (e[ phi / x ] psi) rho $):
   $ Norm (e[ phi / x ] (|_ psi _|)) (|_ rho _|) $ =
   '(_eSubst_not @ _eSubst_ceil @ _eSubst_not h);
+theorem _eSubst_mem_same_var {x: EVar} (phi phi2 psi2: Pattern x)
+  (h: $ Norm (e[ phi / x ] phi2) psi2 $):
+  $ Norm (e[ phi / x ] (x in phi2)) (|^ phi /\ psi2 ^|) $ =
+  '(_eSubst_ceil @ _eSubst_and (eSubstitution_in_same_eVar) h);
 theorem _eSubst_subset {x: EVar} (phi phi1 phi2 psi1 psi2: Pattern x)
   (h1: $ Norm (e[ phi / x ] phi1) psi1 $)
   (h2: $ Norm (e[ phi / x ] phi2) psi2 $):
@@ -864,16 +888,21 @@ theorem floor_ceil_ceil: $ |_ |^ phi ^| _| <-> |^ phi ^| $ =
 
 theorem simple_eq_subst: $ phi /\ (phi == psi) -> psi $ = '(rsyl ancom @ curry eq_to_intro);
 
-theorem alpha_exists {x y: EVar} (phi: Pattern x):
+theorem alpha_exists {x y: EVar} (phi: Pattern x y)
+  (y_fresh: $ _eFresh y phi $):
   $ (exists x phi) <-> exists y (e[ eVar y / x ] phi) $ =
   '(ibii
     (exists_generalization
       (eFresh_exists @ eFresh_eSubst_same_var eFresh_disjoint) @
       syl exists_intro @ norm
         (norm_sym @ norm_imp_r @ norm_trans eSubstitution_in_eSubst @
-          norm_trans (norm_evSubst_pt norm_refl eSubstitution_in_same_eVar) @ norm_trans eSubstitution_id eSubstitution_disjoint)
+          norm_trans (norm_evSubst_pt norm_refl eSubstitution_in_same_eVar) @ norm_trans eSubstitution_id @ eSubstitution_fresh y_fresh)
         id)
-    (exists_generalization_disjoint exists_intro));
+    (exists_generalization (eFresh_exists y_fresh) exists_intro));
+
+theorem alpha_exists_disjoint {x y: EVar} (phi: Pattern x):
+  $ (exists x phi) <-> exists y (e[ eVar y / x ] phi) $ =
+  '(alpha_exists eFresh_disjoint);
 
 theorem subset_imp_subset_framing {box: SVar} (ctx phi psi: Pattern box):
   $ (phi C_ psi) -> ((app[ phi / box ] ctx) C_ (app[ psi / box ] ctx)) $ =
