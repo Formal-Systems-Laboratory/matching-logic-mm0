@@ -39,7 +39,7 @@ theorem wrap_lemma {x: EVar} (phi psi: Pattern x)
   $ (x in phi) -> |_ psi _| $ =
   '(syl (con3 @ framing_def @ con3 h) @ con2 @ rsyl (framing_def membership_not_reverse)
   (rsyl (norm (norm_imp
-    (norm_trans appCtxR_strict @ norm_app norm_refl @ norm_trans appCtxR_strict @ norm_app norm_refl appCtxVar)
+    (norm_trans appCtxR_disjoint @ norm_app norm_refl @ norm_trans appCtxR_disjoint @ norm_app norm_refl appCtxVar)
     norm_refl) (! lemma_56 box)) (con2 @ dne singletonDef)));
 
 theorem unwrap_lemma {x y: EVar} {box: SVar} (ctx phi: Pattern box):
@@ -51,13 +51,13 @@ theorem unwrap_lemma {x y: EVar} {box: SVar} (ctx phi: Pattern box):
 theorem unwrap {sBox: SVar} (ctx: Pattern sBox) (phi psi: Pattern) {eBox: EVar}
   (h: $ phi -> (ctximp_app sBox ctx psi eBox) $):
   $ (app[ phi / sBox ] ctx) -> psi $ =
-  '( imim1 (syl (rsyl propag_exists_strict @ exists_framing lemma_60_forward)
+  '( imim1 (syl (rsyl propag_exists_disjoint @ exists_framing lemma_60_forward)
                @ framing lemma_62_b_reverse)
-          @ exists_generalization_strict @ impcom (imim2 corollary_57_floor (
+          @ exists_generalization_disjoint @ impcom (imim2 corollary_57_floor (
     rsyl (membership_imp_forward @ con1 exists_intro_same_var @ membership_intro h)
   @ rsyl membership_exists_forward
   @ rsyl (exists_framing membership_and_forward)
-  @ exists_generalization_strict
+  @ exists_generalization_disjoint
   (! unwrap_lemma _ y)
   )));
 

@@ -31,7 +31,7 @@ theorem regex_eq_ewp_ab
   (h: $ letter -> top_letter $):
   $ epsilon /\ letter <-> bot $
   = '(ibii
-    (exists_generalization_strict
+    (exists_generalization_disjoint
       (com12
         (eq_to_imp (eq_to_def @ eq_to_and_l eq_to_intro) (eq_to_not @ eq_to_and_l eq_to_intro))
         (con2 (dne @ singleton_norm (! appCtxVar box1) (! defNorm box2))) -- |^ x /\ ~a ^| <-> ~(x /\ a)
@@ -100,7 +100,7 @@ $ (phi1 C_ psi1) -> (phi2 C_ psi2) -> (phi1 . phi2 C_ psi1 . psi2) $ =
 theorem epsilon_and_concat: $ ((epsilon /\ phi) . psi) <-> |^ epsilon /\ phi ^| /\ psi $ =
   (named '(membership_elim_implicit @ mp (anr ,(propag_mem 'x $((epsilon /\ phi) . psi) <-> |^ epsilon /\ phi ^| /\ psi$)) @
     bitr (cong_of_equiv_exists @ cong_of_equiv_and_r @ bicom membership_app) @ ibii
-      (exists_generalization_strict @ rsyl (anl anass) @ rsyl (curry @ syl anl
+      (exists_generalization_disjoint @ rsyl (anl anass) @ rsyl (curry @ syl anl
         ,(func_subst_explicit_helper 'x $x in phi /\ z in (eVar x . psi)$)) @
         anim2 @ framing_in @ anl id_concat_l)
       (exists_generalization (eFresh_imp eFresh_disjoint eFresh_exists_same_var) (
@@ -256,7 +256,7 @@ theorem der_expand (l: Pattern) (phi: Pattern):
   '(norm (norm_equiv_r @ norm_exists @ norm_and_r @ norm_floor @ norm_imp_l (! appCtxRVar box _ _)) biid);
 
 theorem der_in_ctx_forward : $w1 . (derivative w1 w2) -> w2$
- = '(norm_lemma (norm_sym @ norm_trans appCtxR_strict (norm_app norm_refl appCtxVar))
+ = '(norm_lemma (norm_sym @ norm_trans appCtxR_disjoint (norm_app norm_refl appCtxVar))
                 (! ctximp_in_ctx_forward sBox eBox _ _ )
     );
 
@@ -264,7 +264,7 @@ theorem der_in_ctx_forward : $w1 . (derivative w1 w2) -> w2$
 theorem der_equality_forward_lemma (l phi psi: Pattern) (h: $ exists x (eVar x == l) $): $(l . psi) /\ phi -> l . derivative l phi$ =
   (named '(syl ,(framing_subst '(anr der_expand) 'appctx_concat_r) @ syl (anr ,(ex_appCtx_subst 'appctx_concat_r)) @
     rsyl (anim1 @ syl (anl ,(ex_appCtx_subst 'appctx_concat_r)) ,(framing_subst '(anl lemma_exists_and) 'appctx_concat_r)) @
-    rsyl (anr and_exists_strict_r) @ exists_framing @ rsyl (anim1 ,(framing_subst 'anl 'appctx_concat_r)) @
+    rsyl (anr and_exists_disjoint_r) @ exists_framing @ rsyl (anim1 ,(framing_subst 'anl 'appctx_concat_r)) @
     syl ,(func_subst 'd $(l . eVar y) /\ (d in phi) -> (l . (eVar y /\ (eVar d C_ phi)))$ '(rsyl (anim2 eVar_in_subset_forward) @ anr ,(lemma_60_subset_subst 'appctx_concat_r)) '(functional_l_concat h)) @
     iand anl corollary_57_ceil));
 
@@ -332,16 +332,16 @@ theorem der_l1_l2_phi (l1 l2 phi: Pattern)
                 'l1_func) h1) h2
             ) (rsyl (anim ,(eq_imp_eq_framing_subst 'appctx_concat_l) ,(eq_imp_eq_framing_subst 'appctx_concat_r)) @ curry eq_trans))
           (cong_of_equiv_and_r @ bicom membership_var_bi)) anlass) @
-      bitr and_exists_strict @
+      bitr and_exists_disjoint @
       bicom @ cong_of_equiv_and_r ,(membership_appCtx_subst 'appCtxVar)
     ) @
     bitr (cong_of_equiv_exists anlass) @
-    bitr and_exists_strict @
+    bitr and_exists_disjoint @
     cong_of_equiv_and_r lemma_62_b));
 
 do {
   (def (der_transformer x y l phi) '(ibii
-    (exists_generalization_strict @ curry @ syl anr ,(func_subst_explicit_helper 'y $(l . eVar y) C_ phi$))
+    (exists_generalization_disjoint @ curry @ syl anr ,(func_subst_explicit_helper 'y $(l . eVar y) C_ phi$))
     (rsyl (ian eq_refl) @ norm (norm_imp_l ,(propag_e_subst_adv 'x $(eVar y == eVar x) /\ ((l . eVar x) C_ phi)$ (atom-map! '[l #t] '[phi #t]))) exists_intro)
   ))
 };
@@ -353,10 +353,10 @@ theorem der_transformer_test_1 {x y: EVar} (phi: Pattern):
 theorem regex_eq_der_bot
   (h: $ exists x (eVar x == A) $):
   $ (derivative A bot) -> bot $
-  = '(exists_generalization_strict @ con3 anr @ notnot1 @ framing_def notnot1 @
-    exists_generalization_strict (com12
-      (eq_to_def @ norm (norm_imp_r @ norm_imp_r @ norm_sym @ norm_trans appCtxR_strict @ norm_app norm_refl (! appCtxVar box)) @ eq_to_app_l @ eq_to_app_r eq_to_intro)
-      (exists_generalization_strict (com12 (eq_to_def eq_to_intro) definedness)
+  = '(exists_generalization_disjoint @ con3 anr @ notnot1 @ framing_def notnot1 @
+    exists_generalization_disjoint (com12
+      (eq_to_def @ norm (norm_imp_r @ norm_imp_r @ norm_sym @ norm_trans appCtxR_disjoint @ norm_app norm_refl (! appCtxVar box)) @ eq_to_app_l @ eq_to_app_r eq_to_intro)
+      (exists_generalization_disjoint (com12 (eq_to_def eq_to_intro) definedness)
           (! functional_concat x v1 x1))
         ) h
   );
@@ -418,7 +418,7 @@ theorem regex_eq_der_diff_a_wrt_b:
 theorem regex_eq_der_same_a_wrt_a:
   $ (derivative a a) <-> epsilon $ =
   (named '(ibii
-    (rsyl (anl der_expand) @ exists_generalization_strict @ syl simple_eq_subst @ anim2 @ syl
+    (rsyl (anl der_expand) @ exists_generalization_disjoint @ syl simple_eq_subst @ anim2 @ syl
       (syl anr @ mp
         ,(func_subst 'y $(y in top_letter) -> (a . eVar d == eVar y) -> (a == eVar y) /\ (eVar d == epsilon)$
           '(mp
@@ -436,7 +436,7 @@ theorem regex_eq_der_same_a_wrt_a:
 theorem regex_eq_der_same_a_wrt_b:
   $ (derivative b b) <-> epsilon $ =
   (named '(ibii
-    (rsyl (anl der_expand) @ exists_generalization_strict @ syl simple_eq_subst @ anim2 @ syl
+    (rsyl (anl der_expand) @ exists_generalization_disjoint @ syl simple_eq_subst @ anim2 @ syl
       (syl anr @ mp
         ,(func_subst 'y $(y in top_letter) -> (b . eVar d == eVar y) -> (b == eVar y) /\ (eVar d == epsilon)$
           '(mp
@@ -538,16 +538,16 @@ theorem regex_eq_der_concat_wrt_a (Alpha Beta: Pattern) :
     orim2 @ syl (anr epsilon_and_concat) @ syl (anim2 @ anr der_expand) @ rsyl
       (exists_framing @ syl (anr anlass) @ anim2 @ rsyl subset_and @ anim1
         ,(func_subst 'x $(eVar x C_ |^ phi ^|) -> |^ phi ^|$ '(rsyl eVar_in_subset_reverse mem_def_forward) 'functional_a_concat))
-      and_exists_strict_forwards
+      and_exists_disjoint_forwards
     )
     (rsyl (anl @ cong_of_equiv_or (cong_of_equiv_concat_l der_expand) (cong_of_equiv_concat_r der_expand)) @ syl (anr der_expand) @ eori
-      (rsyl (norm (norm_imp appCtxLRVar @ norm_exists appCtxLRVar) propag_exists_strict) @ exists_generalization_strict @
-        rsyl (anl ,(appCtx_pointwise_subst 'appCtxRVar)) @ exists_generalization_strict @ rsyl (anim1
+      (rsyl (norm (norm_imp appCtxLRVar @ norm_exists appCtxLRVar) propag_exists_disjoint) @ exists_generalization_disjoint @
+        rsyl (anl ,(appCtx_pointwise_subst 'appCtxRVar)) @ exists_generalization_disjoint @ rsyl (anim1
           ,(func_subst 'x $((eVar d /\ (eVar x C_ Alpha)) . eVar beta) -> (eVar d . eVar beta /\ (eVar x C_ Alpha))$ '(anl ,(lemma_60_subset_subst 'appCtxLRVar)) 'functional_a_concat)) @
         rsyl (anl anass) @ rsyl (anim2 @ syl (framing_subset (anr assoc_concat) id) @ rsyl (anim
           ,(subset_imp_subset_framing_subst 'appCtxLRVar)
           (rsyl eVar_in_subset_forward ,(subset_imp_subset_framing_subst 'appCtxRVar))) @
-        curry subset_trans) @ anr imp_exists_strict @ exists_framing (
+        curry subset_trans) @ anr imp_exists_disjoint @ exists_framing (
           syl anr ,(func_subst_explicit_helper 'x $eVar x /\ ((a . eVar x) C_ Alpha . Beta)$)
         ) functional_concat)
       (rsyl (anl ,(ex_appCtx_subst 'appCtxRVar)) @ exists_framing @ iand
@@ -580,16 +580,16 @@ theorem regex_eq_der_concat_wrt_b (Alpha Beta: Pattern) :
     orim2 @ syl (anr epsilon_and_concat) @ syl (anim2 @ anr der_expand) @ rsyl
       (exists_framing @ syl (anr anlass) @ anim2 @ rsyl subset_and @ anim1
         ,(func_subst 'x $(eVar x C_ |^ phi ^|) -> |^ phi ^|$ '(rsyl eVar_in_subset_reverse mem_def_forward) 'functional_b_concat))
-      and_exists_strict_forwards
+      and_exists_disjoint_forwards
     )
     (rsyl (anl @ cong_of_equiv_or (cong_of_equiv_concat_l der_expand) (cong_of_equiv_concat_r der_expand)) @ syl (anr der_expand) @ eori
-      (rsyl (norm (norm_imp appCtxLRVar @ norm_exists appCtxLRVar) propag_exists_strict) @ exists_generalization_strict @
-        rsyl (anl ,(appCtx_pointwise_subst 'appCtxRVar)) @ exists_generalization_strict @ rsyl (anim1
+      (rsyl (norm (norm_imp appCtxLRVar @ norm_exists appCtxLRVar) propag_exists_disjoint) @ exists_generalization_disjoint @
+        rsyl (anl ,(appCtx_pointwise_subst 'appCtxRVar)) @ exists_generalization_disjoint @ rsyl (anim1
           ,(func_subst 'x $((eVar d /\ (eVar x C_ Alpha)) . eVar beta) -> (eVar d . eVar beta /\ (eVar x C_ Alpha))$ '(anl ,(lemma_60_subset_subst 'appCtxLRVar)) 'functional_b_concat)) @
         rsyl (anl anass) @ rsyl (anim2 @ syl (framing_subset (anr assoc_concat) id) @ rsyl (anim
           ,(subset_imp_subset_framing_subst 'appCtxLRVar)
           (rsyl eVar_in_subset_forward ,(subset_imp_subset_framing_subst 'appCtxRVar))) @
-        curry subset_trans) @ anr imp_exists_strict @ exists_framing (
+        curry subset_trans) @ anr imp_exists_disjoint @ exists_framing (
           syl anr ,(func_subst_explicit_helper 'x $eVar x /\ ((b . eVar x) C_ Alpha . Beta)$)
         ) functional_concat)
       (rsyl (anl ,(ex_appCtx_subst 'appCtxRVar)) @ exists_framing @ iand

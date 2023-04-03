@@ -64,10 +64,10 @@ theorem norm_concat_r
 
 theorem appctx_concat_l {box: SVar} (phi: Pattern box) (psi: Pattern):
   $ Norm (app[ phi / box ] (sVar box . psi)) (phi . psi) $ =
-  '(norm_trans appCtxL_strict @ norm_app (norm_trans appCtxR_strict @ norm_app norm_refl appCtxVar) norm_refl);
+  '(norm_trans appCtxL_disjoint @ norm_app (norm_trans appCtxR_disjoint @ norm_app norm_refl appCtxVar) norm_refl);
 theorem appctx_concat_r {box: SVar} (psi: Pattern box) (phi: Pattern):
   $ Norm (app[ psi / box ] (phi . sVar box)) (phi . psi) $ =
-  '(norm_trans appCtxR_strict @ norm_app norm_refl appCtxVar);
+  '(norm_trans appCtxR_disjoint @ norm_app norm_refl appCtxVar);
 theorem appctx_concat_l_l {box: SVar} (phi: Pattern box) (rho psi: Pattern):
   $ Norm (app[ phi / box ] ((sVar box . psi) . rho)) ((phi . psi) . rho) $ =
   '(norm_trans appCtxLR @ norm_concat_l appctx_concat_l);
@@ -76,10 +76,10 @@ theorem appctx_concat_l_r {box: SVar} (phi: Pattern box) (rho psi: Pattern):
   '(norm_trans appCtxLR @ norm_concat_l appctx_concat_r);
 theorem appctx_concat_r_l {box: SVar} (phi: Pattern box) (rho psi: Pattern):
   $ Norm (app[ phi / box ] (rho . (sVar box . psi))) (rho . (phi . psi)) $ =
-  '(norm_trans appCtxR_strict @ norm_concat_r appctx_concat_l);
+  '(norm_trans appCtxR_disjoint @ norm_concat_r appctx_concat_l);
 theorem appctx_concat_r_r {box: SVar} (phi: Pattern box) (rho psi: Pattern):
   $ Norm (app[ phi / box ] (rho . (psi . sVar box))) (rho . (psi . phi)) $ =
-  '(norm_trans appCtxR_strict @ norm_concat_r appctx_concat_r);
+  '(norm_trans appCtxR_disjoint @ norm_concat_r appctx_concat_r);
 
 theorem propag_or_concat : $(phi1 \/ phi2) . psi ->  (phi1 . psi) \/ (phi2 . psi)$
 = '(norm (norm_imp appctx_concat_l (norm_or appctx_concat_l appctx_concat_l)) (! propag_or dummy) );
