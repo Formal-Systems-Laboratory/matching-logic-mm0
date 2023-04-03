@@ -578,10 +578,8 @@ mod PROOF-GEN is
    --- Special cases:
     eq theorem-for-equivalence('X:Qid <- T1 ; 'Alpha:Pattern <- T2, 'regex_eq_ewp_kleene) =     [[ 'regex_eq_ewp_kleene positivity(downTerm(T1, 'bad-down-term), downTerm(T2, sVar 'bad-down-term-alpha)) ]] .
     eq theorem-for-equivalence('X:Qid <- T1 ; 'Alpha:Pattern <- T2, 'regex_eq_ewp_not_kleene) = [[ 'regex_eq_ewp_not_kleene positivity(downTerm(T1, 'bad-down-term), downTerm(T2, sVar 'bad-down-term-alpha)) ]] .
-    eq theorem-for-equivalence('X:Qid <- T1 ; 'Alpha:Pattern <- T2 ; 'A:Letter <- Q
-                                                                  , 'regex_eq_der_kleene) =     [[ qid("regex_eq_der_kleene_wrt_" + string(getName(Q)))
-                                                                                                                            sFresh(downTerm(T1, 'bad-down-term), downTerm(T2, sVar 'bad-down-term-alpha))
-                                                                                                                            positivity(downTerm(T1, 'bad-down-term), downTerm(T2, sVar 'bad-down-term-alpha)) ]] .
+    eq theorem-for-equivalence('X:Qid <- T1 ; 'Alpha:Pattern <- T2 ; 'A:Letter <- Q , 'regex_eq_der_kleene)
+                                                                                              = [[ qid("regex_eq_der_kleene_wrt_" + string(getName(Q))) sFresh(downTerm(T1, 'bad-down-term), downTerm(T2, sVar 'bad-down-term-alpha)) ]] .
 
     eq theorem-for-equivalence('A:Letter <- Q ; Subst , R) = qid(string(R) + "-wrt-" + string(getName(Q))) .
     eq theorem-for-equivalence(                 Subst , R) = R [owise] .
