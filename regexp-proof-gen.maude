@@ -379,7 +379,7 @@ mod PROOF-GEN is
 
     var NAT : Nat .
     vars Es : NeEdges . vars Es? : Edges .
-    vars T T1 T2 : Term . vars TL TL' : TermList .
+    vars T T1 T2 T3 : Term . vars TL TL' : TermList .
     vars P : Pattern .
     vars S : State . vars SL SL' : StateList .
     vars X Y Z R Q : Qid . vars Result : Result4Tuple .
@@ -578,6 +578,8 @@ mod PROOF-GEN is
    --- Special cases:
     eq theorem-for-equivalence('X:Qid <- T1 ; 'Alpha:Pattern <- T2, 'regex_eq_ewp_kleene) =     [[ 'regex_eq_ewp_kleene positivity(downTerm(T1, 'bad-down-term), downTerm(T2, sVar 'bad-down-term-alpha)) ]] .
     eq theorem-for-equivalence('X:Qid <- T1 ; 'Alpha:Pattern <- T2, 'regex_eq_ewp_not_kleene) = [[ 'regex_eq_ewp_not_kleene positivity(downTerm(T1, 'bad-down-term), downTerm(T2, sVar 'bad-down-term-alpha)) ]] .
+    eq theorem-for-equivalence('X:Qid <- T1 ; 'Alpha:Pattern <- T2 ; 'Y:Qid <- T3 , 'regex_eq_double_kleene)
+                                                                                             =  [[ 'regex_eq_double_kleene sFresh(downTerm(T1, 'bad-down-term), downTerm(T2, sVar 'bad-down-term-alpha)) ]] .
     eq theorem-for-equivalence('X:Qid <- T1 ; 'Alpha:Pattern <- T2 ; 'A:Letter <- Q , 'regex_eq_der_kleene)
                                                                                               = [[ qid("regex_eq_der_kleene_wrt_" + string(getName(Q))) sFresh(downTerm(T1, 'bad-down-term), downTerm(T2, sVar 'bad-down-term-alpha)) ]] .
 
