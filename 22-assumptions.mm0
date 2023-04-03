@@ -8,12 +8,6 @@ axiom regex_eq_der_kleene_lemma {X: SVar} (Alpha: Pattern X) (h: $ _sFresh X Alp
 --- Theorems that reduce the size of the automata/proof
 axiom regex_eq_double_kleene {X: SVar} (Alpha: Pattern X) (h: $ _sFresh X Alpha $): $ (kleene X (kleene X Alpha)) <-> (kleene X Alpha) $;
 
---- EWP related simplifications
-axiom regex_eq_ewp_concat (Alpha Beta: Pattern):
-  $ epsilon /\ (Alpha . Beta) <-> (epsilon /\ Alpha) /\ (epsilon /\ Beta) $;
-axiom regex_eq_ewp_not_concat (Alpha Beta: Pattern):
-  $ (epsilon /\ ~(Alpha . Beta)) <-> ((epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta)) $;
-
 --- top-implies-fp
 axiom top_implies_fp_interior  {X: SVar} {box: SVar} {dummy: EVar}
 --- TODO: Add eFresh hypothesis? eFresh X { fp_unf_a fp_unf_b fp_ctximp_a fp_ctximp_b }

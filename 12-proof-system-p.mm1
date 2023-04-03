@@ -218,6 +218,7 @@ theorem eq_imp_subset: $ (phi == psi) -> (phi C_ psi) $ = '(framing_floor anl);
 theorem subset_to_eq: $ (phi C_ psi) -> (psi C_ phi) -> (phi == psi) $ = '(exp @ anr propag_and_floor);
 
 theorem eq_refl: $ phi == phi $ = '(equiv_to_eq biid);
+theorem functional_var: $ exists x (eVar x == eVar x) $ = '(exists_intro_same_var eq_refl);
 
 theorem eq_sym: $ (phi1 == phi2) -> (phi2 == phi1) $ =
   '(con3 @ framing_def @ con3 bicom);
@@ -810,6 +811,10 @@ do {
   (def (membership_appCtx_subst subst) '(norm (norm_equiv (norm_mem ,subst) @ norm_exists @ norm_and_r (norm_mem ,subst)) membership_appCtx))
 };
 
+theorem membership_expand {x y: EVar} (phi: Pattern x):
+  $ (x in phi) <-> exists y ((y in phi) /\ (eVar x == eVar y)) $ =
+  (named '(bitr ,(membership_appCtx_subst 'appCtxVar) @ cong_of_equiv_exists @ cong_of_equiv_and_r membership_var_bi));
+
 --- lemma 59
 -- theorem func_subst_explicit {x: EVar} {y: EVar} (phi1: Pattern x y) (phi2: Pattern x):
 --   $ (forall x phi1) /\ (exists y phi2 == eVar y) -> e[ phi2 / x ] phi1 $ =
@@ -929,6 +934,8 @@ do {
     [_ 'eq_to_id_bi]
   )
 
+  (def (func_subst_imp_to_var x ctx) '(com12 @ syl anr ,(func_subst_explicit_helper x ctx)))
+
   (def (func_subst_explicit x y phi1 forall_x_phi1 func_phi2) '(
     exists_generalization_disjoint (mp (com12 @ syl anl ,(func_subst_explicit_helper x phi1)) (norm ,(propag_e_subst x phi1) (! var_subst ,x ,y ,phi1 ,forall_x_phi1))) ,func_phi2
   ))
@@ -936,6 +943,14 @@ do {
   (def (func_subst x phi1 phi1_pf func_phi2) '(
     exists_generalization_disjoint (mp (com12 @ syl anl ,(func_subst_explicit_helper x phi1)) ,phi1_pf) ,func_phi2
   ))
+  (def (func_subst_thm func_phi2 x phi1) '(
+    exists_generalization_disjoint (mp (com12 @ syl anl ,(func_subst_explicit_helper x (nth 4 @ get-decl phi1))) ,phi1) ,func_phi2
+  ))
+  (def (func_subst_thm_rev func_phi2 x phi1) '(
+    bicom @ exists_generalization_disjoint (mp (com12 @ syl anl ,(func_subst_explicit_helper x (nth 4 @ get-decl phi1))) ,phi1) ,func_phi2
+  ))
+
+  (def (membership_var_func_subst func_x func_y) (func_subst 'x $(x in psi) <-> (eVar x == psi)$ (func_subst_thm func_y 'y 'membership_var_bi) func_x))
 
   (def (func_subst_fresh fre x phi1 phi1_pf func_phi2) '(
     exists_generalization ,fre (mp (com12 @ syl anl ,(func_subst_explicit_helper x phi1)) ,phi1_pf) ,func_phi2
