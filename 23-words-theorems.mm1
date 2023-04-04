@@ -768,6 +768,65 @@ theorem top_implies_fp_leaf {box: SVar} (phi : Pattern box) {dummy: EVar}
   : $( ctximp_app box (sVar box . top_letter) phi dummy) . top_letter -> phi $
 = '(norm (norm_imp appctx_concat_l norm_refl) ctximp_in_ctx_forward);
 
+
+--- TODO: This should replace wrap?
+theorem wrap2 {sBox: SVar}  {eBox: EVar} (ctx : Pattern sBox) (phi: Pattern sBox eBox) (psi: Pattern sBox)
+  (h: $ (app[ phi / sBox ] ctx) -> psi $):
+  $ phi -> (ctximp_app sBox ctx psi eBox) $ =
+  '(rsyl  (wrap h) (bi2i (! alpha_ctximp_app sBox eBox eBox2)));
+
+theorem top_implies_fp_interior_positivity_lemma (phi_a phi_b: Pattern X)
+    (p_a: $ _Positive X phi_a $)
+    (p_b: $ _Positive X phi_b $)
+  : $ _Positive X (epsilon \/ (a . phi_a \/ b . phi_b )) $
+= '(positive_in_or positive_disjoint (positive_in_or (positive_in_concat positive_disjoint p_a)
+                                                     (positive_in_concat positive_disjoint p_b)));
+
+theorem top_implies_fp_interior  {X: SVar} {sBox: SVar} {eBox: EVar} (fp_unf_a fp_unf_b fp_ctximp_a fp_ctximp_b : Pattern X sBox)
+  (p_fp_unf_a: $ _Positive X fp_unf_a $)
+  (p_fp_unf_b: $ _Positive X fp_unf_b $)
+  (p_fp_ctximp_a: $ _Positive X fp_ctximp_a $)
+  (p_fp_ctximp_b: $ _Positive X fp_ctximp_b $)
+
+  (he_a: $epsilon -> s[ (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) / X ] fp_unf_a$)
+  (he_b: $epsilon -> s[ (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) / X ] fp_unf_b$)
+  (ha: $((s[ (ctximp_app sBox (sVar sBox . top_letter) (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) eBox) / X ] fp_ctximp_a) . top_letter)
+          -> (s[ (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) / X ] fp_unf_a)$)
+  (hb: $((s[ (ctximp_app sBox (sVar sBox . top_letter) (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) eBox) / X ] fp_ctximp_b) . top_letter)
+          -> (s[ (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) / X ] fp_unf_b)$)
+  : ------------------------
+  $(mu X (epsilon \/ ((a . fp_ctximp_a) \/ (b . fp_ctximp_b)))) . top_letter -> (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b))))$
+= '(norm (norm_imp appctx_concat_l norm_refl) @ unwrap
+   @ KT (top_implies_fp_interior_positivity_lemma p_fp_ctximp_a p_fp_ctximp_b)
+   @ norm (norm_imp (norm_sym @ _sSubst_or sSubstitution_disjoint (_sSubst_or (sSubst_concat_r norm_refl) (sSubst_concat_r norm_refl))) norm_refl)
+   @ eori ( wrap2
+          @ unfold_r (top_implies_fp_interior_positivity_lemma p_fp_unf_a p_fp_unf_b)
+          @ norm (norm_sym @ norm_imp appctx_concat_l
+                                      (_sSubst_or sSubstitution_disjoint (_sSubst_or (sSubst_concat_r norm_refl) (sSubst_concat_r norm_refl)))
+                 )
+          @ rsyl (bi2i @ bicom regex_eq_eps_concat_l)
+          @ eori (orrd @ rsyl (bi2i @ regex_eq_eps_concat_r) @ orld @ framing_concat_r he_a)
+                 (orrd @ rsyl (bi2i @ regex_eq_eps_concat_r) @ orrd @ framing_concat_r he_b)
+          )
+   @ eori ( wrap2
+          @ unfold_r (top_implies_fp_interior_positivity_lemma p_fp_unf_a p_fp_unf_b)
+          @ norm (norm_sym @ norm_imp appctx_concat_l
+                                      (_sSubst_or sSubstitution_disjoint (_sSubst_or (sSubst_concat_r norm_refl) (sSubst_concat_r norm_refl)))
+                 )
+          @ orrd @ orld
+          @ rsyl (bi1i @ regex_eq_concat_assoc)
+          @ framing_concat_r ha )
+          ( wrap2
+          @ unfold_r (top_implies_fp_interior_positivity_lemma p_fp_unf_a p_fp_unf_b)
+          @ norm (norm_sym @ norm_imp appctx_concat_l
+                                      (_sSubst_or sSubstitution_disjoint (_sSubst_or (sSubst_concat_r norm_refl) (sSubst_concat_r norm_refl)))
+                 )
+          @ orrd @ orrd
+          @ rsyl (bi1i @ regex_eq_concat_assoc)
+          @ framing_concat_r hb
+          )
+    );
+
 --- fp-implies-alpha
 --------------------
 
