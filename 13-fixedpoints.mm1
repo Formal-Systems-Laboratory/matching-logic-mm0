@@ -76,3 +76,15 @@ theorem wrap_fresh {eBox: EVar} {sBox: SVar} (ctx psi: Pattern sBox) (phi: Patte
     @ norm (norm_sym @ norm_imp_l @ _eSubst_mem_same_var eSubstitution_disjoint) (wrap_lemma @ expcom @ rsyl exists_intro_same_var (imim1i (rsyl (exists_framing lemma_60_reverse) prop_43_exists)
       (rsyl (framing (rsyl (exists_framing ancom) @ rsyl (norm (norm_imp_r @ norm_exists @ _eSubst_and (_eSubst_mem_same_var @ eSubstitution_fresh eBox_fresh) eSubstitution_in_same_eVar) @ anl @ alpha_exists eFresh_disjoint) lemma_62_forward)) h)))
   ));
+
+theorem wrap_subst {sBox: SVar} (ctx phi psi rho: Pattern sBox) {eBox: EVar}
+  (subst: $ Norm (app[ phi / sBox ] ctx) rho $)
+  (h: $ rho -> psi $):
+  $ phi -> (ctximp_app sBox ctx psi eBox) $ =
+  '(wrap @ norm (norm_sym @ norm_imp_l subst) h);
+
+theorem unwrap_subst {sBox: SVar} (ctx: Pattern sBox) (phi psi: Pattern) {eBox: EVar}
+  (subst: $ Norm (app[ phi / sBox ] ctx) rho $)
+  (h: $ phi -> (ctximp_app sBox ctx psi eBox) $):
+  $ rho -> psi $ =
+  '(norm (norm_imp_l subst) @ unwrap h);
