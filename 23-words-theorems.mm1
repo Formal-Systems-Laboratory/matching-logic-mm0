@@ -108,12 +108,28 @@ theorem epsilon_and_concat: $ ((epsilon /\ phi) . psi) <-> |^ epsilon /\ phi ^| 
             ,(func_subst_explicit_helper 'x $x in phi /\ z in (eVar x . psi)$)) @
             anim2 @ anim2 @ framing_in @ anr id_concat_l) functional_epsilon)));
 
+theorem kleene_l_monotone {X : SVar} (phi: Pattern X)
+  (X_fresh: $ _sFresh X phi $):
+  $ phi -> kleene_l X phi $ =
+  (named '(syl (anr @ unfold_kleene_l X_fresh) @ orrd @ syl
+    (framing_concat_l @ anr @ unfold_kleene_l X_fresh) @
+    rsyl (anr regex_eq_eps_concat_l) @ rsyl orl @ anr ,(or_appCtx_subst 'appctx_concat_l)));
 theorem kleene_monotone {X : SVar} (phi: Pattern X)
   (X_fresh: $ _sFresh X phi $):
   $ phi -> kleene X phi $ =
   (named '(syl (anr @ unfold_kleene X_fresh) @ orrd @ syl
     (framing_concat_r @ anr @ unfold_kleene X_fresh) @
     rsyl (anr regex_eq_eps_concat_r) @ rsyl orl @ anr ,(or_appCtx_subst 'appctx_concat_r)));
+
+theorem epsilon_in_concat_eVar {x: EVar} (phi: Pattern x):
+  $ |^ epsilon /\ (eVar x . phi) ^| -> (eVar x == epsilon) $ =
+  (named '(rsyl (anl ,(func_subst_eps 'x 'membership_app)) @ rsyl (exists_framing @ anim2
+      @ rsyl ,(func_subst 't $(t in (eVar y . eVar z)) -> (eVar t == (eVar y . eVar z))$ (func_subst_concat 'y 'membership_var_forward) 'functional_epsilon)
+      no_confusion_ec_e)
+    @ rsyl (exists_framing @ anl anlass)
+    @ rsyl and_exists_disjoint_forwards
+    @ rsyl anl
+    eq_sym));
 
 --- Proving the Empty Word Property
 -----------------------------------
@@ -303,6 +319,22 @@ theorem regex_eq_eps_kleene {X: SVar}: $ (kleene X epsilon) <-> epsilon $ =
     (imim1i orl @ norm (norm_imp_l ,(propag_s_subst 'Y $epsilon \/ (epsilon . sVar Y)$)) @ pre_fixpoint (positive_in_kleene_r_body positive_disjoint))
   );
 
+theorem regex_eq_double_kleene_l_lemma {X: SVar} (Alpha: Pattern X) (h: $ _sFresh X Alpha $):
+  $ (kleene_l X Alpha) . (kleene_l X Alpha) -> (kleene_l X Alpha) $ =
+  (named '(norm (norm_imp_l appctx_concat_r)
+                @ unwrap
+                @ KT (positive_in_kleene_l_body @ positive_fresh h)
+                @ norm (norm_imp_l @ norm_sym @ _sSubst_or sSubstitution_disjoint (sSubst_concat sSubstitution_in_same_sVar (sSubstitution_fresh h)))
+                @ eori (wrap @ norm (norm_imp_l @ norm_sym appctx_concat_r ) @ bi1i id_concat_r)
+                       ( wrap_fresh (eFresh_concat eFresh_ctximp_same_var eFresh_disjoint)
+                       @ norm (norm_imp_l @ norm_sym @ appctx_concat_r)
+                       @ rsyl (anr assoc_concat)
+                       @ norm (norm_imp_l @ norm_concat_l appctx_concat_r)
+                       @ rsyl (framing_concat_l ctximp_in_ctx_forward)
+                       @ unfold_r (positive_in_kleene_l_body @ positive_fresh h)
+                       @ norm (norm_sym @ norm_imp_r @ _sSubst_or sSubstitution_disjoint @ sSubst_concat sSubstitution_in_same_sVar (sSubstitution_fresh h))
+                       orr)));
+
 theorem regex_eq_double_kleene_lemma {X: SVar} (Alpha: Pattern X) (h: $ _sFresh X Alpha $):
   $ (kleene X Alpha) . (kleene X Alpha) -> (kleene X Alpha) $ =
   (named '(norm (norm_imp_l appctx_concat_l)
@@ -317,8 +349,7 @@ theorem regex_eq_double_kleene_lemma {X: SVar} (Alpha: Pattern X) (h: $ _sFresh 
                        @ rsyl (framing_concat_r ctximp_in_ctx_forward)
                        @ unfold_r (positive_in_kleene_r_body @ positive_fresh h)
                        @ norm (norm_imp_r @ norm_sym @ _sSubst_or sSubstitution_disjoint @ sSubst_concat (sSubstitution_fresh h) sSubstitution_in_same_sVar)
-                       @ orr
-                       )));
+                       orr)));
 
 theorem regex_eq_double_kleene {X: SVar} (Alpha: Pattern X) (h: $ _sFresh X Alpha $):
   $ (kleene X (kleene X Alpha)) <-> (kleene X Alpha) $ =
@@ -327,6 +358,14 @@ theorem regex_eq_double_kleene {X: SVar} (Alpha: Pattern X) (h: $ _sFresh X Alph
       @ norm (norm_sym @ norm_imp_l ,(propag_s_subst 'X $epsilon \/ kleene X Alpha . sVar X$))
       @ eori (epsilon_implies_kleene @ positive_fresh h) @ regex_eq_double_kleene_lemma h)
     @ kleene_monotone sFresh_mu_same_var);
+
+theorem kleene_r_to_kleene_l {X: SVar} (phi: Pattern X)
+  (X_fresh: $ _sFresh X phi $):
+  $ kleene_r X phi -> kleene_l X phi $ =
+  '(KT (positive_in_kleene_r_body @ positive_fresh X_fresh) @ norm (norm_sym @ norm_imp_l @ _sSubst_or sSubstitution_disjoint @ _sSubst_concat (sSubstitution_fresh X_fresh) sSubstitution_in_same_sVar) @
+    eori
+      (rsyl orl @ norm (norm_imp_l ,(propag_s_subst 'X $epsilon \/ sVar X . phi$)) @ pre_fixpoint @ positive_in_kleene_l_body @ positive_fresh X_fresh)
+      (rsyl (framing_concat_l @ kleene_l_monotone X_fresh) @ regex_eq_double_kleene_l_lemma X_fresh));
 
 --- Derivatives: "Semantic" theorems
 ------------------------------------
@@ -678,6 +717,48 @@ theorem regex_eq_der_concat_wrt_b (Alpha Beta: Pattern) :
           rsyl (anim1 ,(func_subst 'x $(x in Alpha) -> (eVar x C_ Alpha)$ 'eVar_in_subset_forward 'functional_epsilon)) @
           rsyl (curry concat_subset) @ framing_subset (anr id_concat_l) id))
     )));
+
+
+theorem regex_eq_der_kleene_lemma {X: SVar} (Alpha: Pattern X)
+  (h: $ _sFresh X Alpha $):
+  $ ~epsilon /\ Alpha . kleene X Alpha <-> (~epsilon /\ Alpha) . kleene X Alpha $ =
+  (named '(ibii
+    ( rsyl ancom
+    @ curry
+    @ unwrap_subst appctx_concat_r
+    @ rsyl (kleene_r_to_kleene_l h)
+    @ KT (positive_in_kleene_l_body @ positive_fresh h)
+    @ norm (norm_sym @ norm_imp_l ,(propag_s_subst 'X $epsilon \/ sVar X . Alpha$))
+    @ eori
+      ( wrap_subst appctx_concat_r
+        @ rsyl (anl id_concat_r)
+        @ expcom
+        @ rsyl (anr id_concat_r)
+        @ framing_concat_r @ epsilon_implies_kleene @ positive_fresh h)
+      ( norm (norm_sym @ norm_imp_l @ norm_concat_r @ sSubstitution_fresh h)
+        @ wrap_fresh (eFresh_concat eFresh_exists_same_var eFresh_disjoint)
+        @ norm (norm_sym @ norm_imp_l appctx_concat_r)
+        @ rsyl (anr assoc_concat)
+        @ norm (norm_imp_l @ norm_concat_l appctx_concat_r)
+        @ rsyl (framing_concat_l ctximp_in_ctx_forward)
+        @ rsyl (anl ,(or_appCtx_subst 'appctx_concat_l))
+        @ eori
+          ( rsyl (anl id_concat_l)
+            @ expcom
+            @ rsyl (anr id_concat_r)
+            @ framing_concat_r @ epsilon_implies_kleene @ positive_fresh h)
+            @ orrd
+            @ rsyl (anl assoc_concat)
+            @ framing_concat_r
+            @ rsyl (framing_concat_r @ kleene_monotone h)
+            @ regex_eq_double_kleene_lemma h)) 
+    @ iand
+      (con2 @ corollary_57_floor @ mp ,(func_subst_eps 'x 'eVar_in_subset_forward) @
+        mp ,(func_subst 'x $~(exists y (~(eVar y == epsilon) /\ y in alpha /\ exists z ((z in alpha_k) /\ x in (eVar y . eVar z)))) -> x in ~(((~ epsilon) /\ alpha) . alpha_k)$ '(anr ,(propag_mem 'x $~(((~ epsilon) /\ alpha) . alpha_k)$)) 'functional_epsilon)
+        (univ_gene @ rsyl ancom @ curry @ syl con3 @ a1i
+          @ rsyl (exists_framing @ syl ancom @ anim2 epsilon_in_concat_eVar)
+          @ rsyl and_exists_disjoint_forwards anl))
+      @ framing_concat_l anr));
 
 theorem regex_eq_der_kleene_wrt_a {X: SVar} (Alpha: Pattern X)
   (X_fresh: $ _sFresh X Alpha $):

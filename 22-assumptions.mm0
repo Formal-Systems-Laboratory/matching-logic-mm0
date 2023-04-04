@@ -3,8 +3,6 @@ import "20-theory-words.mm0";
 --- This file contains unproven theorems as axioms for the theory of words.
 --- As we prove them, we shall move them to an appropriate file.
 
-axiom regex_eq_der_kleene_lemma {X: SVar} (Alpha: Pattern X) (h: $ _sFresh X Alpha $): $ ~epsilon /\ Alpha . kleene X Alpha <-> (~epsilon /\ Alpha) . kleene X Alpha $;
-
 --- top-implies-fp
 axiom top_implies_fp_interior  {X: SVar} {box: SVar} {dummy: EVar}
 --- TODO: Add eFresh hypothesis? eFresh X { fp_unf_a fp_unf_b fp_ctximp_a fp_ctximp_b }
