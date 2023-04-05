@@ -1,6 +1,5 @@
 import "13-fixedpoints.mm1";
 import "21-words-helpers.mm1";
-import "22-assumptions.mm0";
 
 --- Lift axioms to higher level constructs
 ------------------------------------------
@@ -416,7 +415,7 @@ theorem der_equality: $phi == (epsilon /\ phi) \/ ((a . (derivative a phi)) \/ (
 
 theorem l_der_phi_imp_phi (l phi: Pattern):
   $ (l . derivative l phi) -> phi $ =
-  '(norm (norm_imp_l appCtxRVar) (! unwrap box _ _ _ dummy id));
+  (named '(unwrap_subst appctx_concat_r id));
 
 theorem cong_of_equiv_der
   (h1: $ phi1 <-> phi2 $)
@@ -851,6 +850,57 @@ theorem top_implies_fp_leaf {box: SVar} (phi : Pattern box) {dummy: EVar}
 
 --- fp-implies-alpha
 --------------------
+
+theorem positive_in_fp_interior (phi_a phi_b: Pattern X)
+  (p_a: $ _Positive X phi_a $)
+  (p_b: $ _Positive X phi_b $):
+  $ _Positive X (epsilon \/ (a . phi_a \/ b . phi_b )) $
+  = '(positive_in_or positive_disjoint (positive_in_or (positive_in_concat positive_disjoint p_a)
+                                                       (positive_in_concat positive_disjoint p_b)));
+
+-- TODO(MirceaS): Can't this be relaxed to allow eBox to show up in some or all of the patterns?
+theorem top_implies_fp_interior {X: SVar} {sBox: SVar} {eBox: EVar} (fp_unf_a fp_unf_b fp_ctximp_a fp_ctximp_b: Pattern X sBox)
+  (p_fp_unf_a: $ _Positive X fp_unf_a $)
+  (p_fp_unf_b: $ _Positive X fp_unf_b $)
+  (p_fp_ctximp_a: $ _Positive X fp_ctximp_a $)
+  (p_fp_ctximp_b: $ _Positive X fp_ctximp_b $)
+
+  (he_a: $epsilon -> s[ (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) / X ] fp_unf_a$)
+  (he_b: $epsilon -> s[ (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) / X ] fp_unf_b$)
+  (ha: $((s[ (ctximp_app sBox (sVar sBox . top_letter) (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) eBox) / X ] fp_ctximp_a) . top_letter)
+          -> (s[ (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) / X ] fp_unf_a)$)
+  (hb: $((s[ (ctximp_app sBox (sVar sBox . top_letter) (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) eBox) / X ] fp_ctximp_b) . top_letter)
+          -> (s[ (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) / X ] fp_unf_b)$)
+  : ------------------------
+  $(mu X (epsilon \/ ((a . fp_ctximp_a) \/ (b . fp_ctximp_b)))) . top_letter -> (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b))))$
+  = (id
+    '(unwrap_subst appctx_concat_l
+    @ KT_subst (positive_in_fp_interior p_fp_ctximp_a p_fp_ctximp_b) (_sSubst_or_r (_sSubst_or (sSubst_concat_r norm_refl) (sSubst_concat_r norm_refl)))
+    @ eori
+      ( wrap_subst appctx_concat_l
+        @ rsyl (anl regex_eq_eps_concat_l)
+        @ unfold_r (positive_in_fp_interior p_fp_unf_a p_fp_unf_b)
+        @ norm (norm_sym @ norm_imp_r ,(propag_s_subst 'X $epsilon \/ (a . _ \/ b . _)$))
+        @ orrd
+        @ orim
+          (rsyl (anr regex_eq_eps_concat_r) @ framing_concat_r he_a)
+          (rsyl (anr regex_eq_eps_concat_r) @ framing_concat_r he_b))
+    @ eori
+      ( wrap_fresh_subst (eFresh_concat eFresh_disjoint @ eFresh_sSubst eFresh_disjoint eFresh_ctximp_same_var) appctx_concat_l
+        @ rsyl (bi1i @ assoc_concat)
+        @ unfold_r (positive_in_fp_interior p_fp_unf_a p_fp_unf_b)
+        @ norm (norm_sym @ norm_imp_r ,(propag_s_subst 'X $epsilon \/ (a . _ \/ b . _)$))
+        @ orrd @ orld
+        @ framing_concat_r ha)
+      ( wrap_fresh_subst (eFresh_concat eFresh_disjoint @ eFresh_sSubst eFresh_disjoint eFresh_ctximp_same_var) appctx_concat_l
+        @ rsyl (bi1i @ assoc_concat)
+        @ unfold_r (positive_in_fp_interior p_fp_unf_a p_fp_unf_b)
+        @ norm (norm_sym @ norm_imp_r ,(propag_s_subst 'X $epsilon \/ (a . _ \/ b . _)$))
+        @ orrd @ orrd
+        @ framing_concat_r hb)
+    ));
+
+
 
 --- Apply equivalence left to right
 theorem apply_equiv (eq: $phi <-> psi$) (cont: $rho -> psi$): $rho -> phi$

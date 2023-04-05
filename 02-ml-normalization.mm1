@@ -157,7 +157,7 @@ theorem exists_generalization_disjoint {x: EVar} (phi1: Pattern x) (phi2: Patter
   (h: $ phi1 -> phi2 $):
   $ (exists x phi1) -> phi2 $ =
   '(exists_generalization eFresh_disjoint h);
-theorem propag_exists_disjoint {box: SVar} {x: EVar} (ctx: Pattern box) (phi: Pattern x):
+theorem propag_exists_disjoint {box: SVar} {x: EVar} (ctx: Pattern box) (phi: Pattern box x):
   $ app[ exists x phi / box ] ctx -> exists x (app[ phi / box ] ctx) $ =
   '(propag_exists eFresh_disjoint);
 
@@ -337,6 +337,16 @@ theorem _sSubst_or {X: SVar} (phi phi1 phi2 psi1 psi2: Pattern X)
   (h2: $ Norm (s[ phi / X ] phi2) psi2 $):
   $ Norm (s[ phi / X ] (phi1 \/ phi2)) (psi1 \/ psi2) $ =
   '(_sSubst_imp (_sSubst_not h1) h2);
+
+theorem _sSubst_or_l {X: SVar} (phi phi1 psi1: Pattern X) (phi2: Pattern)
+  (h: $ Norm (s[ phi / X ] phi1) psi1 $):
+  $ Norm (s[ phi / X ] (phi1 \/ phi2)) (psi1 \/ phi2) $ =
+  '(_sSubst_or h sSubstitution_disjoint);
+
+theorem _sSubst_or_r {X: SVar} (phi phi2 psi2: Pattern X) (phi1: Pattern)
+  (h: $ Norm (s[ phi / X ] phi2) psi2 $):
+  $ Norm (s[ phi / X ] (phi1 \/ phi2)) (phi1 \/ psi2) $ =
+  '(_sSubst_or sSubstitution_disjoint h);
 
 theorem _sSubst_and {X: SVar} (phi phi1 phi2 psi1 psi2: Pattern X)
   (h1: $ Norm (s[ phi / X ] phi1) psi1 $)
