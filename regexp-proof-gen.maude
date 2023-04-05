@@ -760,11 +760,11 @@ mod PROOF-GEN is
          [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfA) unfold-r(substitute[ FpUnf / X ] in FpUnfA, 'orl) ]]
          [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfB) unfold-r(substitute[ FpUnf / X ] in FpUnfB, 'orl) ]]
          [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfA)
-            [[ 'norm-lemma propag-sSubst([[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy]], X, FpCtximpA . top-letter)
+            [[ 'norm-lemma [[ 'norm-concat-l propag-sSubst([[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy]], X, FpCtximpA) ]]
                          proof-top-implies-fp((substitute[ [[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy]] / X ] in (FpCtximpA . top-letter)) -> substitute[ FpUnf / X ] in FpUnfA , N_A)
          ]] ]]
          [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfB)
-            [[ 'norm-lemma propag-sSubst([[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy]], X, FpCtximpB . top-letter)
+            [[ 'norm-lemma [[ 'norm-concat-l propag-sSubst([[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy]], X, FpCtximpB ) ]]
                          proof-top-implies-fp((substitute[ [[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy]] / X ] in (FpCtximpB . top-letter)) -> substitute[ FpUnf / X ] in FpUnfB , N_B)
          ]] ]]
        ]]
