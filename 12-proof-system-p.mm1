@@ -54,6 +54,13 @@ theorem _eSubst_eq {x: EVar} (phi phi1 phi2 psi1 psi2: Pattern x)
   $ Norm (e[ phi / x ] (phi1 == phi2)) (psi1 == psi2) $ =
   '(_eSubst_floor @ _eSubst_equiv h1 h2);
 
+theorem KT_subst {X: SVar} (phi psi rho: Pattern X)
+  (h_pos: $ _Positive X phi $)
+  (h_subst: $ Norm (s[ psi / X ] phi) rho $)
+  (h: $ rho -> psi $):
+  $ (mu X phi) -> psi $ =
+  '(KT h_pos @ norm (norm_sym @ norm_imp_l h_subst) h);
+
 --- prop_44
 theorem imp_cong_of_equiv_not: $(phi1 <-> phi2) -> (~phi1 <-> ~phi2)$ = 'noteq;
 theorem imp_cong_of_equiv_imp_l: $(phi1 <-> phi2) -> ((phi1 -> psi) <-> (phi2 -> psi))$ = '(rsyl ancom @ anim imim1 imim1);
@@ -437,7 +444,7 @@ theorem floor_idem: $ |_ (|_ phi _|) _| <-> |_ phi _| $ =
 theorem subset_to_imp: $ (phi C_ psi) -> (phi -> psi) $ = 'corollary_57_floor;
 
 --- lemma 60
-theorem lemma_60_forward {x: EVar} {box: SVar} (ctx: Pattern box x) (phi1 phi2: Pattern x):
+theorem lemma_60_forward {x: EVar} {box: SVar} (ctx phi1 phi2: Pattern box x):
   $ (app[ phi1 /\ (x in phi2) / box ] ctx) -> ((app[ phi1 / box ] ctx) /\ (x in phi2)) $ =
   '(iand (framing anl) @
     rsyl (framing anr) @ rsyl (norm (

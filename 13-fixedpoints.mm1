@@ -48,7 +48,7 @@ theorem unwrap_lemma {x y: EVar} {box: SVar} (ctx phi: Pattern box):
   con3d @ norm (norm_imp_r @ norm_imp defNorm defNorm) (lemma_14 @ con3d @ rsyl eq_to_framing imim1)));
 
 --- lemma 91 (Specialized to Application contexts)
-theorem unwrap {sBox: SVar} (ctx: Pattern sBox) (phi psi: Pattern) {eBox: EVar}
+theorem unwrap {eBox: EVar} {sBox: SVar} (ctx phi psi: Pattern sBox)
   (h: $ phi -> (ctximp_app sBox ctx psi eBox) $):
   $ (app[ phi / sBox ] ctx) -> psi $ =
   '( imim1 (syl (rsyl propag_exists_disjoint @ exists_framing lemma_60_forward)
@@ -61,7 +61,7 @@ theorem unwrap {sBox: SVar} (ctx: Pattern sBox) (phi psi: Pattern) {eBox: EVar}
   (! unwrap_lemma _ y)
   )));
 
-theorem wrap {sBox: SVar} (ctx phi psi: Pattern sBox) {eBox: EVar}
+theorem wrap {eBox: EVar} {sBox: SVar} (ctx phi psi: Pattern sBox)
   (h: $ (app[ phi / sBox ] ctx) -> psi $):
   $ phi -> (ctximp_app sBox ctx psi eBox) $ =
   '(rsyl lemma_62_b_reverse @ exists_framing @ anim id
@@ -77,13 +77,20 @@ theorem wrap_fresh {eBox: EVar} {sBox: SVar} (ctx psi: Pattern sBox) (phi: Patte
       (rsyl (framing (rsyl (exists_framing ancom) @ rsyl (norm (norm_imp_r @ norm_exists @ _eSubst_and (_eSubst_mem_same_var @ eSubstitution_fresh eBox_fresh) eSubstitution_in_same_eVar) @ anl @ alpha_exists eFresh_disjoint) lemma_62_forward)) h)))
   ));
 
-theorem wrap_subst {sBox: SVar} (ctx phi psi rho: Pattern sBox) {eBox: EVar}
+theorem wrap_subst {eBox: EVar} {sBox: SVar} (ctx phi psi rho: Pattern sBox)
   (subst: $ Norm (app[ phi / sBox ] ctx) rho $)
   (h: $ rho -> psi $):
   $ phi -> (ctximp_app sBox ctx psi eBox) $ =
   '(wrap @ norm (norm_sym @ norm_imp_l subst) h);
 
-theorem unwrap_subst {sBox: SVar} (ctx: Pattern sBox) (phi psi: Pattern) {eBox: EVar}
+theorem wrap_fresh_subst {eBox: EVar} {sBox: SVar} (ctx psi: Pattern sBox) (phi rho: Pattern eBox sBox)
+  (eBox_fresh: $ _eFresh eBox phi $)
+  (subst: $ Norm (app[ phi / sBox ] ctx) rho $)
+  (h: $ rho -> psi $):
+  $ phi -> (ctximp_app sBox ctx psi eBox) $ =
+  '(wrap_fresh eBox_fresh @ norm (norm_sym @ norm_imp_l subst) h);
+
+theorem unwrap_subst {eBox: EVar} {sBox: SVar} (ctx phi psi rho: Pattern sBox)
   (subst: $ Norm (app[ phi / sBox ] ctx) rho $)
   (h: $ phi -> (ctximp_app sBox ctx psi eBox) $):
   $ rho -> psi $ =
