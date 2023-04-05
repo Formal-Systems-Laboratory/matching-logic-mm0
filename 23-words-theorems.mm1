@@ -875,7 +875,7 @@ theorem top_implies_fp_interior {X: SVar} {sBox: SVar} {eBox: EVar} (fp_unf_a fp
   $(mu X (epsilon \/ ((a . fp_ctximp_a) \/ (b . fp_ctximp_b)))) . top_letter -> (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b))))$
   = (id
     '(unwrap_subst appctx_concat_l
-    @ KT_subst (positive_in_fp_interior p_fp_ctximp_a p_fp_ctximp_b) (_sSubst_or_r (_sSubst_or (sSubst_concat_r norm_refl) (sSubst_concat_r norm_refl)))
+    @ KT_subst (positive_in_fp_interior p_fp_ctximp_a p_fp_ctximp_b) ,(propag_s_subst 'X $epsilon \/ (a . _ \/ b . _)$)
     @ eori
       ( wrap_subst appctx_concat_l
         @ rsyl (anl regex_eq_eps_concat_l)
