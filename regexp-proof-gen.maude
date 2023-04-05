@@ -753,6 +753,10 @@ mod PROOF-GEN is
                            ) )
      = [[ 'bang 'top-implies-fp-interior
          '- 'box 'dummy '- '- '- '-
+         positivity(X, FpUnfA)
+         positivity(X, FpUnfB)
+         positivity(X, FpCtximpA)
+         positivity(X, FpCtximpB)
          [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfA) unfold-r(substitute[ FpUnf / X ] in FpUnfA, 'orl) ]]
          [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfB) unfold-r(substitute[ FpUnf / X ] in FpUnfB, 'orl) ]]
          [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfA)
