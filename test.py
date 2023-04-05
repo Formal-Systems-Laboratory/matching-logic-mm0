@@ -123,6 +123,7 @@ def test_mm(mm0_file: str, mm1_file: str) -> None:
     ('main-goal',            'alternate-top',              '((a *) . b) * + (((b *) . a) *)'),
     ('main-goal',            'even-or-odd',                '((((a . a) + (a . b)) + (b . a)) + (b . b)) * + ((a + b) . (((((a . a) + (a . b)) + (b . a)) + (b . b)) *))'),
     ('main-goal',            'no-contains-a-or-no-only-b', '(~ (top . (a . top))) + ~ (b *)'),
+    ('main-goal',            'bot-bot-star',               '(bot . bot)*'),
 ])
 def test_regex(theorem: str, test_name: str, regex: str) -> None:
     output_mm0_file = path.join(test_dir, test_name + '.mm0')
