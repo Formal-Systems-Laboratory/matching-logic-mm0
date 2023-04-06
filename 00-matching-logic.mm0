@@ -129,7 +129,6 @@ axiom positive_in_exists {X: SVar} {x: EVar} (phi: Pattern x X):
   $ _Positive X phi $ > $ _Positive X (exists x phi) $;
 axiom positive_in_mu {X: SVar} {Y: SVar} (phi: Pattern X Y):
   $ _Positive X phi $ > $ _Positive X (mu Y phi) $;
-axiom positive_in_same_mu {X: SVar} (phi: Pattern X): $ _Positive X (mu X phi) $;
 
 axiom negative_fresh {X: SVar} (phi: Pattern X): $ _sFresh X phi $ > $ _Negative X phi $;
 axiom negative_in_imp {X: SVar} (phi1 phi2: Pattern X):
@@ -140,7 +139,6 @@ axiom negative_in_exists {X: SVar} {x: EVar} (phi: Pattern x X):
   $ _Negative X phi $ > $ _Negative X (exists x phi) $;
 axiom negative_in_mu {X: SVar} {Y: SVar} (phi: Pattern X Y):
   $ _Negative X phi $ > $ _Negative X (mu Y phi) $;
-axiom negative_in_same_mu {X: SVar} (phi: Pattern X): $ _Negative X (mu X phi) $;
 
 -- Definition of substitutions and application contexts as meta-level relations
 term Norm: Pattern > Pattern > Normalization;
