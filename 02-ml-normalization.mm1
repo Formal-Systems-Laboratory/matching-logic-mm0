@@ -134,7 +134,10 @@ theorem sSubstitution_in_and {X: SVar} (psi phi1 phi2: Pattern X):
 
 
 theorem positive_disjoint {X: SVar} (phi: Pattern): $ _Positive X phi $ = '(positive_fresh sFresh_disjoint);
+theorem positive_in_same_mu {X: SVar} (phi: Pattern X): $ _Positive X (mu X phi) $ = '(positive_fresh sFresh_mu_same_var);
+
 theorem negative_disjoint {X: SVar} (phi: Pattern): $ _Negative X phi $ = '(negative_fresh sFresh_disjoint);
+theorem negative_in_same_mu {X: SVar} (phi: Pattern X): $ _Negative X (mu X phi) $ = '(negative_fresh sFresh_mu_same_var);
 
 theorem norm_equiv (phi psi phi2 psi2: Pattern)
   (h1: $ Norm phi phi2 $)
