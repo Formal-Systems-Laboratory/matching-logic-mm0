@@ -618,31 +618,22 @@ mod PROOF-GEN is
     *** eFresh ****************************************************************
     op eFresh : Qid Pattern -> MM0SExpr .
     eq eFresh(X, Notation)      = eFresh(X, desugar(Notation))   .
-   ceq eFresh(X, Phi)           = 'eFresh-disjoint               if not occursIn(X, Phi) .
-   ceq eFresh(X, app Phi1 Phi2) = [[ 'eFresh-app eFresh(X, Phi1) eFresh(X, Phi2) ]]
-                                                                 if     occursIn(X, app Phi1 Phi2) .
-   ceq eFresh(X, Phi1 -> Phi2)  = [[ 'eFresh-imp eFresh(X, Phi1) eFresh(X, Phi2) ]]
-                                                                 if     occursIn(X, Phi1 -> Phi2) .
+   ceq eFresh(X, Phi)           = 'eFresh-disjoint                                  if not occursIn(X, Phi) .
+   ceq eFresh(X, app Phi1 Phi2) = [[ 'eFresh-app eFresh(X, Phi1) eFresh(X, Phi2) ]] if     occursIn(X, app Phi1 Phi2) .
+   ceq eFresh(X, Phi1 -> Phi2)  = [[ 'eFresh-imp eFresh(X, Phi1) eFresh(X, Phi2) ]] if     occursIn(X, Phi1 -> Phi2) .
     eq eFresh(X, exists X Phi)  = 'eFresh-exists-same-var .
-   ceq eFresh(X, exists Y Phi)  = [[ 'bang 'eFresh-exists '- Y '- eFresh(X, Phi) ]]
-                                                                 if     occursIn(X, Phi)
-                                                                     /\ X =/= Y .
-   ceq eFresh(X, mu Y Phi)      = [[ 'eFresh-mu eFresh(X, Phi) ]]
-                                                                 if     occursIn(X, Phi) .
+   ceq eFresh(X, exists Y Phi)  = [[ 'bang 'eFresh-exists '- Y '- eFresh(X, Phi) ]] if     occursIn(X, Phi) /\ X =/= Y .
+   ceq eFresh(X, mu Y Phi)      = [[ 'eFresh-mu eFresh(X, Phi) ]]                   if     occursIn(X, Phi) /\ X =/= Y .
 
     *** sFresh ****************************************************************
     op sFresh : Qid Pattern -> MM0SExpr .
     eq sFresh(X, Notation)      = sFresh(X, desugar(Notation))   .
-   ceq sFresh(X, Phi)           = 'sFresh-disjoint               if not occursIn(X, Phi) .
-   ceq sFresh(X, app Phi1 Phi2) = [[ 'sFresh-app sFresh(X, Phi1) sFresh(X, Phi2) ]]
-                                                                 if     occursIn(X, app Phi1 Phi2) .
-   ceq sFresh(X, Phi1 -> Phi2)  = [[ 'sFresh-imp sFresh(X, Phi1) sFresh(X, Phi2) ]]
-                                                                 if     occursIn(X, Phi1 -> Phi2) .
-   ceq sFresh(X, exists Y Phi)  = [[ 'bang 'sFresh-exists '- Y '- sFresh(X, Phi) ]]
-                                                                 if     occursIn(X, Phi) .
+   ceq sFresh(X, Phi)           = 'sFresh-disjoint                                  if not occursIn(X, Phi) .
+   ceq sFresh(X, app Phi1 Phi2) = [[ 'sFresh-app sFresh(X, Phi1) sFresh(X, Phi2) ]] if     occursIn(X, app Phi1 Phi2) .
+   ceq sFresh(X, Phi1 -> Phi2)  = [[ 'sFresh-imp sFresh(X, Phi1) sFresh(X, Phi2) ]] if     occursIn(X, Phi1 -> Phi2) .
+   ceq sFresh(X, exists Y Phi)  = [[ 'bang 'sFresh-exists '- Y '- sFresh(X, Phi) ]] if     occursIn(X, Phi) .
     eq sFresh(X, mu X Phi)      = 'sFresh-mu-same-var .
-   ceq sFresh(X, mu Y Phi)      = [[ 'sFresh-mu sFresh(X, Phi) ]]
-                                                                 if     occursIn(X, Phi) /\ X =/= Y .
+   ceq sFresh(X, mu Y Phi)      = [[ 'sFresh-mu sFresh(X, Phi) ]]                   if     occursIn(X, Phi) /\ X =/= Y .
 
     *** propag-sSubst *********************************************************
     op propag-sSubst : Pattern Qid Pattern -> MM0SExpr .
@@ -656,19 +647,32 @@ mod PROOF-GEN is
    ceq propag-sSubst(Psi, X, mu Y Phi) = [[ '-sSubst-mu sFresh(Y, Psi) propag-sSubst(Psi, X, Phi) ]] if X =/= Y .
 
 
-    *** pos ******************************************************************
+   *** positivity ******************************************************************
     op positivity : Qid Pattern -> MM0SExpr .
     eq positivity(X, sVar X) = 'positive-in-same-sVar .
-   ceq positivity(X, sVar Y) = 'positive-disjoint if X =/= Y  .
-    eq positivity(X, mu X Phi) = 'positive-in-same-mu .
+   ceq positivity(X, Phi) = 'positive-disjoint if not occursIn(X, Phi) .
+    eq positivity(X, Phi1 -> Phi2) = [[ 'positive-in-imp negativity(X, Phi1) positivity(X, Phi2) ]] .
+    eq positivity(X, app Phi1 Phi2) = [[ 'positive-in-app positivity(X, Phi1) positivity(X, Phi2) ]] .
+    eq positivity(X, exists Y Phi) = [[ 'positive-in-exists positivity(X, Phi) ]] .
+    eq positivity(X, mu X Phi) = [[ 'positive-fresh sFresh(X, mu X Phi) ]] .
    ceq positivity(X, mu Y Phi) = [[ 'positive-in-mu positivity(X, Phi) ]]  if X =/= Y .
     eq positivity(X, [[kleene X Phi]]) = 'positive-in-same-mu .
-   ceq positivity(X, [[kleene Y Phi]]) = [[ 'positive-in-mu positivity(X, Phi) ]]  if X =/= Y .
+   ceq positivity(X, [[kleene Y Phi]]) = [[ 'positive-fresh sFresh(X, [[kleene Y Phi]]) ]]  if X =/= Y .
     eq positivity(X, Phi1 \/ Phi2) = [[ 'positive-in-or positivity(X, Phi1) positivity(X, Phi2) ]] .
-    eq positivity(X, epsilon) = 'positive-disjoint .
-    eq positivity(X, a) = 'positive-disjoint .
-    eq positivity(X, b) = 'positive-disjoint .
-    eq positivity(X, Phi1 . Phi2) = [[ 'positive-in-concat positivity(X, Phi1) positivity(X, Phi2) ]] .
+    eq positivity(X, Notation) =  positivity(X, desugar(Notation)) [owise] .
+
+   *** negativity ******************************************************************
+    op negativity : Qid Pattern -> MM0SExpr .
+   ceq negativity(X, Phi) = 'negative-disjoint if not occursIn(X, Phi) .
+    eq negativity(X, Phi1 -> Phi2) = [[ 'negative-in-imp positivity(X, Phi1) negativity(X, Phi2) ]] .
+    eq negativity(X, app Phi1 Phi2) = [[ 'negative-in-app negativity(X, Phi1) negativity(X, Phi2) ]] .
+    eq negativity(X, exists Y Phi) = [[ 'negative-in-exists negativity(X, Phi) ]] .
+    eq negativity(X, mu X Phi) = [[ 'negative-fresh sFresh(X, Phi) ]] .
+   ceq negativity(X, mu Y Phi) = [[ 'negative-in-mu negativity(X, Phi) ]]  if X =/= Y .
+    eq negativity(X, [[kleene X Phi]]) = 'negative-in-same-mu .
+   ceq negativity(X, [[kleene Y Phi]]) = [[ 'negative-fresh sFresh(X, Phi) ]]  if X =/= Y .
+    eq negativity(X, Phi1 \/ Phi2) = [[ 'negative-in-or negativity(X, Phi1) negativity(X, Phi2) ]] .
+    eq negativity(X, Notation) =  negativity(X, desugar(Notation)) [owise] .
 
     *** unfold ***************************************************************
     op unfold-r : Pattern MM0SExpr -> MM0SExpr .
