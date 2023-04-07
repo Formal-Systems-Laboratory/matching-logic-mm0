@@ -32,11 +32,11 @@ mod TEST is
                                                                                      ?= true ;
         test 's-subst                   @ substitute[sVar 'Z / 'X] in mu 'Y sVar 'X  ?= mu 'Y sVar 'Z ;
         test 's-subst-no-desugar-1      @ substitute[ mu 'ZZ sVar 'Phi / 'ZZ ]
-                                            in [[ ctximp-app 'box (sVar 'box . top-letter) (sVar 'Rho) 'dummy ]]
-                                          ?=   [[ ctximp-app 'box (sVar 'box . top-letter) (sVar 'Rho) 'dummy ]] ;
+                                            in [[ ctximp-app 'box (sVar 'box . top-letter) (sVar 'Rho) ]]
+                                          ?=   [[ ctximp-app 'box (sVar 'box . top-letter) (sVar 'Rho) ]] ;
         test 's-subst-no-desugar-2      @ substitute[ mu 'ZZ sVar 'Phi / 'ZZ ]
-                                            in [[ ctximp-app 'ZZ (sVar 'box . top-letter) (sVar 'Rho) 'dummy ]]
-                                          ?=   [[ ctximp-app 'ZZ (sVar 'box . top-letter) (sVar 'Rho) 'dummy ]] ;
+                                            in [[ ctximp-app 'ZZ (sVar 'box . top-letter) (sVar 'Rho) ]]
+                                          ?=   [[ ctximp-app 'ZZ (sVar 'box . top-letter) (sVar 'Rho) ]] ;
 
      .
 endm

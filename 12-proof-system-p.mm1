@@ -18,8 +18,8 @@ theorem eFresh_mem {x y: EVar} (phi: Pattern x y)
   (h: $ _eFresh x phi $):
   $ _eFresh x (y in phi) $ =
   '(eFresh_ceil @ eFresh_and_r h);
-theorem eFresh_ctximp_same_var {x: EVar} {box: SVar} (ctx phi: Pattern x box):
-  $ _eFresh x (ctximp_app box ctx phi x) $ =
+theorem eFresh_ctximp_same_var {box: SVar} (ctx phi: Pattern box):
+  $ _eFresh x (ctximp_app box ctx phi) $ =
   '(eFresh_exists_same_var);
 
 theorem sFresh_ceil {X: SVar} (phi: Pattern X)
@@ -136,6 +136,13 @@ do {
   (def (framing_subst hyp subst) '(norm (norm_imp ,subst ,subst) @ framing ,hyp))
 };
 
+theorem exists_intro_l_bi_disjoint {x: EVar} (phi: Pattern x) (psi: Pattern)
+  (h: $ phi <-> psi $):
+  $ (exists x phi) <-> psi $ =
+  '(ibii
+    (exists_generalization_disjoint @ anl h)
+    (syl exists_intro_same_var @ anr h));
+
 theorem propag_and_floor: $|_ phi /\ psi _| <-> |_ phi _| /\ |_ psi _|$ =
   '(ibii
     (iand (framing_floor anl) (framing_floor anr))
@@ -221,10 +228,6 @@ do {
   (def (cong_eq_lift2 pf to_eq1 to_eq2) '(equiv_to_eq @ ,pf (corollary_57_floor ,to_eq1) (corollary_57_floor ,to_eq2)))
 };
 
-theorem and_exists_disjoint_r {x: EVar} (phi1: Pattern x) (phi2: Pattern):
-  $ (exists x (phi1 /\ phi2)) <-> ((exists x phi1) /\ phi2) $ =
-  '(bitr (cong_of_equiv_exists ancomb) @ bitr and_exists_disjoint ancomb);
-
 theorem univ_gene {x: EVar} (phi: Pattern x)
   (p: $ phi $):
   $ forall x phi $ = '(exists_generalization_disjoint @ notnot1 p);
@@ -249,7 +252,9 @@ theorem eq_imp_subset: $ (phi == psi) -> (phi C_ psi) $ = '(framing_floor anl);
 theorem subset_to_eq: $ (phi C_ psi) -> (psi C_ phi) -> (phi == psi) $ = '(exp @ anr propag_and_floor);
 
 theorem eq_refl: $ phi == phi $ = '(equiv_to_eq biid);
-theorem functional_var: $ exists x (eVar x == eVar x) $ = '(exists_intro_same_var eq_refl);
+theorem functional_same_var: $ exists x (eVar x == eVar x) $ = '(exists_intro_same_var eq_refl);
+theorem functional_var: $ exists x (eVar x == eVar y) $ =
+  '(exists_intro @ norm (norm_sym @ _eSubst_eq eSubstitution_in_same_eVar eSubstitution_disjoint) eq_refl);
 
 theorem eq_sym: $ (phi1 == phi2) -> (phi2 == phi1) $ =
   '(con3 @ framing_def @ con3 bicom);
@@ -966,6 +971,7 @@ do {
 
     [$nnimp ,phi1 ,phi2$   '(eq_to_nnimp_bi  ,(func_subst_explicit_helper x phi1) ,(func_subst_explicit_helper X phi2))]
     [$concat ,phi1 ,phi2$  '(eq_to_concat_bi ,(func_subst_explicit_helper x phi1) ,(func_subst_explicit_helper x phi2))]
+    [$derivative ,phi1 ,phi2$  '(eq_to_der_bi ,(func_subst_explicit_helper x phi1) ,(func_subst_explicit_helper x phi2))]
 
     [_ 'eq_to_id_bi]
   )
@@ -987,6 +993,11 @@ do {
   ))
 
   (def (membership_var_func_subst func_x func_y) (func_subst 'x $(x in psi) <-> (eVar x == psi)$ (func_subst_thm func_y 'y 'membership_var_bi) func_x))
+
+  -- (exists x (x == phi)) -> ((exists x ((x == phi) /\ ctx[x])) <-> ctx[phi])
+  (def (func_to_and_ctx_bi x ctx) '(ibid
+    (a1i @ exists_generalization_disjoint @ curry @ syl anl ,(func_subst_explicit_helper x ctx))
+    (exp @ rsyl and_exists_disjoint_r_reverse @ exists_framing @ iand anl @ curry @ syl anr ,(func_subst_explicit_helper x ctx))))
 
   (def (func_subst_fresh fre x phi1 phi1_pf func_phi2) '(
     exists_generalization ,fre (mp (com12 @ syl anl ,(func_subst_explicit_helper x phi1)) ,phi1_pf) ,func_phi2

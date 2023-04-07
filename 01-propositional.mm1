@@ -657,8 +657,8 @@ theorem imor: $ ((a \/ b) -> c) <-> ((a -> c) /\ (b -> c)) $ =
 '(ibii (iand (imim1i orl) (imim1i orr)) (curry eor));
 theorem andi: $ a /\ (b \/ c) <-> a /\ b \/ a /\ c $ =
 '(ibii (curry @ orimd ian ian) @ eor (anim2 orl) (anim2 orr));
--- theorem andir: $ (a \/ b) /\ c <-> a /\ c \/ b /\ c $ =
--- '(bitr ancomb @ bitr andi @ oreqi ancomb ancomb);
+theorem andir: $ (a \/ b) /\ c <-> a /\ c \/ b /\ c $ =
+'(bitr ancomb @ bitr andi @ oreqi ancomb ancomb);
 theorem ordi: $ a \/ (b /\ c) <-> (a \/ b) /\ (a \/ c) $ =
 '(ibii (iand (orim2 anl) (orim2 anr)) @ com12 @ animd mpcom mpcom);
 theorem ordir: $ (a /\ b) \/ c <-> (a \/ c) /\ (b \/ c) $ =
