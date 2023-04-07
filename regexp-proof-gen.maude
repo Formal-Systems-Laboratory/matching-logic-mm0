@@ -623,7 +623,7 @@ mod PROOF-GEN is
    ceq eFresh(X, app Phi1 Phi2) = [[ 'eFresh-app eFresh(X, Phi1) eFresh(X, Phi2) ]] if     occursIn(X, app Phi1 Phi2) .
    ceq eFresh(X, Phi1 -> Phi2)  = [[ 'eFresh-imp eFresh(X, Phi1) eFresh(X, Phi2) ]] if     occursIn(X, Phi1 -> Phi2) .
     eq eFresh(X, exists X Phi)  = 'eFresh-exists-same-var .
-   ceq eFresh(X, exists Y Phi)  = [[ 'bang 'eFresh-exists '- Y '- eFresh(X, Phi) ]] if     occursIn(X, Phi) /\ X =/= Y .
+   ceq eFresh(X, exists Y Phi)  = [[ 'eFresh-exists eFresh(X, Phi) ]] if     occursIn(X, Phi) /\ X =/= Y .
    ceq eFresh(X, mu Y Phi)      = [[ 'eFresh-mu eFresh(X, Phi) ]]                   if     occursIn(X, Phi) /\ X =/= Y .
 
     *** sFresh ****************************************************************
@@ -632,7 +632,7 @@ mod PROOF-GEN is
    ceq sFresh(X, Phi)           = 'sFresh-disjoint                                  if not occursIn(X, Phi) .
    ceq sFresh(X, app Phi1 Phi2) = [[ 'sFresh-app sFresh(X, Phi1) sFresh(X, Phi2) ]] if     occursIn(X, app Phi1 Phi2) .
    ceq sFresh(X, Phi1 -> Phi2)  = [[ 'sFresh-imp sFresh(X, Phi1) sFresh(X, Phi2) ]] if     occursIn(X, Phi1 -> Phi2) .
-   ceq sFresh(X, exists Y Phi)  = [[ 'bang 'sFresh-exists '- Y '- sFresh(X, Phi) ]] if     occursIn(X, Phi) .
+   ceq sFresh(X, exists Y Phi)  = [[ 'sFresh-exists sFresh(X, Phi) ]] if     occursIn(X, Phi) .
     eq sFresh(X, mu X Phi)      = 'sFresh-mu-same-var .
    ceq sFresh(X, mu Y Phi)      = [[ 'sFresh-mu sFresh(X, Phi) ]]                   if     occursIn(X, Phi) /\ X =/= Y .
 
@@ -643,7 +643,7 @@ mod PROOF-GEN is
     eq propag-sSubst(Psi, X, sVar X) = 'sSubstitution-in-same-sVar .
     eq propag-sSubst(Psi, X, app Phi1 Phi2) = [[ '-sSubst-app propag-sSubst(Psi, X, Phi1) propag-sSubst(Psi, X, Phi2) ]] .
     eq propag-sSubst(Psi, X, Phi1 -> Phi2) = [[ '-sSubst-imp propag-sSubst(Psi, X, Phi1) propag-sSubst(Psi, X, Phi2) ]] .
-    eq propag-sSubst(Psi, X, exists Y Phi) = [[ 'bang '-sSubst-exists '- Y '- '- '- eFresh(Y, Psi) propag-sSubst(Psi, X, Phi) ]] .
+    eq propag-sSubst(Psi, X, exists Y Phi) = [[ '-sSubst-exists eFresh(Y, Psi) propag-sSubst(Psi, X, Phi) ]] .
     eq propag-sSubst(Psi, X, mu X Phi) = 'sSubstitution-in-same-mu .
    ceq propag-sSubst(Psi, X, mu Y Phi) = [[ '-sSubst-mu sFresh(Y, Psi) propag-sSubst(Psi, X, Phi) ]] if X =/= Y .
 
@@ -694,7 +694,7 @@ mod PROOF-GEN is
     eq epsilon-implies-ewp(Phi .  Psi) = [[ 'epsilon-implies-concat epsilon-implies-ewp(Phi) epsilon-implies-ewp(Psi) ]] .
    ceq epsilon-implies-ewp(Phi \/ Psi) = [[ 'orld                   epsilon-implies-ewp(Phi) ]] if hasEWP(Phi) .
    ceq epsilon-implies-ewp(Phi \/ Psi) = [[ 'orrd                   epsilon-implies-ewp(Psi) ]] if not hasEWP(Phi) /\ hasEWP(Psi) .
-    eq epsilon-implies-ewp([[kleene X Alpha]]) = [[ 'bang 'epsilon-implies-kleene X '- positivity(X, Alpha) ]] .
+    eq epsilon-implies-ewp([[kleene X Alpha]]) = [[ 'epsilon-implies-kleene positivity(X, Alpha) ]] .
 
     eq epsilon-implies-ewp(~ bot)          = 'epsilon-implies-top .
     eq epsilon-implies-ewp(~ L:Letter)     = [[ 'epsilon-implies-not-letter is-letter(L:Letter) ]] .
@@ -750,14 +750,13 @@ mod PROOF-GEN is
     eq proof-top-implies-fp(Phi, node(< Alpha >, eqEdge(applResult(R, Ctx, Subst), N)))
      = proof-top-implies-fp(Phi, N) .
     eq proof-top-implies-fp(Phi, backlink(< Alpha >))
-     = [[ 'bang 'top-implies-fp-leaf 'box ]] .
+     = 'top-implies-fp-leaf .
 
    ceq proof-top-implies-fp( ( FpCtximp . top-letter ) -> FpUnf
                            , node(< Phi >, rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
                                            rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
                            ) )
-     = [[ 'bang 'top-implies-fp-interior
-         '- 'box '- '- '- '-
+     = [[ 'top-implies-fp-interior
          positivity(X, FpUnfA)
          positivity(X, FpUnfB)
          positivity(X, FpCtximpA)
