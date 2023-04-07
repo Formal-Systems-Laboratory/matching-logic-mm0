@@ -29,7 +29,7 @@ class _Benchmark():
         return self
     def __exit__(self, exc_type, exc_val, exc_tb):
         end = time.time_ns()
-        runtime = (end - self.start)
+        runtime = (end - self.start) / (1000 * 1000)
         benchmarks[self.test_name] = benchmarks[self.test_name]._replace(**{self.aspect: runtime})
 
 def benchmark(test_name: str, aspect: str) -> _Benchmark:
