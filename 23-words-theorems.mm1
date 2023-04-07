@@ -38,7 +38,7 @@ theorem regex_eq_ewp_ab
       (framing_def (con3 @ imim2i @ syl h dne) @ dne no_confusion_ae_e))
     absurdum);
 
-theorem no_confusion_cc_e_asym {u x y: EVar} : $(x in top_letter) -> (y in top_letter)
+theorem no_confusion_cc_e_epsilon {u x y: EVar} : $(x in top_letter) -> (y in top_letter)
                             -> (eVar x . eVar u == eVar y) -> (eVar x == eVar y) /\ (eVar u == epsilon)$ =
   '(syl (imim2i @ imim1i @ com12 eq_trans @ eq_sym identity_right_e)
     ,(func_subst 'v $(x in top_letter) -> (y in top_letter) -> (eVar x . eVar u == eVar y . eVar v) -> (eVar x == eVar y) /\ (eVar u == eVar v)$ 'no_confusion_cc_e '(! functional_epsilon w))
@@ -528,7 +528,7 @@ theorem regex_eq_der_diff_a_wrt_a:
       ) '(! functional_b w2)) @
       syl no_confusion_ab_e @ syl anl @ mp
       ,(func_subst 'y $|^ a /\ top_letter ^| -> (y in top_letter) -> (a . eVar u == eVar y) -> (a == eVar y) /\ (eVar u == epsilon)$
-        (func_subst 'x $(x in top_letter) -> (y in top_letter) -> (eVar x . eVar u == eVar y) -> (eVar x == eVar y) /\ (eVar u == epsilon)$ '(! no_confusion_cc_e_asym w3) '(! functional_a w5))
+        (func_subst 'x $(x in top_letter) -> (y in top_letter) -> (eVar x . eVar u == eVar y) -> (eVar x == eVar y) /\ (eVar u == epsilon)$ '(! no_confusion_cc_e_epsilon w3) '(! functional_a w5))
         '(! functional_b w4)) a_in_top_letter b_in_top_letter
   ) absurdum);
 theorem regex_eq_der_diff_a_wrt_b:
@@ -541,7 +541,7 @@ theorem regex_eq_der_diff_a_wrt_b:
       ) '(! functional_a w2)) @
       syl no_confusion_ab_e @ syl eq_sym @ syl anl @ mp
       ,(func_subst 'y $|^ b /\ top_letter ^| -> (y in top_letter) -> (b . eVar u == eVar y) -> (b == eVar y) /\ (eVar u == epsilon)$
-        (func_subst 'x $(x in top_letter) -> (y in top_letter) -> (eVar x . eVar u == eVar y) -> (eVar x == eVar y) /\ (eVar u == epsilon)$ '(! no_confusion_cc_e_asym w3) '(! functional_b w5))
+        (func_subst 'x $(x in top_letter) -> (y in top_letter) -> (eVar x . eVar u == eVar y) -> (eVar x == eVar y) /\ (eVar u == epsilon)$ '(! no_confusion_cc_e_epsilon w3) '(! functional_b w5))
         '(! functional_a w4)) b_in_top_letter a_in_top_letter
   ) absurdum);
 theorem regex_eq_der_same_a_wrt_a:
@@ -551,7 +551,7 @@ theorem regex_eq_der_same_a_wrt_a:
       (syl anr @ mp
         ,(func_subst 'y $(y in top_letter) -> (a . eVar d == eVar y) -> (a == eVar y) /\ (eVar d == epsilon)$
           '(mp
-            ,(func_subst 'x $(x in top_letter) -> (y in top_letter) -> (eVar x . eVar d == eVar y) -> (eVar x == eVar y) /\ (eVar d == epsilon)$ 'no_confusion_cc_e_asym 'functional_a)
+            ,(func_subst 'x $(x in top_letter) -> (y in top_letter) -> (eVar x . eVar d == eVar y) -> (eVar x == eVar y) /\ (eVar d == epsilon)$ 'no_confusion_cc_e_epsilon 'functional_a)
             a_in_top_letter)
           'functional_a)
         a_in_top_letter)
@@ -569,7 +569,7 @@ theorem regex_eq_der_same_a_wrt_b:
       (syl anr @ mp
         ,(func_subst 'y $(y in top_letter) -> (b . eVar d == eVar y) -> (b == eVar y) /\ (eVar d == epsilon)$
           '(mp
-            ,(func_subst 'x $(x in top_letter) -> (y in top_letter) -> (eVar x . eVar d == eVar y) -> (eVar x == eVar y) /\ (eVar d == epsilon)$ 'no_confusion_cc_e_asym 'functional_b)
+            ,(func_subst 'x $(x in top_letter) -> (y in top_letter) -> (eVar x . eVar d == eVar y) -> (eVar x == eVar y) /\ (eVar d == epsilon)$ 'no_confusion_cc_e_epsilon 'functional_b)
             b_in_top_letter)
           'functional_b)
         b_in_top_letter)
