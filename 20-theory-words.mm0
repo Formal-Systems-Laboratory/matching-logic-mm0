@@ -1,10 +1,5 @@
 import "10-theory-definedness.mm0";
 
-term a_symbol : Symbol ;
-def a : Pattern = $sym a_symbol$ ;
-term b_symbol : Symbol ;
-def b : Pattern = $sym b_symbol$ ;
-
 def emptyset : Pattern = $bot$ ;
 
 term epsilon_symbol : Symbol ;
@@ -20,7 +15,8 @@ def kleene   {X: SVar} (alpha: Pattern X) : Pattern = $(kleene_r X alpha)$;
 
 --- We assume that the alphabet has only two letters.
 --- This, however, captures the full expressivity.
-def top_letter : Pattern = $a \/ b$;
+term top_letter_symbol: Symbol;
+def top_letter: Pattern = $sym top_letter_symbol$;
 
 def top_word_l {X: SVar} : Pattern = $(kleene_l X top_letter )$ ;
 def top_word_r {X: SVar} : Pattern = $(kleene_r X top_letter )$ ;
@@ -31,11 +27,8 @@ def top_word   {X: SVar} : Pattern = $(kleene   X top_letter )$ ;
 axiom domain_words {X: SVar} : $ top_word X $;
 
 axiom functional_epsilon {x : EVar} : $exists x (eVar x == epsilon)$;
-axiom functional_a       {x : EVar} : $exists x (eVar x == a)$;
-axiom functional_b       {x : EVar} : $exists x (eVar x == b)$;
 axiom functional_concat  {w v x: EVar} : $exists x (eVar x == (eVar w . eVar v))$;
 
-axiom no_confusion_ab_e  : $a != b$;
 axiom no_confusion_ae_e  : $~(epsilon C= top_letter)$;
 axiom no_confusion_ec_e  {u v: EVar} : $(epsilon == eVar u . eVar v) -> (epsilon == eVar u) /\ (epsilon == eVar v)$;
 axiom no_confusion_cc_e  {u v x y: EVar} : $(x in top_letter) -> (y in top_letter)
