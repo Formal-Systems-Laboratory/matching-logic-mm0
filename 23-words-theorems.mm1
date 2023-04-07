@@ -15,10 +15,10 @@ theorem b_in_top_letter: $|^ b /\ top_letter ^|$ =
   '(framing_def (iand id orr) def_b);
 
 --- Lift functional axioms to $ a . [] $ and $ b . [] $.
-theorem functional_l_concat {.w x y v: EVar} (l: Pattern)
-  (func_l: $ exists y (eVar y == l) $):
-  $ exists x (eVar x == l . eVar v) $ =
-  (func_subst 'w $exists x (eVar x == (eVar w . eVar v))$ 'functional_concat 'func_l);
+theorem functional_l_concat {.w x y v: EVar} (l: Pattern v)
+  (func_l: $ exists x (eVar x == l) $):
+  $ exists y (eVar y == l . eVar v) $ =
+  (func_subst_thm 'func_l 'w 'functional_concat);
 theorem functional_a_concat {.w x v: EVar} :
   $ exists x (eVar x == a . eVar v) $ =
   (named '(functional_l_concat functional_a));
@@ -325,7 +325,7 @@ theorem regex_eq_double_kleene_l_lemma {X: SVar} (Alpha: Pattern X) (h: $ _sFres
                 @ KT (positive_in_kleene_l_body @ positive_fresh h)
                 @ norm (norm_imp_l @ norm_sym @ _sSubst_or sSubstitution_disjoint (sSubst_concat sSubstitution_in_same_sVar (sSubstitution_fresh h)))
                 @ eori (wrap @ norm (norm_imp_l @ norm_sym appctx_concat_r ) @ bi1i id_concat_r)
-                       ( wrap_fresh (eFresh_concat eFresh_ctximp_same_var eFresh_disjoint)
+                       ( wrap
                        @ norm (norm_imp_l @ norm_sym @ appctx_concat_r)
                        @ rsyl (anr assoc_concat)
                        @ norm (norm_imp_l @ norm_concat_l appctx_concat_r)
@@ -341,7 +341,7 @@ theorem regex_eq_double_kleene_lemma {X: SVar} (Alpha: Pattern X) (h: $ _sFresh 
                 @ KT (positive_in_kleene_r_body @ positive_fresh h)
                 @ norm (norm_imp_l @ norm_sym @ _sSubst_or sSubstitution_disjoint (sSubst_concat (sSubstitution_fresh h) sSubstitution_in_same_sVar) )
                 @ eori (wrap @ norm (norm_imp_l @ norm_sym appctx_concat_l ) @ bi1i id_concat_l)
-                       ( wrap_fresh (eFresh_concat eFresh_disjoint eFresh_ctximp_same_var)
+                       ( wrap
                        @ norm (norm_imp_l @ norm_sym @ appctx_concat_l)
                        @ rsyl (bi1i assoc_concat)
                        @ norm (norm_imp_l @ norm_concat_r appctx_concat_l)
@@ -373,49 +373,60 @@ theorem der_expand (l: Pattern) (phi: Pattern):
   $ (derivative l phi) <-> exists d (eVar d /\ ((l . eVar d) C_ phi)) $ =
   '(norm (norm_equiv_r @ norm_exists @ norm_and_r @ norm_floor @ norm_imp_l (! appCtxRVar box _ _)) biid);
 
-theorem der_in_ctx_forward : $w1 . (derivative w1 w2) -> w2$
- = '(norm_lemma (norm_sym @ norm_trans appCtxR_disjoint (norm_app norm_refl appCtxVar))
-                (! ctximp_in_ctx_forward sBox eBox _ _ )
-    );
+theorem l_der_phi_imp_phi (l phi: Pattern):
+  $ (l . derivative l phi) -> phi $ =
+  (named '(unwrap_subst appctx_concat_r id));
 
---- NB: This probably generalizes to any contextual implication.
-theorem der_equality_forward_lemma (l phi psi: Pattern) (h: $ exists x (eVar x == l) $): $(l . psi) /\ phi -> l . derivative l phi$ =
+theorem der_equality_forward_lemma {x: EVar} (phi psi: Pattern x) (l: Pattern) (h: $ exists x (eVar x == l) $): $(l . psi) /\ phi -> l . derivative l phi$ =
   (named '(syl ,(framing_subst '(anr der_expand) 'appctx_concat_r) @ syl (anr ,(ex_appCtx_subst 'appctx_concat_r)) @
     rsyl (anim1 @ syl (anl ,(ex_appCtx_subst 'appctx_concat_r)) ,(framing_subst '(anl lemma_exists_and) 'appctx_concat_r)) @
     rsyl (anr and_exists_disjoint_r) @ exists_framing @ rsyl (anim1 ,(framing_subst 'anl 'appctx_concat_r)) @
     syl ,(func_subst 'd $(l . eVar y) /\ (d in phi) -> (l . (eVar y /\ (eVar d C_ phi)))$ '(rsyl (anim2 eVar_in_subset_forward) @ anr ,(lemma_60_subset_subst 'appctx_concat_r)) '(functional_l_concat h)) @
     iand anl corollary_57_ceil));
 
-theorem der_equality_forward (phi: Pattern):
-    $phi -> (epsilon /\ phi) \/ ((a . (derivative a phi)) \/ (b . (derivative b phi)))$
-= (named '(mpcom (! domain_words X)
-   @ unfold_l_top_word_r
-   @ expcom
-   @ rsyl (bi1i andi)
-   @ eori (orld ancom)
-          (orrd @ impcom
-                @ rsyl propag_or_concat
-                @ eori (exp @ orld @ der_equality_forward_lemma functional_a)
-                       (exp @ orrd @ der_equality_forward_lemma functional_b)
-          )
-   ));
+theorem der_equality_forward {l: EVar} (phi: Pattern):
+  $phi -> (epsilon /\ phi) \/ exists l ((eVar l . (derivative (eVar l) phi)) /\ l in top_letter)$
+  = (named
+    '(mpcom (! domain_words X)
+    @ unfold_l_top_word_r
+    @ expcom
+    @ rsyl (bi1i andi)
+    @ eori (orld ancom)
+    @ orrd
+    @ rsyl ancom
+    @ rsyl (anim1 @ anl ,(appCtx_pointwise_subst 'appctx_concat_l))
+    @ rsyl and_exists_disjoint_r_reverse
+    @ exists_framing
+    @ rsyl (anl anrass)
+    @ anim1
+    @ der_equality_forward_lemma functional_var
+  ));
 theorem der_equality_reverse:
-    $(epsilon /\ phi) \/ ((a . (derivative a phi)) \/ (b . (derivative b phi))) -> phi$
-= '(eori anr @ eori der_in_ctx_forward der_in_ctx_forward);
+    $(epsilon /\ phi) \/ exists l ((eVar l . (derivative (eVar l) phi)) /\ l in top_letter) -> phi$
+  = '(eori anr
+    @ exists_generalization_disjoint
+    @ anwl l_der_phi_imp_phi);
 
 --- main theorem for deriviatives
-theorem der_equality_bi: $phi <-> (epsilon /\ phi) \/ ((a . (derivative a phi)) \/ (b . (derivative b phi)))$
-  = '(ibii der_equality_forward der_equality_reverse);
-theorem der_equality: $phi == (epsilon /\ phi) \/ ((a . (derivative a phi)) \/ (b . (derivative b phi)))$
-  = '(equiv_to_eq der_equality_bi);
+theorem der_equality_bi: $phi <-> (epsilon /\ phi) \/ exists l ((eVar l . (derivative (eVar l) phi)) /\ l in top_letter)$ =
+  '(ibii der_equality_forward der_equality_reverse);
+theorem der_equality: $phi == (epsilon /\ phi) \/ exists l ((eVar l . (derivative (eVar l) phi)) /\ l in top_letter)$ =
+  '(equiv_to_eq der_equality_bi);
 
+theorem der_equality_bi_concrete: $phi <-> (epsilon /\ phi) \/ ((a . (derivative a phi)) \/ (b . (derivative b phi)))$ =
+  (named
+  '(bitr der_equality_bi
+  @ oreq2i
+  -- @ exists_intro_l_bi_disjoint
+  @ bitr (cong_of_equiv_exists @ aneq2i ,(propag_mem 'x $a \/ b$))
+  @ bitr (cong_of_equiv_exists @ bitr ancomb andir)
+  @ bitr or_exists_bi
+  @ oreqi
+    (mp ,(func_to_and_ctx_bi 'x $eVar x . derivative (eVar x) phi$) functional_a)
+    (mp ,(func_to_and_ctx_bi 'x $eVar x . derivative (eVar x) phi$) functional_b)));
 
 --- Derivatives: Syntactic Simplifications
 ------------------------------------------
-
-theorem l_der_phi_imp_phi (l phi: Pattern):
-  $ (l . derivative l phi) -> phi $ =
-  (named '(unwrap_subst appctx_concat_r id));
 
 theorem cong_of_equiv_der
   (h1: $ phi1 <-> phi2 $)
@@ -636,7 +647,7 @@ theorem regex_eq_der_concat_wrt_a (Alpha Beta: Pattern) :
   $ (derivative a (Alpha . Beta)) <-> ((derivative a Alpha) . Beta) \/ ((epsilon /\ Alpha) . (derivative a Beta)) $ =
   (named '(ibii
     (rsyl (anl @
-      bitr (cong_of_equiv_der_r @ cong_of_equiv_concat_l der_equality_bi) @
+      bitr (cong_of_equiv_der_r @ cong_of_equiv_concat_l der_equality_bi_concrete) @
       bitr (cong_of_equiv_der_r ,(or_appCtx2_r_subst 'appctx_concat_l)) @
       bitr regex_eq_der_choice_wrt_a @
       bitr (cong_of_equiv_or_r regex_eq_der_choice_wrt_a) @
@@ -678,7 +689,7 @@ theorem regex_eq_der_concat_wrt_b (Alpha Beta: Pattern) :
   $ (derivative b (Alpha . Beta)) <-> ((derivative b Alpha) . Beta) \/ ((epsilon /\ Alpha) . (derivative b Beta)) $ =
   (named '(ibii
     (rsyl (anl @
-      bitr (cong_of_equiv_der_r @ cong_of_equiv_concat_l der_equality_bi) @
+      bitr (cong_of_equiv_der_r @ cong_of_equiv_concat_l der_equality_bi_concrete) @
       bitr (cong_of_equiv_der_r ,(or_appCtx2_r_subst 'appctx_concat_l)) @
       bitr regex_eq_der_choice_wrt_b @
       bitr (cong_of_equiv_or_r regex_eq_der_choice_wrt_b) @
@@ -735,7 +746,7 @@ theorem regex_eq_der_kleene_lemma {X: SVar} (Alpha: Pattern X)
         @ rsyl (anr id_concat_r)
         @ framing_concat_r @ epsilon_implies_kleene @ positive_fresh h)
       ( norm (norm_sym @ norm_imp_l @ norm_concat_r @ sSubstitution_fresh h)
-        @ wrap_fresh (eFresh_concat eFresh_exists_same_var eFresh_disjoint)
+        @ wrap
         @ norm (norm_sym @ norm_imp_l appctx_concat_r)
         @ rsyl (anr assoc_concat)
         @ norm (norm_imp_l @ norm_concat_l appctx_concat_r)
@@ -789,7 +800,7 @@ theorem regex_eq_der_kleene_wrt_b {X: SVar} (Alpha: Pattern X)
 
 theorem inductive_domain_l_implies_r { X : SVar }
   : $(top_word_l X) -> (top_word_r X)$
-  = '( kt_top_word_l
+  = (named '( kt_top_word_l
            ( unfold_r_top_word_r orl)
            ( norm (norm_imp (! appctx_concat_l _) norm_refl)
                   (unwrap @ kt_top_word_r
@@ -801,18 +812,17 @@ theorem inductive_domain_l_implies_r { X : SVar }
                             @ unfold_r_top_word_r orl)
                           )
                     )
-                    @ syl (bi2i (! alpha_ctximp_app sBox eBox1 eBox2))
-                    (wrap ( norm ( norm_sym  (norm_imp (! appctx_concat_l _) norm_refl) )
+                    @ wrap ( norm ( norm_sym  (norm_imp (! appctx_concat_l _) norm_refl) )
                            @ unfold_r_top_word_r @ orrd
                            @ sylbir (bicom assoc_concat) @ framing_concat_r
                            @ norm (norm_imp (norm_trans appctx_concat_l norm_refl) norm_refl)
                            @ ctximp_in_ctx_forward
-                          ) )
+                          )
                   ))
-     );
+     ));
 theorem inductive_domain_r_implies_l { X : SVar }
   : $(top_word_r X) -> (top_word_l X)$
-  = '( kt_top_word_r
+  = (named '( kt_top_word_r
         ( unfold_r_top_word_l orl)
         ( norm (norm_imp appctx_concat_r norm_refl)
                (unwrap @ kt_top_word_l
@@ -823,16 +833,14 @@ theorem inductive_domain_r_implies_l { X : SVar }
                           @ framing_concat_l
                           @ unfold_r_top_word_l orl
                     )
-                    @ syl (bi2i (! alpha_ctximp_app sBox eBox1 eBox2))
-                    (wrap @ norm ( norm_sym  (norm_imp appctx_concat_r norm_refl) )
+                    @ wrap @ norm ( norm_sym  (norm_imp appctx_concat_r norm_refl) )
                           @ unfold_r_top_word_l @ orrd
                           @ sylbir assoc_concat @ framing_concat_l
                           @ norm (norm_imp (norm_trans appctx_concat_r norm_refl) norm_refl)
                           @ ctximp_in_ctx_forward
-                    )
                )
         )
-     );
+     ));
 
 
 --- Proof certificate implementation
@@ -844,8 +852,8 @@ theorem top_implies_fp_init {X: SVar} (phi: Pattern)
   : $top_word X -> phi$
 = '( rsyl inductive_domain_r_implies_l @ kt_top_word_l he hl );
 
-theorem top_implies_fp_leaf {box: SVar} (phi : Pattern box) {dummy: EVar}
-  : $( ctximp_app box (sVar box . top_letter) phi dummy) . top_letter -> phi $
+theorem top_implies_fp_leaf {box: SVar} (phi : Pattern box)
+  : $( ctximp_app box (sVar box . top_letter) phi) . top_letter -> phi $
 = '(norm (norm_imp appctx_concat_l norm_refl) ctximp_in_ctx_forward);
 
 --- fp-implies-alpha
@@ -859,7 +867,7 @@ theorem positive_in_fp_interior (phi_a phi_b: Pattern X)
                                                        (positive_in_concat positive_disjoint p_b)));
 
 -- TODO(MirceaS): Can't this be relaxed to allow eBox to show up in some or all of the patterns?
-theorem top_implies_fp_interior {X: SVar} {sBox: SVar} {eBox: EVar} (fp_unf_a fp_unf_b fp_ctximp_a fp_ctximp_b: Pattern X sBox)
+theorem top_implies_fp_interior {X: SVar} {box: SVar} (fp_unf_a fp_unf_b fp_ctximp_a fp_ctximp_b: Pattern X box)
   (p_fp_unf_a: $ _Positive X fp_unf_a $)
   (p_fp_unf_b: $ _Positive X fp_unf_b $)
   (p_fp_ctximp_a: $ _Positive X fp_ctximp_a $)
@@ -867,9 +875,9 @@ theorem top_implies_fp_interior {X: SVar} {sBox: SVar} {eBox: EVar} (fp_unf_a fp
 
   (he_a: $epsilon -> s[ (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) / X ] fp_unf_a$)
   (he_b: $epsilon -> s[ (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) / X ] fp_unf_b$)
-  (ha: $((s[ (ctximp_app sBox (sVar sBox . top_letter) (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) eBox) / X ] fp_ctximp_a) . top_letter)
+  (ha: $((s[ (ctximp_app box (sVar box . top_letter) (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b))))) / X ] fp_ctximp_a) . top_letter)
           -> (s[ (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) / X ] fp_unf_a)$)
-  (hb: $((s[ (ctximp_app sBox (sVar sBox . top_letter) (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) eBox) / X ] fp_ctximp_b) . top_letter)
+  (hb: $((s[ (ctximp_app box (sVar box . top_letter) (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b))))) / X ] fp_ctximp_b) . top_letter)
           -> (s[ (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) / X ] fp_unf_b)$)
   : ------------------------
   $(mu X (epsilon \/ ((a . fp_ctximp_a) \/ (b . fp_ctximp_b)))) . top_letter -> (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b))))$
@@ -886,13 +894,13 @@ theorem top_implies_fp_interior {X: SVar} {sBox: SVar} {eBox: EVar} (fp_unf_a fp
           (rsyl (anr regex_eq_eps_concat_r) @ framing_concat_r he_a)
           (rsyl (anr regex_eq_eps_concat_r) @ framing_concat_r he_b))
     @ eori
-      ( wrap_fresh_subst (eFresh_concat eFresh_disjoint @ eFresh_sSubst eFresh_disjoint eFresh_ctximp_same_var) appctx_concat_l
+      ( wrap_subst appctx_concat_l
         @ rsyl (bi1i @ assoc_concat)
         @ unfold_r (positive_in_fp_interior p_fp_unf_a p_fp_unf_b)
         @ norm (norm_sym @ norm_imp_r ,(propag_s_subst 'X $epsilon \/ (a . _ \/ b . _)$))
         @ orrd @ orld
         @ framing_concat_r ha)
-      ( wrap_fresh_subst (eFresh_concat eFresh_disjoint @ eFresh_sSubst eFresh_disjoint eFresh_ctximp_same_var) appctx_concat_l
+      ( wrap_subst appctx_concat_l
         @ rsyl (bi1i @ assoc_concat)
         @ unfold_r (positive_in_fp_interior p_fp_unf_a p_fp_unf_b)
         @ norm (norm_sym @ norm_imp_r ,(propag_s_subst 'X $epsilon \/ (a . _ \/ b . _)$))
@@ -919,7 +927,7 @@ theorem fp_implies_regex_interior {X: SVar} (phi_a phi_b: Pattern X)
     $(mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b)))) -> rho$ =
     '(KT
       (positive_in_or positive_disjoint @ positive_in_or (positive_in_concat positive_disjoint posa) (positive_in_concat positive_disjoint posb)) @
-      apply_equiv (corollary_57_floor der_equality) (norm
+      apply_equiv der_equality_bi_concrete (norm
         (norm_imp_l @ norm_sym @ _sSubst_or sSubstitution_disjoint @ _sSubst_or (sSubst_concat_r norm_refl) (sSubst_concat_r norm_refl))
         (orim (iand id he) @ orim (framing_concat_r ha) (framing_concat_r hb))
       ));

@@ -45,7 +45,6 @@ axiom assoc_concat_e     {u v w: EVar} : $(eVar u . eVar v) . eVar w == eVar u .
 axiom identity_left_e    {u : EVar} : $epsilon . (eVar u) == (eVar u)$;
 axiom identity_right_e   {u : EVar} : $(eVar u) . epsilon == (eVar u)$;
 
-
 --- Secondary sugar
 
 --- TODO: Remove these (Need to be removed from maude as well.
@@ -56,6 +55,5 @@ infixr nnequiv: $<<->>$ prec 20;
 def replus (phi1 phi2: Pattern): Pattern = $ phi1 \/ phi2 $;
 infixl replus: $+$ prec 29;
 
-def derivative (l: Pattern) (phi: Pattern) { .box : SVar } { .dummy : EVar } : Pattern
-= $ctximp_app box (l . sVar box) phi dummy $;
-
+def derivative (l: Pattern) (phi: Pattern) {.box : SVar}: Pattern
+= $ctximp_app box (l . sVar box) phi $;

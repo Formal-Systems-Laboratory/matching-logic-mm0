@@ -12,6 +12,7 @@ fmod PATTERN-METAMATH is
     op mu _ _  : Qid     Pattern -> Pattern [ctor] .
     op bot         : -> Pattern [ctor] .
     op exists _ _ : Qid Pattern -> Pattern [ctor] .
+    op dummy : -> Qid [ctor] .
 
     op app[ _ / _ ] _ : Pattern Qid Pattern -> Pattern [ctor] .
 
@@ -50,13 +51,13 @@ fmod PATTERN-METAMATH is
     op ceil : Pattern -> Notation [ctor] .
     op floor : Pattern -> Notation [ctor] .
     op _ C= _ : Pattern Pattern -> Notation .
-    op [[ ctximp-app _ _ _ _ ]] : Qid Pattern Pattern Qid -> Notation .
+    op [[ ctximp-app _ _ _ ]] : Qid Pattern Pattern -> Notation .
 
     eq desugar(ceil(phi)) = app (sym 'defSym) phi .
     eq desugar(floor(phi)) = ~ ceil(~ phi) .
     eq desugar(phi C= psi) = floor(phi -> psi) .
-    eq desugar([[ ctximp-app X ctx phi x ]])
-     =  exists x (eVar x /\ ((app[ eVar x / X ] ctx) C= phi)) .
+    eq desugar([[ ctximp-app X ctx phi ]])
+     =  exists dummy (eVar dummy /\ ((app[ eVar dummy / X ] ctx) C= phi)) .
 
     *** ERE *********************************************
     op epsilon      :                 -> Notation [ctor] .
@@ -148,8 +149,8 @@ fmod PATTERN-METAMATH is
     eq substitute [ phi / X ] in top-letter = top-letter .
     eq substitute [ phi / X ] in (psi1 . psi2)
      = (substitute [ phi / X ] in psi1) . (substitute [ phi / X ] in psi2) .
-    eq substitute [ phi / X ] in [[ ctximp-app Y psi1 psi2 x ]]
-     = [[ ctximp-app Y (substitute [ phi / X ] in psi1) (substitute [ phi / X ] in psi2)  x ]] .
+    eq substitute [ phi / X ] in [[ ctximp-app Y psi1 psi2 ]]
+     = [[ ctximp-app Y (substitute [ phi / X ] in psi1) (substitute [ phi / X ] in psi2) ]] .
 
     op all-sVars : Pattern -> QidList .
     eq all-sVars(Notation) = all-sVars(desugar(Notation)) .
@@ -349,7 +350,7 @@ fmod MM0 is
     sort MM0Decl MM0Binder .
     op _ _ : MM0Decl MM0Decl -> MM0Decl [ctor assoc format(d n d)] .
     op theorem _ _ colon $ _ $           ; : Qid MM0Binder Pattern          -> MM0Decl .
-    op theorem _ _ colon $ _ $ = quote _ ; : Qid MM0Binder Pattern MM0SExpr -> MM0Decl .
+    op theorem _ _ colon $ _ $ = _ ; : Qid MM0Binder Pattern MM0SExpr -> MM0Decl .
     op pub _ : MM0Decl -> MM0Decl .
     op no-binders : -> MM0Binder [ctor] .
     op { _ colon SVar } : QidList -> MM0Binder [ctor] .
@@ -715,9 +716,9 @@ mod PROOF-GEN is
        theorem-fp-implies-regex(Phi)
        pub theorem 'proof-main-goal { all-sVars(Phi) colon SVar }
            colon $ Phi $
-             = quote([[ 'rsyl [[ 'bang 'top-implies-fp all-sVars((top-word 'X) -> fp(proofHint(Phi))) ]]
+             = [[ 'named 'quote([[ 'rsyl [[ 'bang 'top-implies-fp all-sVars((top-word 'X) -> fp(proofHint(Phi))) ]]
                               [[ 'bang 'fp-implies-regex all-sVars(fp(proofHint(Phi)) -> Phi) ]]
-                        'domain-words ]]) ; .
+                        'domain-words ]]) ]] ; .
     op theorem-main-goal-mm0 : Pattern -> MM0Decl .
     eq theorem-main-goal-mm0(Phi)
      =  theorem 'proof-main-goal { all-sVars(Phi) colon SVar } colon $ Phi $ ; .
@@ -731,7 +732,7 @@ mod PROOF-GEN is
      = theorem 'top-implies-fp
              { all-sVars((top-word 'X) -> fp(proofHint(Phi))) colon SVar }
              colon $ (top-word 'X) -> fp(proofHint(Phi)) $
-                 = quote(proof-top-implies-fp(proofHint(Phi))) ; .
+                 = [[ 'named 'quote(proof-top-implies-fp(proofHint(Phi))) ]] ; .
     op theorem-top-implies-fp-mm0 : Pattern -> MM0Decl .
     eq theorem-top-implies-fp-mm0(Phi)
      = theorem 'top-implies-fp
@@ -749,14 +750,14 @@ mod PROOF-GEN is
     eq proof-top-implies-fp(Phi, node(< Alpha >, eqEdge(applResult(R, Ctx, Subst), N)))
      = proof-top-implies-fp(Phi, N) .
     eq proof-top-implies-fp(Phi, backlink(< Alpha >))
-     = [[ 'bang 'top-implies-fp-leaf 'box '- 'dummy ]] .
+     = [[ 'bang 'top-implies-fp-leaf 'box ]] .
 
    ceq proof-top-implies-fp( ( FpCtximp . top-letter ) -> FpUnf
                            , node(< Phi >, rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
                                            rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
                            ) )
      = [[ 'bang 'top-implies-fp-interior
-         '- 'box 'dummy '- '- '- '-
+         '- 'box '- '- '- '-
          positivity(X, FpUnfA)
          positivity(X, FpUnfB)
          positivity(X, FpCtximpA)
@@ -764,12 +765,12 @@ mod PROOF-GEN is
          [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfA) unfold-r(substitute[ FpUnf / X ] in FpUnfA, 'orl) ]]
          [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfB) unfold-r(substitute[ FpUnf / X ] in FpUnfB, 'orl) ]]
          [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfA)
-            [[ 'norm-lemma [[ 'norm-concat-l propag-sSubst([[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy]], X, FpCtximpA) ]]
-                         proof-top-implies-fp((substitute[ [[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy]] / X ] in (FpCtximpA . top-letter)) -> substitute[ FpUnf / X ] in FpUnfA , N_A)
+            [[ 'norm-lemma [[ 'norm-concat-l propag-sSubst([[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) ]], X, FpCtximpA) ]]
+                         proof-top-implies-fp((substitute[ [[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) ]] / X ] in (FpCtximpA . top-letter)) -> substitute[ FpUnf / X ] in FpUnfA , N_A)
          ]] ]]
          [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfB)
-            [[ 'norm-lemma [[ 'norm-concat-l propag-sSubst([[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy]], X, FpCtximpB ) ]]
-                         proof-top-implies-fp((substitute[ [[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) 'dummy]] / X ] in (FpCtximpB . top-letter)) -> substitute[ FpUnf / X ] in FpUnfB , N_B)
+            [[ 'norm-lemma [[ 'norm-concat-l propag-sSubst([[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) ]], X, FpCtximpB ) ]]
+                         proof-top-implies-fp((substitute[ [[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) ]] / X ] in (FpCtximpB . top-letter)) -> substitute[ FpUnf / X ] in FpUnfB , N_B)
          ]] ]]
        ]]
     if mu X (epsilon \/ ((a . FpCtximpA) \/ (b . FpCtximpB))) := FpCtximp
@@ -783,7 +784,7 @@ mod PROOF-GEN is
      = theorem 'fp-implies-regex
              { all-sVars(fp(proofHint(Phi)) -> Phi) colon SVar }
              colon $ fp(proofHint(Phi)) -> Phi $
-                 = quote(proof-fp-implies-regex(proofHint(Phi))) ; .
+                 = [[ 'named 'quote(proof-fp-implies-regex(proofHint(Phi))) ]] ; .
     op theorem-fp-implies-regex-mm0 : Pattern -> MM0Decl .
     eq theorem-fp-implies-regex-mm0(Phi)
      = theorem 'fp-implies-regex

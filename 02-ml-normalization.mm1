@@ -191,10 +191,16 @@ theorem and_exists {x: EVar} (phi1 phi2: Pattern x):
   $ (exists x (phi1 /\ phi2)) -> ((exists x phi1) /\ (exists x phi2)) $ =
   '(exists_generalization (eFresh_and eFresh_exists_same_var eFresh_exists_same_var) @
     anim exists_intro_same_var exists_intro_same_var);
-theorem or_exists {x: EVar} (phi1 phi2: Pattern x):
+theorem or_exists_forwards {x: EVar} (phi1 phi2: Pattern x):
   $ (exists x (phi1 \/ phi2)) -> ((exists x phi1) \/ (exists x phi2)) $ =
   '(exists_generalization (eFresh_or eFresh_exists_same_var eFresh_exists_same_var) @
     orim exists_intro_same_var exists_intro_same_var);
+theorem or_exists_reverse {x: EVar} (phi1 phi2: Pattern x):
+  $ ((exists x phi1) \/ (exists x phi2)) -> (exists x (phi1 \/ phi2)) $ =
+  '(eori (exists_framing orl) (exists_framing orr));
+theorem or_exists_bi {x: EVar} (phi1 phi2: Pattern x):
+  $ (exists x (phi1 \/ phi2)) <-> ((exists x phi1) \/ (exists x phi2)) $ =
+  '(ibii or_exists_forwards or_exists_reverse);
 
 theorem and_exists_disjoint_forwards {x: EVar} (phi1: Pattern) (phi2: Pattern x):
   $ (exists x (phi1 /\ phi2)) -> (phi1 /\ exists x phi2) $ =
@@ -203,10 +209,22 @@ theorem and_exists_disjoint_forwards {x: EVar} (phi1: Pattern) (phi2: Pattern x)
     (exists_framing anr));
 theorem and_exists_disjoint_reverse {x: EVar} (phi1: Pattern) (phi2: Pattern x):
   $ (phi1 /\ exists x phi2) -> (exists x (phi1 /\ phi2)) $ =
-  '(impcom @ imim2 (anr imp_exists_disjoint) (exists_framing ian2));
+  '(impcom @ syl (anr imp_exists_disjoint) (exists_framing ian2));
 theorem and_exists_disjoint {x: EVar} (phi1: Pattern) (phi2: Pattern x):
   $ (exists x (phi1 /\ phi2)) <-> (phi1 /\ exists x phi2) $ =
   '(ibii and_exists_disjoint_forwards and_exists_disjoint_reverse);
+
+theorem and_exists_disjoint_r_forwards {x: EVar} (phi1: Pattern x) (phi2: Pattern):
+  $ (exists x (phi1 /\ phi2)) -> ((exists x phi1) /\ phi2) $ =
+  '(iand
+    (exists_framing anl)
+    (rsyl (exists_framing anr) (exists_generalization_disjoint id)));
+theorem and_exists_disjoint_r_reverse {x: EVar} (phi1: Pattern x) (phi2: Pattern):
+  $ ((exists x phi1) /\ phi2) -> (exists x (phi1 /\ phi2)) $ =
+  '(curry @ syl (anr imp_exists_disjoint) (exists_framing ian));
+theorem and_exists_disjoint_r {x: EVar} (phi1: Pattern x) (phi2: Pattern):
+  $ (exists x (phi1 /\ phi2)) <-> ((exists x phi1) /\ phi2) $ =
+  '(ibii and_exists_disjoint_r_forwards and_exists_disjoint_r_reverse);
 
 theorem framing_norm {box: SVar} (ctx: Pattern box) (phi1 phi2 rho1 rho2: Pattern)
   (h1: $ Norm (app[ phi1 / box ] ctx) rho1 $)

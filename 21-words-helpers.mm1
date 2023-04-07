@@ -58,18 +58,6 @@ theorem _sSubst_concat_r {X: SVar} (phi psi rho: Pattern X) (gamma: Pattern)
   $ Norm (s[ phi / X ] (gamma . psi)) (gamma . rho) $ =
   '(_sSubst_concat sSubstitution_disjoint h);
 
-theorem cong_of_equiv_concat_l (h: $phi1 <-> phi2$): $(phi1 . psi) <-> (phi2 . psi)$ =
-  '(ibii (framing_concat_l @ anl h) (framing_concat_l @ anr h));
-theorem cong_of_equiv_concat_r (h: $phi1 <-> phi2$): $(psi . phi1) <-> (psi . phi2)$ =
-  '(ibii (framing_concat_r @ anl h) (framing_concat_r @ anr h));
-theorem cong_of_equiv_concat (h1: $phi1 <-> phi2$) (h2: $psi1 <-> psi2$): $(phi1 . psi1) <-> (phi2 . psi2)$ =
-  '(bitr (cong_of_equiv_concat_l h1) (cong_of_equiv_concat_r h2));
-theorem eq_to_concat_bi
-  (h1: $ (phi1 == phi2) -> (psi1 <-> psi2) $)
-  (h2: $ (phi1 == phi2) -> (rho1 <-> rho2) $):
-  $ (phi1 == phi2) -> ((psi1 . rho1) <-> (psi2 . rho2)) $ =
-  '(eq_to_app_bi (eq_to_app_r_bi h1) h2);
-
 theorem norm_concat
   (h1: $Norm phi1 phi2$)
   (h2: $Norm psi1 psi2$)
@@ -103,9 +91,26 @@ theorem appctx_concat_r_r {box: SVar} (phi: Pattern box) (rho psi: Pattern):
   $ Norm (app[ phi / box ] (rho . (psi . sVar box))) (rho . (psi . phi)) $ =
   '(norm_trans appCtxR_disjoint @ norm_concat_r appctx_concat_r);
 
-theorem propag_or_concat : $(phi1 \/ phi2) . psi ->  (phi1 . psi) \/ (phi2 . psi)$
-= '(norm (norm_imp appctx_concat_l (norm_or appctx_concat_l appctx_concat_l)) (! propag_or dummy) );
+theorem propag_or_concat : $(phi1 \/ phi2) . psi -> (phi1 . psi) \/ (phi2 . psi)$
+= (named '(norm (norm_imp appctx_concat_l (norm_or appctx_concat_l appctx_concat_l)) propag_or));
 
+
+theorem cong_of_equiv_concat_l (h: $phi1 <-> phi2$): $(phi1 . psi) <-> (phi2 . psi)$ =
+  '(ibii (framing_concat_l @ anl h) (framing_concat_l @ anr h));
+theorem cong_of_equiv_concat_r (h: $phi1 <-> phi2$): $(psi . phi1) <-> (psi . phi2)$ =
+  '(ibii (framing_concat_r @ anl h) (framing_concat_r @ anr h));
+theorem cong_of_equiv_concat (h1: $phi1 <-> phi2$) (h2: $psi1 <-> psi2$): $(phi1 . psi1) <-> (phi2 . psi2)$ =
+  '(bitr (cong_of_equiv_concat_l h1) (cong_of_equiv_concat_r h2));
+theorem eq_to_concat_bi
+  (h1: $ (phi1 == phi2) -> (psi1 <-> psi2) $)
+  (h2: $ (phi1 == phi2) -> (rho1 <-> rho2) $):
+  $ (phi1 == phi2) -> ((psi1 . rho1) <-> (psi2 . rho2)) $ =
+  '(eq_to_app_bi (eq_to_app_r_bi h1) h2);
+theorem eq_to_der_bi
+  (h1: $ (phi1 == phi2) -> (psi1 <-> psi2) $)
+  (h2: $ (phi1 == phi2) -> (rho1 <-> rho2) $):
+  $ (phi1 == phi2) -> ((derivative psi1 rho1) <-> (derivative psi2 rho2)) $ =
+  (named '(eq_to_exists_bi @ eq_to_and_r_bi @ eq_to_subset_bi (norm (norm_sym @ norm_imp_r @ norm_equiv appctx_concat_r appctx_concat_r) @ eq_to_concat_bi h1 eq_to_id_bi) h2));
 
 --- Helpers for Kleene
 theorem positive_in_kleene_l_body {X: SVar} (phi: Pattern X)

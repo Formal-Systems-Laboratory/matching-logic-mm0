@@ -37,11 +37,11 @@ theorem norm_eq (phi1 phi2: Pattern)
   $ Norm (phi1 == psi1) (phi2 == psi2) $
   = '(norm_floor @ norm_equiv h1 h2);
 
-theorem norm_ctximp_app (phi1: Pattern sBox) (phi2: Pattern)
+theorem norm_ctximp_app (phi1: Pattern box) (phi2: Pattern)
   (h1: $ Norm phi1 phi2 $)
   (h2: $ Norm psi1 psi2 $):
-  $ Norm (ctximp_app sBox phi1 psi1 eBox) (ctximp_app sBox phi2 psi2 eBox) $ =
-  '(norm_exists @ norm_and_r @ norm_subset (norm_ctxApp_pt h1 norm_refl) h2);
+  $ Norm (ctximp_app box phi1 psi1) (ctximp_app box phi2 psi2) $ =
+  (named '(norm_exists @ norm_and_r @ norm_subset (norm_ctxApp_pt h1 norm_refl) h2));
 
 --- High level versions of axioms
 ---------------------------------
