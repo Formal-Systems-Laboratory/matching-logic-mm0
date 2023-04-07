@@ -1,5 +1,4 @@
 from collections import defaultdict
-from tabulate import tabulate
 import time
 from typing import Dict, List, NamedTuple, Optional, Tuple, no_type_check
 
@@ -12,13 +11,9 @@ class Benchmark(NamedTuple):
     gen_mm0:   Optional[int] = None
     join_mm0:  Optional[int] = None
     gen_mm1:   Optional[int] = None
+    size_mm1:  Optional[int] = None
 
 benchmarks : Dict[str, Benchmark] = defaultdict(lambda: Benchmark())
-
-def print_benchmarks() -> None:
-    print(tabulate(((name, *value) for (name, value) in sorted(benchmarks.items())),
-                    headers=('name',) +  Benchmark._fields
-         )        )
 
 class _Benchmark():
     def __init__(self, test_name: str, aspect: str):
@@ -34,4 +29,6 @@ class _Benchmark():
 
 def benchmark(test_name: str, aspect: str) -> _Benchmark:
     return _Benchmark(test_name, aspect)
+
+
 

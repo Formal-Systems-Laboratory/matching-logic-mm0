@@ -1,6 +1,8 @@
 import pytest
 from typing import no_type_check
+from typing import Dict, List, NamedTuple, Optional, Tuple, no_type_check
 import benchmarks
+import csv
 
 @no_type_check
 def pytest_addoption(parser):
@@ -15,7 +17,18 @@ def pytest_runtest_setup(item):
 def pytest_configure(config):
     config.addinivalue_line("markers", "slow: mark test as slow.")
 
-@no_type_check
-def pytest_sessionfinish(session):
-    print()
-    benchmarks.print_benchmarks()
+def pytest_sessionfinish(session) -> None:
+    with open('.build/benchmarks.csv', 'w', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=('name',) + benchmarks.Benchmark._fields)
+        writer.writeheader()
+
+        for (name, b) in benchmarks.benchmarks.items():
+            d = b._asdict()
+            d['name'] = name
+            writer.writerow(d)
+
+
+# def headers() -> Tuple[str,str,str,str,str,str,str,str]:
+#     return ['name'] + Benchmark._fields
+# def rows() -> List[Tuple[str,int,int,int,int,int,int,int]]:
+#     return  [(name, *value) for (name, value) in sorted(benchmarks.items())]
