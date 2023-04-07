@@ -1,51 +1,16 @@
 #!/usr/bin/env python3
 
 import pytest
-from collections import defaultdict
 from glob import glob
 from os import path, makedirs
-import time
-from tabulate import tabulate
-from typing import Dict, List, NamedTuple, Optional, Tuple, no_type_check
+from typing import no_type_check
 from subprocess import check_call, check_output
 from sys import argv
 
 import maude
+from benchmarks import benchmark
 
 test_dir=".build"
-
-
-### Benchmarks ##################
-
-class Benchmark(NamedTuple):
-    join:      Optional[int] = None
-    compile:   Optional[int] = None
-    check:     Optional[int] = None
-    gen_mm0:   Optional[int] = None
-    join_mm0:  Optional[int] = None
-    gen_mm1:   Optional[int] = None
-
-benchmarks : Dict[str, Benchmark] = defaultdict(lambda: Benchmark())
-
-def print_benchmarks() -> None:
-    print(tabulate(((name, *value) for (name, value) in sorted(benchmarks.items())),
-                    headers=('name',) +  Benchmark._fields
-         )        )
-
-class _Benchmark():
-    def __init__(self, test_name: str, aspect: str):
-        self.test_name = test_name
-        self.aspect = aspect
-        self.start = time.time_ns()
-    def __enter__(self):
-        return self
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        end = time.time_ns()
-        runtime = (end - self.start)
-        benchmarks[self.test_name] = benchmarks[self.test_name]._replace(**{self.aspect: runtime})
-
-def benchmark(test_name: str, aspect: str) -> _Benchmark:
-    return _Benchmark(test_name, aspect)
 
 
 ### PyTest Helpers #####################
@@ -213,6 +178,4 @@ def regex() -> SearchStrategy[str]:
 @pytest.mark.slow
 def test_equiv(exp):
     test_regex_implies_self(exp)
-
-
-print_benchmarks()
+    sys.stdout.write('I can print clearly now.')

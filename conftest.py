@@ -1,5 +1,6 @@
 import pytest
 from typing import no_type_check
+import benchmarks
 
 @no_type_check
 def pytest_addoption(parser):
@@ -13,3 +14,8 @@ def pytest_runtest_setup(item):
 @no_type_check
 def pytest_configure(config):
     config.addinivalue_line("markers", "slow: mark test as slow.")
+
+@no_type_check
+def pytest_sessionfinish(session):
+    print()
+    benchmarks.print_benchmarks()
