@@ -29,7 +29,7 @@ def reduce_in_module(src: str, module: str, expected_sort: str, term: str) -> st
     # Parsing
     output = output[3:-2]
     result_string = 'result {0}: '.format(expected_sort)
-    assert(output[0].startswith(result_string)), output[0]
+    assert(output[0].startswith(result_string)), '\n'.join(output)
     output[0] = output[0][len(result_string):]
     return '\n'.join(output)
 

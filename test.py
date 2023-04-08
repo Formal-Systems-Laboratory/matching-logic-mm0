@@ -8,7 +8,7 @@ from subprocess import check_call, check_output
 from sys import argv
 
 import maude
-from benchmarks import benchmark
+from benchmarks import benchmark, record_mm1_stats, record_mmb_stats
 
 test_dir=".build"
 
@@ -71,12 +71,11 @@ def test_mm(mm0_file: str, mm1_file: str) -> None:
     output_joined = path.join(test_dir, test_name + '.joined' + extension)
     output_mmb    = path.join(test_dir, test_name + '.mmb')
 
-    print("Testing: %s" % test_name)
-    # There seems to be a bug in mm0-rs that causes the program to crash
-    # when compiling un-joined files.
     with benchmark(test_name, 'join'):      join(mm1_file, output_joined)
     with benchmark(test_name, 'compile'):   compile(output_joined, output_mmb)
     with benchmark(test_name, 'check'):     check(output_mmb, mm0_file)
+    record_mmb_stats(test_name, output_mmb)
+    record_mm1_stats(test_name, output_joined)
 
 
 ### Test: proof generated certificates ##########################

@@ -37,6 +37,5 @@ mod TEST is
         test 's-subst-no-desugar-2      @ substitute[ mu 'ZZ sVar 'Phi / 'ZZ ]
                                             in [[ ctximp-app 'ZZ (sVar 'box . top-letter) (sVar 'Rho) ]]
                                           ?=   [[ ctximp-app 'ZZ (sVar 'box . top-letter) (sVar 'Rho) ]] ;
-
      .
 endm

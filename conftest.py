@@ -19,16 +19,10 @@ def pytest_configure(config):
 
 def pytest_sessionfinish(session) -> None:
     with open('.build/benchmarks.csv', 'w', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=('name',) + benchmarks.Benchmark._fields)
+        writer = csv.DictWriter(f, fieldnames=['name'] + benchmarks.benchmark_fields())
         writer.writeheader()
 
         for (name, b) in benchmarks.benchmarks.items():
-            d = b._asdict()
+            d = b._asdict_nested()
             d['name'] = name
             writer.writerow(d)
-
-
-# def headers() -> Tuple[str,str,str,str,str,str,str,str]:
-#     return ['name'] + Benchmark._fields
-# def rows() -> List[Tuple[str,int,int,int,int,int,int,int]]:
-#     return  [(name, *value) for (name, value) in sorted(benchmarks.items())]

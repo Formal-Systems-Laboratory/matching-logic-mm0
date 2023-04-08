@@ -15,6 +15,7 @@ def cleanup_maude_output(s: str) -> str:
     s = s.replace("bang", "!")
     s = s.replace("quote ", "'")
     s = s.replace("cong_of_equiv ", "cong_of_equiv_")
+    s = s.replace("comment", "--- ")
     return s
 
 assert len(sys.argv) == 4, "Usage: proof-gen  <mm0|mm1> <fp-implies-top> <regex>"

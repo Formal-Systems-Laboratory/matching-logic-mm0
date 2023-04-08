@@ -355,6 +355,7 @@ fmod MM0 is
     op no-binders : -> MM0Binder [ctor] .
     op { _ colon SVar } : QidList -> MM0Binder [ctor] .
     eq { nil colon SVar } = no-binders .
+
 endfm
 
 --- Manually performs a search, and returns the search graph as a tree with backlinks.
@@ -732,7 +733,9 @@ mod PROOF-GEN is
      = theorem 'top-implies-fp
              { all-sVars((top-word 'X) -> fp(proofHint(Phi))) colon SVar }
              colon $ (top-word 'X) -> fp(proofHint(Phi)) $
-                 = [[ 'named 'quote(proof-top-implies-fp(proofHint(Phi))) ]] ; .
+                 = [[ 'named 'quote(proof-top-implies-fp(proofHint(Phi))) ]] ;
+       mkStats('top-implies-fp, proof-top-implies-fp(proofHint(Phi)))
+    .
     op theorem-top-implies-fp-mm0 : Pattern -> MM0Decl .
     eq theorem-top-implies-fp-mm0(Phi)
      = theorem 'top-implies-fp
@@ -783,7 +786,9 @@ mod PROOF-GEN is
      = theorem 'fp-implies-regex
              { all-sVars(fp(proofHint(Phi)) -> Phi) colon SVar }
              colon $ fp(proofHint(Phi)) -> Phi $
-                 = [[ 'named 'quote(proof-fp-implies-regex(proofHint(Phi))) ]] ; .
+                 = [[ 'named 'quote(proof-fp-implies-regex(proofHint(Phi))) ]] ;
+       mkStats('fp-implies-regex, proof-fp-implies-regex(proofHint(Phi)))
+     .
     op theorem-fp-implies-regex-mm0 : Pattern -> MM0Decl .
     eq theorem-fp-implies-regex-mm0(Phi)
      = theorem 'fp-implies-regex
@@ -807,20 +812,25 @@ mod PROOF-GEN is
        ]]
      .
 
-   *** Public versions of Lemmas
-   --- We don't want these theorems to be public when proving the main theorem,
-   --- so that we can avoid generating the fixedpoint pattern.
-   --- However, it is useful to have public versions available for debugging purposes.
-
-    op theorem-fp-implies-regex-pub-mm0 : Pattern -> MM0Decl .
-    op theorem-fp-implies-regex-pub : Pattern -> MM0Decl .
-    eq theorem-fp-implies-regex-pub-mm0(Phi) = theorem-fp-implies-regex-mm0(Phi) .
-    eq theorem-fp-implies-regex-pub(Phi)     = pub theorem-fp-implies-regex(Phi) .
-
-    op theorem-top-implies-fp-pub-mm0 : Pattern -> MM0Decl .
-    op theorem-top-implies-fp-pub : Pattern -> MM0Decl .
-    eq theorem-top-implies-fp-pub-mm0(Phi) = theorem-top-implies-fp-mm0(Phi) .
-    eq theorem-top-implies-fp-pub(Phi)     = pub theorem-top-implies-fp(Phi) .
+   *** Statistics ********************
+    ---------- stat name,theorems,pos,subst,equiv,cong,nodes
+    op comment stat _   , _      , _ , _   , _   , _  , _ ; :    Qid Nat Nat Nat Nat Nat Nat -> MM0Decl [ctor] .
+    op mkStats : Qid MM0SExpr -> MM0Decl .
+    eq mkStats(Q, MMP) = comment stat Q,
+                                 count-theorems-containing("", MMP),
+                                 count-theorems-containing("pos", MMP),
+                                 count-theorems-containing("sSubst", MMP),
+                                 count-theorems-containing("apply-equiv", MMP),
+                                 count-theorems-containing("cong-of-equiv", MMP),
+                                 count-theorems-containing("top-implies-fp", MMP) + count-theorems-containing("fp-implies-regex", MMP)
+                         ; .
+    var Str : String .
+    var Exprs1 Exprs2 : NeMM0SExprList .
+    op count-theorems-containing : String MM0SExpr -> Nat .
+   ceq count-theorems-containing(Str, Q) = 1 if find(string(Q), Str, 0) =/= notFound .
+   ceq count-theorems-containing(Str, Q) = 0 if find(string(Q), Str, 0)  == notFound .
+    eq count-theorems-containing(Str, [[ MMP ]]) = count-theorems-containing(Str, MMP) .
+    eq count-theorems-containing(Str, [[ Exprs1 Exprs2 ]]) = count-theorems-containing(Str, [[ Exprs1 ]]) + count-theorems-containing(Str, [[ Exprs2 ]]) .
 endm
 
 --- set print attribute on .
