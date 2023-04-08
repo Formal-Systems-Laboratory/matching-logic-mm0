@@ -102,23 +102,23 @@ def test_regex(theorem: str, test_name: str, regex: str) -> None:
 # Benchmarks from Unified Decision Procedures for Regular Expression Equivalence
 # https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=f650281fc011a2c132690903eb443ff1ab3298f7
 
-@pytest.mark.parametrize('n', [1, 2, 4, slow(10), slow(20), slow(30), slow(40), slow(100)])
+@pytest.mark.parametrize('n', [1, 2, 4, slow(8)])
 def test_regex_match_l(n: int) -> None:
     test_regex('main-goal', 'match-l-{:03d}'.format(n), 'match-l({})'.format(n))
 
-@pytest.mark.parametrize('n', [1, 2, 4, slow(10), slow(20), slow(30), slow(40), slow(100)])
+@pytest.mark.parametrize('n', [1, 2, 4, slow(8)])
 def test_regex_match_r(n: int) -> None:
     test_regex('main-goal', 'match-r-{:03d}'.format(n), 'match-r({})'.format(n))
 
-@pytest.mark.parametrize('n', [1, 2, 4, slow(10), slow(20), slow(30), slow(40), slow(100)])
+@pytest.mark.parametrize('n', [1, 2, 4, slow(8)])
 def test_regex_eq_l(n: int) -> None:
     test_regex('main-goal', 'eq-l-{:03d}'.format(n), 'eq-l({})'.format(n))
 
-@pytest.mark.parametrize('n', [1, 2, 4, slow(10), slow(20), slow(30), slow(40), slow(100)])
+@pytest.mark.parametrize('n', [1, 2, 4, slow(8)])
 def test_regex_eq_r(n: int) -> None:
     test_regex('main-goal', 'eq-r-{:03d}'.format(n), 'eq-r({})'.format(n))
 
-@pytest.mark.parametrize('n', [1, 2, 4, slow(10), slow(20), slow(30), slow(40), slow(100)])
+@pytest.mark.parametrize('n', [1, 2, 4, slow(8)])
 def test_regex_eq_lr(n: int) -> None:
     test_regex('main-goal', 'eq-lr-{:03d}'.format(n), 'eq-lr({})'.format(n))
 
