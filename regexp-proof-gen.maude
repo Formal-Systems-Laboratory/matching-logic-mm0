@@ -105,12 +105,12 @@ fmod PATTERN-METAMATH is
     --- n-fold concatenation (right).
     op _ ^r _ : Pattern Nat -> Pattern .
     eq (Alpha ^r 0) = epsilon .
-    eq (Alpha ^r (s N)) = (Alpha + (Alpha ^r N)) .
+    eq (Alpha ^r (s N)) = (Alpha . (Alpha ^r N)) .
 
     --- n-fold concatenation (left).
     op _ ^l _ : Pattern Nat -> Pattern .
     eq (Alpha ^l 0) = epsilon .
-    eq (Alpha ^l (s N)) = ((Alpha ^l N) + Alpha) .
+    eq (Alpha ^l (s N)) = ((Alpha ^l N) . Alpha) .
 
     op match-l : Nat -> Pattern .
     eq match-l(N) = (a ^l N) ->> ((a + epsilon) ^l N) . (a ^l N) .
