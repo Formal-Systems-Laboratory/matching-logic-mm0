@@ -350,6 +350,7 @@ fmod MM0 is
     sort MM0Decl MM0Binder .
     op _ _ : MM0Decl MM0Decl -> MM0Decl [ctor assoc format(d n d)] .
     op theorem _ _ colon $ _ $           ; : Qid MM0Binder Pattern          -> MM0Decl .
+    op theorem _ _ colon $ _ $ = quote _ ; : Qid MM0Binder Pattern MM0SExpr -> MM0Decl .
     op theorem _ _ colon $ _ $ = _ ; : Qid MM0Binder Pattern MM0SExpr -> MM0Decl .
     op pub _ : MM0Decl -> MM0Decl .
     op no-binders : -> MM0Binder [ctor] .
@@ -717,9 +718,9 @@ mod PROOF-GEN is
        theorem-fp-implies-regex(Phi)
        pub theorem 'proof-main-goal { all-sVars(Phi) colon SVar }
            colon $ Phi $
-             = [[ 'named 'quote([[ 'rsyl [[ 'bang 'top-implies-fp all-sVars((top-word 'X) -> fp(proofHint(Phi))) ]]
+             = quote([[ 'rsyl [[ 'bang 'top-implies-fp all-sVars((top-word 'X) -> fp(proofHint(Phi))) ]]
                               [[ 'bang 'fp-implies-regex all-sVars(fp(proofHint(Phi)) -> Phi) ]]
-                        'domain-words ]]) ]] ; .
+                        'domain-words ]]) ; .
     op theorem-main-goal-mm0 : Pattern -> MM0Decl .
     eq theorem-main-goal-mm0(Phi)
      =  theorem 'proof-main-goal { all-sVars(Phi) colon SVar } colon $ Phi $ ; .
@@ -786,7 +787,7 @@ mod PROOF-GEN is
      = theorem 'fp-implies-regex
              { all-sVars(fp(proofHint(Phi)) -> Phi) colon SVar }
              colon $ fp(proofHint(Phi)) -> Phi $
-                 = [[ 'named 'quote(proof-fp-implies-regex(proofHint(Phi))) ]] ;
+                 = quote(proof-fp-implies-regex(proofHint(Phi))) ;
        mkStats('fp-implies-regex, proof-fp-implies-regex(proofHint(Phi)))
      .
     op theorem-fp-implies-regex-mm0 : Pattern -> MM0Decl .
