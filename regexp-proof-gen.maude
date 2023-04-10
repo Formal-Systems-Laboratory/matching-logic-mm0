@@ -825,13 +825,14 @@ mod PROOF-GEN is
 
    *** Statistics ********************
     ---------- stat name,theorems,pos,subst,equiv,cong,nodes
-    op comment stat _   , _      , _ , _   , _   , _  , _ ; :    Qid Nat Nat Nat Nat Nat Nat -> MM0Decl [ctor] .
+    op comment stat _   , _      , _ , _   , _ , _   , _  , _ ; :    Qid Nat Nat Nat Nat Nat Nat Nat -> MM0Decl [ctor] .
     op mkStats : Qid MM0SExpr -> MM0Decl .
     eq mkStats(Q, MMP) = comment stat Q,
                                  count-theorems-containing("", MMP),
                                  count-theorems-containing("pos", MMP),
                                  count-theorems-containing("sSubst", MMP),
                                  count-theorems-containing("apply-equiv", MMP),
+                                 count-theorems-containing("bitri", MMP),
                                  count-theorems-containing("cong-of-equiv", MMP),
                                  count-theorems-containing("top-implies-fp", MMP) + count-theorems-containing("fp-implies-regex", MMP)
                          ; .
