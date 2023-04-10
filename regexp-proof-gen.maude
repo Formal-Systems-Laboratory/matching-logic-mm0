@@ -360,8 +360,12 @@ fmod MM0 is
     --- Optimizations
     var CongThm : Qid .
     vars MM0SEVar1 MM0SEVar2 MM0SEVar3 : MM0SExpr .
-    eq [[ 'apply-equiv [[ CongThm MM0SEVar1 ]] [[ 'apply-equiv [[ CongThm MM0SEVar2 ]] MM0SEVar3 ]] ]] =
-       [[ 'apply-equiv [[ CongThm [[ 'bitr MM0SEVar1 MM0SEVar2 ]] ]] MM0SEVar3 ]] .
+    eq [[ 'apply-equiv MM0SEVar1 [[ 'apply-equiv MM0SEVar2 MM0SEVar3 ]] ]] =
+       [[ 'apply-equiv [[ 'bitri MM0SEVar1 MM0SEVar2 ]] MM0SEVar3 ]] .
+    eq [[ 'bitri [[ CongThm MM0SEVar1 ]] [[ 'bitri [[ CongThm MM0SEVar2 ]] MM0SEVar3 ]] ]] =
+       [[ 'bitri [[ CongThm [[ 'bitri MM0SEVar1 MM0SEVar2 ]] ]] MM0SEVar3 ]] .
+    eq [[ 'bitri [[ CongThm MM0SEVar1 ]] [[ CongThm MM0SEVar2 ]] ]] =
+       [[ CongThm [[ 'bitri MM0SEVar1 MM0SEVar2 ]] ]] .
 
 endfm
 
