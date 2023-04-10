@@ -359,10 +359,10 @@ fmod MM0 is
     eq { nil colon SVar } = no-binders .
 
     --- Optimizations
-    var cong-of-equiv-x : MM0SExpr .
+    var CongThm : Qid .
     vars MM0SEVar1 MM0SEVar2 MM0SEVar3 : MM0SExpr .
-    eq [[ apply-equiv ([[ cong-of-equiv-x MM0SEVar1 ]]) ([[ apply-equiv ([[ cong-of-equiv-x MM0SEVar2 ]]) MM0SEVar3 ]]) ]] =
-       [[ apply-equiv ([[ cong-of-equiv-x ([[ 'bitr MM0SEVar1 MM0SEVar2 ]]) ]]) MM0SEVar3 ]] .
+    eq [[ apply-equiv [[ CongThm MM0SEVar1 ]] [[ apply-equiv [[ CongThm MM0SEVar2 ]] MM0SEVar3 ]] ]] =
+       [[ apply-equiv [[ CongThm [[ 'bitr MM0SEVar1 MM0SEVar2 ]] ]] MM0SEVar3 ]] .
     eq [[ apply-equiv MM0SEVar1 MM0SEVar2 ]] = [[ 'apply-equiv MM0SEVar1 MM0SEVar2 ]] [owise] .
 
 endfm
