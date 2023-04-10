@@ -343,7 +343,6 @@ fmod MM0 is
     --- We use square brackets instead of parens for S-Expressions since Maude treats parens specially.
     --- We use *double* square brackets since single square brackets conflicts with META-TERM syntax.
     op [[ _ ]] : NeMM0SExprList -> MM0SExpr .
-    op [[ apply-equiv _ _ ]] : MM0SExpr MM0SExpr -> MM0SExpr .
     op _ _ : MM0SExprList MM0SExprList -> MM0SExprList [ctor ditto].
     op _ _ : NeMM0SExprList MM0SExprList -> NeMM0SExprList [ctor ditto].
     op _ _ : MM0SExprList NeMM0SExprList -> NeMM0SExprList [ctor ditto].
@@ -361,9 +360,8 @@ fmod MM0 is
     --- Optimizations
     var CongThm : Qid .
     vars MM0SEVar1 MM0SEVar2 MM0SEVar3 : MM0SExpr .
-    eq [[ apply-equiv [[ CongThm MM0SEVar1 ]] [[ apply-equiv [[ CongThm MM0SEVar2 ]] MM0SEVar3 ]] ]] =
-       [[ apply-equiv [[ CongThm [[ 'bitr MM0SEVar1 MM0SEVar2 ]] ]] MM0SEVar3 ]] .
-    eq [[ apply-equiv MM0SEVar1 MM0SEVar2 ]] = [[ 'apply-equiv MM0SEVar1 MM0SEVar2 ]] [owise] .
+    eq [[ 'apply-equiv [[ CongThm MM0SEVar1 ]] [[ 'apply-equiv [[ CongThm MM0SEVar2 ]] MM0SEVar3 ]] ]] =
+       [[ 'apply-equiv [[ CongThm [[ 'bitr MM0SEVar1 MM0SEVar2 ]] ]] MM0SEVar3 ]] .
 
 endfm
 
@@ -806,8 +804,8 @@ mod PROOF-GEN is
 
     op proof-fp-implies-regex : Node -> MM0SExpr .
     eq proof-fp-implies-regex(backlink(< Alpha >)) = 'fp-implies-regex-leaf .
-    eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [[ apply-equiv lift-equality-to-context(Ctx, upTerm(S), upTerm(getState(N)), theorem-for-equivalence(Subst, R)) proof-fp-implies-regex(N) ]] .
-    eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [[ apply-equiv lift-equality-to-context(Ctx, upTerm(S), upTerm(getState(N)), theorem-for-equivalence(Subst, R)) proof-fp-implies-regex(N) ]] .
+    eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [[ 'apply-equiv lift-equality-to-context(Ctx, upTerm(S), upTerm(getState(N)), theorem-for-equivalence(Subst, R)) proof-fp-implies-regex(N) ]] .
+    eq proof-fp-implies-regex(node(S, eqEdge(applResult(R, Ctx, Subst), N))) = [[ 'apply-equiv lift-equality-to-context(Ctx, upTerm(S), upTerm(getState(N)), theorem-for-equivalence(Subst, R)) proof-fp-implies-regex(N) ]] .
     eq proof-fp-implies-regex(node(< Alpha >,
                                        rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
                                        rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
