@@ -824,7 +824,7 @@ mod PROOF-GEN is
      .
 
    *** Statistics ********************
-    ---------- stat name,theorems,pos,subst,equiv,cong,nodes
+    ---------- stat name,theorems,pos,subst,equiv,bitr,cong,nodes
     op comment stat _   , _      , _ , _   , _ , _   , _  , _ ; :    Qid Nat Nat Nat Nat Nat Nat Nat -> MM0Decl [ctor] .
     op mkStats : Qid MM0SExpr -> MM0Decl .
     eq mkStats(Q, MMP) = comment stat Q,
