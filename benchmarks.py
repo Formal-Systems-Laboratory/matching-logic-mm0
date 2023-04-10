@@ -10,6 +10,7 @@ class ProofStats(NamedTuple):
     pos: int
     subst: int
     equiv: int
+    bitr: int
     cong: int
     nodes: int
 
