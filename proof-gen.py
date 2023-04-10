@@ -10,6 +10,7 @@ def cleanup_maude_output(s: str) -> str:
     s = s.replace("]]", ")")
     s = s.replace("_>>", "->>")
     s = s.replace("_>", "->")
+    s = s.replace("space", " ")
     s = s.replace("colon", ":")
     s = s.replace("no_binders", "")
     s = s.replace("bang", "!")
