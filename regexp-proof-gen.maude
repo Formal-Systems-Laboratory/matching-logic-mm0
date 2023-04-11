@@ -118,11 +118,19 @@ fmod PATTERN-METAMATH is
     op match-r : Nat -> Pattern .
     eq match-r(N) = (a ^r N) ->> ((a + epsilon) ^r N) . (a ^r N) .
 
+    op as-of-len-l : Nat -> Pattern .
+    eq as-of-len-l(0) = epsilon .
+    eq as-of-len-l(s(N)) = (a ^l s(N)) + as-of-len-l(N) .
+
+    op as-of-len-r : Nat -> Pattern .
+    eq as-of-len-r(0) = epsilon .
+    eq as-of-len-r(s(N)) = (a ^r s(N)) + as-of-len-r(N) .
+
     op eq-l : Nat -> Pattern .
-    eq eq-l(N) = [[ kleene 'X a ]] ->> ((a + epsilon) ^l N) . [[ kleene 'X (a ^l N) ]] .
+    eq eq-l(N) = [[ kleene 'X a ]] ->> as-of-len-l(N) . [[ kleene 'X (a ^l N) ]] .
 
     op eq-r : Nat -> Pattern .
-    eq eq-r(N) = [[ kleene 'X a ]] ->> ((a + epsilon) ^r N) . [[ kleene 'X (a ^r N) ]] .
+    eq eq-r(N) = [[ kleene 'X a ]] ->> as-of-len-r(N) . [[ kleene 'X (a ^r N) ]] .
 
     op eq-lr : Nat -> Pattern .
     eq eq-lr(N) = (((a + epsilon) ^l N) . [[ kleene 'X (a ^l N) ]] ) ->> ((a + epsilon) ^r N) . [[ kleene 'X (a ^r N) ]] .
