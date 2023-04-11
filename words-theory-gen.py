@@ -77,6 +77,9 @@ def gen_mm1(letters, f, longest):
         theorem regex_eq_der_neg_wrt_{0}: $ (derivative {0} (~ Alpha)) <-> ~ (derivative {0} Alpha) $ =
           '(regex_eq_der_neg functional_{0});''')
     gen_thms(letters, f, longest, '''
+        theorem regex_eq_der_same_l_wrt_{0}: $ (derivative {0} {0}) <-> epsilon $ =
+          '(regex_eq_der_same_l functional_{0} {0}_in_top_letter);''')
+    gen_thms(letters, f, longest, '''
         theorem regex_eq_der_concat_wrt_{0}: $ (derivative {0} (Alpha . Beta)) <-> ((derivative {0} Alpha) . Beta) \/ ((epsilon /\ Alpha) . (derivative {0} Beta)) $ =
           '(regex_eq_der_concat functional_{0} {0}_in_top_letter);''')
     gen_thms(letters, f, longest, '''
