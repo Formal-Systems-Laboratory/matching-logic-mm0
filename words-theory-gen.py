@@ -30,8 +30,8 @@ def gen_mm0(letters, f, longest):
 
 def gen_thms(letters, f, longest, str_base):
     for lname in letters:
-        functional_concat = dedent(str_base.format(lname))
-        f.write(functional_concat)
+        thm = dedent(str_base.format(lname))
+        f.write(thm)
     f.write('\n')
 
 def gen_mm1(letters, f, longest):
