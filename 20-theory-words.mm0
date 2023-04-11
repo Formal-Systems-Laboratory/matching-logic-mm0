@@ -26,8 +26,8 @@ def top_word   {X: SVar} : Pattern = $(kleene   X top_letter )$ ;
 
 axiom domain_words {X: SVar} : $ top_word X $;
 
-axiom functional_epsilon {x : EVar} : $exists x (eVar x == epsilon)$;
-axiom functional_concat  {w v x: EVar} : $exists x (eVar x == (eVar w . eVar v))$;
+axiom functional_epsilon : $ is_func epsilon $;
+axiom functional_concat  {w v: EVar} : $ is_func (eVar w . eVar v)$;
 
 axiom no_confusion_ae_e  : $~(epsilon C= top_letter)$;
 axiom no_confusion_ec_e  {u v: EVar} : $(epsilon == eVar u . eVar v) -> (epsilon == eVar u) /\ (epsilon == eVar v)$;

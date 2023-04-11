@@ -4,45 +4,28 @@ import "21-words-helpers.mm1";
 --- Lift axioms to higher level constructs
 ------------------------------------------
 
-theorem def_a: $|^ a ^|$ =
-  (named @ func_subst_thm 'functional_a 'x 'definedness);
-theorem def_b: $|^ b ^|$ =
-  (named @ func_subst_thm 'functional_b 'x 'definedness);
+theorem functional_l_concat {v: EVar} (l: Pattern v)
+  (func_l: $ is_func l $):
+  $ is_func (l . eVar v) $ =
+  (named (func_subst_thm 'func_l 'w 'functional_concat));
 
-theorem a_in_top_letter: $|^ a /\ top_letter ^|$ =
-  '(framing_def (iand id orl) def_a);
-theorem b_in_top_letter: $|^ b /\ top_letter ^|$ =
-  '(framing_def (iand id orr) def_b);
-
---- Lift functional axioms to $ a . [] $ and $ b . [] $.
-theorem functional_l_concat {.w x y v: EVar} (l: Pattern v)
-  (func_l: $ exists x (eVar x == l) $):
-  $ exists y (eVar y == l . eVar v) $ =
-  (func_subst_thm 'func_l 'w 'functional_concat);
-theorem functional_a_concat {.w x v: EVar} :
-  $ exists x (eVar x == a . eVar v) $ =
-  (named '(functional_l_concat functional_a));
-theorem functional_b_concat {.w x v: EVar} :
-  $ exists x (eVar x == b . eVar v) $ =
-  (named '(functional_l_concat functional_b));
-
-theorem regex_eq_ewp_ab
+theorem regex_eq_ewp_l
   (h: $ letter -> top_letter $):
   $ epsilon /\ letter <-> bot $
-  = '(ibii
+  = (named '(ibii
     (exists_generalization_disjoint
       (com12
         (eq_to_imp (eq_to_def @ eq_to_and_l eq_to_intro) (eq_to_not @ eq_to_and_l eq_to_intro))
-        (con2 (dne @ singleton_norm (! appCtxVar box1) (! defNorm box2))) -- |^ x /\ ~a ^| <-> ~(x /\ a)
-      ) (exists_framing eq_sym (! functional_epsilon x))
+        (con2 (dne @ singleton_norm appCtxVar defNorm)) -- |^ x /\ ~l ^| <-> ~(x /\ l)
+      ) (exists_framing eq_sym functional_epsilon)
       (framing_def (con3 @ imim2i @ syl h dne) @ dne no_confusion_ae_e))
-    absurdum);
+    absurdum));
 
 theorem no_confusion_cc_e_epsilon {u x y: EVar} : $(x in top_letter) -> (y in top_letter)
                             -> (eVar x . eVar u == eVar y) -> (eVar x == eVar y) /\ (eVar u == epsilon)$ =
-  '(syl (imim2i @ imim1i @ com12 eq_trans @ eq_sym identity_right_e)
-    ,(func_subst 'v $(x in top_letter) -> (y in top_letter) -> (eVar x . eVar u == eVar y . eVar v) -> (eVar x == eVar y) /\ (eVar u == eVar v)$ 'no_confusion_cc_e '(! functional_epsilon w))
-  );
+  (named '(syl (imim2i @ imim1i @ com12 eq_trans @ eq_sym identity_right_e)
+    ,(func_subst 'v $(x in top_letter) -> (y in top_letter) -> (eVar x . eVar u == eVar y . eVar v) -> (eVar x == eVar y) /\ (eVar u == eVar v)$ 'no_confusion_cc_e 'functional_epsilon)
+  ));
 
 theorem assoc_concat (Alpha Beta Gamma: Pattern): $ ((Alpha . Beta) . Gamma) <-> (Alpha . (Beta . Gamma)) $ =
   (named '(
@@ -154,10 +137,9 @@ theorem epsilon_implies_concat (phi psi : Pattern)
      id);
 
 theorem epsilon_implies_not_letter (letter : Pattern)
-    (h: $letter -> top_letter$)
-  : $epsilon -> ~ letter$
-= '(exp (bi1i @ regex_eq_ewp_ab h))
-  ;
+  (h: $letter -> top_letter$):
+  $ epsilon -> ~ letter $ =
+  '(exp (bi1i @ regex_eq_ewp_l h));
 
 theorem epsilon_implies_not_and_l (phi psi : Pattern)
     (h: $epsilon -> ~ phi$)
@@ -179,10 +161,6 @@ theorem regex_eq_ewp_bot:
   $ (epsilon /\ bot) <-> bot $ = '(ibii anr absurdum);
 theorem regex_eq_ewp_epsilon:
   $ epsilon /\ epsilon <-> epsilon $ = 'anidm;
-theorem regex_eq_ewp_a:
-  $ epsilon /\ a <-> bot $ = '(regex_eq_ewp_ab orl);
-theorem regex_eq_ewp_b:
-  $ epsilon /\ b <-> bot $ = '(regex_eq_ewp_ab orr);
 theorem regex_eq_ewp_and:
   $ epsilon /\ (Alpha /\ Beta) <-> (epsilon /\ Alpha) /\ (epsilon /\ Beta) $ = 'anandi;
 theorem regex_eq_ewp_choice:
@@ -196,10 +174,6 @@ theorem regex_eq_ewp_not_bot: $ (epsilon /\ ~bot) <-> epsilon $ =
   '(ibii anl @ syl ancom top_and);
 theorem regex_eq_ewp_not_eps: $ (epsilon /\ ~epsilon) <-> bot $ =
   '(ibii (notnot1 notnot1) absurdum);
-theorem regex_eq_ewp_not_a: $ (epsilon /\ ~a) <-> epsilon $ =
-  '(ibii anl @ iand id @ dne @ anl regex_eq_ewp_a);
-theorem regex_eq_ewp_not_b: $ (epsilon /\ ~b) <-> epsilon $ =
-  '(ibii anl @ iand id @ dne @ anl regex_eq_ewp_b);
 theorem regex_eq_ewp_not_and: $ (epsilon /\ ~(Alpha /\ Beta)) <-> ((epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta)) $ =
   '(bitr (cong_of_equiv_and_r notan) andi);
 theorem regex_eq_ewp_not_choice: $ (epsilon /\ ~(Alpha \/ Beta)) <-> ((epsilon /\ ~ Alpha) /\ (epsilon /\ ~ Beta)) $ =
@@ -313,10 +287,10 @@ theorem regex_eq_bot_kleene: $ (kleene X bot) <-> epsilon $ = '(ibii
   (epsilon_implies_kleene positive_disjoint));
 
 theorem regex_eq_eps_kleene {X: SVar}: $ (kleene X epsilon) <-> epsilon $ =
-  '(ibii
-    (KT (positive_in_kleene_r_body positive_disjoint) @ norm (norm_sym @ norm_imp_l ,(propag_s_subst 'Y $epsilon \/ (epsilon . sVar Y)$)) @ eori id @ eq_to_intro ,(func_subst 'u $(eVar u) . epsilon == (eVar u)$ 'identity_right_e '(! functional_epsilon w)))
+  (named '(ibii
+    (KT (positive_in_kleene_r_body positive_disjoint) @ norm (norm_sym @ norm_imp_l ,(propag_s_subst 'Y $epsilon \/ (epsilon . sVar Y)$)) @ eori id @ eq_to_intro ,(func_subst 'u $(eVar u) . epsilon == (eVar u)$ 'identity_right_e 'functional_epsilon))
     (imim1i orl @ norm (norm_imp_l ,(propag_s_subst 'Y $epsilon \/ (epsilon . sVar Y)$)) @ pre_fixpoint (positive_in_kleene_r_body positive_disjoint))
-  );
+  ));
 
 theorem regex_eq_double_kleene_l_lemma {X: SVar} (Alpha: Pattern X) (h: $ _sFresh X Alpha $):
   $ (kleene_l X Alpha) . (kleene_l X Alpha) -> (kleene_l X Alpha) $ =
@@ -377,6 +351,15 @@ theorem l_der_phi_imp_phi (l phi: Pattern):
   $ (l . derivative l phi) -> phi $ =
   (named '(unwrap_subst appctx_concat_r id));
 
+theorem der_ceil (h: $ is_func phi $): $ (derivative phi (|^ psi ^|)) <-> |^ psi ^| $ =
+  (named '(bitr der_expand
+  @ bitr (cong_of_equiv_exists @ cong_of_equiv_and_r
+    ,(func_subst 'x $ (eVar x . eVar y C= (|^ psi ^|)) <-> |^ psi ^|$
+      '(bitr ,(func_subst_thm 'functional_concat 'x 'eVar_in_subset_rev)
+             ,(func_subst_thm 'functional_concat 'x 'mem_def))
+      'h))
+  @ bicom lemma_exists_and));
+
 theorem der_equality_forward_lemma {x: EVar} (phi psi: Pattern x) (l: Pattern) (h: $ exists x (eVar x == l) $): $(l . psi) /\ phi -> l . derivative l phi$ =
   (named '(syl ,(framing_subst '(anr der_expand) 'appctx_concat_r) @ syl (anr ,(ex_appCtx_subst 'appctx_concat_r)) @
     rsyl (anim1 @ syl (anl ,(ex_appCtx_subst 'appctx_concat_r)) ,(framing_subst '(anl lemma_exists_and) 'appctx_concat_r)) @
@@ -413,18 +396,6 @@ theorem der_equality_bi: $phi <-> (epsilon /\ phi) \/ exists l ((eVar l . (deriv
 theorem der_equality: $phi == (epsilon /\ phi) \/ exists l ((eVar l . (derivative (eVar l) phi)) /\ l in top_letter)$ =
   '(equiv_to_eq der_equality_bi);
 
-theorem der_equality_bi_concrete: $phi <-> (epsilon /\ phi) \/ ((a . (derivative a phi)) \/ (b . (derivative b phi)))$ =
-  (named
-  '(bitr der_equality_bi
-  @ oreq2i
-  -- @ exists_intro_l_bi_disjoint
-  @ bitr (cong_of_equiv_exists @ aneq2i ,(propag_mem 'x $a \/ b$))
-  @ bitr (cong_of_equiv_exists @ bitr ancomb andir)
-  @ bitr or_exists_bi
-  @ oreqi
-    (mp ,(func_to_and_ctx_bi 'x $eVar x . derivative (eVar x) phi$) functional_a)
-    (mp ,(func_to_and_ctx_bi 'x $eVar x . derivative (eVar x) phi$) functional_b)));
-
 --- Derivatives: Syntactic Simplifications
 ------------------------------------------
 
@@ -443,8 +414,8 @@ theorem cong_of_equiv_der_r
   '(cong_of_equiv_der biid h);
 
 theorem der_l1_l2_phi (l1 l2 phi: Pattern)
-  (l1_func: $ exists x (eVar x == l1) $)
-  (l2_func: $ exists y (eVar y == l2) $)
+  (l1_func: $ is_func l1 $)
+  (l2_func: $ is_func l2 $)
   (h1: $ |^ l1 /\ top_letter ^| $)
   (h2: $ |^ l2 /\ top_letter ^| $):
   $ (derivative l1 (l2 . phi)) <-> (l1 == l2) /\ phi $ =
@@ -468,6 +439,35 @@ theorem der_l1_l2_phi (l1 l2 phi: Pattern)
     bitr and_exists_disjoint @
     cong_of_equiv_and_r lemma_62_b));
 
+theorem der_l1_l2_phi_and (l1 l2 phi: Pattern)
+  (l1_func: $ is_func l1 $)
+  (l2_func: $ is_func l2 $)
+  (h1: $ |^ l1 /\ top_letter ^| $):
+  $ (|^ l2 /\ top_letter ^| /\ derivative l1 (l2 . phi)) <-> (l1 == l2) /\ phi $ =
+  (named '(bitr (cong_of_equiv_and_r der_expand) @
+    bitr (bicom and_exists_disjoint) @
+    bitr (cong_of_equiv_exists @ bitr anlass @ cong_of_equiv_and_r @
+      bitr
+        (cong_of_equiv_and_r ,(func_subst 'x $(eVar x C= (l2 . phi)) <-> exists z ((z in phi) /\ (eVar x == (l2 . eVar z)))$ '(bitr (bitr eVar_in_subset_rev membership_app) @ cong_of_equiv_exists @ cong_of_equiv_and_r
+        ,(func_subst 'y $(x in eVar y) <-> (eVar x == eVar y)$ 'membership_var_bi '(functional_l_concat l2_func)))
+        '(functional_l_concat l1_func))) @
+      bitr (bicom and_exists_disjoint) @
+      bitr (cong_of_equiv_exists @
+        bitr anlass @
+        bitr (cong_of_equiv_and_r @ bitr (ibii (
+              curry (mp ,(func_subst 'x $(x in top_letter) -> |^ l2 /\ top_letter ^| -> (eVar x . eVar u == l2 . eVar v) -> (eVar x == l2) /\ (eVar u == eVar v)$
+                (func_subst 'y $(x in top_letter) -> (y in top_letter) -> (eVar x . eVar u == eVar y . eVar v) -> (eVar x == eVar y) /\ (eVar u == eVar v)$ 'no_confusion_cc_e 'l2_func)
+                'l1_func) h1)
+            ) (iand (rsyl anl (com12 (syl anl ,(func_subst_explicit_helper 'x $x in top_letter$)) h1)) (rsyl (anim ,(eq_imp_eq_framing_subst 'appctx_concat_l) ,(eq_imp_eq_framing_subst 'appctx_concat_r)) @ curry eq_trans))) (cong_of_equiv_and_r @ bicom membership_var_bi))
+        anlass) @
+      bitr and_exists_disjoint @
+      bicom @ cong_of_equiv_and_r ,(membership_appCtx_subst 'appCtxVar)
+    ) @
+    bitr (cong_of_equiv_exists anlass) @
+    bitr and_exists_disjoint @
+    cong_of_equiv_and_r lemma_62_b
+    ));
+
 do {
   (def (der_transformer x y l phi) '(ibii
     (exists_generalization_disjoint @ curry @ syl anr ,(func_subst_explicit_helper 'y $(l . eVar y) C= phi$))
@@ -478,46 +478,41 @@ theorem der_transformer_test_1 {x y: EVar} (phi: Pattern):
   $ (exists x ((eVar y == eVar x) /\ ((a . eVar x) C= (~ phi)))) <-> ((a . eVar y) C= (~ phi)) $ =
   (der_transformer 'x 'y 'a $~ phi$);
 
+theorem regex_eq_der_exists {x: EVar} (phi: Pattern) (psi: Pattern x)
+  (func_phi: $ is_func phi $):
+  $ (derivative phi (exists x psi)) <-> exists x (derivative phi psi) $ =
+  (named '(bisquare der_expand (cong_of_equiv_exists der_expand)
+  @ bitr (cong_of_equiv_exists
+    @ bitr (cong_of_equiv_and_r ,(func_subst 'x $ (eVar x . eVar y C= exists z psi) <-> exists z (eVar x . eVar y C= psi)$ '(bisquare ,(func_subst_thm 'functional_concat 'x 'eVar_in_subset_rev) (cong_of_equiv_exists ,(func_subst_thm 'functional_concat 'x 'eVar_in_subset_rev)) ,(func_subst_thm 'functional_concat 'x 'membership_exists_bi)) 'func_phi))
+    @ bicom and_exists_disjoint
+  )
+  swap_exists_bi));
 
 theorem regex_eq_der_bot
-  (h: $ exists x (eVar x == A) $):
-  $ (derivative A bot) -> bot $
-  = '(exists_generalization_disjoint @ con3 anr @ notnot1 @ framing_def notnot1 @
+  (h: $ is_func phi $):
+  $ (derivative phi bot) -> bot $
+  = (named '(exists_generalization_disjoint @ con3 anr @ notnot1 @ framing_def notnot1 @
     exists_generalization_disjoint (com12
-      (eq_to_def @ norm (norm_imp_r @ norm_imp_r @ norm_sym @ norm_trans appCtxR_disjoint @ norm_app norm_refl (! appCtxVar box)) @ eq_to_app_l @ eq_to_app_r eq_to_intro)
+      (eq_to_def @ norm (norm_imp_r @ norm_imp_r @ norm_sym @ norm_trans appCtxR_disjoint @ norm_app norm_refl appCtxVar) @ eq_to_app_l @ eq_to_app_r eq_to_intro)
       (exists_generalization_disjoint (com12 (eq_to_def eq_to_intro) definedness)
-          (! functional_concat x v1 x1))
+          functional_concat)
         ) h
-  );
-theorem regex_eq_der_bot_wrt_a:
-  $ (derivative a bot) <-> bot $ = '(ibii (regex_eq_der_bot (! functional_a x)) absurdum);
-theorem regex_eq_der_bot_wrt_b:
-  $ (derivative b bot) <-> bot $ = '(ibii (regex_eq_der_bot (! functional_b x)) absurdum);
+  ));
 
-theorem regex_eq_der_epsilon_wrt_a:
-  $ (derivative a epsilon) <-> bot $ =
-  '(ibii (rsyl (anl der_expand) @ syl not_exists_bot @ exists_framing @ con3 anr @
-    rsyl ,(func_subst 'x $((a . eVar d) C= eVar x) -> ((a . eVar d) == eVar x)$ (
+theorem regex_eq_der_epsilon (phi: Pattern)
+  (func_phi: $ is_func phi $)
+  (phi_in_top_letter: $ phi -> top_letter $):
+  $ (derivative phi epsilon) <-> bot $ =
+  (named '(ibii (rsyl (anl der_expand) @ syl not_exists_bot @ exists_framing @ con3 anr @
+    rsyl ,(func_subst 'x $((phi . eVar d) C= eVar x) -> ((phi . eVar d) == eVar x)$ (
         func_subst 'y $((eVar y . eVar d) C= eVar x) -> ((eVar y . eVar d) == eVar x)$ (
-          func_subst 'z $(eVar z C= eVar x) -> (eVar z == eVar x)$ '(eVars_subset_eq_forward) '(! functional_concat _ _ k)
-        ) '(! functional_a w1)
-      ) '(! functional_epsilon w2)) @
+          func_subst_thm 'functional_concat 'x 'eVars_subset_eq_forward
+        ) 'func_phi
+      ) 'functional_epsilon) @
     rsyl eq_sym @
-    rsyl ,(func_subst 'x $(epsilon == eVar x . eVar d) -> ((epsilon == eVar x) /\ (epsilon == eVar d))$ '(! no_confusion_ec_e _ d) '(! functional_a w3)) @
-      con3 anl @ con3 (rsyl eq_imp_subset subset_imp_subset_or_l) no_confusion_ae_e
-  ) absurdum);
-theorem regex_eq_der_epsilon_wrt_b:
-  $ (derivative b epsilon) <-> bot $ =
-  '(ibii (rsyl (anl der_expand) @ syl not_exists_bot @ exists_framing @ con3 anr @
-    rsyl ,(func_subst 'x $((b . eVar d) C= eVar x) -> ((b . eVar d) == eVar x)$ (
-        func_subst 'y $((eVar y . eVar d) C= eVar x) -> ((eVar y . eVar d) == eVar x)$ (
-          func_subst 'z $(eVar z C= eVar x) -> (eVar z == eVar x)$ '(eVars_subset_eq_forward) '(! functional_concat _ _ k)
-        ) '(! functional_b w1)
-      ) '(! functional_epsilon w2)) @
-    rsyl eq_sym @
-    rsyl ,(func_subst 'x $(epsilon == eVar x . eVar d) -> ((epsilon == eVar x) /\ (epsilon == eVar d))$ '(! no_confusion_ec_e _ d) '(! functional_b w3)) @
-      con3 anl @ con3 (rsyl eq_imp_subset subset_imp_subset_or_r) no_confusion_ae_e
-  ) absurdum);
+    rsyl ,(func_subst_thm 'func_phi 'u 'no_confusion_ec_e) @
+      anwl @ con3 eq_imp_subset @ con3 (com12 subset_trans @ imp_to_subset phi_in_top_letter) no_confusion_ae_e
+  ) absurdum));
 theorem regex_eq_der_diff_a_wrt_a:
   $ (derivative a b) <-> bot $ =
   '(ibii (rsyl (anl der_expand) @ syl not_exists_bot @ exists_framing @ con3 anr @
@@ -581,152 +576,70 @@ theorem regex_eq_der_same_a_wrt_b:
     )
   ));
 
-theorem regex_eq_der_choice_wrt_a: $ (derivative a (Alpha \/ Beta)) <-> (derivative a Alpha) \/ (derivative a Beta) $ =
-  '(bitr (! der_expand d1) @
+theorem regex_eq_der_choice (phi: Pattern)
+  (func_phi: $ is_func phi $):
+  $ (derivative phi (Alpha \/ Beta)) <-> (derivative phi Alpha) \/ (derivative phi Beta) $ =
+  (named '(bitr (! der_expand d1) @
     bitr (
       membership_elim_implicit @ anr
-        ,(propag_mem 'y $(exists x (eVar x /\ ((a . eVar x) C= (Alpha \/ Beta)))) <-> ((exists x (eVar x /\ ((a . eVar x) C= Alpha))) \/ (exists x (eVar x /\ ((a . eVar x) C= Beta))))$) @
-          bitr ,(der_transformer 'x 'y 'a $Alpha \/ Beta$) @
+        ,(propag_mem_w_fun 'y $(exists x (eVar x /\ ((phi . eVar x) C= (Alpha \/ Beta)))) <-> ((exists x (eVar x /\ ((phi . eVar x) C= Alpha))) \/ (exists x (eVar x /\ ((phi . eVar x) C= Beta))))$ (atom-map! '[phi func_phi])) @
+          bitr ,(der_transformer 'x 'y 'phi $Alpha \/ Beta$) @
           bitr ,(func_subst 'x $(eVar x C= Alpha \/ Beta) <-> (eVar x C= Alpha) \/ (eVar x C= Beta)$ '(
             bitr eVar_in_subset_rev @ bitr membership_or_bi (cong_of_equiv_or eVar_in_subset eVar_in_subset)
-          ) '(! functional_a_concat d2 x)) @
+          ) '(functional_l_concat func_phi)) @
           bicom @ cong_of_equiv_or ,(der_transformer 'x 'y 'a $Alpha$) ,(der_transformer 'x 'y 'a $Beta$)) @
-    bicom @ cong_of_equiv_or (! der_expand d1) (! der_expand d1));
-theorem regex_eq_der_choice_wrt_b: $ (derivative b (Alpha \/ Beta)) <-> (derivative b Alpha) \/ (derivative b Beta) $ =
-  '(bitr (! der_expand d1) @
+    bicom @ cong_of_equiv_or (! der_expand d1) (! der_expand d1)));
+theorem regex_eq_der_conj (phi: Pattern)
+  (func_phi: $ is_func phi $):
+  $ (derivative phi (Alpha /\ Beta)) <-> (derivative phi Alpha) /\ (derivative phi Beta) $ =
+  (named '(bitr (! der_expand d1) @
     bitr (
       membership_elim_implicit @ anr
-        ,(propag_mem 'y $(exists x (eVar x /\ ((b . eVar x) C= (Alpha \/ Beta)))) <-> ((exists x (eVar x /\ ((b . eVar x) C= Alpha))) \/ (exists x (eVar x /\ ((b . eVar x) C= Beta))))$) @
-          bitr ,(der_transformer 'x 'y 'b $Alpha \/ Beta$) @
-          bitr ,(func_subst 'x $(eVar x C= Alpha \/ Beta) <-> (eVar x C= Alpha) \/ (eVar x C= Beta)$ '(
-            bitr eVar_in_subset_rev @ bitr membership_or_bi (cong_of_equiv_or eVar_in_subset eVar_in_subset)
-          ) '(! functional_b_concat d2 x)) @
-          bicom @ cong_of_equiv_or ,(der_transformer 'x 'y 'b $Alpha$) ,(der_transformer 'x 'y 'b $Beta$)) @
-    bicom @ cong_of_equiv_or (! der_expand d1) (! der_expand d1));
-theorem regex_eq_der_conj_wrt_a: $ (derivative a (Alpha /\ Beta)) <-> (derivative a Alpha) /\ (derivative a Beta) $ =
-  '(bitr (! der_expand d1) @
-    bitr (
-      membership_elim_implicit @ anr
-        ,(propag_mem 'y $(exists x (eVar x /\ ((a . eVar x) C= (Alpha /\ Beta)))) <-> ((exists x (eVar x /\ ((a . eVar x) C= Alpha))) /\ (exists x (eVar x /\ ((a . eVar x) C= Beta))))$) @
-          bitr ,(der_transformer 'x 'y 'a $Alpha /\ Beta$) @
+        ,(propag_mem_w_fun 'y $(exists x (eVar x /\ ((phi . eVar x) C= (Alpha /\ Beta)))) <-> ((exists x (eVar x /\ ((phi . eVar x) C= Alpha))) /\ (exists x (eVar x /\ ((phi . eVar x) C= Beta))))$ (atom-map! '[phi func_phi])) @
+          bitr ,(der_transformer 'x 'y 'phi $Alpha /\ Beta$) @
           bitr ,(func_subst 'x $(eVar x C= Alpha /\ Beta) <-> (eVar x C= Alpha) /\ (eVar x C= Beta)$ '(
             bitr eVar_in_subset_rev @ bitr membership_and_bi (cong_of_equiv_and eVar_in_subset eVar_in_subset)
-          ) '(! functional_a_concat d2 x)) @
+          ) '(functional_l_concat func_phi)) @
           bicom @ cong_of_equiv_and ,(der_transformer 'x 'y 'a $Alpha$) ,(der_transformer 'x 'y 'a $Beta$)) @
-    bicom @ cong_of_equiv_and (! der_expand d1) (! der_expand d1));
-theorem regex_eq_der_conj_wrt_b: $ (derivative b (Alpha /\ Beta)) <-> (derivative b Alpha) /\ (derivative b Beta) $ =
-  '(bitr (! der_expand d1) @
+    bicom @ cong_of_equiv_and (! der_expand d1) (! der_expand d1)));
+theorem regex_eq_der_neg (phi: Pattern)
+  (func_phi: $ is_func phi $):
+  $ (derivative phi (~ Alpha)) <-> ~ (derivative phi Alpha) $ =
+  (named '(bitr (! der_expand d1) @
     bitr (
       membership_elim_implicit @ anr
-        ,(propag_mem 'y $(exists x (eVar x /\ ((b . eVar x) C= (Alpha /\ Beta)))) <-> ((exists x (eVar x /\ ((b . eVar x) C= Alpha))) /\ (exists x (eVar x /\ ((b . eVar x) C= Beta))))$) @
-          bitr ,(der_transformer 'x 'y 'b $Alpha /\ Beta$) @
-          bitr ,(func_subst 'x $(eVar x C= Alpha /\ Beta) <-> (eVar x C= Alpha) /\ (eVar x C= Beta)$ '(
-            bitr eVar_in_subset_rev @ bitr membership_and_bi (cong_of_equiv_and eVar_in_subset eVar_in_subset)
-          ) '(! functional_b_concat d2 x)) @
-          bicom @ cong_of_equiv_and ,(der_transformer 'x 'y 'b $Alpha$) ,(der_transformer 'x 'y 'b $Beta$)) @
-    bicom @ cong_of_equiv_and (! der_expand d1) (! der_expand d1));
-theorem regex_eq_der_neg_wrt_a: $ (derivative a (~ Alpha)) <-> ~ (derivative a Alpha) $ =
-  '(bitr (! der_expand d1) @
-    bitr (
-      membership_elim_implicit @ anr
-        ,(propag_mem 'y $(exists x (eVar x /\ ((a . eVar x) C= ~ Alpha))) <-> ~ (exists x (eVar x /\ ((a . eVar x) C= Alpha)))$) @
+        ,(propag_mem_w_fun 'y $(exists x (eVar x /\ ((phi . eVar x) C= ~ Alpha))) <-> ~ (exists x (eVar x /\ ((phi . eVar x) C= Alpha)))$ (atom-map! '[phi func_phi])) @
           bitr ,(der_transformer 'x 'y 'a $~ Alpha$) @
-          bitr (cong_of_equiv_not ,(func_subst 'x $(x in Alpha) <-> (eVar x C= Alpha)$ 'eVar_in_subset '(! functional_a_concat d2 x))) @
+          bitr (cong_of_equiv_not ,(func_subst 'x $(x in Alpha) <-> (eVar x C= Alpha)$ 'eVar_in_subset '(functional_l_concat func_phi))) @
           bicom @ cong_of_equiv_not ,(der_transformer 'x 'y 'b $Alpha$)) @
-    bicom @ cong_of_equiv_not (! der_expand d1));
-theorem regex_eq_der_neg_wrt_b: $ (derivative b (~ Alpha)) <-> ~ (derivative b Alpha) $ =
-  '(bitr (! der_expand d1) @
-    bitr (
-      membership_elim_implicit @ anr
-        ,(propag_mem 'y $(exists x (eVar x /\ ((b . eVar x) C= ~ Alpha))) <-> ~ (exists x (eVar x /\ ((b . eVar x) C= Alpha)))$) @
-          bitr ,(der_transformer 'x 'y 'b $~ Alpha$) @
-          bitr (cong_of_equiv_not ,(func_subst 'x $(x in Alpha) <-> (eVar x C= Alpha)$ 'eVar_in_subset '(! functional_b_concat d2 x))) @
-          bicom @ cong_of_equiv_not ,(der_transformer 'x 'y 'b $Alpha$)) @
-    bicom @ cong_of_equiv_not (! der_expand d1));
-theorem regex_eq_der_concat_wrt_a (Alpha Beta: Pattern) :
-  $ (derivative a (Alpha . Beta)) <-> ((derivative a Alpha) . Beta) \/ ((epsilon /\ Alpha) . (derivative a Beta)) $ =
-  (named '(ibii
-    (rsyl (anl @
-      bitr (cong_of_equiv_der_r @ cong_of_equiv_concat_l der_equality_bi_concrete) @
-      bitr (cong_of_equiv_der_r ,(or_appCtx2_r_subst 'appctx_concat_l)) @
-      bitr regex_eq_der_choice_wrt_a @
-      bitr (cong_of_equiv_or_r regex_eq_der_choice_wrt_a) @
-      bitr (cong_of_equiv_or
-          ( bitr (cong_of_equiv_der_r epsilon_and_concat)
-            der_expand)
-        @ cong_of_equiv_or
-          ( bitr (cong_of_equiv_der_r assoc_concat) @
-            bitr (der_l1_l2_phi functional_a functional_a a_in_top_letter a_in_top_letter) @
-            taut_and_equiv eq_refl)
-          ( bitr (cong_of_equiv_der_r assoc_concat) @
-            bitr (der_l1_l2_phi functional_a functional_b a_in_top_letter b_in_top_letter) @
-            absurd_and_equiv_bot no_confusion_ab_e)
-      ) @
-      bitr (cong_of_equiv_or_r or_bot_bi_l) @
-      orcomb) @
-    orim2 @ syl (anr epsilon_and_concat) @ syl (anim2 @ anr der_expand) @ rsyl
-      (exists_framing @ syl (anr anlass) @ anim2 @ rsyl subset_and @ anim1
-        ,(func_subst 'x $(eVar x C= |^ phi ^|) -> |^ phi ^|$ '(rsyl eVar_in_subset_reverse mem_def_forward) 'functional_a_concat))
-      and_exists_disjoint_forwards
-    )
-    (rsyl (anl @ cong_of_equiv_or (cong_of_equiv_concat_l der_expand) (cong_of_equiv_concat_r der_expand)) @ syl (anr der_expand) @ eori
-      (rsyl (norm (norm_imp appCtxLRVar @ norm_exists appCtxLRVar) propag_exists_disjoint) @ exists_generalization_disjoint @
-        rsyl (anl ,(appCtx_pointwise_subst 'appCtxRVar)) @ exists_generalization_disjoint @ rsyl (anim1
-          ,(func_subst 'x $((eVar d /\ (eVar x C= Alpha)) . eVar beta) -> (eVar d . eVar beta /\ (eVar x C= Alpha))$ '(anl ,(lemma_60_subset_subst 'appCtxLRVar)) 'functional_a_concat)) @
-        rsyl (anl anass) @ rsyl (anim2 @ syl (framing_subset (anr assoc_concat) id) @ rsyl (anim
-          ,(subset_imp_subset_framing_subst 'appCtxLRVar)
-          (rsyl eVar_in_subset_forward ,(subset_imp_subset_framing_subst 'appCtxRVar))) @
-        curry subset_trans) @ anr imp_exists_disjoint @ exists_framing (
-          syl anr ,(func_subst_explicit_helper 'x $eVar x /\ ((a . eVar x) C= Alpha . Beta)$)
-        ) functional_concat)
-      (rsyl (anl ,(ex_appCtx_subst 'appCtxRVar)) @ exists_framing @ iand
-        (rsyl ,(framing_subst 'anl 'appCtxLRVar) @ syl anl @ anl id_concat_l)
-        (rsyl (iand (norm (norm_imp_l appCtxLRVar) lemma_56) (syl anr @ syl (anl id_concat_l) ,(framing_subst 'anl 'appCtxLRVar))) @
-          rsyl (anim1 ,(func_subst 'x $(x in Alpha) -> (eVar x C= Alpha)$ 'eVar_in_subset_forward 'functional_epsilon)) @
-          rsyl (curry concat_subset) @ framing_subset (anr id_concat_l) id))
-    )));
-theorem regex_eq_der_concat_wrt_b (Alpha Beta: Pattern) :
-  $ (derivative b (Alpha . Beta)) <-> ((derivative b Alpha) . Beta) \/ ((epsilon /\ Alpha) . (derivative b Beta)) $ =
-  (named '(ibii
-    (rsyl (anl @
-      bitr (cong_of_equiv_der_r @ cong_of_equiv_concat_l der_equality_bi_concrete) @
-      bitr (cong_of_equiv_der_r ,(or_appCtx2_r_subst 'appctx_concat_l)) @
-      bitr regex_eq_der_choice_wrt_b @
-      bitr (cong_of_equiv_or_r regex_eq_der_choice_wrt_b) @
-      bitr (cong_of_equiv_or
-          ( bitr (cong_of_equiv_der_r epsilon_and_concat)
-            der_expand)
-        @ cong_of_equiv_or
-          ( bitr (cong_of_equiv_der_r assoc_concat) @
-            bitr (der_l1_l2_phi functional_b functional_a b_in_top_letter a_in_top_letter) @
-            absurd_and_equiv_bot @ rsyl eq_sym no_confusion_ab_e)
-          ( bitr (cong_of_equiv_der_r assoc_concat) @
-            bitr (der_l1_l2_phi functional_b functional_b b_in_top_letter b_in_top_letter) @
-            taut_and_equiv eq_refl)
-      ) @
-      bitr (cong_of_equiv_or_r or_bot_bi_r) @
-      orcomb) @
-    orim2 @ syl (anr epsilon_and_concat) @ syl (anim2 @ anr der_expand) @ rsyl
-      (exists_framing @ syl (anr anlass) @ anim2 @ rsyl subset_and @ anim1
-        ,(func_subst 'x $(eVar x C= |^ phi ^|) -> |^ phi ^|$ '(rsyl eVar_in_subset_reverse mem_def_forward) 'functional_b_concat))
-      and_exists_disjoint_forwards
-    )
-    (rsyl (anl @ cong_of_equiv_or (cong_of_equiv_concat_l der_expand) (cong_of_equiv_concat_r der_expand)) @ syl (anr der_expand) @ eori
-      (rsyl (norm (norm_imp appCtxLRVar @ norm_exists appCtxLRVar) propag_exists_disjoint) @ exists_generalization_disjoint @
-        rsyl (anl ,(appCtx_pointwise_subst 'appCtxRVar)) @ exists_generalization_disjoint @ rsyl (anim1
-          ,(func_subst 'x $((eVar d /\ (eVar x C= Alpha)) . eVar beta) -> (eVar d . eVar beta /\ (eVar x C= Alpha))$ '(anl ,(lemma_60_subset_subst 'appCtxLRVar)) 'functional_b_concat)) @
-        rsyl (anl anass) @ rsyl (anim2 @ syl (framing_subset (anr assoc_concat) id) @ rsyl (anim
-          ,(subset_imp_subset_framing_subst 'appCtxLRVar)
-          (rsyl eVar_in_subset_forward ,(subset_imp_subset_framing_subst 'appCtxRVar))) @
-        curry subset_trans) @ anr imp_exists_disjoint @ exists_framing (
-          syl anr ,(func_subst_explicit_helper 'x $eVar x /\ ((b . eVar x) C= Alpha . Beta)$)
-        ) functional_concat)
-      (rsyl (anl ,(ex_appCtx_subst 'appCtxRVar)) @ exists_framing @ iand
-        (rsyl ,(framing_subst 'anl 'appCtxLRVar) @ syl anl @ anl id_concat_l)
-        (rsyl (iand (norm (norm_imp_l appCtxLRVar) lemma_56) (syl anr @ syl (anl id_concat_l) ,(framing_subst 'anl 'appCtxLRVar))) @
-          rsyl (anim1 ,(func_subst 'x $(x in Alpha) -> (eVar x C= Alpha)$ 'eVar_in_subset_forward 'functional_epsilon)) @
-          rsyl (curry concat_subset) @ framing_subset (anr id_concat_l) id))
-    )));
+    bicom @ cong_of_equiv_not (! der_expand d1)));
+theorem regex_eq_der_concat (phi: Pattern)
+  (func_phi: $ is_func phi $)
+  (phi_in_top_letter: $ phi -> top_letter $):
+  $ (derivative phi (Alpha . Beta)) <-> ((derivative phi Alpha) . Beta) \/ ((epsilon /\ Alpha) . (derivative phi Beta)) $ =
+  (named '(
+      bitr (cong_of_equiv_der_r @ cong_of_equiv_concat_l der_equality_bi) @
+      bitr (cong_of_equiv_der_r ,(or_appCtx_subst 'appctx_concat_l)) @
+      bitr (regex_eq_der_choice func_phi) @
+      bitr orcomb @
+      cong_of_equiv_or
+        ( bitr (cong_of_equiv_der_r ,(ex_appCtx_subst 'appctx_concat_l))
+          @ bitr (regex_eq_der_exists func_phi)
+          @ bitr (cong_of_equiv_exists @ cong_of_equiv_der_r ,(lemma_60_subst 'appctx_concat_l))
+          @ bitr (cong_of_equiv_exists @ cong_of_equiv_der_r @ cong_of_equiv_and_l assoc_concat)
+          @ bitr (cong_of_equiv_exists
+            ( bitr (regex_eq_der_conj func_phi)
+            @ bitr (cong_of_equiv_and_r @ der_ceil func_phi)
+            @ bitr ancomb
+            @ bitr (der_l1_l2_phi_and func_phi functional_var @ mp ,(func_subst_thm 'func_phi 'x 'eVar_in_subset_reverse) (imp_to_subset phi_in_top_letter))
+            @ cong_of_equiv_and_l @ ibii eq_sym eq_sym))
+          @ mp ,(func_to_and_ctx_bi 'x $(derivative (eVar x) Alpha) . Beta$) func_phi
+          )
+        ( bitr (cong_of_equiv_der_r epsilon_and_concat)
+          @ bitr (regex_eq_der_conj func_phi)
+          @ bitr (cong_of_equiv_and_l @ der_ceil func_phi)
+          @ bicom epsilon_and_concat)
+    ));
 
 
 theorem regex_eq_der_kleene_lemma {X: SVar} (Alpha: Pattern X)
@@ -770,31 +683,19 @@ theorem regex_eq_der_kleene_lemma {X: SVar} (Alpha: Pattern X)
           @ rsyl and_exists_disjoint_forwards anl))
       @ framing_concat_l anr));
 
-theorem regex_eq_der_kleene_wrt_a {X: SVar} (Alpha: Pattern X)
-  (X_fresh: $ _sFresh X Alpha $):
-  $ (derivative a (kleene X Alpha)) <-> ((derivative a Alpha) . (kleene X Alpha)) $ =
+theorem regex_eq_der_kleene {X: SVar} (Alpha: Pattern X) (phi: Pattern)
+  (X_fresh: $ _sFresh X Alpha $)
+  (func_phi: $ is_func phi $)
+  (phi_in_top_letter: $ phi -> top_letter $):
+  $ (derivative phi (kleene X Alpha)) <-> ((derivative phi Alpha) . (kleene X Alpha)) $ =
   (named '(bitr (cong_of_equiv_der_r @ bitr (unfold_kleene X_fresh) or_or_not_an) @
-    bitr regex_eq_der_choice_wrt_a @
-    bitr (cong_of_equiv_or_l regex_eq_der_epsilon_wrt_a) @
+    bitr (regex_eq_der_choice func_phi) @
+    bitr (cong_of_equiv_or_l @ regex_eq_der_epsilon func_phi phi_in_top_letter) @
     bitr or_bot_bi_r @
     bitr (cong_of_equiv_der_r @ regex_eq_der_kleene_lemma X_fresh) @
-    bitr regex_eq_der_concat_wrt_a @
+    bitr (regex_eq_der_concat func_phi phi_in_top_letter) @
     bitr (cong_of_equiv_or
-      (cong_of_equiv_concat_l (bitr regex_eq_der_conj_wrt_a @ bitr (cong_of_equiv_and_l @ bitr regex_eq_der_neg_wrt_a @ cong_of_equiv_not regex_eq_der_epsilon_wrt_a) an_top_bi_r))
-      (bitr (cong_of_equiv_concat_l @ bitr (bicom anass) @ bitr (cong_of_equiv_and_l absurd_an_r) an_bot_bi_r) (ibii (norm (norm_imp_l appctx_concat_l) propag_bot) absurdum))) @
-    or_bot_bi_l));
-
-theorem regex_eq_der_kleene_wrt_b {X: SVar} (Alpha: Pattern X)
-  (X_fresh: $ _sFresh X Alpha $):
-  $ (derivative b (kleene X Alpha)) <-> ((derivative b Alpha) . (kleene X Alpha)) $ =
-  (named '(bitr (cong_of_equiv_der_r @ bitr (unfold_kleene X_fresh) or_or_not_an) @
-    bitr regex_eq_der_choice_wrt_b @
-    bitr (cong_of_equiv_or_l regex_eq_der_epsilon_wrt_b) @
-    bitr or_bot_bi_r @
-    bitr (cong_of_equiv_der_r @ regex_eq_der_kleene_lemma X_fresh) @
-    bitr regex_eq_der_concat_wrt_b @
-    bitr (cong_of_equiv_or
-      (cong_of_equiv_concat_l (bitr regex_eq_der_conj_wrt_b @ bitr (cong_of_equiv_and_l @ bitr regex_eq_der_neg_wrt_b @ cong_of_equiv_not regex_eq_der_epsilon_wrt_b) an_top_bi_r))
+      (cong_of_equiv_concat_l (bitr (regex_eq_der_conj func_phi) @ bitr (cong_of_equiv_and_l @ bitr (regex_eq_der_neg func_phi) @ cong_of_equiv_not (regex_eq_der_epsilon func_phi phi_in_top_letter)) an_top_bi_r))
       (bitr (cong_of_equiv_concat_l @ bitr (bicom anass) @ bitr (cong_of_equiv_and_l absurd_an_r) an_bot_bi_r) (ibii (norm (norm_imp_l appctx_concat_l) propag_bot) absurdum))) @
     or_bot_bi_l));
 
