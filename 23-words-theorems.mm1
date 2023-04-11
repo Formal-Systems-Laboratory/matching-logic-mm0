@@ -539,39 +539,23 @@ theorem regex_eq_der_diff_a_wrt_b:
         (func_subst 'x $(x in top_letter) -> (y in top_letter) -> (eVar x . eVar u == eVar y) -> (eVar x == eVar y) /\ (eVar u == epsilon)$ '(! no_confusion_cc_e_epsilon w3) '(! functional_b w5))
         '(! functional_a w4)) b_in_top_letter a_in_top_letter
   ) absurdum);
-theorem regex_eq_der_same_a_wrt_a:
-  $ (derivative a a) <-> epsilon $ =
+theorem regex_eq_der_same_l (phi: Pattern)
+  (func_phi: $ is_func phi $)
+  (phi_in_top_letter: $ phi -> top_letter $):
+  $ (derivative phi phi) <-> epsilon $ =
   (named '(ibii
     (rsyl (anl der_expand) @ exists_generalization_disjoint @ syl simple_eq_subst @ anim2 @ syl
       (syl anr @ mp
         ,(func_subst 'y $(y in top_letter) -> (a . eVar d == eVar y) -> (a == eVar y) /\ (eVar d == epsilon)$
           '(mp
-            ,(func_subst 'x $(x in top_letter) -> (y in top_letter) -> (eVar x . eVar d == eVar y) -> (eVar x == eVar y) /\ (eVar d == epsilon)$ 'no_confusion_cc_e_epsilon 'functional_a)
-            a_in_top_letter)
-          'functional_a)
-        a_in_top_letter)
-      ,(func_subst 'y $((a . eVar d) C= eVar y) -> ((a . eVar d) == eVar y)$ (func_subst 'v $((eVar v . eVar d) C= eVar y) -> ((eVar v . eVar d) == eVar y)$ (func_subst 'x $(eVar x C= eVar y) -> (eVar x == eVar y)$ 'eVars_subset_eq_forward 'functional_concat) 'functional_a) 'functional_a)
+            ,(func_subst_thm 'func_phi 'x 'no_confusion_cc_e_epsilon)
+            (mp ,(func_subst_thm 'func_phi 'x 'eVar_in_subset_reverse) @ imp_to_subset phi_in_top_letter))
+          'func_phi)
+        (mp ,(func_subst_thm 'func_phi 'x 'eVar_in_subset_reverse) @ imp_to_subset phi_in_top_letter))
+      ,(func_subst 'y $((a . eVar d) C= eVar y) -> ((a . eVar d) == eVar y)$ (func_subst 'v $((eVar v . eVar d) C= eVar y) -> ((eVar v . eVar d) == eVar y)$ (func_subst 'x $(eVar x C= eVar y) -> (eVar x == eVar y)$ 'eVars_subset_eq_forward 'functional_concat) 'func_phi) 'func_phi)
       )
     (syl (anr der_expand) @
       syl ,(func_subst_fresh '(eFresh_imp eFresh_disjoint eFresh_exists_same_var) 'd $(eVar d /\ ((a . eVar d) C= a)) -> exists d (eVar d /\ ((a . eVar d) C= a))$ 'exists_intro_same_var 'functional_epsilon) @
-      iand id @ a1i @ imp_to_subset @ anl id_concat_r
-    )
-  ));
-theorem regex_eq_der_same_a_wrt_b:
-  $ (derivative b b) <-> epsilon $ =
-  (named '(ibii
-    (rsyl (anl der_expand) @ exists_generalization_disjoint @ syl simple_eq_subst @ anim2 @ syl
-      (syl anr @ mp
-        ,(func_subst 'y $(y in top_letter) -> (b . eVar d == eVar y) -> (b == eVar y) /\ (eVar d == epsilon)$
-          '(mp
-            ,(func_subst 'x $(x in top_letter) -> (y in top_letter) -> (eVar x . eVar d == eVar y) -> (eVar x == eVar y) /\ (eVar d == epsilon)$ 'no_confusion_cc_e_epsilon 'functional_b)
-            b_in_top_letter)
-          'functional_b)
-        b_in_top_letter)
-      ,(func_subst 'y $((b . eVar d) C= eVar y) -> ((b . eVar d) == eVar y)$ (func_subst 'v $((eVar v . eVar d) C= eVar y) -> ((eVar v . eVar d) == eVar y)$ (func_subst 'x $(eVar x C= eVar y) -> (eVar x == eVar y)$ 'eVars_subset_eq_forward 'functional_concat) 'functional_b) 'functional_b)
-      )
-    (syl (anr der_expand) @
-      syl ,(func_subst_fresh '(eFresh_imp eFresh_disjoint eFresh_exists_same_var) 'd $(eVar d /\ ((b . eVar d) C= b)) -> exists d (eVar d /\ ((b . eVar d) C= b))$ 'exists_intro_same_var 'functional_epsilon) @
       iand id @ a1i @ imp_to_subset @ anl id_concat_r
     )
   ));

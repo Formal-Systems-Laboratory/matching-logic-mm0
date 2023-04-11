@@ -263,7 +263,7 @@ mod ERE-THEOREMS is
 
     rl [regex_eq_der_bot]     : (derivative A bot)          => bot .
     rl [regex_eq_der_epsilon] : (derivative A epsilon)      => bot .
-    rl [regex_eq_der_same_a]  : (derivative A A)            => epsilon .
+    rl [regex_eq_der_same_l]  : (derivative A A)            => epsilon .
    crl [regex_eq_der_diff_a]  : (derivative A B)            => bot if A =/= B .
 
     rl [regex_eq_der_kleene]  : (derivative A [[kleene X Alpha]])
@@ -418,7 +418,7 @@ mod PROOF-GEN is
     eq applyAnyEquation(S, SL, NAT) =
         applyEq(S, SL, NAT, 'regex_eq_der_bot) or-else
         applyEq(S, SL, NAT, 'regex_eq_der_epsilon) or-else
-        applyEq(S, SL, NAT, 'regex_eq_der_same_a) or-else
+        applyEq(S, SL, NAT, 'regex_eq_der_same_l) or-else
         applyEq(S, SL, NAT, 'regex_eq_der_diff_a) or-else
         applyEq(S, SL, NAT, 'regex_eq_der_kleene) or-else
         applyEq(S, SL, NAT, 'regex_eq_der_concat) or-else
