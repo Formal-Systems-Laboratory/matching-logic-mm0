@@ -1,0 +1,19 @@
+import "20-theory-words.mm0";
+
+term a_symbol: Symbol;
+def a: Pattern = $ sym a_symbol $;
+term b_symbol: Symbol;
+def b: Pattern = $ sym b_symbol $;
+term c_symbol: Symbol;
+def c: Pattern = $ sym c_symbol $;
+
+term A_symbol: Symbol;
+def A: Pattern = $ sym A_symbol $;
+term B_symbol: Symbol;
+def B: Pattern = $ sym A_symbol $;
+term C_symbol: Symbol;
+def C: Pattern = $ sym A_symbol $;
+
+axiom A_prod: $ A == (a . B) \/ (b . A . b) $;
+axiom B_prod: $ B == c . C $;
+axiom C_prod: $ C == epsilon \/ (a . C) $;
