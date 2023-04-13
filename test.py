@@ -48,6 +48,10 @@ def run_proof_gen(mode: str, theorem: str, regex: str, output_file: str) -> None
     with open(output_file, 'w') as f:
         check_call(['./proof-gen.py', mode, theorem, regex], stdout=f)
 
+# The following exists for benchmarking purposes only
+def proof_hint_gen(regex: str) -> None:
+    maude.reduce_in_module('regexp-proof-gen.maude', 'PROOF-GEN', 'Node',
+                                'proofHint({0})'.format(regex))
 
 ### Tests: Maude #######################
 
@@ -102,6 +106,7 @@ def test_regex(theorem: str, test_name: str, regex: str) -> None:
     output_joined_mm1_file = path.join(test_dir, test_name + '.joined.mm1')
 
     with benchmark(test_name, 'gen_mm0'):  run_proof_gen('mm0', theorem, regex, output_mm0_file)
+    with benchmark(test_name, 'gen_ph'):  proof_hint_gen(regex)
     with benchmark(test_name, 'join_mm0'): join(output_mm0_file, output_joined_mm0_file)
     with benchmark(test_name, 'gen_mm1'): run_proof_gen('mm1', theorem, regex, output_mm1_file)
     test_mm(output_joined_mm0_file, output_mm1_file)

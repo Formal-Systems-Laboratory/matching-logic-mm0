@@ -76,6 +76,7 @@ def aggregate(input):
         'Benchmark'     : rename(input['name']),
         '`.mm1` Size'   : divide(maybe_int(input['size_mm1']) - base_mm1_size, 1024),
         '`.mm1` time'   : maybe_float(input['gen_mm1']),
+        'proofHint time' : maybe_float(input['gen_ph']),
         '`.mmb` Size'   : divide(maybe_int(input['size_mmb']) - base_mmb_size, 1024),
         '`.mmb` time'   : maybe_float(input['compile']) - base_mmb_time,
         'Nodes'         : maybe_int(input['nodes_fp_imp_r']),

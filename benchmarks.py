@@ -21,6 +21,7 @@ class Benchmark(NamedTuple):
     gen_mm0:   Optional[int] = None
     join_mm0:  Optional[int] = None
     gen_mm1:   Optional[int] = None
+    gen_ph:    Optional[int] = None
 
     size_mmb:  Optional[int] = None
     size_mm1:  Optional[int] = None
