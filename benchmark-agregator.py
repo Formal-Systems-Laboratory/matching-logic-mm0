@@ -74,11 +74,11 @@ def aggregate(input):
     simpls = plus(maybe_int(input['equiv_fp_imp_r']), maybe_int(input['bitr_fp_imp_r']))
     ret = {
         'Benchmark'     : rename(input['name']),
-        '`.mm1` Size'   : divide(maybe_int(input['size_mm1']) - base_mm1_size, 1024),
+        '`.mm1` Size'   : divide(minus(maybe_int(input['size_mm1']), base_mm1_size), 1024),
         '`.mm1` time'   : maybe_float(input['gen_mm1']),
         'proofHint time' : maybe_float(input['gen_ph']),
-        '`.mmb` Size'   : divide(maybe_int(input['size_mmb']) - base_mmb_size, 1024),
-        '`.mmb` time'   : maybe_float(input['compile']) - base_mmb_time,
+        '`.mmb` Size'   : divide(minus(maybe_int(input['size_mmb']), base_mmb_size), 1024),
+        '`.mmb` time'   : minus(maybe_float(input['compile']), base_mmb_time),
         'Nodes'         : maybe_int(input['nodes_fp_imp_r']),
         'Thms 1'        : maybe_int(input['theorems_d_imp_fp']),
         'Thms 2'        : maybe_int(input['theorems_fp_imp_r']),
