@@ -27,7 +27,7 @@ if mm01 == 'mm0':
           reduce_in_module('regexp-proof-gen.maude', 'PROOF-GEN', 'MM0Decl',
                                 'theorem-{0}-mm0({1})'.format(theorem, regex))))
 elif mm01 == 'mm1':
-    print('import "../23-words-theorems.mm1";')
+    print('import "../22-words-theorems.mm1";')
     print(cleanup_maude_output(
           reduce_in_module('regexp-proof-gen.maude', 'PROOF-GEN', 'MM0Decl',
                                 'theorem-{0}({1})'.format(theorem, regex))))

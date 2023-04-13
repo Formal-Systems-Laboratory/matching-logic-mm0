@@ -28,7 +28,7 @@ def divide(num, by):
     return math.ceil(num / by)
 
 def filter(name: str) -> bool:
-    if name == '23-words-theorems': return True
+    if name == '22-words-theorems': return True
     if re.match(r'^\d\d-.*$', name): return False
     if re.match(r'^eq-lr', name): return False
     if (re.match(r'^match-', name) or re.match(r'^eq-', name)) and not re.match(r'.*[1248]', name):
@@ -62,7 +62,7 @@ def aggregate(input):
         'cong'               : maybe_int(input['cong_fp_imp_r']),
         'per simpl.'    : divide(maybe_int(input['cong_fp_imp_r']), simpls),
     }
-    if input['name'] == '23-words-theorems':
+    if input['name'] == '22-words-theorems':
         base_mmb = maybe_int(input['size_mmb'])
         base_mm1 = maybe_int(input['size_mm1'])
     return ret

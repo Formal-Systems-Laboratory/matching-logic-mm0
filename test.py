@@ -6,12 +6,19 @@ from os import path, makedirs
 from typing import no_type_check
 from subprocess import check_call, check_output
 from sys import argv
+from shutil import which
 
 import maude
 from benchmarks import benchmark, record_mm1_stats, record_mmb_stats
 
 test_dir=".build"
+mm0_c_exe_path="mm0-c"
+mm0_rs_exe_path="mm0-rs"
 
+if which('mm0-c') is None:
+    mm0_c_exe_path='./mm0/mm0-c/mm0-c'
+if which('mm0-rs') is None:
+    mm0_rs_exe_path='./mm0/mm0-rs/target/release/mm0-rs'
 
 ### PyTest Helpers #####################
 
@@ -30,12 +37,12 @@ def slow(*args):
 ### MM0 Helpers #######################
 
 def join(input_file: str, output_file: str) -> None:
-    check_call(['mm0-rs', 'join', input_file, output_file])
+    check_call([mm0_rs_exe_path, 'join', input_file, output_file])
 def compile(input_file: str, output_file: str) -> None:
-    check_call(['mm0-rs', 'compile', '-q', '--warn-as-error', input_file, output_file])
+    check_call([mm0_rs_exe_path, 'compile', '-q', '--warn-as-error', input_file, output_file])
 def check(mmb_file: str, mm0_file: str) -> None:
     with open(mm0_file) as f:
-        check_call(['mm0-c', mmb_file], stdin=f)
+        check_call([mm0_c_exe_path, mmb_file], stdin=f)
 
 def run_proof_gen(mode: str, theorem: str, regex: str, output_file: str) -> None:
     with open(output_file, 'w') as f:
@@ -56,8 +63,8 @@ def test_maude_unit_tests() -> None:
 makedirs(test_dir, exist_ok=True)
 last_mm0_file = None
 base_mm_tests = []
-for f in sorted((glob('*.mm0') + glob('*.mm1'))):
-    if path.splitext(f)[1] == '.mm0':
+for f in sorted(list(set(glob('*.mm0') + glob('*.mm1')) - set(glob('_*')))):
+    if path.splitext(f)[-1] == '.mm0':
         last_mm0_file = path.join(test_dir, 'joined.' + f)
         join(f, last_mm0_file)
     assert last_mm0_file
