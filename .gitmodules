@@ -1,0 +1,3 @@
+[submodule "mm0"]
+	path = mm0
+	url = git@github.com:digama0/mm0.git
