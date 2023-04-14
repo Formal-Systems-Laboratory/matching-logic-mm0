@@ -428,7 +428,7 @@ mod PROOF-GEN is
     eq S in SL = false [owise] .
 
    --- curr term, previous terms, depth
-    op mkProofHint : State StateList Nat -> Node [memo] .
+    op mkProofHint : State StateList Nat -> Node .
    ceq mkProofHint(S, SL, NAT) = backlink(S)                              if      S in SL .
    ceq mkProofHint(S, SL, NAT) = node(S, applyAnyEquation(S, SL, NAT))      if (not S in SL) /\ Es := applyAnyEquation(S, SL, NAT) .
    ceq mkProofHint(S, SL, s(NAT)) = node(S, applyAllRules(S, (SL, S), NAT)) if (not S in SL) /\ none = applyAnyEquation(S, SL, NAT) .
@@ -529,7 +529,7 @@ mod PROOF-GEN is
 
     *** Proof hint generation ************************************************
 
-    op proofHint : Pattern -> Node .
+    op proofHint : Pattern -> Node  [memo] .
     eq proofHint(Alpha) = mkProofHint(< Alpha >, empty, 20) .
 
     *** Mapping EREs to its Matching Logic signature *************************
