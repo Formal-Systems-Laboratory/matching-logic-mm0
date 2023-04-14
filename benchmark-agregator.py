@@ -61,6 +61,7 @@ def rename(name: str) -> str:
     name = name.replace('a-or-b-star', '$(a + b)\kleene$')
     name = name.replace('kleene-star-star', '${a\kleene}\kleene \limplies a\kleene$')
     name = name.replace('no-contains-a-or-no-only-b', '$\\lnot (\\top \\concat a \\concat \\top) + \lnot (b \\kleene)$')
+    name = name.replace('example-in-paper', '$(aa)\concat \limplies (((a \kleene)a) + \epsilon)$')
     # TODO: Addition replacements
     name = re.sub(r'match-(\w)-00(\d)', r'$\\match_\1(\2)$', name)
     name = re.sub(r'eq-(\w)-00(\d)', r'$\\eq_\1(\2)$', name)
