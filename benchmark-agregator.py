@@ -57,7 +57,7 @@ def filter(name: str) -> bool:
     return True
 
 def rename(name: str) -> str:
-    name = name.replace('23-words-theorems', 'Base')
+    name = name.replace('22-words-theorems', 'Base')
     name = name.replace('a-or-b-star', '$(a + b)\kleene$')
     name = name.replace('kleene-star-star', '${a\kleene}\kleene \limplies a\kleene$')
     name = name.replace('no-contains-a-or-no-only-b', '$\\lnot (\\top \\concat a \\concat \\top) + \lnot (b \\kleene)$')
