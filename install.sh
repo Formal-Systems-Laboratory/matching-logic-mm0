@@ -1,6 +1,6 @@
 #! /bin/sh
 
-git submodule update --init --recursive
+git submodule update --init
 
 # Install Metamath Zero
 cd mm0/mm0-c
