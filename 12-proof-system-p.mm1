@@ -46,7 +46,7 @@ theorem _eSubst_mem_same_var {x: EVar} (phi phi2 psi2: Pattern x)
 theorem _eSubst_subset {x: EVar} (phi phi1 phi2 psi1 psi2: Pattern x)
   (h1: $ Norm (e[ phi / x ] phi1) psi1 $)
   (h2: $ Norm (e[ phi / x ] phi2) psi2 $):
-  $ Norm (e[ phi / x ] (phi1 C_ phi2)) (psi1 C_ psi2) $ =
+  $ Norm (e[ phi / x ] (phi1 C= phi2)) (psi1 C= psi2) $ =
   '(_eSubst_floor @ _eSubst_imp h1 h2);
 theorem _eSubst_eq {x: EVar} (phi phi1 phi2 psi1 psi2: Pattern x)
   (h1: $ Norm (e[ phi / x ] phi1) psi1 $)
@@ -215,7 +215,7 @@ theorem cong_of_equiv_floor (h: $ phi1 <-> phi2 $):
   $ |_ phi1 _| <-> |_ phi2 _| $ =
   '(cong_of_equiv_not @ cong_of_equiv_def @ cong_of_equiv_not h);
 theorem cong_of_equiv_subset (h1: $phi1 <-> phi2$) (h2: $psi1 <-> psi2$):
-  $ (phi1 C_ psi1) <-> (phi2 C_ psi2) $ =
+  $ (phi1 C= psi1) <-> (phi2 C= psi2) $ =
   '(cong_of_equiv_floor @ cong_of_equiv_imp h1 h2);
 theorem cong_of_equiv_mem {x: EVar} (phi1 phi2: Pattern x)
   (h: $ phi1 <-> phi2 $):
@@ -246,10 +246,10 @@ theorem lemma_46_floor
   (h: $phi$)
 : $|_ phi _|$
 = '(norm (norm_not @ ! defNorm box) @ lemma_46 h);
-theorem imp_to_subset  (h: $ phi -> psi $): $ phi C_ psi $ = '(lemma_46_floor h);
+theorem imp_to_subset  (h: $ phi -> psi $): $ phi C= psi $ = '(lemma_46_floor h);
 theorem equiv_to_eq  (h: $ phi <-> psi $): $ phi == psi $ = '(lemma_46_floor h);
-theorem eq_imp_subset: $ (phi == psi) -> (phi C_ psi) $ = '(framing_floor anl);
-theorem subset_to_eq: $ (phi C_ psi) -> (psi C_ phi) -> (phi == psi) $ = '(exp @ anr propag_and_floor);
+theorem eq_imp_subset: $ (phi == psi) -> (phi C= psi) $ = '(framing_floor anl);
+theorem subset_to_eq: $ (phi C= psi) -> (psi C= phi) -> (phi == psi) $ = '(exp @ anr propag_and_floor);
 
 theorem eq_refl: $ phi == phi $ = '(equiv_to_eq biid);
 theorem functional_same_var: $ exists x (eVar x == eVar x) $ = '(exists_intro_same_var eq_refl);
@@ -260,13 +260,13 @@ theorem eq_sym: $ (phi1 == phi2) -> (phi2 == phi1) $ =
   '(con3 @ framing_def @ con3 bicom);
 
 theorem subset_imp_subset_or_l:
-  $(phi C_ psi) -> (phi C_ (psi \/ rho))$ =
+  $(phi C= psi) -> (phi C= (psi \/ rho))$ =
   '(framing_floor @ imim2i orl);
 theorem subset_imp_subset_or_r:
-  $(phi C_ psi) -> (phi C_ (rho \/ psi))$ =
+  $(phi C= psi) -> (phi C= (rho \/ psi))$ =
   '(framing_floor @ imim2i orr);
 
-theorem subset_and: $ (phi C_ (psi1 /\ psi2)) -> (phi C_ psi1) /\ (phi C_ psi2) $ =
+theorem subset_and: $ (phi C= (psi1 /\ psi2)) -> (phi C= psi1) /\ (phi C= psi2) $ =
   '(iand (framing_subset id anl) (framing_subset id anr));
 
 theorem taut_equiv_top (h: $ phi $): $ phi <-> top $ =
@@ -393,26 +393,26 @@ theorem membership_equiv {x: EVar} (phi1 phi2: Pattern x):
 
 
 theorem eVar_in_subset {x: EVar} (phi: Pattern x):
-  $ (x in phi) <-> (eVar x C_ phi) $ =
+  $ (x in phi) <-> (eVar x C= phi) $ =
   '(con2b @ bitr (cong_of_equiv_def @ cong_of_equiv_not @ cong_of_equiv_imp_r notnot) membership_not_bi);
 theorem eVar_in_subset_rev {x: EVar} (phi: Pattern x):
-  $ (eVar x C_ phi) <-> (x in phi) $ =
+  $ (eVar x C= phi) <-> (x in phi) $ =
   '(bicom eVar_in_subset);
 theorem eVar_in_subset_forward {x: EVar} (phi: Pattern x):
-  $ (x in phi) -> (eVar x C_ phi) $
+  $ (x in phi) -> (eVar x C= phi) $
 = '(bi1i eVar_in_subset);
 theorem eVar_in_subset_reverse {x: EVar} (phi: Pattern x):
-  $ (eVar x C_ phi) -> (x in phi) $
+  $ (eVar x C= phi) -> (x in phi) $
 = '(bi2i eVar_in_subset);
 
 theorem eVars_subset_eq_forward {x y: EVar}:
-  $ (eVar x C_ eVar y) -> (eVar x == eVar y) $ =
+  $ (eVar x C= eVar y) -> (eVar x == eVar y) $ =
   '(rsyl eVar_in_subset_reverse membership_var_forward);
 theorem eVars_subset_eq_reverse {x y: EVar}:
-  $ (eVar x == eVar y) -> (eVar x C_ eVar y) $ =
+  $ (eVar x == eVar y) -> (eVar x C= eVar y) $ =
   'eq_imp_subset;
 theorem eVars_subset_eq {x y: EVar}:
-  $ (eVar x C_ eVar y) <-> (eVar x == eVar y) $ =
+  $ (eVar x C= eVar y) <-> (eVar x == eVar y) $ =
   '(ibii eVars_subset_eq_forward eVars_subset_eq_reverse);
 
 theorem lemma_exists_and: $ phi <-> exists x (eVar x /\ phi) $ =
@@ -446,7 +446,7 @@ theorem def_idem: $ |^ (|^ phi ^|) ^| <-> |^ phi ^| $ =
 theorem floor_idem: $ |_ (|_ phi _|) _| <-> |_ phi _| $ =
   '(bitr (bicom not_ceil_floor_bi) @ con3b def_idem);
 
-theorem subset_to_imp: $ (phi C_ psi) -> (phi -> psi) $ = 'corollary_57_floor;
+theorem subset_to_imp: $ (phi C= psi) -> (phi -> psi) $ = 'corollary_57_floor;
 
 --- lemma 60
 theorem lemma_60_forward {x: EVar} {box: SVar} (ctx phi1 phi2: Pattern box x):
@@ -470,7 +470,7 @@ theorem lemma_60_b {x: EVar} {box: SVar} (ctx: Pattern box x) (phi1 phi2: Patter
   $ (app[ (x in phi2) /\ phi1 / box ] ctx) <-> ((x in phi2) /\ (app[ phi1 / box ] ctx)) $ =
   '(bitr (cong_of_equiv_appCtx ancomb) @ bitr lemma_60 ancomb);
 theorem lemma_60_subset {x: EVar} {box: SVar} (ctx: Pattern box x) (phi1 phi2: Pattern x):
-  $ (app[ phi1 /\ (eVar x C_ phi2) / box ] ctx) <-> ((app[ phi1 / box ] ctx) /\ (eVar x C_ phi2)) $ =
+  $ (app[ phi1 /\ (eVar x C= phi2) / box ] ctx) <-> ((app[ phi1 / box ] ctx) /\ (eVar x C= phi2)) $ =
   '(bisquare (cong_of_equiv_appCtx @ cong_of_equiv_and_r eVar_in_subset_rev) (cong_of_equiv_and_r eVar_in_subset_rev) lemma_60);
 
 do {
@@ -558,7 +558,7 @@ theorem in_refl: $ x in eVar x $ =
 theorem eq_trans: $(phi1 == phi2) -> (phi2 == phi3) -> (phi1 == phi3)$ =
   '(exp @ rsyl (anr propag_and_floor) @ framing_floor @ curry bitr);
 
-theorem subset_trans: $(phi1 C_ phi2) -> (phi2 C_ phi3) -> (phi1 C_ phi3)$ =
+theorem subset_trans: $(phi1 C= phi2) -> (phi2 C= phi3) -> (phi1 C= phi3)$ =
   '(exp @ rsyl (anr propag_and_floor) @ framing_floor @ curry imim1);
 
 theorem eq_to_intro:
@@ -778,7 +778,7 @@ theorem eq_to_gen_mem_bi
 theorem eq_to_subset_bi
   (h1: $ (phi1 == phi2) -> (psi1 <-> psi2) $)
   (h2: $ (phi1 == phi2) -> (rho1 <-> rho2) $):
-  $ (phi1 == phi2) -> ((psi1 C_ rho1) <-> (psi2 C_ rho2)) $ =
+  $ (phi1 == phi2) -> ((psi1 C= rho1) <-> (psi2 C= rho2)) $ =
   '(eq_to_not_bi @ eq_to_def_bi @ eq_to_not_bi @ eq_to_imp_bi h1 h2);
 
 
@@ -917,7 +917,7 @@ theorem alpha_exists_disjoint {x y: EVar} (phi: Pattern x):
   '(alpha_exists eFresh_disjoint);
 
 theorem subset_imp_subset_framing {box: SVar} (ctx phi psi: Pattern box):
-  $ (phi C_ psi) -> ((app[ phi / box ] ctx) C_ (app[ psi / box ] ctx)) $ =
+  $ (phi C= psi) -> ((app[ phi / box ] ctx) C= (app[ psi / box ] ctx)) $ =
   '(rsyl (anr floor_idem) @ framing_floor @ lemma_14 subset_to_imp);
 theorem eq_imp_eq_framing {box: SVar} (ctx phi psi: Pattern box):
   $ (phi == psi) -> ((app[ phi / box ] ctx) == (app[ psi / box ] ctx)) $ =

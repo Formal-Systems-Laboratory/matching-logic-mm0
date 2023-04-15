@@ -29,7 +29,7 @@ theorem norm_mem {x: EVar} (phi1 phi2: Pattern x)
 theorem norm_subset (phi1 phi2: Pattern)
   (h1: $ Norm phi1 phi2 $)
   (h2: $ Norm psi1 psi2 $):
-  $ Norm (phi1 C_ psi1) (phi2 C_ psi2) $
+  $ Norm (phi1 C= psi1) (phi2 C= psi2) $
   = '(norm_floor @ norm_imp h1 h2);
 theorem norm_eq (phi1 phi2: Pattern)
   (h1: $ Norm phi1 phi2 $)
@@ -56,7 +56,7 @@ theorem framing_floor (h: $ phi1 -> phi2 $):
 theorem framing_subset
   (h1: $ phi2 -> phi1 $)
   (h2: $ psi1 -> psi2 $):
-  $ (phi1 C_ psi1) -> (phi2 C_ psi2) $ =
+  $ (phi1 C= psi1) -> (phi2 C= psi2) $ =
   '(framing_floor @ imim h1 h2);
 
 

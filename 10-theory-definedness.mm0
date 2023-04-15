@@ -11,7 +11,7 @@ infixl _eq: $==$ prec 15;
 def _neq (phi1 phi2: Pattern): Pattern = $ not (phi1 == phi2) $;
 infixl _neq: $!=$ prec 15;
 def _subset (phi1 phi2: Pattern): Pattern = $ |_ phi1 -> phi2 _| $;
-infixl _subset: $C_$ prec 15;
+infixl _subset: $C=$ prec 15;
 def _in {x: EVar} (phi: Pattern x): Pattern x = $ |^ (eVar x) /\ phi ^| $;
 infixl _in: $in$ prec 35;
 -- TODO: Define the following and then update the metatheorems to consider this new construct
@@ -25,5 +25,5 @@ axiom definedness {x: EVar}: $ |^ eVar x ^| $;
 
 --- We define this here, so it can be used in public theories.
 def ctximp_app {.dummy: EVar} {box: SVar} (ctx: Pattern box) (phi: Pattern): Pattern
- = $ exists dummy (eVar dummy /\ ((app[ eVar dummy / box ] ctx) C_ phi)) $;
+ = $ exists dummy (eVar dummy /\ ((app[ eVar dummy / box ] ctx) C= phi)) $;
 

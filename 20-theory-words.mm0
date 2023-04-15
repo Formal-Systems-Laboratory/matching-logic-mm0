@@ -36,7 +36,7 @@ axiom functional_b       {x : EVar} : $exists x (eVar x == b)$;
 axiom functional_concat  {w v x: EVar} : $exists x (eVar x == (eVar w . eVar v))$;
 
 axiom no_confusion_ab_e  : $a != b$;
-axiom no_confusion_ae_e  : $~(epsilon C_ top_letter)$;
+axiom no_confusion_ae_e  : $~(epsilon C= top_letter)$;
 axiom no_confusion_ec_e  {u v: EVar} : $(epsilon == eVar u . eVar v) -> (epsilon == eVar u) /\ (epsilon == eVar v)$;
 axiom no_confusion_cc_e  {u v x y: EVar} : $(x in top_letter) -> (y in top_letter)
                             -> (eVar x . eVar u == eVar y . eVar v) -> (eVar x == eVar y) /\ (eVar u == eVar v)$;
