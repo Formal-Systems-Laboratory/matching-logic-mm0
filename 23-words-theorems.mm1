@@ -4,6 +4,10 @@ import "21-words-helpers.mm1";
 --- Lift axioms to higher level constructs
 ------------------------------------------
 
+do {
+  (def (in_to_mem func_phi phi_in) '(mp ,(func_subst_thm func_phi 'x 'eVar_in_subset_reverse) @ imp_to_subset ,phi_in))
+};
+
 theorem functional_l_concat {v: EVar} (l: Pattern v)
   (func_l: $ is_func l $):
   $ is_func (l . eVar v) $ =
@@ -513,32 +517,24 @@ theorem regex_eq_der_epsilon (phi: Pattern)
     rsyl ,(func_subst_thm 'func_phi 'u 'no_confusion_ec_e) @
       anwl @ con3 eq_imp_subset @ con3 (com12 subset_trans @ imp_to_subset phi_in_top_letter) no_confusion_ae_e
   ) absurdum));
-theorem regex_eq_der_diff_a_wrt_a:
-  $ (derivative a b) <-> bot $ =
-  '(ibii (rsyl (anl der_expand) @ syl not_exists_bot @ exists_framing @ con3 anr @
-    rsyl ,(func_subst 'x $((a . eVar d) C= eVar x) -> ((a . eVar d) == eVar x)$ (
+theorem regex_eq_der_diff_l
+  (func_phi: $ is_func phi $)
+  (func_psi: $ is_func psi $)
+  (phi_in_top_letter: $ phi -> top_letter $)
+  (psi_in_top_letter: $ psi -> top_letter $)
+  (diff: $ phi != psi $):
+  $ (derivative phi psi) <-> bot $ =
+  (named '(ibii (rsyl (anl der_expand) @ syl not_exists_bot @ exists_framing @ con3 anr @
+    rsyl ,(func_subst 'x $((phi . eVar d) C= eVar x) -> ((phi . eVar d) == eVar x)$ (
         func_subst 'y $((eVar y . eVar d) C= eVar x) -> ((eVar y . eVar d) == eVar x)$ (
-          func_subst 'z $(eVar z C= eVar x) -> (eVar z == eVar x)$ '(eVars_subset_eq_forward) '(! functional_concat _ _ k)
-        ) '(! functional_a w1)
-      ) '(! functional_b w2)) @
-      syl no_confusion_ab_e @ syl anl @ mp
+          func_subst 'z $(eVar z C= eVar x) -> (eVar z == eVar x)$ '(eVars_subset_eq_forward) 'functional_concat
+        ) 'func_phi
+      ) 'func_psi) @
+      syl diff @ syl anl @ mp
       ,(func_subst 'y $|^ a /\ top_letter ^| -> (y in top_letter) -> (a . eVar u == eVar y) -> (a == eVar y) /\ (eVar u == epsilon)$
-        (func_subst 'x $(x in top_letter) -> (y in top_letter) -> (eVar x . eVar u == eVar y) -> (eVar x == eVar y) /\ (eVar u == epsilon)$ '(! no_confusion_cc_e_epsilon w3) '(! functional_a w5))
-        '(! functional_b w4)) a_in_top_letter b_in_top_letter
-  ) absurdum);
-theorem regex_eq_der_diff_a_wrt_b:
-  $ (derivative b a) <-> bot $ =
-  '(ibii (rsyl (anl der_expand) @ syl not_exists_bot @ exists_framing @ con3 anr @
-    rsyl ,(func_subst 'x $((b . eVar d) C= eVar x) -> ((b . eVar d) == eVar x)$ (
-        func_subst 'y $((eVar y . eVar d) C= eVar x) -> ((eVar y . eVar d) == eVar x)$ (
-          func_subst 'z $(eVar z C= eVar x) -> (eVar z == eVar x)$ '(eVars_subset_eq_forward) '(! functional_concat _ _ k)
-        ) '(! functional_b w1)
-      ) '(! functional_a w2)) @
-      syl no_confusion_ab_e @ syl eq_sym @ syl anl @ mp
-      ,(func_subst 'y $|^ b /\ top_letter ^| -> (y in top_letter) -> (b . eVar u == eVar y) -> (b == eVar y) /\ (eVar u == epsilon)$
-        (func_subst 'x $(x in top_letter) -> (y in top_letter) -> (eVar x . eVar u == eVar y) -> (eVar x == eVar y) /\ (eVar u == epsilon)$ '(! no_confusion_cc_e_epsilon w3) '(! functional_b w5))
-        '(! functional_a w4)) b_in_top_letter a_in_top_letter
-  ) absurdum);
+        (func_subst 'x $(x in top_letter) -> (y in top_letter) -> (eVar x . eVar u == eVar y) -> (eVar x == eVar y) /\ (eVar u == epsilon)$ 'no_confusion_cc_e_epsilon 'func_phi)
+        'func_psi) ,(in_to_mem 'func_phi 'phi_in_top_letter) ,(in_to_mem 'func_psi 'psi_in_top_letter)
+  ) absurdum));
 theorem regex_eq_der_same_l (phi: Pattern)
   (func_phi: $ is_func phi $)
   (phi_in_top_letter: $ phi -> top_letter $):
@@ -549,9 +545,9 @@ theorem regex_eq_der_same_l (phi: Pattern)
         ,(func_subst 'y $(y in top_letter) -> (a . eVar d == eVar y) -> (a == eVar y) /\ (eVar d == epsilon)$
           '(mp
             ,(func_subst_thm 'func_phi 'x 'no_confusion_cc_e_epsilon)
-            (mp ,(func_subst_thm 'func_phi 'x 'eVar_in_subset_reverse) @ imp_to_subset phi_in_top_letter))
+            ,(in_to_mem 'func_phi 'phi_in_top_letter))
           'func_phi)
-        (mp ,(func_subst_thm 'func_phi 'x 'eVar_in_subset_reverse) @ imp_to_subset phi_in_top_letter))
+        ,(in_to_mem 'func_phi 'phi_in_top_letter))
       ,(func_subst 'y $((a . eVar d) C= eVar y) -> ((a . eVar d) == eVar y)$ (func_subst 'v $((eVar v . eVar d) C= eVar y) -> ((eVar v . eVar d) == eVar y)$ (func_subst 'x $(eVar x C= eVar y) -> (eVar x == eVar y)$ 'eVars_subset_eq_forward 'functional_concat) 'func_phi) 'func_phi)
       )
     (syl (anr der_expand) @
@@ -615,7 +611,7 @@ theorem regex_eq_der_concat (phi: Pattern)
             ( bitr (regex_eq_der_conj func_phi)
             @ bitr (cong_of_equiv_and_r @ der_ceil func_phi)
             @ bitr ancomb
-            @ bitr (der_l1_l2_phi_and func_phi functional_var @ mp ,(func_subst_thm 'func_phi 'x 'eVar_in_subset_reverse) (imp_to_subset phi_in_top_letter))
+            @ bitr (der_l1_l2_phi_and func_phi functional_var ,(in_to_mem 'func_phi 'phi_in_top_letter))
             @ cong_of_equiv_and_l @ ibii eq_sym eq_sym))
           @ mp ,(func_to_and_ctx_bi 'x $(derivative (eVar x) Alpha) . Beta$) func_phi
           )

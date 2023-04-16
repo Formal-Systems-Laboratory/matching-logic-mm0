@@ -79,6 +79,14 @@ def gen_mm1(letters, f, longest):
     gen_thms(letters, f, longest, '''
         theorem regex_eq_der_same_l_wrt_{0}: $ (derivative {0} {0}) <-> epsilon $ =
           '(regex_eq_der_same_l functional_{0} {0}_in_top_letter);''')
+    
+    for (lname1, lname2) in itertools.combinations(letters, 2):
+        der_diff_letters = dedent('''
+            theorem regex_eq_der_diff_l_{1}_wrt_{0}: $ (derivative {0} {1}) <-> bot $ =
+              '(regex_eq_der_diff_l functional_{0} functional_{1} {0}_in_top_letter {1}_in_top_letter no_confusion_{0}_{1});'''.format(lname1, lname2))
+        f.write(der_diff_letters)
+    f.write('\n')
+
     gen_thms(letters, f, longest, '''
         theorem regex_eq_der_concat_wrt_{0}: $ (derivative {0} (Alpha . Beta)) <-> ((derivative {0} Alpha) . Beta) \/ ((epsilon /\ Alpha) . (derivative {0} Beta)) $ =
           '(regex_eq_der_concat functional_{0} {0}_in_top_letter);''')
