@@ -113,6 +113,29 @@ def gen_mm1(letters, f, longest):
                                           letters))))
     f.write(der_equality_bi_concrete)
 
+    fp_implies_regex_interior = dedent('''
+        theorem fp_implies_regex_interior {{X: SVar}} ({} rho: Pattern X)
+          {}
+          (he: $ epsilon -> rho $)
+          {}:
+          ----------------------------------------------
+          $(mu X (epsilon \/ ({}))) -> rho$ =
+          '(KT
+            (positive_in_or positive_disjoint {}) @
+            apply_equiv der_equality_bi_concrete (norm
+              (norm_imp_l @ norm_sym @ _sSubst_or sSubstitution_disjoint {})
+              (orim (iand id he) {})
+            ));
+        '''.format(' '.join(map('phi_{0}'.format, letters)),
+                   '\n          '.join(map('(pos_{0}: $ _Positive X phi_{0} $)'.format, letters)),
+                   '\n          '.join(map('(h_{0}: $ s[ rho / X ] phi_{0} -> (derivative {0} rho) $)'.format, letters)),
+                   ' \/ '.join(map('({0} . phi_{0})'.format, letters)),
+                   functools.reduce('(positive_in_or {0} {1})'.format, map('(positive_in_concat positive_disjoint pos_{0})'.format, letters)),
+                   functools.reduce('(_sSubst_or {0} {1})'.format, ['(sSubst_concat_r norm_refl)']*n),
+                   functools.reduce('(orim {0} {1})'.format, map('(framing_concat_r h_{0})'.format, letters)),
+                   ))
+    f.write(fp_implies_regex_interior)
+
 assert len(sys.argv) >= 3, "Usage: words-theory-gen <filename> <letter>*"
 filename = sys.argv[1]
 letters = sys.argv[2:]

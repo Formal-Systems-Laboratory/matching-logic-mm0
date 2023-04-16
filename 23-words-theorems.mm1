@@ -747,7 +747,6 @@ theorem positive_in_fp_interior (phi_a phi_b: Pattern X)
   = '(positive_in_or positive_disjoint (positive_in_or (positive_in_concat positive_disjoint p_a)
                                                        (positive_in_concat positive_disjoint p_b)));
 
--- TODO(MirceaS): Can't this be relaxed to allow eBox to show up in some or all of the patterns?
 theorem top_implies_fp_interior {X: SVar} {box: SVar} (fp_unf_a fp_unf_b fp_ctximp_a fp_ctximp_b: Pattern X box)
   (p_fp_unf_a: $ _Positive X fp_unf_a $)
   (p_fp_unf_b: $ _Positive X fp_unf_b $)
@@ -797,18 +796,3 @@ theorem apply_equiv (eq: $phi <-> psi$) (cont: $rho -> psi$): $rho -> phi$
 
 theorem fp_implies_regex_leaf :
     $rho -> rho$ = 'id;
-
-theorem fp_implies_regex_interior {X: SVar} (phi_a phi_b: Pattern X)
-    (posa: $ _Positive X phi_a $)
-    (posb: $ _Positive X phi_b $)
-    (he: $epsilon -> rho$)
-    (ha: $s[ rho / X ] phi_a -> (derivative a rho)$)
-    (hb: $s[ rho / X ] phi_b -> (derivative b rho)$):
-    ----------------------------------------------
-    $(mu X (epsilon \/ ((a . phi_a) \/ (b . phi_b)))) -> rho$ =
-    '(KT
-      (positive_in_or positive_disjoint @ positive_in_or (positive_in_concat positive_disjoint posa) (positive_in_concat positive_disjoint posb)) @
-      apply_equiv der_equality_bi_concrete (norm
-        (norm_imp_l @ norm_sym @ _sSubst_or sSubstitution_disjoint @ _sSubst_or (sSubst_concat_r norm_refl) (sSubst_concat_r norm_refl))
-        (orim (iand id he) @ orim (framing_concat_r ha) (framing_concat_r hb))
-      ));
