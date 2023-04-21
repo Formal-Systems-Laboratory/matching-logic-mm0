@@ -683,8 +683,8 @@ mod PROOF-GEN is
 
    *** is-letter *************************************************************
     op is-letter : Letter -> MM0SExpr .
-    eq is-letter(a) = 'orl .
-    eq is-letter(b) = 'orr .
+    eq is-letter(a) = 'a-in-top-letter .
+    eq is-letter(b) = 'b-in-top-letter .
 
    *** epsilon-implies-ewp ***************************************************
    --- MetaTheorem:

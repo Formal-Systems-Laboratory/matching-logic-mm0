@@ -46,6 +46,11 @@ def gen_mm1(letters, f, longest):
     n = len(letters)
     f.write('import "{}.mm0";\n'.format(filename))
     f.write('import "23-words-theorems.mm1";\n')
+    for (lname1, lname2) in itertools.combinations(letters, 2):
+        no_confusion = dedent('''
+            theorem no_confusion_{1}_{0}: $ {1} != {0} $ = '(con3 eq_sym no_confusion_{0}_{1});'''.format(lname1, lname2))
+        f.write(no_confusion)
+    f.write('\n')
     for i, lname in enumerate(letters):
         if n == 1:
             proof = 'eq_to_intro_rev all_letters'
@@ -88,7 +93,7 @@ def gen_mm1(letters, f, longest):
         theorem regex_eq_der_same_l_wrt_{0}: $ (derivative {0} {0}) <-> epsilon $ =
           '(regex_eq_der_same_l functional_{0} {0}_in_top_letter);''')
     
-    for (lname1, lname2) in itertools.combinations(letters, 2):
+    for (lname1, lname2) in itertools.permutations(letters, 2):
         der_diff_letters = dedent('''
             theorem regex_eq_der_diff_l_{1}_wrt_{0}: $ (derivative {0} {1}) <-> bot $ =
               '(regex_eq_der_diff_l functional_{0} functional_{1} {0}_in_top_letter {1}_in_top_letter no_confusion_{0}_{1});'''.format(lname1, lname2))
@@ -99,7 +104,7 @@ def gen_mm1(letters, f, longest):
         theorem regex_eq_der_concat_wrt_{0}: $ (derivative {0} (Alpha . Beta)) <-> ((derivative {0} Alpha) . Beta) \/ ((epsilon /\ Alpha) . (derivative {0} Beta)) $ =
           '(regex_eq_der_concat functional_{0} {0}_in_top_letter);''')
     gen_thms(letters, f, longest, '''
-        theorem regex_eq_der_kleene_wrt_{0} (X_fresh: $ _sFresh X Alpha $): $ (derivative {0} (kleene X Alpha)) <-> ((derivative {0} Alpha) . (kleene X Alpha)) $ =
+        theorem regex_eq_der_kleene_wrt_{0} {{X: SVar}} (Alpha: Pattern X) (X_fresh: $ _sFresh X Alpha $): $ (derivative {0} (kleene X Alpha)) <-> ((derivative {0} Alpha) . (kleene X Alpha)) $ =
           '(regex_eq_der_kleene X_fresh functional_{0} {0}_in_top_letter);''')
 
     der_equality_bi_concrete = dedent('''
