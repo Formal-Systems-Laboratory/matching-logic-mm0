@@ -34,6 +34,14 @@ def gen_thms(letters, f, longest, str_base):
         f.write(thm)
     f.write('\n')
 
+def build_str(letters, delim, part_format):
+    return delim.join(map(part_format.format, letters))
+
+def bin_tree_list(n):
+    if n == 1:
+        return ['id']
+    return [((('orld @ '*(n-2)) + 'orld') if i == 0 else (('orld @ '*(n-i-1)) + 'orrd')) for i in range(n)]
+
 def gen_mm1(letters, f, longest):
     n = len(letters)
     f.write('import "{}.mm0";\n'.format(filename))
@@ -43,9 +51,9 @@ def gen_mm1(letters, f, longest):
             proof = 'eq_to_intro_rev all_letters'
         else:
             if i == 0:
-                proof = '{}orl'.format('@ syl orl '*(n-2))
+                proof = ('@ syl orl '*(n-2)) + 'orl'
             else:
-                proof = '{}orr'.format('@ syl orl '*(n-i-1))
+                proof = ('@ syl orl '*(n-i-1)) + 'orr'
             proof = 'syl (eq_to_intro_rev all_letters) {}'.format(proof)
         in_top_letter = dedent('''
             theorem {0}_in_top_letter: $ {0} -> top_letter $ =
@@ -105,36 +113,99 @@ def gen_mm1(letters, f, longest):
                   ancomb)
           {3}
           ));
-          '''.format(' \/ '.join(map('({0} . (derivative {0} phi))'.format, letters)),
+          '''.format(build_str(letters, ' \/ ', '({0} . (derivative {0} phi))'),
                      ' \/ '.join(letters),
-                     ' '.join(map('\'[{0} functional_{0}]'.format, letters)),
+                     build_str(letters, ' ', '\'[{0} functional_{0}]'),
                      functools.reduce('(bitr (cong_of_equiv_exists andir) @ bitr or_exists_bi @ oreqi {0} {1})'.format,
                                       map("(mp ,(func_to_and_ctx_bi 'x $eVar x . derivative (eVar x) phi$) functional_{})".format,
                                           letters))))
     f.write(der_equality_bi_concrete)
 
-    fp_implies_regex_interior = dedent('''
-        theorem fp_implies_regex_interior {{X: SVar}} ({} rho: Pattern X)
-          {}
-          (he: $ epsilon -> rho $)
-          {}:
-          ----------------------------------------------
-          $(mu X (epsilon \/ ({}))) -> rho$ =
-          '(KT
-            (positive_in_or positive_disjoint {}) @
-            apply_equiv der_equality_bi_concrete (norm
-              (norm_imp_l @ norm_sym @ _sSubst_or sSubstitution_disjoint {})
-              (orim (iand id he) {})
-            ));
-        '''.format(' '.join(map('phi_{0}'.format, letters)),
-                   '\n          '.join(map('(pos_{0}: $ _Positive X phi_{0} $)'.format, letters)),
-                   '\n          '.join(map('(h_{0}: $ s[ rho / X ] phi_{0} -> (derivative {0} rho) $)'.format, letters)),
-                   ' \/ '.join(map('({0} . phi_{0})'.format, letters)),
+    positive_in_fp_interior = dedent('''
+        theorem positive_in_fp_interior {{X: SVar}} ({0}: Pattern X)
+          {1}:
+          $ _Positive X (epsilon \/ ({2})) $
+          = '(positive_in_or positive_disjoint {3});
+        '''.format(build_str(letters, ' ', 'phi_{0}'),
+                   build_str(letters, '\n          ', '(pos_{0}: $ _Positive X phi_{0} $)'),
+                   build_str(letters, ' \/ ', '{0} . phi_{0}'),
                    functools.reduce('(positive_in_or {0} {1})'.format, map('(positive_in_concat positive_disjoint pos_{0})'.format, letters)),
+                   ))
+    f.write(positive_in_fp_interior)
+
+    fp_implies_regex_interior = dedent('''
+        theorem fp_implies_regex_interior {{X: SVar}} ({0} rho: Pattern X)
+          {1}
+          (he: $ epsilon -> rho $)
+          {2}:
+          ----------------------------------------------
+          $(mu X (epsilon \/ ({3}))) -> rho$ =
+          '(KT (positive_in_fp_interior {4}) @
+            apply_equiv der_equality_bi_concrete (norm
+              (norm_imp_l @ norm_sym @ _sSubst_or sSubstitution_disjoint {5})
+              (orim (iand id he) {6})
+            ));
+        '''.format(build_str(letters, ' ', 'phi_{0}'),
+                   build_str(letters, '\n          ', '(pos_{0}: $ _Positive X phi_{0} $)'),
+                   build_str(letters, '\n          ', '(h_{0}: $ s[ rho / X ] phi_{0} -> (derivative {0} rho) $)'),
+                   build_str(letters, ' \/ ', '({0} . phi_{0})'),
+                   build_str(letters, ' ', 'pos_{0}'),
                    functools.reduce('(_sSubst_or {0} {1})'.format, ['(sSubst_concat_r norm_refl)']*n),
                    functools.reduce('(orim {0} {1})'.format, map('(framing_concat_r h_{0})'.format, letters)),
                    ))
     f.write(fp_implies_regex_interior)
+
+    top_implies_fp_interior = dedent('''
+        theorem top_implies_fp_interior {{X box: SVar}} ({0} {1}: Pattern X box)
+          {2}
+          {3}
+        
+          {4}
+          {5}
+          : ------------------------
+          $(mu X (epsilon \/ ({6}))) . top_letter -> (mu X (epsilon \/ ({7})))$
+          = '(unwrap_subst appctx_concat_l
+            @ KT_subst (positive_in_fp_interior {8}) ,(propag_s_subst_adv 'X $epsilon \/ ({9})$ (atom-map! {10}))
+            @ eori
+              ( wrap_subst appctx_concat_l
+                @ rsyl (anl regex_eq_eps_concat_l)
+                @ unfold_r (positive_in_fp_interior {11})
+                @ norm (norm_sym @ norm_imp_r ,(propag_s_subst_adv 'X $epsilon \/ ({9})$ (atom-map! {10})))
+                @ orrd
+                @ rsyl (eq_to_intro all_letters)
+                {12})
+            {13}
+            );
+        '''.format(build_str(letters, ' ', 'fp_unf_{0}'),
+                   build_str(letters, ' ', 'fp_ctximp_{0}'),
+                   build_str(letters, '\n          ', '(p_fp_unf_{0}: $ _Positive X fp_unf_{0} $)'),
+                   build_str(letters, '\n          ', '(p_fp_ctximp_{0}: $ _Positive X fp_ctximp_{0} $)'),
+                   build_str(letters, '\n          ', '(he_{{0}}: $ epsilon -> s[ (mu X (epsilon \/ ({0}))) / X ] fp_unf_{{0}} $)'
+                             .format(build_str(letters, ' \/ ', '{0} . fp_unf_{0}'))),
+                   build_str(letters, '\n          ', '(h{{0}}: $ ((s[ (ctximp_app box (sVar box . top_letter) (mu X (epsilon \/ ({0})))) / X ] fp_ctximp_{{0}}) . top_letter)\n            -> (s[ (mu X (epsilon \/ ({0}))) / X ] fp_unf_{{0}}) $)'
+                             .format(build_str(letters, ' \/ ', '{0} . fp_unf_{0}'))),
+                   build_str(letters, ' \/ ', '{0} . fp_ctximp_{0}'),
+                   build_str(letters, ' \/ ', '{0} . fp_unf_{0}'),
+                   build_str(letters, ' ', 'p_fp_ctximp_{0}'),
+                   build_str(letters, ' \/ ', '{0} . _'),
+                   build_str(letters, ' ', '\'[{0} #t]'),
+                   build_str(letters, ' ', 'p_fp_unf_{0}'),
+                   functools.reduce('(orim {0} {1})'.format, map('(rsyl (anr regex_eq_eps_concat_r) @ framing_concat_r he_{0})'.format, letters)),
+                   functools.reduce('(eori {0} {1})'.format, map('''
+                     ( wrap_subst appctx_concat_l
+                       @ rsyl (bi1i @ assoc_concat)
+                       @ unfold_r (positive_in_fp_interior {0})
+                       @ norm (norm_sym @ norm_imp_r ,(propag_s_subst_adv 'X $epsilon \/ ({1})$ (atom-map! {2})))
+                       @ orrd
+                       @ {{1}}
+                       @ framing_concat_r h{{0}})'''.format(build_str(letters, ' ', 'p_fp_unf_{0}'),
+                                                            build_str(letters, ' \/ ', '{0} . _'),
+                                                            build_str(letters, ' ', '\'[{0} #t]'),
+                                                            ).format, letters, bin_tree_list(n))),
+                   ))
+    f.write(top_implies_fp_interior)
+
+
 
 assert len(sys.argv) >= 3, "Usage: words-theory-gen <filename> <letter>*"
 filename = sys.argv[1]

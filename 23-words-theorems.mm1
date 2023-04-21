@@ -240,8 +240,8 @@ theorem regex_eq_ewp_not_concat (Alpha Beta: Pattern):
             rsyl (anl ,(membership_var_func_subst 'functional_epsilon 'functional_concat)) no_confusion_ec_e)
         @ rsyl (exists_framing @ anr anass)
         @ rsyl (anl and_exists_disjoint_r)
-        @ rsyl (anim1 @ anr ,(func_subst_eps 'x 'membership_expand))
-        @ anim id id)));
+        @ anim1
+        @ anr ,(func_subst_eps 'x 'membership_expand))));
 
 
 
@@ -736,58 +736,6 @@ theorem top_implies_fp_init {X: SVar} (phi: Pattern)
 theorem top_implies_fp_leaf {box: SVar} (phi : Pattern box)
   : $( ctximp_app box (sVar box . top_letter) phi) . top_letter -> phi $
 = '(norm (norm_imp appctx_concat_l norm_refl) ctximp_in_ctx_forward);
-
---- fp-implies-alpha
---------------------
-
-theorem positive_in_fp_interior (phi_a phi_b: Pattern X)
-  (p_a: $ _Positive X phi_a $)
-  (p_b: $ _Positive X phi_b $):
-  $ _Positive X (epsilon \/ (a . phi_a \/ b . phi_b )) $
-  = '(positive_in_or positive_disjoint (positive_in_or (positive_in_concat positive_disjoint p_a)
-                                                       (positive_in_concat positive_disjoint p_b)));
-
-theorem top_implies_fp_interior {X: SVar} {box: SVar} (fp_unf_a fp_unf_b fp_ctximp_a fp_ctximp_b: Pattern X box)
-  (p_fp_unf_a: $ _Positive X fp_unf_a $)
-  (p_fp_unf_b: $ _Positive X fp_unf_b $)
-  (p_fp_ctximp_a: $ _Positive X fp_ctximp_a $)
-  (p_fp_ctximp_b: $ _Positive X fp_ctximp_b $)
-
-  (he_a: $epsilon -> s[ (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) / X ] fp_unf_a$)
-  (he_b: $epsilon -> s[ (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) / X ] fp_unf_b$)
-  (ha: $((s[ (ctximp_app box (sVar box . top_letter) (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b))))) / X ] fp_ctximp_a) . top_letter)
-          -> (s[ (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) / X ] fp_unf_a)$)
-  (hb: $((s[ (ctximp_app box (sVar box . top_letter) (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b))))) / X ] fp_ctximp_b) . top_letter)
-          -> (s[ (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b)))) / X ] fp_unf_b)$)
-  : ------------------------
-  $(mu X (epsilon \/ ((a . fp_ctximp_a) \/ (b . fp_ctximp_b)))) . top_letter -> (mu X (epsilon \/ ((a . fp_unf_a) \/ (b . fp_unf_b))))$
-  = (id
-    '(unwrap_subst appctx_concat_l
-    @ KT_subst (positive_in_fp_interior p_fp_ctximp_a p_fp_ctximp_b) ,(propag_s_subst 'X $epsilon \/ (a . _ \/ b . _)$)
-    @ eori
-      ( wrap_subst appctx_concat_l
-        @ rsyl (anl regex_eq_eps_concat_l)
-        @ unfold_r (positive_in_fp_interior p_fp_unf_a p_fp_unf_b)
-        @ norm (norm_sym @ norm_imp_r ,(propag_s_subst 'X $epsilon \/ (a . _ \/ b . _)$))
-        @ orrd
-        @ orim
-          (rsyl (anr regex_eq_eps_concat_r) @ framing_concat_r he_a)
-          (rsyl (anr regex_eq_eps_concat_r) @ framing_concat_r he_b))
-    @ eori
-      ( wrap_subst appctx_concat_l
-        @ rsyl (bi1i @ assoc_concat)
-        @ unfold_r (positive_in_fp_interior p_fp_unf_a p_fp_unf_b)
-        @ norm (norm_sym @ norm_imp_r ,(propag_s_subst 'X $epsilon \/ (a . _ \/ b . _)$))
-        @ orrd @ orld
-        @ framing_concat_r ha)
-      ( wrap_subst appctx_concat_l
-        @ rsyl (bi1i @ assoc_concat)
-        @ unfold_r (positive_in_fp_interior p_fp_unf_a p_fp_unf_b)
-        @ norm (norm_sym @ norm_imp_r ,(propag_s_subst 'X $epsilon \/ (a . _ \/ b . _)$))
-        @ orrd @ orrd
-        @ framing_concat_r hb)
-    ));
-
 
 
 --- Apply equivalence left to right
