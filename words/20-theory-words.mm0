@@ -1,4 +1,4 @@
-import "10-theory-definedness.mm0";
+import "../10-theory-definedness.mm0";
 
 def emptyset : Pattern = $bot$ ;
 

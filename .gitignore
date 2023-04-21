@@ -1,4 +1,6 @@
-/.build
+/words/.build
+/words/.mypy_cache
+/words/.pytest_cache
 
 # Hypothesis example database. Could we move this to a new directory?
-/.hypothesis
+words/.hypothesis

@@ -1,4 +1,3 @@
-import "13-fixedpoints.mm1";
 import "21-words-helpers.mm1";
 
 --- Lift axioms to higher level constructs

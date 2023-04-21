@@ -1,6 +1,5 @@
-import "11-definedness-normalization.mm1";
+import "../13-fixedpoints.mm1";
 import "20-theory-words.mm0";
-import "13-fixedpoints.mm1";
 
 --- Helpers for concat
 theorem eFresh_concat {x: EVar} (phi psi: Pattern x)
