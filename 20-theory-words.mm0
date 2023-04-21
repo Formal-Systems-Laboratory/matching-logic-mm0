@@ -13,8 +13,6 @@ def kleene_l {X: SVar} (alpha: Pattern X) : Pattern = $mu X (epsilon \/ sVar X .
 def kleene_r {X: SVar} (alpha: Pattern X) : Pattern = $mu X (epsilon \/ alpha . sVar X)$;
 def kleene   {X: SVar} (alpha: Pattern X) : Pattern = $(kleene_r X alpha)$;
 
---- We assume that the alphabet has only two letters.
---- This, however, captures the full expressivity.
 term top_letter_symbol: Symbol;
 def top_letter: Pattern = $sym top_letter_symbol$;
 
