@@ -15,7 +15,7 @@ def gen_mm0(letters, f, longest):
     for lname in letters:
         space = ' '*(longest-len(lname))
         functional_let = dedent('''
-            axiom functional_{0} {1}: $ is_func {0}{1} $;'''.format(lname, space))
+            axiom functional_{0} {1}: $ functional {0}{1} $;'''.format(lname, space))
         f.write(functional_let)
     f.write('\n')
     for (lname1, lname2) in itertools.combinations(letters, 2):

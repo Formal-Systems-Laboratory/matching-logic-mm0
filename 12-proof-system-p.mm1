@@ -100,11 +100,11 @@ theorem propag_exists_def {x: EVar} (phi: Pattern x):
   $ |^ exists x phi ^| -> exists x (|^ phi ^|) $ =
   '(norm (norm_imp defNorm @ norm_exists defNorm) (! propag_exists_disjoint box));
 
-theorem swap_exists {x y: EVar} (phi: Pattern x y): $ exists x (exists y phi) -> exists y (exists x phi) $ =
+theorem commute_exists {x y: EVar} (phi: Pattern x y): $ exists x (exists y phi) -> exists y (exists x phi) $ =
   '(exists_generalization (eFresh_exists eFresh_exists_same_var) @ exists_framing exists_intro_same_var);
 
-theorem swap_exists_bi {x y: EVar} (phi: Pattern x y): $ exists x (exists y phi) <-> exists y (exists x phi) $ =
-  '(ibii swap_exists swap_exists);
+theorem commute_exists_bi {x y: EVar} (phi: Pattern x y): $ exists x (exists y phi) <-> exists y (exists x phi) $ =
+  '(ibii commute_exists commute_exists);
 
 theorem prop_43_bot (rho: Pattern): $ bot -> rho $ = 'absurdum;
 theorem prop_43_or {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
@@ -259,7 +259,7 @@ theorem subset_to_eq: $ (phi C= psi) -> (psi C= phi) -> (phi == psi) $ = '(exp @
 
 theorem eq_refl: $ phi == phi $ = '(equiv_to_eq biid);
 theorem functional_same_var: $ exists x (eVar x == eVar x) $ = '(exists_intro_same_var eq_refl);
-theorem functional_var: $ is_func (eVar x) $ =
+theorem functional_var: $ functional (eVar x) $ =
   (named '(exists_intro @ norm (norm_sym @ _eSubst_eq eSubstitution_in_same_eVar eSubstitution_disjoint) eq_refl));
 
 theorem eq_sym: $ (phi1 == phi2) -> (phi2 == phi1) $ =
@@ -772,7 +772,7 @@ theorem eq_to_forall_bi {x: EVar} (phi1 phi2: Pattern) (psi1 psi2: Pattern x)
 
 theorem eq_to_func_bi
   (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
-  $ (phi1 == phi2) -> ((is_func psi1) <-> (is_func psi2)) $ = (named '(eq_to_exists_bi @ eq_to_eq_r_bi h));
+  $ (phi1 == phi2) -> ((functional psi1) <-> (functional psi2)) $ = (named '(eq_to_exists_bi @ eq_to_eq_r_bi h));
 
 theorem eq_to_mem_bi {x: EVar} (phi1 phi2 psi1 psi2: Pattern x)
   (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
@@ -978,7 +978,7 @@ do {
     [$_subset ,phi1 ,phi2$ '(eq_to_subset_bi ,(func_subst_explicit_helper x phi1) ,(func_subst_explicit_helper x phi2))]
     [$equiv ,phi1 ,phi2$   '(eq_to_equiv_bi  ,(func_subst_explicit_helper x phi1) ,(func_subst_explicit_helper x phi2))]
     [$_eq ,phi1 ,phi2$     '(eq_to_eq_bi     ,(func_subst_explicit_helper x phi1) ,(func_subst_explicit_helper x phi2))]
-    [$is_func ,psi$        '(eq_to_func_bi   ,(func_subst_explicit_helper x psi))]
+    [$functional ,psi$        '(eq_to_func_bi   ,(func_subst_explicit_helper x psi))]
 
     [$nnimp ,phi1 ,phi2$   '(eq_to_nnimp_bi  ,(func_subst_explicit_helper x phi1) ,(func_subst_explicit_helper X phi2))]
     [$concat ,phi1 ,phi2$  '(eq_to_concat_bi ,(func_subst_explicit_helper x phi1) ,(func_subst_explicit_helper x phi2))]

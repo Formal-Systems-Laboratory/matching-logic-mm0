@@ -23,7 +23,7 @@ axiom definedness {x: EVar}: $ |^ eVar x ^| $;
 --- Functional Patterns
 -----------------------
 
-def is_func {.x: EVar} (phi: Pattern): Pattern = $ exists x (eVar x == phi) $;
+def functional {.x: EVar} (phi: Pattern): Pattern = $ exists x (eVar x == phi) $;
 
 --- Contextual Implications
 ---------------------------

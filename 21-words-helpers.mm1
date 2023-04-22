@@ -132,14 +132,6 @@ theorem cong_of_equiv_kleene {X: SVar} (phi1 phi2: Pattern X)
     (cong_of_equiv_or_r @ cong_of_equiv_concat_l h));
 
 
---- Helpers for top_letter
-theorem positive_in_top_letter {X: SVar}:
-  $ _Positive X top_letter $ = '(positive_disjoint);
-theorem sSubst_top_letter {X: SVar} (psi: Pattern X):
- $ Norm (s[ psi  / X ] (top_letter))  (top_letter) $ = 'sSubstitution_disjoint;
-theorem eSubst_top_letter {X: EVar} (psi: Pattern X):
- $ Norm (e[ psi  / X ] (top_letter))  (top_letter) $ = 'eSubstitution_disjoint;
-
 --- Helpers for top_word_l
 --- TODO: Define in terms of kleene_l
 theorem positive_in_top_word_l_body {X: SVar}: $_Positive X (epsilon \/ sVar X . top_letter)$ =
