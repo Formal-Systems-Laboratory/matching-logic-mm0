@@ -1,0 +1,25 @@
+import "sorts.mm0";
+import "13-fixedpoints.mm1";
+
+do {
+  (def (is_function symbol input_sorts output_sort) @ foldri
+    0
+    input_sorts
+    '(s_exists ,output_sort y (_eq (eVar y) ,(foldli 0 input_sorts symbol (fn (i phi s) '(app ,phi (eVar ,(string->atom @ string-append "x" i)))))))
+    (fn (i s phi) '(s_forall ,s ,(string->atom @ string-append "x" i) ,phi)))
+
+  (def (is_partial_function symbol input_sorts output_sort) @ foldri
+    0
+    input_sorts
+    '(s_exists ,output_sort y (_subset ,(foldli 0 input_sorts symbol (fn (i phi s) '(app ,phi (eVar ,(string->atom @ string-append "x" i))))) (eVar y)))
+    (fn (i s phi) '(s_forall ,s ,(string->atom @ string-append "x" i) ,phi)))
+
+  (def (is_multi_function symbol input_sorts output_sort) @ foldri
+    0
+    input_sorts
+    '(_subset ,(foldli 0 input_sorts symbol (fn (i phi s) '(app ,phi (eVar ,(string->atom @ string-append "x" i))))) output_sort)
+    (fn (i s phi) '(s_forall ,s ,(string->atom @ string-append "x" i) ,phi)))
+
+  (def (is_rel symbol input_sorts) @ is_multi_function symbol input_sorts 'pred)
+};
+

@@ -1,0 +1,81 @@
+import "../sorts.mm1";
+
+term sort_abstraction_sym: Symbol;
+def sort_abstraction (abs body: Pattern): Pattern = $ (sym sort_abstraction_sym) @@ abs @@ body $;
+
+axiom function_sort_abstraction: $ ,(is_function '(sym sort_abstraction_sym) '[sorts sorts] 'sorts) $;
+
+term alpha_sym: Symbol;
+def alpha: Pattern = $ sym alpha_sym $;
+term tau_sym: Symbol;
+def tau: Pattern = $ sym tau_sym $;
+
+-- Atom sort
+axiom sort_alpha: $ is_sort alpha $;
+axiom sort_tau: $ is_sort tau $;
+
+def is_atom {a: EVar}: Pattern a = $ (eVar a) C= dom alpha $;
+def is_tau (phi: Pattern): Pattern = $ phi C= dom tau $;
+
+term swap_sym: Symbol;
+def swap {a b: EVar} (phi: Pattern a b): Pattern a b = $ (sym swap_sym) @@ eVar a @@ eVar b @@ phi $;
+term abstraction_sym: Symbol;
+def abstraction {a: EVar} (phi: Pattern a): Pattern a = $ (sym abstraction_sym) @@ eVar a @@ phi $;
+term freshness_sym: Symbol;
+def freshness {a: EVar} (phi: Pattern a): Pattern a = $ (sym freshness_sym) @@ eVar a @@ phi $;
+
+axiom function_swap: $ ,(is_function '(sym swap_sym) '[alpha alpha tau] 'tau) $;
+axiom function_abstraction: $ ,(is_function '(sym abstraction_sym) '[alpha tau] '(sort_abstraction alpha tau)) $;
+axiom pred_freshness: $ ,(is_rel '(sym freshness_sym) '[alpha tau]) $;
+
+-- Axioms of Nominal Logic
+axiom EV_app {a b: EVar} (phi rho: Pattern a b):
+  $ is_atom a $ >
+  $ is_atom b $ >
+  $ is_tau phi $ >
+  $ is_tau rho $ >
+  $ (swap a b (app phi rho)) == (app (swap a b phi) (swap a b rho)) $;
+axiom EV_sym {a b: EVar} (s: Symbol):
+  $ is_atom a $ >
+  $ is_atom b $ >
+  $ (swap a b (sym s)) == sym s $;
+axiom EV_pred {a b: EVar}:
+  $ is_atom a $ >
+  $ is_atom b $ >
+  $ (swap a b (dom pred)) == dom pred $;
+axiom S1 {a: EVar} (phi: Pattern a):
+  $ is_atom a $ >
+  $ is_tau phi $ >
+  $ (swap a a phi) == phi $;
+axiom S2 {a b: EVar} (phi: Pattern a b):
+  $ is_atom a $ >
+  $ is_atom b $ >
+  $ is_tau phi $ >
+  $ (swap a b (swap a b phi)) == phi $;
+axiom S3 {a b: EVar}:
+  $ is_atom a $ >
+  $ is_atom b $ >
+  $ (swap a b (eVar a)) == eVar b $;
+axiom F1 {a b: EVar} (phi: Pattern a b):
+  $ is_atom a $ >
+  $ is_atom b $ >
+  $ is_tau phi $ >
+  $ (freshness a phi) /\ (freshness b phi) -> ((swap a b phi) == phi) $;
+axiom F2 {a b: EVar}:
+  $ is_atom a $ >
+  $ is_atom b $ >
+  $ (freshness a (eVar b)) <-> (eVar a != eVar b) $;
+axiom A1 {a b: EVar} (phi rho: Pattern a b):
+  $ is_atom a $ >
+  $ is_atom b $ >
+  $ is_tau phi $ >
+  $ is_tau rho $ >
+  $ ((abstraction a phi) == (abstraction b rho)) <->
+    ((eVar a == eVar b) /\ (phi == rho)) \/
+    ((freshness a rho) /\ ((swap a b phi) == rho)) $;
+axiom A2 {x a y: EVar}:
+  $ s_forall (sort_abstraction alpha tau) x
+    (s_exists alpha a (s_exists tau y (eVar x == abstraction a (eVar y)))) $;
+
+def coercion {a: EVar} (phi: Pattern a) {.y: EVar}: Pattern a =
+  $ exists y (eVar y /\ ((abstraction a (eVar y)) == phi)) $;
