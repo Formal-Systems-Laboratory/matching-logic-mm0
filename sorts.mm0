@@ -8,6 +8,8 @@ def dom (s: Pattern): Pattern = $ (sym domain_sym) @@ s $;
 
 def is_sort (s: Pattern): Pattern = $ (is_func s) /\ (s C= dom sorts) $;
 
+def is_of_sort (phi s: Pattern): Pattern = $ phi C= dom s $;
+
 axiom sorts_is_sort: $ is_sort sorts $;
 
 axiom nonempty_domain (s: Pattern): $ (is_sort s) -> (dom s != bot) $;

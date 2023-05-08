@@ -25,6 +25,10 @@ axiom definedness {x: EVar}: $ |^ eVar x ^| $;
 
 def is_func {.x: EVar} (phi: Pattern): Pattern = $ exists x (eVar x == phi) $;
 
+--- Predicates
+
+def is_pred (phi: Pattern): Pattern = $ (phi == bot) \/ (phi == top) $;
+
 --- Contextual Implications
 ---------------------------
 

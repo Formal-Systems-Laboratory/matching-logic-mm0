@@ -1,2 +1,100 @@
 import "core.mm1";
 
+term Var_sym: Symbol;
+def Var: Pattern = $ sym Var_sym $;
+axiom Var_atom: $ is_atom_sort Var $;
+
+term Exp_sym: Symbol;
+def Exp: Pattern = $ sym Exp_sym $;
+axiom Exp_sort: $ is_nominal_sort Exp $;
+
+term lc_var_sym: Symbol;
+def lc_var (phi: Pattern): Pattern = $ (sym lc_var_sym) @@ phi $;
+axiom function_lc_var: $ ,(is_function '(sym lc_var_sym) '[Var] 'Exp) $;
+
+term lc_app_sym: Symbol;
+def lc_app (phi rho: Pattern): Pattern = $ (sym lc_app_sym) @@ phi @@ rho $;
+axiom function_lc_app: $ ,(is_function '(sym lc_var_app) '[Exp Exp] 'Exp) $;
+
+term lc_lam_sym: Symbol;
+def lc_lam (phi: Pattern): Pattern = $ (sym lc_lam_sym) @@ phi $;
+axiom function_lc_lam: $ ,(is_function '(sym lc_lam_sym) '[(sort_abstraction Var Exp)] 'Exp) $;
+
+axiom no_junk {X: SVar}:
+  $ (dom Exp) == mu X ( (lc_var (dom Var))
+                     \/ (lc_app (sVar X) (sVar X))
+                     \/ (lc_lam (abstraction (dom Var) (sVar X)))) $;
+
+--- no_confusion
+
+
+theorem predicate_lemma (pred freshness_arg: Pattern) {x y: EVar}
+  (predicate: $ forall x (is_pred (pred @@ eVar x @@ freshness_arg))$):
+  $ (pred @@ eVar y @@ freshness_arg) == |^ pred @@ eVar y @@ freshness_arg ^| $ =
+  '(anl ceil_idempotency_for_pred @ norm ,(propag_e_subst_adv 'z $((app (app pred (eVar z)) freshness_arg) == bot) \/ ((app (app pred (eVar z)) freshness_arg) == top)$ (atom-map! '[pred #t] '[freshness_arg #t])) @ var_subst predicate);
+
+
+theorem induction_lemma_var (pred freshness_arg: Pattern)
+  (predicate: $ forall x (is_pred (pred @@ eVar x @@ freshness_arg)) $)
+  (h_var: $ s_forall Var a (pred @@ (lc_var (eVar a)) @@ freshness_arg) $):
+  $ (lc_var (dom Var)) -> exists x (eVar x /\ (pred @@ eVar x @@ freshness_arg)) $ =
+  (named '(membership_elim_implicit @
+    anr ,(propag_mem 'b $(sym lc_var_sym @@ (dom Var)) -> exists z (eVar z /\ _)$) @
+    syl (exists_framing @ anim1 eq_sym) @
+    syl (anr @ mp ,(func_to_and_ctx_bi 'z $x in (pred @@ eVar z @@ freshness_arg)$) functional_var) @
+    syl (anl @ bitr (bitr (eq_to_intro_bi @ predicate_lemma predicate) (bicom mem_def)) (cong_of_equiv_mem @ eq_to_intro_rev_bi @ predicate_lemma predicate)) @
+    exists_generalization_disjoint @
+    rsyl (anim1 eVar_in_subset_forward) @
+    rsyl (anim1 @ iand id @ var_subst_same_var h_var) @
+    rsyl (anl anrass) @
+    curry @
+    curry @
+    rsyl (var_subst_same_var function_lc_var) @
+    rsyl (exists_framing anr) @
+    exists_generalization_disjoint @
+    rsyl eq_sym @
+    mp ,(func_subst_imp_to_var 'y $x in eVar y -> (pred @@ eVar y @@ freshness_arg) -> (pred @@ eVar x @@ freshness_arg)$) @
+    rsyl membership_var_forward @
+    rsyl ,(func_subst_explicit_helper 'y $pred @@ eVar y @@ freshness_arg$)
+    anr
+  ));
+
+theorem induction_lemma_exp (pred freshness_arg: Pattern)
+  (predicate: $ forall x (is_pred (pred @@ eVar x @@ freshness_arg)) $)
+  (h_exp: $ s_forall Exp t1 (s_forall Exp t2 ((pred @@ eVar t1 @@ freshness_arg) /\ (pred @@ eVar t2 @@ freshness_arg) -> (pred @@ (lc_app (eVar t1) (eVar t2)) @@ freshness_arg))) $):
+  $ (lc_app (exists x (eVar x /\ (pred @@ eVar x @@ freshness_arg)))
+            (exists x (eVar x /\ (pred @@ eVar x @@ freshness_arg)))
+        ) -> exists x (eVar x /\ (pred @@ eVar x @@ freshness_arg)) $ =
+  '(membership_elim_implicit @
+    anr ,(propag_mem 'b $(sym lc_app_sym @@ (exists z (eVar z /\ _)) @@ (exists z (eVar z /\ _))) -> (exists z (eVar z /\ _))$) @
+    _);
+
+theorem induction_lemma_abs (pred freshness_arg: Pattern)
+  (predicate: $ forall x (is_pred (pred @@ eVar x @@ freshness_arg)) $)
+  (h_abs: $ s_forall Var a (s_forall Exp t ((fresh_in_all a freshness_arg) -> (pred @@ eVar t @@ freshness_arg) -> (pred @@ (lc_lam (abstraction (eVar a) (eVar t))) @@ freshness_arg))) $):
+  $ (lc_lam (abstraction (dom Var) (exists x (eVar x /\ (pred @@ eVar x @@ freshness_arg))))
+                               ) -> exists x (eVar x /\ (pred @@ eVar x @@ freshness_arg)) $ =
+  '();
+
+theorem induction (pred freshness_arg: Pattern)
+  (predicate: $ forall x (is_pred (pred @@ eVar x @@ freshness_arg)) $)
+  (h_var: $ s_forall Var a (pred @@ lc_var (eVar a) @@ freshness_arg) $)
+  (h_exp: $ s_forall Exp t1 (s_forall Exp t2 ((pred @@ eVar t1 @@ freshness_arg) /\ (pred @@ eVar t2 @@ freshness_arg) -> (pred @@ (lc_app (eVar t1) (eVar t2)) @@ freshness_arg))) $)
+  (h_abs: $ s_forall Var a (s_forall Exp t ((fresh_in_all a freshness_arg) -> (pred @@ eVar t @@ freshness_arg) -> (pred @@ (lc_lam (abstraction (eVar a) (eVar t))) @@ freshness_arg))) $):
+  $ s_forall Exp t (pred @@ eVar t @@ freshness_arg) $ = (named
+  '(univ_gene @
+    rsyl eVar_in_subset_reverse @
+    rsyl (anl ,(propag_mem 't $(dom Exp) -> exists tt (eVar tt /\ _)$) (membership_intro_implicit @
+      rsyl (eq_to_intro no_junk) @ KT () (norm (norm_sym @ norm_imp_l
+        ,(propag_s_subst_adv 'X $((sym lc_var_sym) @@ ((sym (dom_sym)) @@ Var)) \/ ((sym lc_app_sym) @@ (sVar X) @@ (sVar X)) \/ ((sym lc_lam_sym) @@ ((sym abstraction_sym) @@ ((sym (dom_sym)) @@ Var) @@ (sVar X)))$ (atom-map! '[Var #t]))
+        ) @
+        eori (eori (induction_lemma_var predicate h_var) (induction_lemma_exp predicate h_exp)) (induction_lemma_abs predicate h_abs))
+    )) @
+    rsyl (anl @ cong_of_equiv_exists @ cong_of_equiv_and_r @ bitr
+      (cong_of_equiv_mem (eq_to_intro_bi @ predicate_lemma predicate))
+      mem_def) @
+    exists_generalization_disjoint @
+    syl (eq_to_intro_rev @ predicate_lemma predicate) @
+    curry @
+    syl anr ,(func_subst_explicit_helper 'x $|^ pred @@ eVar x @@ freshness_arg ^|$)
+    ));

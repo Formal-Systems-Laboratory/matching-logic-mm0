@@ -1068,3 +1068,28 @@ theorem propag_mem_test_11 {x y: EVar} (phi: Pattern x):
 theorem propag_mem_test_12 {x y z: EVar}:
   $ (x in ~(app (sym defSym) (bot -> eVar y))) <-> ~(exists z (((z in bot) -> (eVar z == eVar y)) /\ (x in app (sym defSym) (eVar z)))) $ =
   (propag_mem 'x $~(app (sym defSym) (bot -> eVar y))$);
+
+
+
+
+theorem ceil_is_pred: $ (|^ phi ^| == bot) \/ (|^ phi ^| == top) $ =
+  '(orim
+    (anl
+    @ bitr (bicom @ cong_of_equiv_not def_idem)
+    @ bitr not_ceil_floor_bi
+    @ cong_of_equiv_floor
+    @ ibii (iand id @ a1i absurdum)
+    anl)
+    (anl
+    @ bitr (bicom floor_ceil_ceil)
+    @ cong_of_equiv_floor
+    @ ibii (iand (a1i imp_top) @ com12 @ a1i id)
+    @ rsyl anr @ mpcom taut)
+    emr);
+
+theorem ceil_idempotency_for_pred (phi: Pattern): $ ((phi == bot) \/ (phi == top)) <-> (phi == |^ phi ^|) $ =
+  (named '(ibii
+    (eori
+      (mp ,(func_subst_imp_to_var 'x $eVar x == |^ eVar x ^| $) @ lemma_46_floor @ ibii absurdum @ norm (norm_imp_l defNorm) propag_bot)
+      (mp ,(func_subst_imp_to_var 'x $eVar x == |^ eVar x ^| $) @ lemma_46_floor @ bicom @ taut_equiv_top @ framing_def imp_top definedness))
+    (mp ,(func_subst_imp_to_var 'x $(eVar x == bot) \/ (eVar x == top)$) ceil_is_pred)));
