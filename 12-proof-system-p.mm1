@@ -248,10 +248,8 @@ theorem lemma_46 (phi: Pattern) {box: SVar} (ctx: Pattern box)
   $ ~ (app[ (~ phi) / box ] ctx) $ = '(syl propag_bot @ framing @ notnot1 p);
 
 
-theorem lemma_46_floor
-  (h: $phi$)
-: $|_ phi _|$
-= '(norm (norm_not @ ! defNorm box) @ lemma_46 h);
+theorem lemma_46_floor (h: $ phi $): $ |_ phi _| $ =
+  '(norm (norm_not @ ! defNorm box) @ lemma_46 h);
 theorem imp_to_subset  (h: $ phi -> psi $): $ phi C= psi $ = '(lemma_46_floor h);
 theorem equiv_to_eq  (h: $ phi <-> psi $): $ phi == psi $ = '(lemma_46_floor h);
 theorem eq_imp_subset: $ (phi == psi) -> (phi C= psi) $ = '(framing_floor anl);
@@ -910,6 +908,27 @@ theorem floor_ceil_ceil: $ |_ |^ phi ^| _| <-> |^ phi ^| $ =
 
 theorem simple_eq_subst: $ phi /\ (phi == psi) -> psi $ = '(rsyl ancom @ curry eq_to_intro);
 
+
+theorem appCtx_ceil_commute {box: SVar} (ctx: Pattern box) (phi psi: Pattern):
+  $ app[ phi /\ |^ psi ^| / box ] ctx -> app[ phi / box ] ctx /\ |^ psi ^| $ =
+  '(iand (framing anl) @ rsyl (framing anr) ceil_appCtx);
+theorem appCtx_ceil_commute_b {box: SVar} (ctx: Pattern box) (phi psi: Pattern):
+  $ app[ |^ psi ^| /\ phi / box ] ctx -> |^ psi ^| /\ app[ phi / box ] ctx $ =
+  '(iand (rsyl (framing anl) ceil_appCtx) @ framing anr);
+theorem appCtx_floor_commute {box: SVar} (ctx: Pattern box) (phi psi: Pattern):
+  $ app[ phi /\ |_ psi _| / box ] ctx -> app[ phi / box ] ctx /\ |_ psi _| $ =
+  '(rsyl (framing @ anim2 @ anr ceil_floor_floor) @ rsyl appCtx_ceil_commute @ anim2 @ anl ceil_floor_floor);
+theorem appCtx_floor_commute_b {box: SVar} (ctx: Pattern box) (phi psi: Pattern):
+  $ app[ |_ psi _| /\ phi / box ] ctx -> |_ psi _| /\ app[ phi / box ] ctx $ =
+  '(rsyl (framing @ anim1 @ anr ceil_floor_floor) @ rsyl appCtx_ceil_commute_b @ anim1 @ anl ceil_floor_floor);
+
+do {
+  (def (appCtx_ceil_commute_subst subst) '(norm (norm_imp ,subst @ norm_and_l ,subst) appCtx_ceil_commute))
+  (def (appCtx_ceil_commute_b_subst subst) '(norm (norm_imp ,subst @ norm_and_r ,subst) appCtx_ceil_commute_b))
+  (def (appCtx_floor_commute_subst subst) '(norm (norm_imp ,subst @ norm_and_l ,subst) appCtx_floor_commute))
+  (def (appCtx_floor_commute_b_subst subst) '(norm (norm_imp ,subst @ norm_and_r ,subst) appCtx_floor_commute_b))
+};
+
 theorem alpha_exists {x y: EVar} (phi: Pattern x y)
   (y_fresh: $ _eFresh y phi $):
   $ (exists x phi) <-> exists y (e[ eVar y / x ] phi) $ =
@@ -1070,7 +1089,14 @@ theorem propag_mem_test_12 {x y z: EVar}:
   (propag_mem 'x $~(app (sym defSym) (bot -> eVar y))$);
 
 
+theorem lemma_14_subset {box: SVar} (ctx psi phi1 phi2: Pattern box)
+  (h: $ |_ psi _| -> (phi1 C= phi2) $):
+  $ |_ psi _| -> ((app[ phi1 / box ] ctx) C= app[ phi2 / box ] ctx) $ =
+  '(rsyl (anr floor_idem) @ framing_floor @ lemma_14 @ syl corollary_57_floor h);
 
+do {
+  (def (lemma_14_subset_subst h subst) '(norm (norm_imp_r @ norm_subset ,subst ,subst) @ lemma_14_subset ,h))
+};
 
 theorem ceil_is_pred: $ (|^ phi ^| == bot) \/ (|^ phi ^| == top) $ =
   '(orim

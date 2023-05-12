@@ -97,6 +97,11 @@ axiom F3 (alpha1 alpha2: Pattern) {a b: EVar}:
   $ is_atom b alpha2 $ >
   $ alpha1 != alpha2 $ >
   $ freshness a (eVar b) $;
+axiom F4 (alpha tau phi: Pattern) {a: EVar}:
+  $ is_atom_sort alpha $ >
+  $ is_nominal_sort tau $ >
+  $ is_of_sort phi tau $ >
+  $ s_exists alpha a (fresh_in_all a phi) $;
 axiom A1 (alpha tau: Pattern) {a b: EVar} (phi rho: Pattern a b):
   $ is_atom_sort alpha $ >
   $ is_nominal_sort tau $ >
