@@ -127,6 +127,7 @@ theorem induction_lemma_app (pred freshness_arg: Pattern)
     @ syl anr ,(func_subst_explicit_helper 'z $(eVar z C= dom Exp) /\ (eVar z /\ (pred @@ eVar z @@ freshness_arg))$)));
 
 theorem induction_lemma_abs (pred freshness_arg: Pattern)
+  (freshness_arg_Exp: $ is_of_sort freshness_arg Exp $)
   (predicate: $ forall x (is_pred (pred @@ eVar x @@ freshness_arg)) $)
   (h_abs: $ s_forall Var a (s_forall Exp t ((fresh_in_all a freshness_arg) -> (pred @@ eVar t @@ freshness_arg) -> (pred @@ (lc_lam (abstraction (eVar a) (eVar t))) @@ freshness_arg))) $):
   $ (lc_lam (abstraction (dom Var) (s_exists Exp x (eVar x /\ (pred @@ eVar x @@ freshness_arg))))
@@ -136,11 +137,23 @@ theorem induction_lemma_abs (pred freshness_arg: Pattern)
   @ rsyl ,(framing_subst '(anl ,(ex_appCtx_subst 'appCtxRVar)) 'appCtxRVar)
   @ rsyl (anl ,(ex_appCtx_subst 'appCtxRVar))
   @ exists_generalization_disjoint
-  @ rsyl ,(framing_subst ,(appCtx_floor_commute_b_subst 'appCtxRVar)'appCtxRVar)
+  @ rsyl ,(framing_subst ,(appCtx_floor_commute_b_subst 'appCtxRVar) 'appCtxRVar)
   @ rsyl ,(appCtx_floor_commute_b_subst 'appCtxRVar)
+  @ rsyl (anim2 ,(framing_subst (framing_subst '(anim2 @ eq_to_intro @ predicate_lemma predicate) 'appCtxRVar) 'appCtxRVar))
+  @ rsyl (anim2 ,(framing_subst (appCtx_ceil_commute_subst 'appCtxRVar) 'appCtxRVar))
+  @ rsyl (anim2 ,(appCtx_ceil_commute_subst 'appCtxRVar))
+  @ rsyl (anim2 ancom)
+  @ rsyl (anr anass)
+  @ rsyl (anim1 @ anim2 @ eq_to_intro_rev @ predicate_lemma predicate)
+  @ rsyl (anim1 @ iand anl id)
+  @ rsyl (anl anass)
+  @ rsyl (anim2 @ anim1 @ curry @ syl (rsyl (exists_framing imancom) (anr imp_exists_disjoint)) @ anr imp_exists_disjoint @ exists_framing imancom @ exists_framing (iand id @ curry (com23 @ syl var_subst_same_var @ var_subst_same_var h_abs)) (F4 Var_atom Exp_sort freshness_arg_Exp))
+  @ rsyl (anim2 @ anim1 @ exists_framing @ anim1 anl)
+  -- @ syl (curry @ syl anr ,(func_subst_explicit_helper 'z $(eVar z C= dom Exp) /\ (eVar z /\ (pred @@ eVar z @@ freshness_arg))$))
   _);
 
 theorem induction_principle (pred freshness_arg: Pattern)
+  (freshness_arg_Exp: $ is_of_sort freshness_arg Exp $)
   (predicate: $ forall x (is_pred (pred @@ eVar x @@ freshness_arg)) $)
   (h_var: $ s_forall Var a (pred @@ lc_var (eVar a) @@ freshness_arg) $)
   (h_app: $ s_forall Exp t1 (s_forall Exp t2 ((pred @@ eVar t1 @@ freshness_arg) /\ (pred @@ eVar t2 @@ freshness_arg) -> (pred @@ (lc_app (eVar t1) (eVar t2)) @@ freshness_arg))) $)
@@ -152,7 +165,7 @@ theorem induction_principle (pred freshness_arg: Pattern)
       rsyl (eq_to_intro no_junk) @ KT positive_in_no_junk (norm (norm_sym @ norm_imp_l
         ,(propag_s_subst_adv 'X $((sym lc_var_sym) @@ ((sym (dom_sym)) @@ Var)) \/ ((sym lc_app_sym) @@ (sVar X) @@ (sVar X)) \/ ((sym lc_lam_sym) @@ ((sym abstraction_sym) @@ ((sym (dom_sym)) @@ Var) @@ (sVar X)))$ disjoints)
         ) @
-        eori (eori (induction_lemma_var predicate h_var) (induction_lemma_app predicate h_app)) (induction_lemma_abs predicate h_abs))
+        eori (eori (induction_lemma_var predicate h_var) (induction_lemma_app predicate h_app)) (induction_lemma_abs freshness_arg_Exp predicate h_abs))
     )) @
     rsyl (anl @ cong_of_equiv_exists @ cong_of_equiv_and_r @ cong_of_equiv_and_r @ bitr
       (cong_of_equiv_mem (eq_to_intro_bi @ predicate_lemma_same_var predicate))
