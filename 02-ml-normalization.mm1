@@ -156,6 +156,18 @@ theorem norm_equiv_r (phi psi psi2: Pattern)
 --- High level versions of axioms
 ---------------------------------
 
+theorem alpha_exists {x y: EVar} (phi: Pattern x y)
+  (y_fresh: $ _eFresh y phi $):
+  $ (exists x phi) <-> exists y (e[ eVar y / x ] phi) $ =
+  '(ibii
+    (exists_generalization
+      (eFresh_exists @ eFresh_eSubst_same_var eFresh_disjoint) @
+      syl exists_intro @ norm
+        (norm_sym @ norm_imp_r @ norm_trans eSubstitution_in_eSubst @
+          norm_trans (norm_evSubst_pt norm_refl eSubstitution_in_same_eVar) @ norm_trans eSubstitution_id @ eSubstitution_fresh y_fresh)
+        id)
+    (exists_generalization (eFresh_exists y_fresh) exists_intro));
+
 theorem exists_generalization_disjoint {x: EVar} (phi1: Pattern x) (phi2: Pattern)
   (h: $ phi1 -> phi2 $):
   $ (exists x phi1) -> phi2 $ =
