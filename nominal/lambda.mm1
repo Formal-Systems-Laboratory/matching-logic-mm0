@@ -145,10 +145,20 @@ theorem induction_lemma_abs (pred freshness_arg: Pattern)
   @ rsyl (anim2 ancom)
   @ rsyl (anr anass)
   @ rsyl (anim1 @ anim2 @ eq_to_intro_rev @ predicate_lemma predicate)
+  @ rsyl (anim2 @ anl ,(appCtx_pointwise_subst '(norm_trans appCtxR_disjoint @ norm_app_r appCtxLRVar)))
+  @ rsyl and_exists_disjoint_reverse
+  @ exists_generalization_disjoint
+  @ rsyl (anim2 @ anim2 eVar_in_subset_forward)
+  @ rsyl (anim2 ancom)
+  @ rsyl (anl anlass)
+  @ rsyl (anr anass)
+  @ rsyl (anim1 @ anr anass)
   @ rsyl (anim1 @ iand anl id)
   @ rsyl (anl anass)
-  @ rsyl (anim2 @ anim1 @ curry @ syl (rsyl (exists_framing imancom) (anr imp_exists_disjoint)) @ anr imp_exists_disjoint @ exists_framing imancom @ exists_framing (iand id @ curry (com23 @ syl var_subst_same_var @ var_subst_same_var h_abs)) (F4 Var_atom Exp_sort freshness_arg_Exp))
-  @ rsyl (anim2 @ anim1 @ exists_framing @ anim1 anl)
+  @ rsyl (anim2 @ anim1 @ curry @ curry @ exp @ com23 @ curry @ syl var_subst_same_var @ var_subst_same_var h_abs)
+  -- @ rsyl (anim2 @ anim1 @ mpcom @ _)
+  -- @ rsyl (anim2 @ anim1 @ curry @ syl (rsyl (exists_framing imancom) (anr imp_exists_disjoint)) @ anr imp_exists_disjoint @ exists_framing imancom @ exists_framing (iand id @ curry (com23 @ syl var_subst_same_var @ var_subst_same_var h_abs)) (F4 Var_atom Exp_sort freshness_arg_Exp))
+  -- @ rsyl (anim2 @ anim1 @ exists_framing @ anim1 anl)
   -- @ syl (curry @ syl anr ,(func_subst_explicit_helper 'z $(eVar z C= dom Exp) /\ (eVar z /\ (pred @@ eVar z @@ freshness_arg))$))
   _);
 
