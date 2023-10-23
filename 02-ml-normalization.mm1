@@ -281,8 +281,6 @@ do {
 
     [$epsilon$     'eSubstitution_disjoint]
     [$top_letter$  'eSubstitution_disjoint]
-    [$a$           'eSubstitution_disjoint]
-    [$b$           'eSubstitution_disjoint]
     [$top_word ,Y$ 'eSubstitution_disjoint]
     [$concat ,psi1 ,psi2$    '(_eSubst_concat          ,(propag_e_subst_adv x psi1 wo_x) ,(propag_e_subst_adv x psi2 wo_x))]
     [$nnimp ,phi1 ,phi2$     '(_eSubst_nnimp           ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
@@ -313,8 +311,6 @@ do {
 
     [$epsilon$    'sSubstitution_disjoint]
     [$top_letter$ 'sSubstitution_disjoint]
-    [$a$          'sSubstitution_disjoint]
-    [$b$          'sSubstitution_disjoint]
     [$concat ,psi1 ,psi2$ '(sSubst_concat          ,(propag_s_subst_adv X psi1 wo_X) ,(propag_s_subst_adv X psi2 wo_X))]
     [$top_word ,Y$    (if (== X Y) 'sSubstitution_in_same_mu 'sSubstitution_disjoint)]
     [$kleene ,Y ,psi$ (if (== X Y)

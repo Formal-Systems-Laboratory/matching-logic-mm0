@@ -349,345 +349,345 @@ do {
     @ refine tgt (foldl ps (verb e) @ fn (acc p2) @ copy-span e '(mp ,acc ,p2)))
 };
 
-theorem a1i (h: $ b $): $ a -> b $ = '(prop_1 h);
-theorem a2i (h: $ a -> b -> c $): $ (a -> b) -> (a -> c) $ = '(prop_2 h);
-theorem mpd (h1: $ a -> b $) (h2: $ a -> b -> c $): $ a -> c $ = '(prop_2 h2 h1);
-theorem mpi (h1: $ b $) (h2: $ a -> b -> c $): $ a -> c $ = '(mpd (a1i h1) h2);
-theorem id: $ a -> a $ = '(mpd (! prop_1 _ a) prop_1);
-theorem idd: $ a -> b -> b $ = '(a1i id);
-theorem syl (h1: $ b -> c $) (h2: $ a -> b $): $ a -> c $ = '(mpd h2 (a1i h1));
-theorem rsyl (h1: $ a -> b $) (h2: $ b -> c $): $ a -> c $ = '(syl h2 h1);
-theorem a1d (h: $ a -> b $): $ a -> c -> b $ = '(syl prop_1 h);
-theorem a2d (h: $ a -> b -> c -> d $): $ a -> (b -> c) -> (b -> d) $ = '(syl prop_2 h);
-theorem a3d (h: $ a -> ~b -> ~c $): $ a -> c -> b $ = '(syl prop_3 h);
-theorem sylc (h: $ b -> c -> d $) (h1: $ a -> b $) (h2: $ a -> c $): $ a -> d $ = '(mpd h2 @ syl h h1);
-theorem syld (h1: $ a -> b -> c $) (h2: $ a -> c -> d $): $ a -> b -> d $ = '(mpd h1 @ a2d @ a1d h2);
-theorem syl5 (h1: $ b -> c $) (h2: $ a -> c -> d $): $ a -> b -> d $ = '(syld (a1i h1) h2);
-theorem syl6 (h1: $ c -> d $) (h2: $ a -> b -> c $): $ a -> b -> d $ = '(syld h2 (a1i h1));
-theorem imim2: $ (b -> c) -> (a -> b) -> (a -> c) $ = '(a2d prop_1);
-theorem imim2i (h: $ b -> c $): $ (a -> b) -> (a -> c) $ = '(imim2 h);
-theorem imim2d (h: $ a -> c -> d $): $ a -> (b -> c) -> (b -> d) $ = '(syl imim2 h);
-theorem absurd: $ ~a -> a -> b $ = '(a3d prop_1);
-theorem com12 (h: $ a -> b -> c $): $ b -> a -> c $ = '(syl (a2i h) prop_1);
-theorem mpcom: $ a -> (a -> b) -> b $ = '(com12 id);
-theorem com23 (h: $ a -> b -> c -> d $): $ a -> c -> b -> d $ = '(syl (com12 @ imim2d mpcom) h);
-theorem eimd (h1: $ a -> b $) (h2: $ a -> c -> d $): $ a -> (b -> c) -> d $ = '(syld (rsyl h1 mpcom) h2);
-theorem absurdr: $ a -> ~a -> b $ = '(com12 absurd);
-theorem imim1: $ (a -> b) -> (b -> c) -> (a -> c) $ = '(com12 imim2);
-theorem imim1i (h: $ a -> b $): $ (b -> c) -> (a -> c) $ = '(imim1 h);
-theorem imim1d (h: $ a -> b -> c $): $ a -> (c -> d) -> (b -> d) $ = '(syl imim1 h);
-theorem imimd (h1: $ a -> b -> c $) (h2: $ a -> d -> e $):
-  $ a -> (c -> d) -> (b -> e) $ = '(syld (imim1d h1) (imim2d h2));
-theorem imim: $ (a -> b) -> (c -> d) -> (b -> c) -> (a -> d) $ = '(syl5 imim2 (imim2d imim1));
-theorem imidm: $ (a -> a -> b) -> a -> b $ = '(a2i mpcom);
-theorem eim: $ a -> (b -> c) -> (a -> b) -> c $ = '(imim1d mpcom);
-theorem contra: $ (~a -> a) -> a $ = '(imidm (a3d (a2i absurd)));
-theorem dne: $ ~~a -> a $ = '(syl contra absurd);
-theorem inot: $ (a -> ~a) -> ~a $ = '(syl contra (imim1 dne));
-theorem con2: $ (a -> ~b) -> (b -> ~a) $ = '(a3d (syl5 dne id));
-theorem notnot1: $ a -> ~~a $ = '(con2 id);
-theorem con3: $ (a -> b) -> (~b -> ~a) $ = '(syl con2 (imim2i notnot1));
-theorem con1: $ (~a -> b) -> (~b -> a) $ = '(a3d (imim2i notnot1));
-theorem cases (h1: $ a -> b $) (h2: $ ~a -> b $): $ b $ = '(contra @ syl h1 @ con1 h2);
-theorem casesd (h1: $ a -> b -> c $) (h2: $ a -> ~b -> c $): $ a -> c $ =
+theorem a1i (h: $ bb $): $ aa -> bb $ = '(prop_1 h);
+theorem a2i (h: $ aa -> bb -> c $): $ (aa -> bb) -> (aa -> c) $ = '(prop_2 h);
+theorem mpd (h1: $ aa -> bb $) (h2: $ aa -> bb -> c $): $ aa -> c $ = '(prop_2 h2 h1);
+theorem mpi (h1: $ bb $) (h2: $ aa -> bb -> c $): $ aa -> c $ = '(mpd (a1i h1) h2);
+theorem id: $ aa -> aa $ = '(mpd (! prop_1 _ aa) prop_1);
+theorem idd: $ aa -> bb -> bb $ = '(a1i id);
+theorem syl (h1: $ bb -> c $) (h2: $ aa -> bb $): $ aa -> c $ = '(mpd h2 (a1i h1));
+theorem rsyl (h1: $ aa -> bb $) (h2: $ bb -> c $): $ aa -> c $ = '(syl h2 h1);
+theorem a1d (h: $ aa -> bb $): $ aa -> c -> bb $ = '(syl prop_1 h);
+theorem a2d (h: $ aa -> bb -> c -> d $): $ aa -> (bb -> c) -> (bb -> d) $ = '(syl prop_2 h);
+theorem a3d (h: $ aa -> ~bb -> ~c $): $ aa -> c -> bb $ = '(syl prop_3 h);
+theorem sylc (h: $ bb -> c -> d $) (h1: $ aa -> bb $) (h2: $ aa -> c $): $ aa -> d $ = '(mpd h2 @ syl h h1);
+theorem syld (h1: $ aa -> bb -> c $) (h2: $ aa -> c -> d $): $ aa -> bb -> d $ = '(mpd h1 @ a2d @ a1d h2);
+theorem syl5 (h1: $ bb -> c $) (h2: $ aa -> c -> d $): $ aa -> bb -> d $ = '(syld (a1i h1) h2);
+theorem syl6 (h1: $ c -> d $) (h2: $ aa -> bb -> c $): $ aa -> bb -> d $ = '(syld h2 (a1i h1));
+theorem imim2: $ (bb -> c) -> (aa -> bb) -> (aa -> c) $ = '(a2d prop_1);
+theorem imim2i (h: $ bb -> c $): $ (aa -> bb) -> (aa -> c) $ = '(imim2 h);
+theorem imim2d (h: $ aa -> c -> d $): $ aa -> (bb -> c) -> (bb -> d) $ = '(syl imim2 h);
+theorem absurd: $ ~aa -> aa -> bb $ = '(a3d prop_1);
+theorem com12 (h: $ aa -> bb -> c $): $ bb -> aa -> c $ = '(syl (a2i h) prop_1);
+theorem mpcom: $ aa -> (aa -> bb) -> bb $ = '(com12 id);
+theorem com23 (h: $ aa -> bb -> c -> d $): $ aa -> c -> bb -> d $ = '(syl (com12 @ imim2d mpcom) h);
+theorem eimd (h1: $ aa -> bb $) (h2: $ aa -> c -> d $): $ aa -> (bb -> c) -> d $ = '(syld (rsyl h1 mpcom) h2);
+theorem absurdr: $ aa -> ~aa -> bb $ = '(com12 absurd);
+theorem imim1: $ (aa -> bb) -> (bb -> c) -> (aa -> c) $ = '(com12 imim2);
+theorem imim1i (h: $ aa -> bb $): $ (bb -> c) -> (aa -> c) $ = '(imim1 h);
+theorem imim1d (h: $ aa -> bb -> c $): $ aa -> (c -> d) -> (bb -> d) $ = '(syl imim1 h);
+theorem imimd (h1: $ aa -> bb -> c $) (h2: $ aa -> d -> e $):
+  $ aa -> (c -> d) -> (bb -> e) $ = '(syld (imim1d h1) (imim2d h2));
+theorem imim: $ (aa -> bb) -> (c -> d) -> (bb -> c) -> (aa -> d) $ = '(syl5 imim2 (imim2d imim1));
+theorem imidm: $ (aa -> aa -> bb) -> aa -> bb $ = '(a2i mpcom);
+theorem eim: $ aa -> (bb -> c) -> (aa -> bb) -> c $ = '(imim1d mpcom);
+theorem contra: $ (~aa -> aa) -> aa $ = '(imidm (a3d (a2i absurd)));
+theorem dne: $ ~~aa -> aa $ = '(syl contra absurd);
+theorem inot: $ (aa -> ~aa) -> ~aa $ = '(syl contra (imim1 dne));
+theorem con2: $ (aa -> ~bb) -> (bb -> ~aa) $ = '(a3d (syl5 dne id));
+theorem notnot1: $ aa -> ~~aa $ = '(con2 id);
+theorem con3: $ (aa -> bb) -> (~bb -> ~aa) $ = '(syl con2 (imim2i notnot1));
+theorem con1: $ (~aa -> bb) -> (~bb -> aa) $ = '(a3d (imim2i notnot1));
+theorem cases (h1: $ aa -> bb $) (h2: $ ~aa -> bb $): $ bb $ = '(contra @ syl h1 @ con1 h2);
+theorem casesd (h1: $ aa -> bb -> c $) (h2: $ aa -> ~bb -> c $): $ aa -> c $ =
 '(cases (com12 h1) (com12 h2));
-theorem con1d (h: $ a -> ~b -> c $): $ a -> ~c -> b $ = '(syl con1 h);
-theorem con2d (h: $ a -> b -> ~c $): $ a -> c -> ~b $ = '(syl con2 h);
-theorem con3d (h: $ a -> b -> c $): $ a -> ~c -> ~b $ = '(syl con3 h);
-theorem con4d (h: $ a -> ~b -> ~c $): $ a -> c -> b $ = '(syl prop_3 h);
-theorem mt (h1: $ b -> a $) (h2: $ ~a $): $ ~b $ = '(con3 h1 h2);
-theorem mt2 (h1: $ b -> ~a $) (h2: $ a $): $ ~b $ = '(con2 h1 h2);
-theorem mtd (h1: $ a -> ~b $) (h2: $ a -> c -> b $): $ a -> ~c $ = '(mpd h1 (con3d h2));
-theorem mti (h1: $ ~b $) (h2: $ a -> c -> b $): $ a -> ~c $ = '(mtd (a1i h1) h2);
-theorem mt2d (h1: $ a -> c $) (h2: $ a -> b -> ~c $): $ a -> ~b $ = '(sylc con2 h2 h1);
+theorem con1d (h: $ aa -> ~bb -> c $): $ aa -> ~c -> bb $ = '(syl con1 h);
+theorem con2d (h: $ aa -> bb -> ~c $): $ aa -> c -> ~bb $ = '(syl con2 h);
+theorem con3d (h: $ aa -> bb -> c $): $ aa -> ~c -> ~bb $ = '(syl con3 h);
+theorem con4d (h: $ aa -> ~bb -> ~c $): $ aa -> c -> bb $ = '(syl prop_3 h);
+theorem mt (h1: $ bb -> aa $) (h2: $ ~aa $): $ ~bb $ = '(con3 h1 h2);
+theorem mt2 (h1: $ bb -> ~aa $) (h2: $ aa $): $ ~bb $ = '(con2 h1 h2);
+theorem mtd (h1: $ aa -> ~bb $) (h2: $ aa -> c -> bb $): $ aa -> ~c $ = '(mpd h1 (con3d h2));
+theorem mti (h1: $ ~bb $) (h2: $ aa -> c -> bb $): $ aa -> ~c $ = '(mtd (a1i h1) h2);
+theorem mt2d (h1: $ aa -> c $) (h2: $ aa -> bb -> ~c $): $ aa -> ~bb $ = '(sylc con2 h2 h1);
 
-theorem anl: $ a /\ b -> a $ = '(con1 absurd);
-theorem anr: $ a /\ b -> b $ = '(con1 prop_1);
-theorem anli (h: $ a /\ b $): $ a $ = '(anl h);
-theorem anri (h: $ a /\ b $): $ b $ = '(anr h);
-theorem ian: $ a -> b -> a /\ b $ = '(con2d mpcom);
-theorem iand (h1: $ a -> b $) (h2: $ a -> c $): $ a -> b /\ c $ = '(sylc ian h1 h2);
-theorem anld (h: $ a -> b /\ c $): $ a -> b $ = '(syl anl h);
-theorem anrd (h: $ a -> b /\ c $): $ a -> c $ = '(syl anr h);
-theorem iani (h1: $ a $) (h2: $ b $): $ a /\ b $ = '(ian h1 h2);
-theorem anwl (h: $ a -> c $): $ a /\ b -> c $ = '(syl h anl);
-theorem anwr (h: $ b -> c $): $ a /\ b -> c $ = '(syl h anr);
-theorem anll: $ a /\ b /\ c -> a $ = '(anwl anl);
-theorem anlr: $ a /\ b /\ c -> b $ = '(anwl anr);
-theorem anrl: $ a /\ (b /\ c) -> b $ = '(anwr anl);
-theorem anrr: $ a /\ (b /\ c) -> c $ = '(anwr anr);
-theorem anwll (h: $ a -> d $): $ a /\ b /\ c -> d $ = '(anwl (anwl h));
-theorem anw3l (h: $ a -> e $): $ a /\ b /\ c /\ d -> e $ = '(anwll (anwl h));
-theorem anw4l (h: $ a -> f $): $ a /\ b /\ c /\ d /\ e -> f $ = '(anw3l (anwl h));
-theorem anw5l (h: $ a -> g $): $ a /\ b /\ c /\ d /\ e /\ f -> g $ = '(anw4l (anwl h));
-theorem anw6l (x: $ a -> h $): $ a /\ b /\ c /\ d /\ e /\ f /\ g -> h $ = '(anw5l (anwl x));
-theorem anw7l (x: $ a -> i $): $ a /\ b /\ c /\ d /\ e /\ f /\ g /\ h -> i $ = '(anw6l (anwl x));
-theorem anllr: $ a /\ b /\ c /\ d -> b $ = '(anwll anr);
-theorem an3l: $ a /\ b /\ c /\ d -> a $ = '(anwll anl);
-theorem an3lr: $ a /\ b /\ c /\ d /\ e -> b $ = '(anwl anllr);
-theorem an4l: $ a /\ b /\ c /\ d /\ e -> a $ = '(anwl an3l); -- TODO: automate these
-theorem an4lr: $ a /\ b /\ c /\ d /\ e /\ f -> b $ = '(anwl an3lr);
-theorem an5l: $ a /\ b /\ c /\ d /\ e /\ f -> a $ = '(anwl an4l);
-theorem an5lr: $ a /\ b /\ c /\ d /\ e /\ f /\ g -> b $ = '(anwl an4lr);
-theorem an6l: $ a /\ b /\ c /\ d /\ e /\ f /\ g -> a $ = '(anwl an5l);
-theorem an6lr: $ a /\ b /\ c /\ d /\ e /\ f /\ g /\ h -> b $ = '(anwl an5lr);
-theorem curry (h: $ a -> b -> c $): $ a /\ b -> c $ = '(sylc h anl anr);
-theorem exp (h: $ a /\ b -> c $): $ a -> b -> c $ = '(syl6 h ian);
-theorem impcom (h: $ a -> b -> c $): $ b /\ a -> c $ = '(curry (com12 h));
-theorem expcom (h: $ a /\ b -> c $): $ b -> a -> c $ = '(com12 (exp h));
-theorem syla (h1: $ (b -> c) -> d $) (h2: $ a /\ b -> c $): $ a -> d $ = '(syl h1 @ exp h2);
-theorem sylan (h: $ b /\ c -> d $) (h1: $ a -> b $) (h2: $ a -> c $):
-  $ a -> d $ = '(syl h @ iand h1 h2);
-theorem animd (h1: $ a -> b -> c $) (h2: $ a -> d -> e $): $ a -> b /\ d -> c /\ e $ =
+theorem anl: $ aa /\ bb -> aa $ = '(con1 absurd);
+theorem anr: $ aa /\ bb -> bb $ = '(con1 prop_1);
+theorem anli (h: $ aa /\ bb $): $ aa $ = '(anl h);
+theorem anri (h: $ aa /\ bb $): $ bb $ = '(anr h);
+theorem ian: $ aa -> bb -> aa /\ bb $ = '(con2d mpcom);
+theorem iand (h1: $ aa -> bb $) (h2: $ aa -> c $): $ aa -> bb /\ c $ = '(sylc ian h1 h2);
+theorem anld (h: $ aa -> bb /\ c $): $ aa -> bb $ = '(syl anl h);
+theorem anrd (h: $ aa -> bb /\ c $): $ aa -> c $ = '(syl anr h);
+theorem iani (h1: $ aa $) (h2: $ bb $): $ aa /\ bb $ = '(ian h1 h2);
+theorem anwl (h: $ aa -> c $): $ aa /\ bb -> c $ = '(syl h anl);
+theorem anwr (h: $ bb -> c $): $ aa /\ bb -> c $ = '(syl h anr);
+theorem anll: $ aa /\ bb /\ c -> aa $ = '(anwl anl);
+theorem anlr: $ aa /\ bb /\ c -> bb $ = '(anwl anr);
+theorem anrl: $ aa /\ (bb /\ c) -> bb $ = '(anwr anl);
+theorem anrr: $ aa /\ (bb /\ c) -> c $ = '(anwr anr);
+theorem anwll (h: $ aa -> d $): $ aa /\ bb /\ c -> d $ = '(anwl (anwl h));
+theorem anw3l (h: $ aa -> e $): $ aa /\ bb /\ c /\ d -> e $ = '(anwll (anwl h));
+theorem anw4l (h: $ aa -> f $): $ aa /\ bb /\ c /\ d /\ e -> f $ = '(anw3l (anwl h));
+theorem anw5l (h: $ aa -> g $): $ aa /\ bb /\ c /\ d /\ e /\ f -> g $ = '(anw4l (anwl h));
+theorem anw6l (x: $ aa -> h $): $ aa /\ bb /\ c /\ d /\ e /\ f /\ g -> h $ = '(anw5l (anwl x));
+theorem anw7l (x: $ aa -> i $): $ aa /\ bb /\ c /\ d /\ e /\ f /\ g /\ h -> i $ = '(anw6l (anwl x));
+theorem anllr: $ aa /\ bb /\ c /\ d -> bb $ = '(anwll anr);
+theorem an3l: $ aa /\ bb /\ c /\ d -> aa $ = '(anwll anl);
+theorem an3lr: $ aa /\ bb /\ c /\ d /\ e -> bb $ = '(anwl anllr);
+theorem an4l: $ aa /\ bb /\ c /\ d /\ e -> aa $ = '(anwl an3l); -- TODO: automate these
+theorem an4lr: $ aa /\ bb /\ c /\ d /\ e /\ f -> bb $ = '(anwl an3lr);
+theorem an5l: $ aa /\ bb /\ c /\ d /\ e /\ f -> aa $ = '(anwl an4l);
+theorem an5lr: $ aa /\ bb /\ c /\ d /\ e /\ f /\ g -> bb $ = '(anwl an4lr);
+theorem an6l: $ aa /\ bb /\ c /\ d /\ e /\ f /\ g -> aa $ = '(anwl an5l);
+theorem an6lr: $ aa /\ bb /\ c /\ d /\ e /\ f /\ g /\ h -> bb $ = '(anwl an5lr);
+theorem curry (h: $ aa -> bb -> c $): $ aa /\ bb -> c $ = '(sylc h anl anr);
+theorem exp (h: $ aa /\ bb -> c $): $ aa -> bb -> c $ = '(syl6 h ian);
+theorem impcom (h: $ aa -> bb -> c $): $ bb /\ aa -> c $ = '(curry (com12 h));
+theorem expcom (h: $ aa /\ bb -> c $): $ bb -> aa -> c $ = '(com12 (exp h));
+theorem syla (h1: $ (bb -> c) -> d $) (h2: $ aa /\ bb -> c $): $ aa -> d $ = '(syl h1 @ exp h2);
+theorem sylan (h: $ bb /\ c -> d $) (h1: $ aa -> bb $) (h2: $ aa -> c $):
+  $ aa -> d $ = '(syl h @ iand h1 h2);
+theorem animd (h1: $ aa -> bb -> c $) (h2: $ aa -> d -> e $): $ aa -> bb /\ d -> c /\ e $ =
 '(exp (iand (curry (syl5 anl h1)) (curry (syl5 anr h2))));
-theorem anim1d (h: $ a -> b -> c $): $ a -> b /\ d -> c /\ d $ = '(animd h idd);
-theorem anim2d (h: $ a -> c -> d $): $ a -> b /\ c -> b /\ d $ = '(animd idd h);
-theorem anim1: $ (a -> b) -> a /\ c -> b /\ c $ = '(anim1d id);
-theorem anim2: $ (b -> c) -> a /\ b -> a /\ c $ = '(anim2d id);
-theorem anim: $ (a -> b) -> (c -> d) -> a /\ c -> b /\ d $ =
+theorem anim1d (h: $ aa -> bb -> c $): $ aa -> bb /\ d -> c /\ d $ = '(animd h idd);
+theorem anim2d (h: $ aa -> c -> d $): $ aa -> bb /\ c -> bb /\ d $ = '(animd idd h);
+theorem anim1: $ (aa -> bb) -> aa /\ c -> bb /\ c $ = '(anim1d id);
+theorem anim2: $ (bb -> c) -> aa /\ bb -> aa /\ c $ = '(anim2d id);
+theorem anim: $ (aa -> bb) -> (c -> d) -> aa /\ c -> bb /\ d $ =
 '(exp @ syld (anim1d anl) (anim2d anr));
-theorem anim2a: $ (a -> b -> c) -> (a /\ b -> a /\ c) $ =
+theorem anim2a: $ (aa -> bb -> c) -> (aa /\ bb -> aa /\ c) $ =
 '(exp @ iand anrl @ mpd anrr @ mpd anrl anl);
-theorem ancom: $ a /\ b -> b /\ a $ = '(iand anr anl);
-theorem anrasss (h: $ a /\ b /\ c -> d $): $ a /\ c /\ b -> d $ =
+theorem ancom: $ aa /\ bb -> bb /\ aa $ = '(iand anr anl);
+theorem anrasss (h: $ aa /\ bb /\ c -> d $): $ aa /\ c /\ bb -> d $ =
 '(sylan h (iand anll anr) anlr);
-theorem anim1a: $ (a -> b -> c) -> (b /\ a -> c /\ a) $ =
+theorem anim1a: $ (aa -> bb -> c) -> (bb /\ aa -> c /\ aa) $ =
 '(syl6 ancom @ syl5 ancom anim2a);
-theorem casesda (h1: $ a /\ b -> c $) (h2: $ a /\ ~b -> c $): $ a -> c $ =
+theorem casesda (h1: $ aa /\ bb -> c $) (h2: $ aa /\ ~bb -> c $): $ aa -> c $ =
 '(casesd (exp h1) (exp h2));
-theorem inotda (h: $ a /\ b -> ~b $): $ a -> ~b $ = '(syla inot h);
-theorem mpand (h1: $ a -> b $) (h2: $ a /\ b -> c $): $ a -> c $ = '(mpd h1 (exp h2));
-theorem mtand (h1: $ a -> ~b $) (h2: $ a /\ c -> b $): $ a -> ~c $ = '(mtd h1 (exp h2));
-theorem mtani (h1: $ ~b $) (h2: $ a /\ c -> b $): $ a -> ~c $ = '(mtand (a1i h1) h2);
+theorem inotda (h: $ aa /\ bb -> ~bb $): $ aa -> ~bb $ = '(syla inot h);
+theorem mpand (h1: $ aa -> bb $) (h2: $ aa /\ bb -> c $): $ aa -> c $ = '(mpd h1 (exp h2));
+theorem mtand (h1: $ aa -> ~bb $) (h2: $ aa /\ c -> bb $): $ aa -> ~c $ = '(mtd h1 (exp h2));
+theorem mtani (h1: $ ~bb $) (h2: $ aa /\ c -> bb $): $ aa -> ~c $ = '(mtand (a1i h1) h2);
 
-theorem bi1: $ (a <-> b) -> a -> b $ = 'anl;
-theorem bi1i (h: $ a <-> b $): $ a -> b $ = '(bi1 h);
-theorem bi1d (h: $ a -> (b <-> c) $): $ a -> b -> c $ = '(syl bi1 h);
-theorem bi1a (h: $ a -> (b <-> c) $): $ a /\ b -> c $ = '(curry @ bi1d h);
-theorem bi2: $ (a <-> b) -> b -> a $ = 'anr;
-theorem bi2i (h: $ a <-> b $): $ b -> a $ = '(bi2 h);
-theorem bi2d (h: $ a -> (b <-> c) $): $ a -> c -> b $ = '(syl bi2 h);
-theorem bi2a (h: $ a -> (b <-> c) $): $ a /\ c -> b $ = '(curry @ bi2d h);
-theorem ibii (h1: $ a -> b $) (h2: $ b -> a $): $ a <-> b $ = '(iani h1 h2);
-theorem ibid (h1: $ a -> b -> c $) (h2: $ a -> c -> b $): $ a -> (b <-> c) $ = '(iand h1 h2);
-theorem ibida (h1: $ a /\ b -> c $) (h2: $ a /\ c -> b $): $ a -> (b <-> c) $ = '(ibid (exp h1) (exp h2));
-theorem biid: $ a <-> a $ = '(ibii id id);
-theorem biidd: $ a -> (b <-> b) $ = '(a1i biid);
-theorem mpbi (h1: $ a <-> b $) (h2: $ a $): $ b $ = '(bi1i h1 h2);
-theorem mpbir (h1: $ b <-> a $) (h2: $ a $): $ b $ = '(bi2i h1 h2);
-theorem mpbid (h1: $ a -> (b <-> c) $) (h2: $ a -> b $): $ a -> c $ = '(mpd h2 (bi1d h1));
-theorem mpbird (h1: $ a -> (c <-> b) $) (h2: $ a -> b $): $ a -> c $ = '(mpd h2 (bi2d h1));
-theorem mpbii (h1: $ b $) (h2: $ a -> (b <-> c) $): $ a -> c $ = '(mpbid h2 (a1i h1));
-theorem mpbiri (h1: $ b $) (h2: $ a -> (c <-> b) $): $ a -> c $ = '(mpbird h2 (a1i h1));
-theorem mtbi (h1: $ a <-> b $) (h2: $ ~a $): $ ~b $ = '(mt (bi2 h1) h2);
-theorem mtbir (h1: $ b <-> a $) (h2: $ ~a $): $ ~b $ = '(mt (bi1 h1) h2);
-theorem mtbid (h1: $ a -> (b <-> c) $) (h2: $ a -> ~b $): $ a -> ~c $ = '(mtd h2 (bi2d h1));
-theorem mtbird (h1: $ a -> (c <-> b) $) (h2: $ a -> ~b $): $ a -> ~c $ = '(mtd h2 (bi1d h1));
-theorem con1b: $ (~a <-> b) -> (~b <-> a) $ = '(ibid (con1d bi1) (con2d bi2));
-theorem con2b: $ (a <-> ~b) -> (b <-> ~a) $ = '(ibid (con2d bi1) (con1d bi2));
-theorem con3b: $ (a <-> b) -> (~a <-> ~b) $ = '(ibid (con3d bi2) (con3d bi1));
-theorem con4b: $ (~a <-> ~b) -> (a <-> b) $ = '(ibid (con4d bi2) (con4d bi1));
-theorem con1bb: $ (~a <-> b) <-> (~b <-> a) $ = '(ibii con1b con1b);
-theorem con2bb: $ (a <-> ~b) <-> (b <-> ~a) $ = '(ibii con2b con2b);
-theorem con3bb: $ (a <-> b) <-> (~a <-> ~b) $ = '(ibii con3b con4b);
-theorem con1bi: $ (~a -> b) <-> (~b -> a) $ = '(ibii con1 con1);
-theorem con2bi: $ (a -> ~b) <-> (b -> ~a) $ = '(ibii con2 con2);
-theorem con3bi: $ (a -> b) <-> (~b -> ~a) $ = '(ibii con3 prop_3);
-theorem notnot: $ a <-> ~~a $ = '(ibii notnot1 dne);
-theorem bithd (h1: $ a -> b $) (h2: $ a -> c $): $ a -> (b <-> c) $ = '(ibid (a1d h2) (a1d h1));
-theorem binthd (h1: $ a -> ~b $) (h2: $ a -> ~c $): $ a -> (b <-> c) $ = '(syl con4b @ bithd h1 h2);
-theorem bith: $ a -> b -> (a <-> b) $ = '(exp @ bithd anl anr);
-theorem binth: $ ~a -> ~b -> (a <-> b) $ = '(exp @ binthd anl anr);
-theorem bicom: $ (a <-> b) -> (b <-> a) $ = '(ibid bi2 bi1);
-theorem bicomb: $ (a <-> b) <-> (b <-> a) $ = '(ibii bicom bicom);
-theorem bicomd (h: $ a -> (b <-> c) $): $ a -> (c <-> b) $ = '(syl bicom h);
-theorem bitrd (h1: $ a -> (b <-> c) $) (h2: $ a -> (c <-> d) $): $ a -> (b <-> d) $ =
+theorem bi1: $ (aa <-> bb) -> aa -> bb $ = 'anl;
+theorem bi1i (h: $ aa <-> bb $): $ aa -> bb $ = '(bi1 h);
+theorem bi1d (h: $ aa -> (bb <-> c) $): $ aa -> bb -> c $ = '(syl bi1 h);
+theorem bi1a (h: $ aa -> (bb <-> c) $): $ aa /\ bb -> c $ = '(curry @ bi1d h);
+theorem bi2: $ (aa <-> bb) -> bb -> aa $ = 'anr;
+theorem bi2i (h: $ aa <-> bb $): $ bb -> aa $ = '(bi2 h);
+theorem bi2d (h: $ aa -> (bb <-> c) $): $ aa -> c -> bb $ = '(syl bi2 h);
+theorem bi2a (h: $ aa -> (bb <-> c) $): $ aa /\ c -> bb $ = '(curry @ bi2d h);
+theorem ibii (h1: $ aa -> bb $) (h2: $ bb -> aa $): $ aa <-> bb $ = '(iani h1 h2);
+theorem ibid (h1: $ aa -> bb -> c $) (h2: $ aa -> c -> bb $): $ aa -> (bb <-> c) $ = '(iand h1 h2);
+theorem ibida (h1: $ aa /\ bb -> c $) (h2: $ aa /\ c -> bb $): $ aa -> (bb <-> c) $ = '(ibid (exp h1) (exp h2));
+theorem biid: $ aa <-> aa $ = '(ibii id id);
+theorem biidd: $ aa -> (bb <-> bb) $ = '(a1i biid);
+theorem mpbi (h1: $ aa <-> bb $) (h2: $ aa $): $ bb $ = '(bi1i h1 h2);
+theorem mpbir (h1: $ bb <-> aa $) (h2: $ aa $): $ bb $ = '(bi2i h1 h2);
+theorem mpbid (h1: $ aa -> (bb <-> c) $) (h2: $ aa -> bb $): $ aa -> c $ = '(mpd h2 (bi1d h1));
+theorem mpbird (h1: $ aa -> (c <-> bb) $) (h2: $ aa -> bb $): $ aa -> c $ = '(mpd h2 (bi2d h1));
+theorem mpbii (h1: $ bb $) (h2: $ aa -> (bb <-> c) $): $ aa -> c $ = '(mpbid h2 (a1i h1));
+theorem mpbiri (h1: $ bb $) (h2: $ aa -> (c <-> bb) $): $ aa -> c $ = '(mpbird h2 (a1i h1));
+theorem mtbi (h1: $ aa <-> bb $) (h2: $ ~aa $): $ ~bb $ = '(mt (bi2 h1) h2);
+theorem mtbir (h1: $ bb <-> aa $) (h2: $ ~aa $): $ ~bb $ = '(mt (bi1 h1) h2);
+theorem mtbid (h1: $ aa -> (bb <-> c) $) (h2: $ aa -> ~bb $): $ aa -> ~c $ = '(mtd h2 (bi2d h1));
+theorem mtbird (h1: $ aa -> (c <-> bb) $) (h2: $ aa -> ~bb $): $ aa -> ~c $ = '(mtd h2 (bi1d h1));
+theorem con1b: $ (~aa <-> bb) -> (~bb <-> aa) $ = '(ibid (con1d bi1) (con2d bi2));
+theorem con2b: $ (aa <-> ~bb) -> (bb <-> ~aa) $ = '(ibid (con2d bi1) (con1d bi2));
+theorem con3b: $ (aa <-> bb) -> (~aa <-> ~bb) $ = '(ibid (con3d bi2) (con3d bi1));
+theorem con4b: $ (~aa <-> ~bb) -> (aa <-> bb) $ = '(ibid (con4d bi2) (con4d bi1));
+theorem con1bb: $ (~aa <-> bb) <-> (~bb <-> aa) $ = '(ibii con1b con1b);
+theorem con2bb: $ (aa <-> ~bb) <-> (bb <-> ~aa) $ = '(ibii con2b con2b);
+theorem con3bb: $ (aa <-> bb) <-> (~aa <-> ~bb) $ = '(ibii con3b con4b);
+theorem con1bi: $ (~aa -> bb) <-> (~bb -> aa) $ = '(ibii con1 con1);
+theorem con2bi: $ (aa -> ~bb) <-> (bb -> ~aa) $ = '(ibii con2 con2);
+theorem con3bi: $ (aa -> bb) <-> (~bb -> ~aa) $ = '(ibii con3 prop_3);
+theorem notnot: $ aa <-> ~~aa $ = '(ibii notnot1 dne);
+theorem bithd (h1: $ aa -> bb $) (h2: $ aa -> c $): $ aa -> (bb <-> c) $ = '(ibid (a1d h2) (a1d h1));
+theorem binthd (h1: $ aa -> ~bb $) (h2: $ aa -> ~c $): $ aa -> (bb <-> c) $ = '(syl con4b @ bithd h1 h2);
+theorem bith: $ aa -> bb -> (aa <-> bb) $ = '(exp @ bithd anl anr);
+theorem binth: $ ~aa -> ~bb -> (aa <-> bb) $ = '(exp @ binthd anl anr);
+theorem bicom: $ (aa <-> bb) -> (bb <-> aa) $ = '(ibid bi2 bi1);
+theorem bicomb: $ (aa <-> bb) <-> (bb <-> aa) $ = '(ibii bicom bicom);
+theorem bicomd (h: $ aa -> (bb <-> c) $): $ aa -> (c <-> bb) $ = '(syl bicom h);
+theorem bitrd (h1: $ aa -> (bb <-> c) $) (h2: $ aa -> (c <-> d) $): $ aa -> (bb <-> d) $ =
 '(ibid (syld (bi1d h1) (bi1d h2)) (syld (bi2d h2) (bi2d h1)));
-theorem bitr2d (h1: $ a -> (b <-> c) $) (h2: $ a -> (c <-> d) $): $ a -> (d <-> b) $ = '(bicomd (bitrd h1 h2));
-theorem bitr3d (h1: $ a -> (c <-> b) $) (h2: $ a -> (c <-> d) $): $ a -> (b <-> d) $ = '(bitrd (bicomd h1) h2);
-theorem bitr4d (h1: $ a -> (b <-> c) $) (h2: $ a -> (d <-> c) $): $ a -> (b <-> d) $ = '(bitrd h1 (bicomd h2));
-theorem bitr: $ (a <-> b) -> (b <-> c) -> (a <-> c) $ = '(exp (bitrd anl anr));
-theorem bitr2: $ (a <-> b) -> (b <-> c) -> (c <-> a) $ = '(exp (bitr2d anl anr));
-theorem bitr3: $ (b <-> a) -> (b <-> c) -> (a <-> c) $ = '(exp (bitr3d anl anr));
-theorem bitr4: $ (a <-> b) -> (c <-> b) -> (a <-> c) $ = '(exp (bitr4d anl anr));
-theorem bisylr: $ (c <-> b) -> (a <-> b) -> (a <-> c) $ = '(rsyl bicom @ com23 id bitr);
-theorem sylib (h1: $ b <-> c $) (h2: $ a -> b $): $ a -> c $ = '(syl (bi1i h1) h2);
-theorem sylibr (h1: $ c <-> b $) (h2: $ a -> b $): $ a -> c $ = '(syl (bi2i h1) h2);
-theorem sylbi (h1: $ a <-> b $) (h2: $ b -> c $): $ a -> c $ = '(syl h2 (bi1i h1));
-theorem sylbir (h1: $ b <-> a $) (h2: $ b -> c $): $ a -> c $ = '(syl h2 (bi2i h1));
-theorem syl5bb (h1: $ b <-> c $) (h2: $ a -> (c <-> d) $): $ a -> (b <-> d) $ = '(bitrd (a1i h1) h2);
-theorem syl5bbr (h1: $ c <-> b $) (h2: $ a -> (c <-> d) $): $ a -> (b <-> d) $ = '(syl5bb (bicom h1) h2);
-theorem syl6bb (h1: $ c <-> d $) (h2: $ a -> (b <-> c) $): $ a -> (b <-> d) $ = '(bitrd h2 (a1i h1));
-theorem syl6bbr (h1: $ d <-> c $) (h2: $ a -> (b <-> c) $): $ a -> (b <-> d) $ = '(syl6bb (bicom h1) h2);
-theorem syl5bi (h1: $ b <-> c $) (h2: $ a -> c -> d $): $ a -> b -> d $ = '(syl5 (bi1 h1) h2);
-theorem syl5bir (h1: $ c <-> b $) (h2: $ a -> c -> d $): $ a -> b -> d $ = '(syl5bi (bicom h1) h2);
-theorem syl6ib (h1: $ c <-> d $) (h2: $ a -> b -> c $): $ a -> b -> d $ = '(syl6 (bi1 h1) h2);
-theorem syl6ibr (h1: $ d <-> c $) (h2: $ a -> b -> c $): $ a -> b -> d $ = '(syl6 (bi2 h1) h2);
-theorem syl5ibrcom (h1: $ c -> (b <-> d) $) (h2: $ a -> d $): $ a -> c -> b $ = '(com12 @ syl5 h2 (bi2d h1));
-theorem sylbid (h1: $ a -> (b <-> c) $) (h2: $ a -> c -> d $): $ a -> b -> d $ = '(syld (bi1d h1) h2);
-theorem sylibd (h1: $ a -> b -> c $) (h2: $ a -> (c <-> d) $): $ a -> b -> d $ = '(syld h1 (bi1d h2));
-theorem sylbird (h1: $ a -> (c <-> b) $) (h2: $ a -> c -> d $): $ a -> b -> d $ = '(syld (bi2d h1) h2);
-theorem sylibrd (h1: $ a -> b -> c $) (h2: $ a -> (d <-> c) $): $ a -> b -> d $ = '(syld h1 (bi2d h2));
-theorem bitr3g (h1: $ b <-> d $) (h2: $ c <-> e $) (h: $ a -> (b <-> c) $):
-  $ a -> (d <-> e) $ = '(syl5bb (bicom h1) @ syl6bb h2 h);
-theorem bitr4g (h1: $ d <-> b $) (h2: $ e <-> c $) (h: $ a -> (b <-> c) $):
-  $ a -> (d <-> e) $ = '(syl5bb h1 @ syl6bb (bicom h2) h);
-theorem bitr3gi (h1: $ a <-> c $) (h2: $ b <-> d $) (h: $ a <-> b $): $ c <-> d $ = '(bitr3 h1 @ bitr h h2);
-theorem bitr4gi (h1: $ c <-> a $) (h2: $ d <-> b $) (h: $ a <-> b $): $ c <-> d $ = '(bitr h1 @ bitr4 h h2);
-theorem impbi (h: $ a -> (b <-> c) $): $ a /\ b -> c $ = '(curry @ bi1d h);
-theorem impbir (h: $ a -> (c <-> b) $): $ a /\ b -> c $ = '(curry @ bi2d h);
-theorem ancomb: $ a /\ b <-> b /\ a $ = '(ibii ancom ancom);
-theorem anass: $ a /\ b /\ c <-> a /\ (b /\ c) $ =
+theorem bitr2d (h1: $ aa -> (bb <-> c) $) (h2: $ aa -> (c <-> d) $): $ aa -> (d <-> bb) $ = '(bicomd (bitrd h1 h2));
+theorem bitr3d (h1: $ aa -> (c <-> bb) $) (h2: $ aa -> (c <-> d) $): $ aa -> (bb <-> d) $ = '(bitrd (bicomd h1) h2);
+theorem bitr4d (h1: $ aa -> (bb <-> c) $) (h2: $ aa -> (d <-> c) $): $ aa -> (bb <-> d) $ = '(bitrd h1 (bicomd h2));
+theorem bitr: $ (aa <-> bb) -> (bb <-> c) -> (aa <-> c) $ = '(exp (bitrd anl anr));
+theorem bitr2: $ (aa <-> bb) -> (bb <-> c) -> (c <-> aa) $ = '(exp (bitr2d anl anr));
+theorem bitr3: $ (bb <-> aa) -> (bb <-> c) -> (aa <-> c) $ = '(exp (bitr3d anl anr));
+theorem bitr4: $ (aa <-> bb) -> (c <-> bb) -> (aa <-> c) $ = '(exp (bitr4d anl anr));
+theorem bisylr: $ (c <-> bb) -> (aa <-> bb) -> (aa <-> c) $ = '(rsyl bicom @ com23 id bitr);
+theorem sylib (h1: $ bb <-> c $) (h2: $ aa -> bb $): $ aa -> c $ = '(syl (bi1i h1) h2);
+theorem sylibr (h1: $ c <-> bb $) (h2: $ aa -> bb $): $ aa -> c $ = '(syl (bi2i h1) h2);
+theorem sylbi (h1: $ aa <-> bb $) (h2: $ bb -> c $): $ aa -> c $ = '(syl h2 (bi1i h1));
+theorem sylbir (h1: $ bb <-> aa $) (h2: $ bb -> c $): $ aa -> c $ = '(syl h2 (bi2i h1));
+theorem syl5bb (h1: $ bb <-> c $) (h2: $ aa -> (c <-> d) $): $ aa -> (bb <-> d) $ = '(bitrd (a1i h1) h2);
+theorem syl5bbr (h1: $ c <-> bb $) (h2: $ aa -> (c <-> d) $): $ aa -> (bb <-> d) $ = '(syl5bb (bicom h1) h2);
+theorem syl6bb (h1: $ c <-> d $) (h2: $ aa -> (bb <-> c) $): $ aa -> (bb <-> d) $ = '(bitrd h2 (a1i h1));
+theorem syl6bbr (h1: $ d <-> c $) (h2: $ aa -> (bb <-> c) $): $ aa -> (bb <-> d) $ = '(syl6bb (bicom h1) h2);
+theorem syl5bi (h1: $ bb <-> c $) (h2: $ aa -> c -> d $): $ aa -> bb -> d $ = '(syl5 (bi1 h1) h2);
+theorem syl5bir (h1: $ c <-> bb $) (h2: $ aa -> c -> d $): $ aa -> bb -> d $ = '(syl5bi (bicom h1) h2);
+theorem syl6ib (h1: $ c <-> d $) (h2: $ aa -> bb -> c $): $ aa -> bb -> d $ = '(syl6 (bi1 h1) h2);
+theorem syl6ibr (h1: $ d <-> c $) (h2: $ aa -> bb -> c $): $ aa -> bb -> d $ = '(syl6 (bi2 h1) h2);
+theorem syl5ibrcom (h1: $ c -> (bb <-> d) $) (h2: $ aa -> d $): $ aa -> c -> bb $ = '(com12 @ syl5 h2 (bi2d h1));
+theorem sylbid (h1: $ aa -> (bb <-> c) $) (h2: $ aa -> c -> d $): $ aa -> bb -> d $ = '(syld (bi1d h1) h2);
+theorem sylibd (h1: $ aa -> bb -> c $) (h2: $ aa -> (c <-> d) $): $ aa -> bb -> d $ = '(syld h1 (bi1d h2));
+theorem sylbird (h1: $ aa -> (c <-> bb) $) (h2: $ aa -> c -> d $): $ aa -> bb -> d $ = '(syld (bi2d h1) h2);
+theorem sylibrd (h1: $ aa -> bb -> c $) (h2: $ aa -> (d <-> c) $): $ aa -> bb -> d $ = '(syld h1 (bi2d h2));
+theorem bitr3g (h1: $ bb <-> d $) (h2: $ c <-> e $) (h: $ aa -> (bb <-> c) $):
+  $ aa -> (d <-> e) $ = '(syl5bb (bicom h1) @ syl6bb h2 h);
+theorem bitr4g (h1: $ d <-> bb $) (h2: $ e <-> c $) (h: $ aa -> (bb <-> c) $):
+  $ aa -> (d <-> e) $ = '(syl5bb h1 @ syl6bb (bicom h2) h);
+theorem bitr3gi (h1: $ aa <-> c $) (h2: $ bb <-> d $) (h: $ aa <-> bb $): $ c <-> d $ = '(bitr3 h1 @ bitr h h2);
+theorem bitr4gi (h1: $ c <-> aa $) (h2: $ d <-> bb $) (h: $ aa <-> bb $): $ c <-> d $ = '(bitr h1 @ bitr4 h h2);
+theorem impbi (h: $ aa -> (bb <-> c) $): $ aa /\ bb -> c $ = '(curry @ bi1d h);
+theorem impbir (h: $ aa -> (c <-> bb) $): $ aa /\ bb -> c $ = '(curry @ bi2d h);
+theorem ancomb: $ aa /\ bb <-> bb /\ aa $ = '(ibii ancom ancom);
+theorem anass: $ aa /\ bb /\ c <-> aa /\ (bb /\ c) $ =
 '(ibii (iand anll (anim1 anr)) (iand (anim2 anl) anrr));
-theorem bian2a: $ (a -> b) -> (a /\ b <-> a) $ = '(ibid (a1i anl) (a2i ian));
-theorem bian1a: $ (b -> a) -> (a /\ b <-> b) $ = '(syl5bb ancomb bian2a);
-theorem bian1: $ a -> (a /\ b <-> b) $ = '(syl bian1a prop_1);
-theorem bian2: $ b -> (a /\ b <-> a) $ = '(syl bian2a prop_1);
-theorem bibi1: $ a -> ((a <-> b) <-> b) $ = '(ibid (com12 bi1) bith);
-theorem bibi2: $ b -> ((a <-> b) <-> a) $ = '(syl5bb bicomb bibi1);
-theorem noteq: $ (a <-> b) -> (~a <-> ~b) $ = 'con3b;
-theorem noteqi (h: $ a <-> b $): $ ~a <-> ~b $ = '(noteq h);
-theorem noteqd (h: $ a -> (b <-> c) $): $ a -> (~b <-> ~c) $ = '(syl noteq h);
+theorem bian2a: $ (aa -> bb) -> (aa /\ bb <-> aa) $ = '(ibid (a1i anl) (a2i ian));
+theorem bian1a: $ (bb -> aa) -> (aa /\ bb <-> bb) $ = '(syl5bb ancomb bian2a);
+theorem bian1: $ aa -> (aa /\ bb <-> bb) $ = '(syl bian1a prop_1);
+theorem bian2: $ bb -> (aa /\ bb <-> aa) $ = '(syl bian2a prop_1);
+theorem bibi1: $ aa -> ((aa <-> bb) <-> bb) $ = '(ibid (com12 bi1) bith);
+theorem bibi2: $ bb -> ((aa <-> bb) <-> aa) $ = '(syl5bb bicomb bibi1);
+theorem noteq: $ (aa <-> bb) -> (~aa <-> ~bb) $ = 'con3b;
+theorem noteqi (h: $ aa <-> bb $): $ ~aa <-> ~bb $ = '(noteq h);
+theorem noteqd (h: $ aa -> (bb <-> c) $): $ aa -> (~bb <-> ~c) $ = '(syl noteq h);
 theorem imeqd
-  (h1: $ a -> (b <-> c) $) (h2: $ a -> (d <-> e) $): $ a -> (b -> d <-> c -> e) $ =
+  (h1: $ aa -> (bb <-> c) $) (h2: $ aa -> (d <-> e) $): $ aa -> (bb -> d <-> c -> e) $ =
 '(ibid (imimd (bi2d h1) (bi1d h2)) (imimd (bi1d h1) (bi2d h2)));
-theorem bibin1: $ ~a -> ((a <-> b) <-> ~b) $ = '(ibid (com12 @ bi1d noteq) binth);
-theorem bibin2: $ ~b -> ((a <-> b) <-> ~a) $ = '(syl5bb bicomb bibin1);
-theorem imeq1d (h: $ a -> (b <-> c) $): $ a -> (b -> d <-> c -> d) $ = '(imeqd h biidd);
-theorem imeq2d (h: $ a -> (c <-> d) $): $ a -> (b -> c <-> b -> d) $ = '(imeqd biidd h);
-theorem imeq1i (h: $ a <-> b $): $ a -> c <-> b -> c $ = '(imeq1d id h);
-theorem imeq2i (h: $ b <-> c $): $ a -> b <-> a -> c $ = '(imeq2d id h);
-theorem imeqi (h1: $ a <-> b $) (h2: $ c <-> d $): $ a -> c <-> b -> d $ = '(bitr (imeq1i h1) (imeq2i h2));
+theorem bibin1: $ ~aa -> ((aa <-> bb) <-> ~bb) $ = '(ibid (com12 @ bi1d noteq) binth);
+theorem bibin2: $ ~bb -> ((aa <-> bb) <-> ~aa) $ = '(syl5bb bicomb bibin1);
+theorem imeq1d (h: $ aa -> (bb <-> c) $): $ aa -> (bb -> d <-> c -> d) $ = '(imeqd h biidd);
+theorem imeq2d (h: $ aa -> (c <-> d) $): $ aa -> (bb -> c <-> bb -> d) $ = '(imeqd biidd h);
+theorem imeq1i (h: $ aa <-> bb $): $ aa -> c <-> bb -> c $ = '(imeq1d id h);
+theorem imeq2i (h: $ bb <-> c $): $ aa -> bb <-> aa -> c $ = '(imeq2d id h);
+theorem imeqi (h1: $ aa <-> bb $) (h2: $ c <-> d $): $ aa -> c <-> bb -> d $ = '(bitr (imeq1i h1) (imeq2i h2));
 theorem aneqd
-  (h1: $ a -> (b <-> c) $) (h2: $ a -> (d <-> e) $): $ a -> (b /\ d <-> c /\ e) $ =
+  (h1: $ aa -> (bb <-> c) $) (h2: $ aa -> (d <-> e) $): $ aa -> (bb /\ d <-> c /\ e) $ =
 '(ibid (animd (bi1d h1) (bi1d h2)) (animd (bi2d h1) (bi2d h2)));
-theorem imeq2a: $ (a -> (b <-> c)) -> (a -> b <-> a -> c) $ = '(ibid (a2d @ imim2i bi1) (a2d @ imim2i bi2));
-theorem imeq1a: $ (~c -> (a <-> b)) -> (a -> c <-> b -> c) $ = '(bitr4g con3bi con3bi @ syl imeq2a @ imim2i noteq);
-theorem imeq2da (h: $ G /\ a -> (b <-> c) $): $ G -> (a -> b <-> a -> c) $ = '(syl imeq2a @ exp h);
-theorem aneq1d (h: $ a -> (b <-> c) $): $ a -> (b /\ d <-> c /\ d) $ = '(aneqd h biidd);
-theorem aneq2d (h: $ a -> (c <-> d) $): $ a -> (b /\ c <-> b /\ d) $ = '(aneqd biidd h);
-theorem aneq: $ (a <-> b) -> (c <-> d) -> (a /\ c <-> b /\ d) $ = '(exp @ aneqd anl anr);
-theorem aneq1i (h: $ a <-> b $): $ a /\ c <-> b /\ c $ = '(aneq1d id h);
-theorem aneq2i (h: $ b <-> c $): $ a /\ b <-> a /\ c $ = '(aneq2d id h);
-theorem aneq2a: $ (a -> (b <-> c)) -> (a /\ b <-> a /\ c) $ =
+theorem imeq2a: $ (aa -> (bb <-> c)) -> (aa -> bb <-> aa -> c) $ = '(ibid (a2d @ imim2i bi1) (a2d @ imim2i bi2));
+theorem imeq1a: $ (~c -> (aa <-> bb)) -> (aa -> c <-> bb -> c) $ = '(bitr4g con3bi con3bi @ syl imeq2a @ imim2i noteq);
+theorem imeq2da (h: $ G /\ aa -> (bb <-> c) $): $ G -> (aa -> bb <-> aa -> c) $ = '(syl imeq2a @ exp h);
+theorem aneq1d (h: $ aa -> (bb <-> c) $): $ aa -> (bb /\ d <-> c /\ d) $ = '(aneqd h biidd);
+theorem aneq2d (h: $ aa -> (c <-> d) $): $ aa -> (bb /\ c <-> bb /\ d) $ = '(aneqd biidd h);
+theorem aneq: $ (aa <-> bb) -> (c <-> d) -> (aa /\ c <-> bb /\ d) $ = '(exp @ aneqd anl anr);
+theorem aneq1i (h: $ aa <-> bb $): $ aa /\ c <-> bb /\ c $ = '(aneq1d id h);
+theorem aneq2i (h: $ bb <-> c $): $ aa /\ bb <-> aa /\ c $ = '(aneq2d id h);
+theorem aneq2a: $ (aa -> (bb <-> c)) -> (aa /\ bb <-> aa /\ c) $ =
 '(ibid (syl anim2a @ imim2i bi1) (syl anim2a @ imim2i bi2));
-theorem aneq1a: $ (c -> (a <-> b)) -> (a /\ c <-> b /\ c) $ = '(syl5bb ancomb @ syl6bb ancomb aneq2a);
-theorem aneq1da (h: $ G /\ c -> (a <-> b) $): $ G -> (a /\ c <-> b /\ c) $ = '(syl aneq1a @ exp h);
-theorem aneq2da (h: $ G /\ a -> (b <-> c) $): $ G -> (a /\ b <-> a /\ c) $ = '(syl aneq2a @ exp h);
-theorem anlass: $ a /\ (b /\ c) <-> b /\ (a /\ c) $ =
+theorem aneq1a: $ (c -> (aa <-> bb)) -> (aa /\ c <-> bb /\ c) $ = '(syl5bb ancomb @ syl6bb ancomb aneq2a);
+theorem aneq1da (h: $ G /\ c -> (aa <-> bb) $): $ G -> (aa /\ c <-> bb /\ c) $ = '(syl aneq1a @ exp h);
+theorem aneq2da (h: $ G /\ aa -> (bb <-> c) $): $ G -> (aa /\ bb <-> aa /\ c) $ = '(syl aneq2a @ exp h);
+theorem anlass: $ aa /\ (bb /\ c) <-> bb /\ (aa /\ c) $ =
 '(bitr3 anass @ bitr (aneq1i ancomb) anass);
-theorem anrass: $ a /\ b /\ c <-> a /\ c /\ b $ =
+theorem anrass: $ aa /\ bb /\ c <-> aa /\ c /\ bb $ =
 '(bitr anass @ bitr4 (aneq2i ancomb) anass);
-theorem an4: $ (a /\ b) /\ (c /\ d) <-> (a /\ c) /\ (b /\ d) $ =
+theorem an4: $ (aa /\ bb) /\ (c /\ d) <-> (aa /\ c) /\ (bb /\ d) $ =
 '(bitr4 anass @ bitr4 anass @ aneq2i anlass);
-theorem anroti (h: $ a -> b /\ d $): $ a /\ c -> b /\ c /\ d $ = '(sylib anrass @ anim1 h);
-theorem anrotri (h: $ b /\ d -> a $): $ b /\ c /\ d -> a /\ c $ = '(sylbi anrass @ anim1 h);
-theorem bian11i (h: $ a <-> b /\ c $): $ a /\ d <-> b /\ (c /\ d) $ = '(bitr (aneq1i h) anass);
-theorem bian21i (h: $ a <-> b /\ c $): $ a /\ d <-> (b /\ d) /\ c $ = '(bitr (aneq1i h) anrass);
-theorem bian12i (h: $ a <-> b /\ c $): $ d /\ a <-> b /\ (d /\ c) $ = '(bitr (aneq2i h) anlass);
-theorem bian22i (h: $ a <-> b /\ c $): $ d /\ a <-> (d /\ b) /\ c $ = '(bitr4 (aneq2i h) anass);
-theorem bian11d (h: $ G -> (a <-> b /\ c) $): $ G -> (a /\ d <-> b /\ (c /\ d)) $ = '(syl6bb anass (aneq1d h));
-theorem bian21d (h: $ G -> (a <-> b /\ c) $): $ G -> (a /\ d <-> (b /\ d) /\ c) $ = '(syl6bb anrass (aneq1d h));
-theorem bian12d (h: $ G -> (a <-> b /\ c) $): $ G -> (d /\ a <-> b /\ (d /\ c)) $ = '(syl6bb anlass (aneq2d h));
-theorem bian22d (h: $ G -> (a <-> b /\ c) $): $ G -> (d /\ a <-> (d /\ b) /\ c) $ = '(syl6bbr anass (aneq2d h));
-theorem bian11da (h: $ G /\ d -> (a <-> b /\ c) $): $ G -> (a /\ d <-> b /\ (c /\ d)) $ = '(syl6bb anass (aneq1da h));
-theorem bian21da (h: $ G /\ d -> (a <-> b /\ c) $): $ G -> (a /\ d <-> (b /\ d) /\ c) $ = '(syl6bb anrass (aneq1da h));
-theorem bian12da (h: $ G /\ d -> (a <-> b /\ c) $): $ G -> (d /\ a <-> b /\ (d /\ c)) $ = '(syl6bb anlass (aneq2da h));
-theorem bian22da (h: $ G /\ d -> (a <-> b /\ c) $): $ G -> (d /\ a <-> (d /\ b) /\ c) $ = '(syl6bbr anass (aneq2da h));
-theorem anidm: $ a /\ a <-> a $ = '(ibii anl (iand id id));
-theorem anandi: $ a /\ (b /\ c) <-> (a /\ b) /\ (a /\ c) $ = '(bitr3 (aneq1i anidm) an4);
-theorem anandir: $ (a /\ b) /\ c <-> (a /\ c) /\ (b /\ c) $ = '(bitr3 (aneq2i anidm) an4);
-theorem imandi: $ (a -> b /\ c) <-> (a -> b) /\ (a -> c) $ =
+theorem anroti (h: $ aa -> bb /\ d $): $ aa /\ c -> bb /\ c /\ d $ = '(sylib anrass @ anim1 h);
+theorem anrotri (h: $ bb /\ d -> aa $): $ bb /\ c /\ d -> aa /\ c $ = '(sylbi anrass @ anim1 h);
+theorem bian11i (h: $ aa <-> bb /\ c $): $ aa /\ d <-> bb /\ (c /\ d) $ = '(bitr (aneq1i h) anass);
+theorem bian21i (h: $ aa <-> bb /\ c $): $ aa /\ d <-> (bb /\ d) /\ c $ = '(bitr (aneq1i h) anrass);
+theorem bian12i (h: $ aa <-> bb /\ c $): $ d /\ aa <-> bb /\ (d /\ c) $ = '(bitr (aneq2i h) anlass);
+theorem bian22i (h: $ aa <-> bb /\ c $): $ d /\ aa <-> (d /\ bb) /\ c $ = '(bitr4 (aneq2i h) anass);
+theorem bian11d (h: $ G -> (aa <-> bb /\ c) $): $ G -> (aa /\ d <-> bb /\ (c /\ d)) $ = '(syl6bb anass (aneq1d h));
+theorem bian21d (h: $ G -> (aa <-> bb /\ c) $): $ G -> (aa /\ d <-> (bb /\ d) /\ c) $ = '(syl6bb anrass (aneq1d h));
+theorem bian12d (h: $ G -> (aa <-> bb /\ c) $): $ G -> (d /\ aa <-> bb /\ (d /\ c)) $ = '(syl6bb anlass (aneq2d h));
+theorem bian22d (h: $ G -> (aa <-> bb /\ c) $): $ G -> (d /\ aa <-> (d /\ bb) /\ c) $ = '(syl6bbr anass (aneq2d h));
+theorem bian11da (h: $ G /\ d -> (aa <-> bb /\ c) $): $ G -> (aa /\ d <-> bb /\ (c /\ d)) $ = '(syl6bb anass (aneq1da h));
+theorem bian21da (h: $ G /\ d -> (aa <-> bb /\ c) $): $ G -> (aa /\ d <-> (bb /\ d) /\ c) $ = '(syl6bb anrass (aneq1da h));
+theorem bian12da (h: $ G /\ d -> (aa <-> bb /\ c) $): $ G -> (d /\ aa <-> bb /\ (d /\ c)) $ = '(syl6bb anlass (aneq2da h));
+theorem bian22da (h: $ G /\ d -> (aa <-> bb /\ c) $): $ G -> (d /\ aa <-> (d /\ bb) /\ c) $ = '(syl6bbr anass (aneq2da h));
+theorem anidm: $ aa /\ aa <-> aa $ = '(ibii anl (iand id id));
+theorem anandi: $ aa /\ (bb /\ c) <-> (aa /\ bb) /\ (aa /\ c) $ = '(bitr3 (aneq1i anidm) an4);
+theorem anandir: $ (aa /\ bb) /\ c <-> (aa /\ c) /\ (bb /\ c) $ = '(bitr3 (aneq2i anidm) an4);
+theorem imandi: $ (aa -> bb /\ c) <-> (aa -> bb) /\ (aa -> c) $ =
 '(ibii (iand (imim2i anl) (imim2i anr)) (com12 @ animd mpcom mpcom));
-theorem imancom: $ a /\ (b -> c) -> b -> a /\ c $ = '(com12 @ anim2d mpcom);
-theorem rbida (h1: $ a /\ c -> b $) (h2: $ a /\ d -> b $)
-  (h: $ a /\ b -> (c <-> d) $): $ a -> (c <-> d) $ =
+theorem imancom: $ aa /\ (bb -> c) -> bb -> aa /\ c $ = '(com12 @ anim2d mpcom);
+theorem rbida (h1: $ aa /\ c -> bb $) (h2: $ aa /\ d -> bb $)
+  (h: $ aa /\ bb -> (c <-> d) $): $ aa -> (c <-> d) $ =
 '(bitr3d (syla bian2a h1) @ bitrd (syla aneq1a h) (syla bian2a h2));
-theorem rbid (h1: $ b -> a $) (h2: $ c -> a $) (h: $ a -> (b <-> c) $): $ b <-> c $ =
+theorem rbid (h1: $ bb -> aa $) (h2: $ c -> aa $) (h: $ aa -> (bb <-> c) $): $ bb <-> c $ =
 '(bitr3 (bian2a h1) @ bitr (aneq1a h) (bian2a h2));
 theorem bieqd
-  (h1: $ a -> (b <-> c) $) (h2: $ a -> (d <-> e) $): $ a -> ((b <-> d) <-> (c <-> e)) $ =
+  (h1: $ aa -> (bb <-> c) $) (h2: $ aa -> (d <-> e) $): $ aa -> ((bb <-> d) <-> (c <-> e)) $ =
 '(aneqd (imeqd h1 h2) (imeqd h2 h1));
-theorem bieq1d (h: $ a -> (b <-> c) $): $ a -> ((b <-> d) <-> (c <-> d)) $ = '(bieqd h biidd);
-theorem bieq2d (h: $ a -> (c <-> d) $): $ a -> ((b <-> c) <-> (b <-> d)) $ = '(bieqd biidd h);
-theorem bieq: $ (a <-> b) -> (c <-> d) -> ((a <-> c) <-> (b <-> d)) $ = '(exp (bieqd anl anr));
-theorem bieq1: $ (a <-> b) -> ((a <-> c) <-> (b <-> c)) $ = '(bieq1d id);
-theorem bieq2: $ (b <-> c) -> ((a <-> b) <-> (a <-> c)) $ = '(bieq2d id);
-theorem impexp: $ (a /\ b -> c) <-> (a -> b -> c) $ =
+theorem bieq1d (h: $ aa -> (bb <-> c) $): $ aa -> ((bb <-> d) <-> (c <-> d)) $ = '(bieqd h biidd);
+theorem bieq2d (h: $ aa -> (c <-> d) $): $ aa -> ((bb <-> c) <-> (bb <-> d)) $ = '(bieqd biidd h);
+theorem bieq: $ (aa <-> bb) -> (c <-> d) -> ((aa <-> c) <-> (bb <-> d)) $ = '(exp (bieqd anl anr));
+theorem bieq1: $ (aa <-> bb) -> ((aa <-> c) <-> (bb <-> c)) $ = '(bieq1d id);
+theorem bieq2: $ (bb <-> c) -> ((aa <-> bb) <-> (aa <-> c)) $ = '(bieq2d id);
+theorem impexp: $ (aa /\ bb -> c) <-> (aa -> bb -> c) $ =
 '(ibii (exp @ exp @ mpd (anim1 anr) anll) (exp @ mpd anrr @ mpd anrl anl));
-theorem impd (h: $ a -> b -> c -> d $): $ a -> b /\ c -> d $ = '(sylibr impexp h);
-theorem expd (h: $ a -> b /\ c -> d $): $ a -> b -> c -> d $ = '(sylib impexp h);
-theorem com12b: $ (a -> b -> c) <-> (b -> a -> c) $ = '(ibii (com23 id) (com23 id));
+theorem impd (h: $ aa -> bb -> c -> d $): $ aa -> bb /\ c -> d $ = '(sylibr impexp h);
+theorem expd (h: $ aa -> bb /\ c -> d $): $ aa -> bb -> c -> d $ = '(sylib impexp h);
+theorem com12b: $ (aa -> bb -> c) <-> (bb -> aa -> c) $ = '(ibii (com23 id) (com23 id));
 
-theorem orl: $ a -> a \/ b $ = 'absurdr;
-theorem orr: $ b -> a \/ b $ = 'prop_1;
-theorem eori (h1: $ a -> c $) (h2: $ b -> c $): $ a \/ b -> c $ =
+theorem orl: $ aa -> aa \/ bb $ = 'absurdr;
+theorem orr: $ bb -> aa \/ bb $ = 'prop_1;
+theorem eori (h1: $ aa -> c $) (h2: $ bb -> c $): $ aa \/ bb -> c $ =
 '(casesd (a1i h1) (imim2i h2));
-theorem eord (h1: $ a -> b -> d $) (h2: $ a -> c -> d $):
-  $ a -> b \/ c -> d $ = '(com12 (eori (com12 h1) (com12 h2)));
-theorem eorda (h1: $ a /\ b -> d $) (h2: $ a /\ c -> d $):
-  $ a -> b \/ c -> d $ = '(eord (exp h1) (exp h2));
-theorem orld (h: $ a -> b $): $ a -> b \/ c $ = '(syl orl h);
-theorem orrd (h: $ a -> c $): $ a -> b \/ c $ = '(syl orr h);
-theorem eor: $ (a -> c) -> (b -> c) -> a \/ b -> c $ = '(exp (eord anl anr));
-theorem orimd (h1: $ a -> b -> c $) (h2: $ a -> d -> e $): $ a -> b \/ d -> c \/ e $ =
+theorem eord (h1: $ aa -> bb -> d $) (h2: $ aa -> c -> d $):
+  $ aa -> bb \/ c -> d $ = '(com12 (eori (com12 h1) (com12 h2)));
+theorem eorda (h1: $ aa /\ bb -> d $) (h2: $ aa /\ c -> d $):
+  $ aa -> bb \/ c -> d $ = '(eord (exp h1) (exp h2));
+theorem orld (h: $ aa -> bb $): $ aa -> bb \/ c $ = '(syl orl h);
+theorem orrd (h: $ aa -> c $): $ aa -> bb \/ c $ = '(syl orr h);
+theorem eor: $ (aa -> c) -> (bb -> c) -> aa \/ bb -> c $ = '(exp (eord anl anr));
+theorem orimd (h1: $ aa -> bb -> c $) (h2: $ aa -> d -> e $): $ aa -> bb \/ d -> c \/ e $ =
 '(eord (syl6 orl h1) (syl6 orr h2));
-theorem orim1d (h: $ a -> b -> c $): $ a -> b \/ d -> c \/ d $ = '(orimd h idd);
-theorem orim2d (h: $ a -> c -> d $): $ a -> b \/ c -> b \/ d $ = '(orimd idd h);
-theorem orim1: $ (a -> b) -> a \/ c -> b \/ c $ = '(orim1d id);
-theorem orim2: $ (b -> c) -> a \/ b -> a \/ c $ = '(orim2d id);
-theorem oreq1d: $ (a <-> b) -> (a \/ c <-> b \/ c) $ = '(anim orim1 orim1);
-theorem oreq2d: $ (a <-> b) -> (c \/ a <-> c \/ b) $ = '(anim orim2 orim2);
-theorem oreq1i (h: $ a <-> b $): $ a \/ c <-> b \/ c $ = '(oreq1d h);
-theorem oreq2i (h: $ b <-> c $): $ a \/ b <-> a \/ c $ = '(oreq2d h);
-theorem orim: $ (a -> b) -> (c -> d) -> a \/ c -> b \/ d $ = '(exp @ syld (anwl orim1) (anwr orim2));
-theorem oreq: $ (a <-> b) -> (c <-> d) -> (a \/ c <-> b \/ d) $ = '(syl5 oreq2d @ syl bitr oreq1d);
-theorem oreqi (h1: $ a <-> b $) (h2: $ c <-> d $): $ a \/ c <-> b \/ d $ = '(bitr (oreq1i h1) (oreq2i h2));
-theorem orcom: $ a \/ b -> b \/ a $ = 'con1;
-theorem orcomb: $ a \/ b <-> b \/ a $ = '(ibii orcom orcom);
-theorem or12: $ a \/ (b \/ c) <-> b \/ (a \/ c) $ = '(bitr3 impexp @ bitr (imeq1i ancomb) impexp);
-theorem orass: $ a \/ b \/ c <-> a \/ (b \/ c) $ = '(bitr orcomb @ bitr or12 @ imeq2i orcomb);
--- theorem or4: $ (a \/ b) \/ (c \/ d) <-> (a \/ c) \/ (b \/ d) $ = '(bitr4 orass @ bitr4 orass @ oreq2 or12);
-theorem oridm: $ a \/ a <-> a $ = '(ibii (eor id id) orl);
-theorem notan2: $ ~(a /\ b) <-> a -> ~b $ = '(bicom notnot);
-theorem notan: $ ~(a /\ b) <-> (~a \/ ~b) $ = '(bitr notan2 (imeq1i notnot));
-theorem notor: $ ~(a \/ b) <-> (~a /\ ~b) $ = '(con1b (bitr4 notan (oreqi notnot notnot)));
-theorem iman: $ a -> b <-> ~(a /\ ~b) $ = '(bitr4 (imeq2i notnot) notan2);
-theorem imor: $ ((a \/ b) -> c) <-> ((a -> c) /\ (b -> c)) $ =
+theorem orim1d (h: $ aa -> bb -> c $): $ aa -> bb \/ d -> c \/ d $ = '(orimd h idd);
+theorem orim2d (h: $ aa -> c -> d $): $ aa -> bb \/ c -> bb \/ d $ = '(orimd idd h);
+theorem orim1: $ (aa -> bb) -> aa \/ c -> bb \/ c $ = '(orim1d id);
+theorem orim2: $ (bb -> c) -> aa \/ bb -> aa \/ c $ = '(orim2d id);
+theorem oreq1d: $ (aa <-> bb) -> (aa \/ c <-> bb \/ c) $ = '(anim orim1 orim1);
+theorem oreq2d: $ (aa <-> bb) -> (c \/ aa <-> c \/ bb) $ = '(anim orim2 orim2);
+theorem oreq1i (h: $ aa <-> bb $): $ aa \/ c <-> bb \/ c $ = '(oreq1d h);
+theorem oreq2i (h: $ bb <-> c $): $ aa \/ bb <-> aa \/ c $ = '(oreq2d h);
+theorem orim: $ (aa -> bb) -> (c -> d) -> aa \/ c -> bb \/ d $ = '(exp @ syld (anwl orim1) (anwr orim2));
+theorem oreq: $ (aa <-> bb) -> (c <-> d) -> (aa \/ c <-> bb \/ d) $ = '(syl5 oreq2d @ syl bitr oreq1d);
+theorem oreqi (h1: $ aa <-> bb $) (h2: $ c <-> d $): $ aa \/ c <-> bb \/ d $ = '(bitr (oreq1i h1) (oreq2i h2));
+theorem orcom: $ aa \/ bb -> bb \/ aa $ = 'con1;
+theorem orcomb: $ aa \/ bb <-> bb \/ aa $ = '(ibii orcom orcom);
+theorem or12: $ aa \/ (bb \/ c) <-> bb \/ (aa \/ c) $ = '(bitr3 impexp @ bitr (imeq1i ancomb) impexp);
+theorem orass: $ aa \/ bb \/ c <-> aa \/ (bb \/ c) $ = '(bitr orcomb @ bitr or12 @ imeq2i orcomb);
+-- theorem or4: $ (aa \/ bb) \/ (c \/ d) <-> (aa \/ c) \/ (bb \/ d) $ = '(bitr4 orass @ bitr4 orass @ oreq2 or12);
+theorem oridm: $ aa \/ aa <-> aa $ = '(ibii (eor id id) orl);
+theorem notan2: $ ~(aa /\ bb) <-> aa -> ~bb $ = '(bicom notnot);
+theorem notan: $ ~(aa /\ bb) <-> (~aa \/ ~bb) $ = '(bitr notan2 (imeq1i notnot));
+theorem notor: $ ~(aa \/ bb) <-> (~aa /\ ~bb) $ = '(con1b (bitr4 notan (oreqi notnot notnot)));
+theorem iman: $ aa -> bb <-> ~(aa /\ ~bb) $ = '(bitr4 (imeq2i notnot) notan2);
+theorem imor: $ ((aa \/ bb) -> c) <-> ((aa -> c) /\ (bb -> c)) $ =
 '(ibii (iand (imim1i orl) (imim1i orr)) (curry eor));
-theorem andi: $ a /\ (b \/ c) <-> a /\ b \/ a /\ c $ =
+theorem andi: $ aa /\ (bb \/ c) <-> aa /\ bb \/ aa /\ c $ =
 '(ibii (curry @ orimd ian ian) @ eor (anim2 orl) (anim2 orr));
-theorem andir: $ (a \/ b) /\ c <-> a /\ c \/ b /\ c $ =
+theorem andir: $ (aa \/ bb) /\ c <-> aa /\ c \/ bb /\ c $ =
 '(bitr ancomb @ bitr andi @ oreqi ancomb ancomb);
-theorem ordi: $ a \/ (b /\ c) <-> (a \/ b) /\ (a \/ c) $ =
+theorem ordi: $ aa \/ (bb /\ c) <-> (aa \/ bb) /\ (aa \/ c) $ =
 '(ibii (iand (orim2 anl) (orim2 anr)) @ com12 @ animd mpcom mpcom);
-theorem ordir: $ (a /\ b) \/ c <-> (a \/ c) /\ (b \/ c) $ =
+theorem ordir: $ (aa /\ bb) \/ c <-> (aa \/ c) /\ (bb \/ c) $ =
 '(bitr orcomb @ bitr ordi @ aneq orcomb orcomb);
-theorem oreq2a: $ (~a -> (b <-> c)) -> (a \/ b <-> a \/ c) $ = 'imeq2a;
-theorem oreq1a: $ (~c -> (a <-> b)) -> (a \/ c <-> b \/ c) $ = '(syl5bb orcomb @ syl6bb orcomb oreq2a);
-theorem biim1a: $ (~a -> b) -> (a -> b <-> b) $ = '(ibid (exp @ casesd anr anl) (a1i prop_1));
-theorem biim2a: $ (b -> ~a) -> (a -> b <-> ~a) $ = '(ibid (exp @ syl inot @ curry imim2) (a1i absurd));
-theorem bior1a: $ (a -> b) -> (a \/ b <-> b) $ = '(sylbi (imeq1i notnot) biim1a);
-theorem bior2a: $ (b -> a) -> (a \/ b <-> a) $ = '(syl5bb orcomb bior1a);
-theorem biim1: $ a -> (a -> b <-> b) $ = '(syl biim1a absurdr);
-theorem biim2: $ ~b -> (a -> b <-> ~a) $ = '(syl biim2a absurd);
-theorem bior1: $ ~a -> (a \/ b <-> b) $ = '(syl bior1a absurd);
-theorem bior2: $ ~b -> (a \/ b <-> a) $ = '(syl bior2a absurd);
+theorem oreq2a: $ (~aa -> (bb <-> c)) -> (aa \/ bb <-> aa \/ c) $ = 'imeq2a;
+theorem oreq1a: $ (~c -> (aa <-> bb)) -> (aa \/ c <-> bb \/ c) $ = '(syl5bb orcomb @ syl6bb orcomb oreq2a);
+theorem biim1a: $ (~aa -> bb) -> (aa -> bb <-> bb) $ = '(ibid (exp @ casesd anr anl) (a1i prop_1));
+theorem biim2a: $ (bb -> ~aa) -> (aa -> bb <-> ~aa) $ = '(ibid (exp @ syl inot @ curry imim2) (a1i absurd));
+theorem bior1a: $ (aa -> bb) -> (aa \/ bb <-> bb) $ = '(sylbi (imeq1i notnot) biim1a);
+theorem bior2a: $ (bb -> aa) -> (aa \/ bb <-> aa) $ = '(syl5bb orcomb bior1a);
+theorem biim1: $ aa -> (aa -> bb <-> bb) $ = '(syl biim1a absurdr);
+theorem biim2: $ ~bb -> (aa -> bb <-> ~aa) $ = '(syl biim2a absurd);
+theorem bior1: $ ~aa -> (aa \/ bb <-> bb) $ = '(syl bior1a absurd);
+theorem bior2: $ ~bb -> (aa \/ bb <-> aa) $ = '(syl bior2a absurd);
 theorem em: $ p \/ ~p $ = 'id;
 theorem emr: $ ~p \/ p $ = '(orcom em);
 
-theorem ian2: $ a -> b -> b /\ a $ = '(exp ancom);
+theorem ian2: $ aa -> bb -> bb /\ aa $ = '(exp ancom);
 theorem absurdum: $ bot -> phi $ = '(prop_3 idd);
 theorem taut: $ top $ = 'absurdum;
 theorem imp_top: $ phi -> top $ = '(a1i taut);
 theorem top_or: $ top \/ phi $ = '(syl absurdum dne);
-theorem bot_or: $ (bot \/ a) -> a $ = '(mpcom taut);
+theorem bot_or: $ (bot \/ aa) -> aa $ = '(mpcom taut);
 theorem top_and: $ phi -> top /\ phi $ = '(com12 bot_or);
 
-theorem imp_to_or (h: $(~a \/ b) -> c$): $(a -> b) -> c$  = '(rsyl con3 (rsyl orcom h)) ;
+theorem imp_to_or (h: $(~aa \/ bb) -> c$): $(aa -> bb) -> c$  = '(rsyl con3 (rsyl orcom h)) ;
 
-theorem not_distr_or: $ ~(a \/ b) <-> ~a /\ ~b $ = 'notor;
-theorem and_distr: $ a /\ (b /\ c) <-> (a /\ b) /\ (a /\ c) $ =
+theorem not_distr_or: $ ~(aa \/ bb) <-> ~aa /\ ~bb $ = 'notor;
+theorem and_distr: $ aa /\ (bb /\ c) <-> (aa /\ bb) /\ (aa /\ c) $ =
   '(ibii
     (   rsyl (anim1 @ anr anidm)
       @ rsyl (anl anass)
@@ -695,44 +695,44 @@ theorem and_distr: $ a /\ (b /\ c) <-> (a /\ b) /\ (a /\ c) $ =
              (anr anass))
     (rsyl (rsyl (anl anass) anr) (anl anlass)));
 
-theorem appl: $ (a /\ (a -> b)) -> b $ = '(con1 @ anl com12b @ con3d mpcom);
+theorem appl: $ (aa /\ (aa -> bb)) -> bb $ = '(con1 @ anl com12b @ con3d mpcom);
 
---- analogs to anl and anr; Would prefer: $~(a -> b) <-> (a /\ ~b)$
-theorem neg_imp_left: $ ~(a -> b) -> a $ = '(con1 absurd);
-theorem neg_imp_right: $~(a -> b) -> ~b $ = '(con1 (rsyl dne (a1d id)));
-theorem neg_imp_wl(h: $ a -> c $): $ ~(a -> b) -> c $ = '(syl h neg_imp_left);
-theorem neg_imp_wr(h: $ ~b -> c $): $ ~(a -> b) -> c $ = '(syl h neg_imp_right);
+--- analogs to anl and anr; Would prefer: $~(aa -> bb) <-> (aa /\ ~bb)$
+theorem neg_imp_left: $ ~(aa -> bb) -> aa $ = '(con1 absurd);
+theorem neg_imp_right: $~(aa -> bb) -> ~bb $ = '(con1 (rsyl dne (a1d id)));
+theorem neg_imp_wl(h: $ aa -> c $): $ ~(aa -> bb) -> c $ = '(syl h neg_imp_left);
+theorem neg_imp_wr(h: $ ~bb -> c $): $ ~(aa -> bb) -> c $ = '(syl h neg_imp_right);
 
-theorem or_imp_xor_and: $ a \/ b -> (~(a <-> b) \/ (a /\ b)) $ =
-  '( eori (! cases b _ (expcom orr)
+theorem or_imp_xor_and: $ aa \/ bb -> (~(aa <-> bb) \/ (aa /\ bb)) $ =
+  '( eori (! cases bb _ (expcom orr)
                        @ expcom @ syl orl @ com12 @ curry @ com23 @ impd @ a2i @ a1i absurdr
           )
-          (! cases a _ (exp orr)
+          (! cases aa _ (exp orr)
                        @ expcom @ syl orl @ com12 @ curry @ com12 @ com23 @ impd @ a2i @ a1i absurdr
           ) );
-theorem xor_and_imp_or: $ (~(a <-> b) \/ (a /\ b)) -> a \/ b $ =
+theorem xor_and_imp_or: $ (~(aa <-> bb) \/ (aa /\ bb)) -> aa \/ bb $ =
  '(eori (syl (imp_to_or (eori (neg_imp_wl orl) (neg_imp_wl orr))) dne)
         (anwl orl)
   );
 
-theorem lemma_51: $ ((a /\ ~b) \/ (b /\ ~a)) <-> ~(a <-> b) $ = '(iani
+theorem lemma_51: $ ((aa /\ ~bb) \/ (bb /\ ~aa)) <-> ~(aa <-> bb) $ = '(iani
   (eori (con3 @ rsyl anl @ imim2i notnot1)
         (rsyl ancom @ con3 @ rsyl anr con3))
   (con1 @ rsyl (anl not_distr_or) @ anim (anr iman) (anr iman)));
 
-theorem lemma_in_in_reverse_helper: $ (~a \/ b) -> (~a \/ (b /\ a)) $ =
+theorem lemma_in_in_reverse_helper: $ (~aa \/ bb) -> (~aa \/ (bb /\ aa)) $ =
   '(syl (orim2 @ anim2 dne) @ syl anr bian1a);
 
-theorem lemma_60_helper_1: $ a -> (a /\ ~b) \/ (a /\ b) $ =
+theorem lemma_60_helper_1: $ aa -> (aa /\ ~bb) \/ (aa /\ bb) $ =
   '(syl (anl andi) @ iand id @ a1i emr);
 
-theorem lemma_60_helper_2: $ a -> ~b \/ (a /\ b) $ =
+theorem lemma_60_helper_2: $ aa -> ~bb \/ (aa /\ bb) $ =
   '(syl (imim1i dne) ian);
 
-theorem bisquare (h1: $a <-> b$) (h2: $d <-> c$) (h3: $b <-> c$): $a <-> d$ =
+theorem bisquare (h1: $aa <-> bb$) (h2: $d <-> c$) (h3: $bb <-> c$): $aa <-> d$ =
   '(bitr h1 @ bisylr h2 h3);
 
-theorem Fprop: $ (a -> b) -> (c -> d) -> (b -> d -> e) -> (a -> c -> e) $ =
+theorem Fprop: $ (aa -> bb) -> (c -> d) -> (bb -> d -> e) -> (aa -> c -> e) $ =
   '(syl (anl impexp) @ com12 @ imim2d @ curry @ imim2d imim1);
 
 theorem an_top_bi_l: $ phi /\ top <-> phi $ = '(ibii anl @ syl ancom top_and);
@@ -743,8 +743,8 @@ theorem an_bot_bi_r: $ bot /\ phi <-> bot $ = '(ibii anl absurdum);
 theorem or_bot_bi_l: $ phi \/ bot <-> phi $ = '(ibii (eori id absurdum) orl);
 theorem or_bot_bi_r: $ bot \/ phi <-> phi $ = '(ibii (eori absurdum id) orr);
 
-theorem or_or_not_an: $ a \/ b <-> a \/ (~a /\ b) $ =
+theorem or_or_not_an: $ aa \/ bb <-> aa \/ (~aa /\ bb) $ =
   '(bitr (bitr (bicom an_top_bi_r) @ aneq1i @ ibii (a1i em) imp_top) @ bicom ordi);
 
-theorem absurd_an: $~a /\ a <-> bot$ = '(ibii (impcom mpcom) absurdum);
-theorem absurd_an_r: $a /\ ~a <-> bot$ = '(ibii (curry mpcom) absurdum);
+theorem absurd_an: $~aa /\ aa <-> bot$ = '(ibii (impcom mpcom) absurdum);
+theorem absurd_an_r: $aa /\ ~aa <-> bot$ = '(ibii (curry mpcom) absurdum);

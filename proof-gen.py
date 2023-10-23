@@ -21,12 +21,12 @@ assert len(sys.argv) == 4, "Usage: proof-gen  <mm0|mm1> <fp-implies-top> <regex>
 (mm01, theorem, regex) = sys.argv[1:]
 
 if mm01 == 'mm0':
-    print('import "../20-theory-words.mm0";')
+    print('import "../24-ab-alphabet.mm0";')
     print(cleanup_maude_output(
           reduce_in_module('regexp-proof-gen.maude', 'PROOF-GEN', 'MM0Decl',
                                 'theorem-{0}-mm0({1})'.format(theorem, regex))))
 elif mm01 == 'mm1':
-    print('import "../23-words-theorems.mm1";')
+    print('import "../24-ab-alphabet.mm1";')
     print(cleanup_maude_output(
           reduce_in_module('regexp-proof-gen.maude', 'PROOF-GEN', 'MM0Decl',
                                 'theorem-{0}({1})'.format(theorem, regex))))

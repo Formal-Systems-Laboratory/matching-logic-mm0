@@ -261,10 +261,11 @@ mod ERE-THEOREMS is
     vars A B A1 A2 : Letter .
     vars X Y : Qid .
 
-    rl [regex_eq_der_bot]     : (derivative A bot)          => bot .
-    rl [regex_eq_der_epsilon] : (derivative A epsilon)      => bot .
-    rl [regex_eq_der_same_a]  : (derivative A A)            => epsilon .
-   crl [regex_eq_der_diff_a]  : (derivative A B)            => bot if A =/= B .
+    rl [regex_eq_der_bot]       : (derivative A bot)          => bot .
+    rl [regex_eq_der_epsilon]   : (derivative A epsilon)      => bot .
+    rl [regex_eq_der_same_l]    : (derivative A A)            => epsilon .
+   crl [regex_eq_der_diff_l_a]  : (derivative A a)            => bot if A =/= a .
+   crl [regex_eq_der_diff_l_b]  : (derivative A b)            => bot if A =/= b .
 
     rl [regex_eq_der_kleene]  : (derivative A [[kleene X Alpha]])
                                                                => (derivative A Alpha) . [[kleene X Alpha]] .
@@ -418,8 +419,9 @@ mod PROOF-GEN is
     eq applyAnyEquation(S, SL, NAT) =
         applyEq(S, SL, NAT, 'regex_eq_der_bot) or-else
         applyEq(S, SL, NAT, 'regex_eq_der_epsilon) or-else
-        applyEq(S, SL, NAT, 'regex_eq_der_same_a) or-else
-        applyEq(S, SL, NAT, 'regex_eq_der_diff_a) or-else
+        applyEq(S, SL, NAT, 'regex_eq_der_same_l) or-else
+        applyEq(S, SL, NAT, 'regex_eq_der_diff_l_a) or-else
+        applyEq(S, SL, NAT, 'regex_eq_der_diff_l_b) or-else
         applyEq(S, SL, NAT, 'regex_eq_der_kleene) or-else
         applyEq(S, SL, NAT, 'regex_eq_der_concat) or-else
         applyEq(S, SL, NAT, 'regex_eq_der_choice) or-else
@@ -681,8 +683,8 @@ mod PROOF-GEN is
 
    *** is-letter *************************************************************
     op is-letter : Letter -> MM0SExpr .
-    eq is-letter(a) = 'orl .
-    eq is-letter(b) = 'orr .
+    eq is-letter(a) = 'a-in-top-letter .
+    eq is-letter(b) = 'b-in-top-letter .
 
    *** epsilon-implies-ewp ***************************************************
    --- MetaTheorem:

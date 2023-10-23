@@ -2,6 +2,8 @@
 set -euo pipefail
 export PYTHONPYCACHEPREFIX='.build/'
 
+./words-theory-gen.py 24-ab-alphabet a b
+
 poetry install
 poetry run mypy *.py
 poetry run pytest ./test.py "$@"
