@@ -398,7 +398,7 @@ theorem or_bot_bi_r: $ bot \/ phi <-> phi $ = '(ibii (eori absurdum id) orr);
 theorem or_or_not_an: $ a \/ b <-> a \/ (~a /\ b) $ =
   '(bitr (bitr (bicom an_top_bi_r) @ aneq1i @ ibii (a1i em) imp_top) @ bicom ordi);
 
-theorem absurd_an: $~a /\ a <-> bot$ = '(ibii (impcom mpcom) absurdum);
-theorem absurd_an_r: $a /\ ~a <-> bot$ = '(ibii (curry mpcom) absurdum);
+theorem absurd_an:  $~a /\  a <-> bot$ = '(ibii (impcom mpcom) absurdum);
+theorem absurd_an_r:$ a /\ ~a <-> bot$ = '(ibii (curry  mpcom) absurdum);
 
 theorem bitri (h1: $ a <-> b $) (h2: $ b <-> c $): $ a <-> c $ = '(bitr h1 h2);
