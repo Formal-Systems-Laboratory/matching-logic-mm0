@@ -2,6 +2,8 @@
 
 import sys
 import csv
+from prettytable import PrettyTable
+import prettytable
 import re
 import math
 
@@ -49,7 +51,7 @@ def filter(name: str) -> bool:
     if name == '22-words-theorems': return True
     if re.match(r'^\d\d-.*$', name): return False
     if re.match(r'^eq-lr', name): return False
-    if (re.match(r'^match-', name) or re.match(r'^eq-', name)) and not re.match(r'.*[1248]', name):
+    if (re.match(r'^match-', name) or re.match(r'^eq-', name)) and not re.match(r'.*[28]', name):
         return False
 
     # TODO: Curate cases that we want.
@@ -70,44 +72,50 @@ def rename(name: str) -> str:
 base_mmb_size = 0
 base_mm1_size = 0
 base_mmb_time = 0
+base_check_time = 0
 def aggregate(input):
-    global base_mmb_size, base_mm1_size, base_mmb_time, base_mm1_time
+    global base_mmb_size, base_mm1_size, base_mmb_time, base_mm1_time, base_check_time
     simpls = plus(maybe_int(input['equiv_fp_imp_r']), maybe_int(input['bitr_fp_imp_r']))
     ret = {
         'Benchmark'     : rename(input['name']),
-        '`.mm1` Size'   : divide(minus(maybe_int(input['size_mm1']), base_mm1_size), 1024),
+        # '`.mm1` Size'   : divide(minus(maybe_int(input['size_mm1']), base_mm1_size), 1024),
         '`.mm1` time'   : maybe_float(input['gen_mm1']),
-        'proofHint time' : maybe_float(input['gen_ph']),
+        # 'proofHint time' : maybe_float(input['gen_ph']),
         '`.mmb` Size'   : divide(minus(maybe_int(input['size_mmb']), base_mmb_size), 1024),
-        '`.mmb` time'   : minus(maybe_float(input['compile']), base_mmb_time),
+        # '`.mmb` time'   : minus(maybe_float(input['compile']), base_mmb_time),
         'Nodes'         : maybe_int(input['nodes_fp_imp_r']),
-        'Thms 1'        : maybe_int(input['theorems_d_imp_fp']),
-        'Thms 2'        : maybe_int(input['theorems_fp_imp_r']),
-        'Simpls.'       : simpls,
+        # 'Thms 1'        : maybe_int(input['theorems_d_imp_fp']),
+        # 'Thms 2'        : maybe_int(input['theorems_fp_imp_r']),
+        # 'Simpls.'       : simpls,
         'cong'          : maybe_int(input['cong_fp_imp_r']),
+        'check time'    : minus(maybe_float(input['check']), base_check_time),
         # 'per simpl.'    : divide(maybe_int(input['cong_fp_imp_r']), simpls),
-        "O'head %"      : percent(minus( maybe_int(input['theorems_fp_imp_r'])
-                                       , plus(times(2, simpls), maybe_int(input['cong_fp_imp_r']))
-                                       )
-                                 , maybe_int(input['theorems_fp_imp_r']))
+        # "O'head %"      : percent(minus( maybe_int(input['theorems_fp_imp_r'])
+        #                                , plus(times(2, simpls), maybe_int(input['cong_fp_imp_r']))
+        #                                )
+        #                          , maybe_int(input['theorems_fp_imp_r']))
     }
     if input['name'] == '22-words-theorems':
         base_mmb_size = maybe_int(input['size_mmb'])
         base_mm1_size = maybe_int(input['size_mm1'])
         base_mmb_time = maybe_float(input['compile'])
+        base_check_time = maybe_float(input['check'])
     return ret
 
 with open('.build/benchmarks.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
-    writer = None
+    writer = PrettyTable()
+    writer.set_style(prettytable.MARKDOWN)
+
     for row in reader:
         out = aggregate(row)
-        if not writer:
-            writer = csv.DictWriter(sys.stdout, fieldnames=out.keys(), delimiter=',')
-            writer.writeheader()
+        if not writer.field_names:
+            writer.field_names = out.keys()
+            writer.align = 'r'
+            writer.align['Benchmark'] = 'l'
         if not filter(row['name']):
             continue
-        writer.writerow(out)
-    assert writer
+        writer.add_row(list(map(lambda x: x if x else '', out.values())))
+    print(writer)
 
 
