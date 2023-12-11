@@ -257,6 +257,91 @@ fmod PATTERN-METAMATH-COMPARE is
     eq compare(derivative phi1 phi2, derivative psi1 psi2) = compare(pair(phi1, phi2), pair(psi1, psi2)) .
 endfm
 
+mod ERE-THEOREMS-EQS is
+    protecting PATTERN-METAMATH-COMPARE .
+    protecting META-TERM . --- TODO: I think this is required due to a bug in maude 2.7
+                           --- I get this warning: Advisory: could not find sort Sort in meta-module ERE-THEOREMS.
+                           --- Does this go away in newer versions of Maude?
+
+    vars Alpha Alpha1 Alpha2 : Pattern .
+    vars Beta  Beta1  Beta2  : Pattern .
+    vars Gamma : Pattern .
+    vars A B A1 A2 : Letter .
+    vars X Y : Qid .
+
+    eq [regex_eq_der_bot]     : (derivative A bot)          = bot .
+    eq [regex_eq_der_epsilon] : (derivative A epsilon)      = bot .
+    eq [regex_eq_der_same_a]  : (derivative A A)            = epsilon .
+   ceq [regex_eq_der_diff_a]  : (derivative A B)            = bot if A =/= B .
+
+    eq [regex_eq_der_kleene]  : (derivative A [[kleene X Alpha]])
+                                                               = (derivative A Alpha) . [[kleene X Alpha]] .
+    eq [regex_eq_der_concat]  : (derivative A (Alpha . Beta))  = ((derivative A Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative A Beta)) .
+    eq [regex_eq_der_choice]  : (derivative A (Alpha \/ Beta)) = (derivative A Alpha) \/ (derivative A Beta) .
+    eq [regex_eq_der_conj]    : (derivative A (Alpha /\ Beta)) = (derivative A Alpha) /\ (derivative A Beta) .
+    eq [regex_eq_der_neg]     : (derivative A ~ Alpha)         = ~ (derivative A Alpha) .
+
+    eq [regex_eq_ewp_bot]     : epsilon /\ bot             = bot .
+    eq [regex_eq_ewp_epsilon] : epsilon /\ epsilon         = epsilon .
+    eq [regex_eq_ewp_a]       : epsilon /\ a               = bot .
+    eq [regex_eq_ewp_b]       : epsilon /\ b               = bot .
+    eq [regex_eq_ewp_concat]  : epsilon /\ (Alpha . Beta)  = (epsilon /\ Alpha) /\ (epsilon /\ Beta) .
+    eq [regex_eq_ewp_choice]  : epsilon /\ (Alpha \/ Beta) = (epsilon /\ Alpha) \/ (epsilon /\ Beta) .
+    eq [regex_eq_ewp_kleene]  : epsilon /\ [[kleene X Alpha]]      = epsilon .
+
+    eq [regex_eq_ewp_not_bot]     : epsilon /\ ~(bot)           = epsilon .
+    eq [regex_eq_ewp_not_eps]     : epsilon /\ ~(epsilon)       = bot .
+    eq [regex_eq_ewp_not_a]       : epsilon /\ ~(a)             = epsilon .
+    eq [regex_eq_ewp_not_b]       : epsilon /\ ~(b)             = epsilon .
+    eq [regex_eq_ewp_not_concat]  : epsilon /\ ~(Alpha . Beta)  = (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta) .
+    eq [regex_eq_ewp_not_and]     : epsilon /\ ~(Alpha /\ Beta) = (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta) .
+    eq [regex_eq_ewp_not_choice]  : epsilon /\ ~(Alpha \/ Beta) = (epsilon /\ ~ Alpha) /\ (epsilon /\ ~ Beta) .
+    eq [regex_eq_ewp_not_kleene]  : epsilon /\ ~ ([[ kleene X Alpha ]]) = bot .
+    eq [regex_eq_ewp_not_not]     : epsilon /\ ~(~ Alpha)       = epsilon /\ Alpha .
+
+    --- Identity and idemoptency of \/
+    eq [regex_eq_or_choice_abs] : (~ bot)   \/ Alpha = (~ bot) .
+    eq [regex_eq_or_choice_unit] : bot   \/ Alpha = Alpha .
+    eq [regex_eq_or_choice_idem_leaf] : Alpha \/ Alpha = Alpha .
+    eq [regex_eq_or_choice_idem_node] : Alpha \/ (Alpha \/ Beta) = Alpha \/ Beta .
+    eq [regex_eq_or_choice_assoc] : (Alpha \/ Beta) \/ Gamma  = Alpha \/ (Beta \/ Gamma) .
+   ceq [regex_eq_or_choice_comm_node] : Alpha \/ (Beta \/ Gamma) = Beta \/ (Alpha \/ Gamma) if compare(Alpha, Beta) = GT .
+   ceq [regex_eq_or_choice_comm_leaf] : Alpha \/ Beta = Beta \/ Alpha if compare(Alpha, Beta) == GT and not isDisjunction(Beta) .
+
+    --- Identity and idemoptency of /\
+    eq [regex_eq_and_choice_abs] : bot   /\ Alpha = bot .
+    eq [regex_eq_and_choice_unit] : (~ bot)   /\ Alpha = Alpha .
+    eq [regex_eq_and_choice_idem_leaf] : Alpha /\ Alpha = Alpha .
+    eq [regex_eq_and_choice_idem_node] : Alpha /\ (Alpha /\ Beta) = Alpha /\ Beta .
+    eq [regex_eq_and_choice_assoc] : (Alpha /\ Beta) /\ Gamma  = Alpha /\ (Beta /\ Gamma) .
+   ceq [regex_eq_and_choice_comm_node] : Alpha /\ (Beta /\ Gamma) = Beta /\ (Alpha /\ Gamma) if compare(Alpha, Beta) = GT .
+   ceq [regex_eq_and_choice_comm_leaf] : Alpha /\ Beta = Beta /\ Alpha if compare(Alpha, Beta) == GT and not isConjunction(Beta) .
+
+    ---- Optional simplifications
+    eq [regex_eq_bot_concat_l] : bot . Alpha = bot .
+    eq [regex_eq_bot_concat_r] : Alpha . bot = bot .
+
+    eq [regex_eq_eps_concat_l] : epsilon . Alpha = Alpha .
+    eq [regex_eq_eps_concat_r] : Alpha . epsilon = Alpha .
+
+    eq [regex_eq_double_neg] : ~ ~ Alpha = Alpha .
+    eq [regex_eq_double_kleene] : [[ kleene X [[ kleene Y Alpha ]] ]] = [[ kleene X Alpha ]] .
+
+    eq [regex_eq_eps_kleene] : [[ kleene X epsilon ]] = epsilon .
+    eq [regex_eq_bot_kleene] : [[ kleene X bot ]] = epsilon .
+
+
+    *** Rules *********************************
+    *******************************************
+
+    sort State .
+    op < invalid > : -> State [ctor] .
+    op < _ > : Pattern -> State [ctor] .
+   crl [der-a] : < Alpha > => < (derivative a Alpha) > if hasEWP(Alpha) .
+   crl [der-b] : < Alpha > => < (derivative b Alpha) > if hasEWP(Alpha) .
+   crl [invalid] : < Alpha > => < invalid >  if not hasEWP(Alpha) .
+endm
+
 mod ERE-THEOREMS is
     protecting PATTERN-METAMATH-COMPARE .
     protecting META-TERM . --- TODO: I think this is required due to a bug in maude 2.7
@@ -335,9 +420,11 @@ mod ERE-THEOREMS is
     *******************************************
 
     sort State .
+    op < invalid > : -> State [ctor] .
     op < _ > : Pattern -> State [ctor] .
    crl [der-a] : < Alpha > => < (derivative a Alpha) > if hasEWP(Alpha) .
    crl [der-b] : < Alpha > => < (derivative b Alpha) > if hasEWP(Alpha) .
+   crl [invalid] : < Alpha > => < invalid >  if not hasEWP(Alpha) .
 endm
 
 fmod MM0 is
