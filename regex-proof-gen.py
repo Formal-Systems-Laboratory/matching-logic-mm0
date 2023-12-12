@@ -80,7 +80,7 @@ def has_ewp(exp: Regex) -> bool:
         case Letter(_): return False
         case Concat(l, r):  return has_ewp(l) and has_ewp(r)
         case Choice(l, r): return has_ewp(l) or has_ewp(r)
-        case Kleene(_): return True 
+        case Kleene(_): return True
         case Not(e): return not has_ewp(e)
         case _: raise AssertionError(exp)
 
@@ -163,7 +163,7 @@ def derivative(by: Letter, exp: Regex) -> Regex:
             if has_ewp(l):
                 return normalize(Choice(Concat(derivative(by, l), r), derivative(by, r)))
             else:
-                return normalize(Choice(Concat(derivative(by, l), r), derivative(by, r)))
+                return normalize(Concat(derivative(by, l), r))
         case Choice(l, r): return normalize(Choice(derivative(by, l), derivative(by, r)))
         case Kleene(e):
             return normalize(Concat(derivative(by, e), Kleene(e)))
@@ -179,16 +179,24 @@ def brzozowski(exp: Regex, prev: set[Regex] | None = None) -> bool:
     if exp in prev:
         return True
     prev.add(exp)
-    print(exp)
     if not has_ewp(exp):
         return False
     return brzozowski(derivative(a, exp), prev=prev) and brzozowski(derivative(b, exp), prev=prev)
 
+even = Kleene(Choice(Concat(a, a), Choice(Concat(a, b), Choice(Concat(b, a), Concat(b, b)))))
+odd = Concat(Choice(a, b), even)
+top = Kleene(Choice(a, b))
+
+assert odd == derivative(a, even)
 
 assert brzozowski(a) == False
 assert brzozowski(b) == False
 assert brzozowski(Choice(a, b)) == False
-assert brzozowski(Kleene(Choice(a, b))) == True
+assert brzozowski(top) == True
 assert brzozowski(implies(Kleene(Kleene(a)), Kleene(a))) == True
 assert brzozowski(implies(Kleene(Kleene(a)), Kleene(Kleene(a)))) == True
 assert brzozowski(implies(Kleene(Concat(a, a)), Choice(Concat(Kleene(a), a), Epsilon()))) == True
+assert brzozowski(Choice(Kleene(Concat(Kleene(a), b)), Kleene(Concat(Kleene(b), a)))) == True
+assert brzozowski(even) == False
+assert brzozowski(Choice(even, odd)) == True
+assert brzozowski(Choice(Not(Concat(top, Concat(a, top))), Not(Kleene(b))))
