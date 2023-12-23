@@ -3,7 +3,8 @@ name = "matching-logic-mm0"
 version = "0.1.0"
 description = "A formalization of Matching Logic in Metamath Zero"
 authors = [
-    "Submission 393 <ooplsa-23-subission-393@example.com>",
+    "Mircea Sebe <osebe2@illinois.edu>",
+    "Nishant Rodrigues <nishant2@illinois.edu>",
 ]
 
 [tool.poetry.dependencies]
