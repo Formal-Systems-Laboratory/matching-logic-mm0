@@ -13,13 +13,13 @@ The minimum requirement to compile and verify the core theory `mm0`/`mm1` files 
 * Rust 1.67
 
 Additionally, in order to run the proof generation procedure, the following need to be installed:
-* Maude 3.2.1 \*
+* Maude 3.2.1 [^maude]
 * Python 3.9.13
-* Poetry \*\*
+* Poetry [^poetry]
 
-\* If the user doesn't have Maude installed on their system, appropriate Maude binaries are provided inside this repository for Linux and macOS distributions (see installation instructions below).
+[^maude]:  If the user doesn't have Maude installed on their system, appropriate Maude binaries are provided inside this repository for Linux and macOS distributions (see installation instructions below).
+[^poetry]: Poetry can be installed by running the following command:
 
-\*\* Poetry can be installed by running the following command:
 ```
 curl -sSL https://install.python-poetry.org | python3 -
 ```
