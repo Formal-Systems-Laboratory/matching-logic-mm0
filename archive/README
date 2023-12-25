@@ -8,6 +8,12 @@ All of this is handled for the TACAS VM by running `./install-deps`.
 This script needs `sudo` access, as well as internet access to bring in the
 various dependencies.
 
+Once this script completes run:
+
+    PATH=/home/tacas23/.local/bin
+
+to place `poetry` in your shell.
+
 Running Tests
 -------------
 
