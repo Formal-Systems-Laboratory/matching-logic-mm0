@@ -1,21 +1,25 @@
 #! /bin/sh
 
-git submodule update --init
+set -euo pipefail
 
-# Install Metamath Zero
-cd mm0/mm0-c
-./make.sh
-cd ../mm0-rs
-cargo build --release
-cd ../..
+install-system-deps() {
+    sudo apt install rustc poetry
+}
 
-# Install Python requirements
-poetry install
+install-metamath() {
+    (cd mm0/mm0-c; ./make.sh)
+    (cd mm0/mm0-rs; cargo build --release)
+}
 
-# Select the right Maude binary to use depending on the platform
-if [ $# -gt 0 ] && [ "$1" = "macOS" ]
-  then
-    cp maude/maude.darwin64 maude/maude
-  else
+install-maude() {
     cp maude/maude.linux64 maude/maude
-fi
+}
+
+install-python-deps() {
+    poetry install
+}
+
+install-system-deps
+install-metamath
+install-maude
+install-python-deps
