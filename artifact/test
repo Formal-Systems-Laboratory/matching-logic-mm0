@@ -2,6 +2,6 @@
 set -euo pipefail
 export PYTHONPYCACHEPREFIX='.build/'
 
-poetry update
+poetry install --no-root
 poetry run mypy *.py
 poetry run pytest ./test.py "$@"

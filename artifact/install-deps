@@ -16,7 +16,7 @@ install-maude() {
 }
 
 install-python-deps() {
-    poetry install
+    poetry install --no-root
 }
 
 install-system-deps
