@@ -1,0 +1,51 @@
+Installing Third Party Dependecies
+----------------------------------
+
+This project depends on Metamath Zero for proof checking, and python and Maude for proof generation.
+We also have some other python dependecies for testing and presenting benchmarks.
+These are installed using poetry.
+All of this is handled for the TACAS VM by running `./install-deps`.
+This script needs `sudo` access, as well as internet access to bring in the
+various dependencies.
+
+Running Tests
+-------------
+
+Once this is done you may run the quick test, taking approximately 30 seconds.
+
+    $ ./test --skip-slow
+
+Running with omitting the `--skip-slow` flag runs the entire test suite,
+taking approximately 26 minutes.
+
+    $ ./test
+
+Since flags to `test` are forwarded to `pytest`, we may view progress by
+passing in the `-vv`.
+
+
+Viewing Test Statistics
+-----------------------
+
+After a test run, you may view the statistics for each benchmark using:
+
+    $ poetry run ./benchmark-aggregator.py
+
+Here, the "`.mm1` time" is the proof generation time, in the human readable `mm1` format.
+The "`.mm0` time" indicates the time to compile this to the binary `mm0` format.
+The "check time" indicates the time to check this generated certificate.
+Note that these are rounded down to the milisecond, so it may sometimes be zero.
+
+The base time is the time for proving the handwritten lemmas.
+All other statistics have the base statistics subtracted from them.
+
+
+Adding New Tests
+----------------
+
+New tests may be added to `test.py`.
+The easiest way to do this, is to add a new input to `test_regex`.
+Note that this tests checks for validity (i.e. equivalence with the total language),
+and not equivalence.
+To check equivalence, use the `<<->>` operator.
+Further, the regular expressions are parsed in Maude, and are a little sensitive to whitespace.
