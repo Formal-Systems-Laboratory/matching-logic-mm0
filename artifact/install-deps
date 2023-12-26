@@ -1,9 +1,11 @@
-#! /bin/sh
+#! /usr/bin/env bash
 
 set -euo pipefail
+export PATH=/home/tacas23/.local/bin:$PATH
 
 install-system-deps() {
-    sudo apt install rustc poetry
+    sudo apt install cargo rustc
+    pip3 install poetry
 }
 
 install-metamath() {
