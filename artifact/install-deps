@@ -4,7 +4,8 @@ set -euo pipefail
 export PATH=/home/tacas23/.local/bin:$PATH
 
 install-system-deps() {
-    sudo apt install cargo rustc
+    sudo apt-get --yes update
+    sudo apt --yes install cargo rustc
     pip3 install poetry
 }
 
