@@ -1,3 +1,34 @@
+This artifact includes the software used for generating proofs of equivalence
+between and totality of regular expressions. It also includes testing
+infrastructure for checking these proofs with Metamath Zero.
+
+The benchmarks displayed in the paper are collected by running the `./test`
+script. These may then be displayed in (pandoc) markdown using the
+`./benchmark-aggregator.py` script. See `README` in archive for details.
+
+These tests have been timed on the TACAS 23 VM running on a 11th Gen Intel(R)
+Core(TM) i7-1165G7 host with 32GB of RAM. Default settings were used for
+importing the VM into virtualbox, and NAT-based networking was used to install
+dependencies.
+
+
+Download the artifact
+---------------------
+
+The artifact is available at the citable URL:
+
+    https://zenodo.org/records/10431211
+
+Download the artifact using the following command:
+
+    # Approx time: 1h
+    $ wget https://zenodo.org/records/10431211/files/artifact.zip?download=1
+
+unzip it using:
+
+    $ unzip artifact.zip
+
+
 Installing Third Party Dependecies
 ----------------------------------
 
@@ -10,9 +41,11 @@ various dependencies.
 
 Once this script completes run:
 
-    PATH=/home/tacas23/.local/bin
+    $ PATH=/home/tacas23/.local/bin:$PATH
 
 to place `poetry` in your shell.
+If you open new shell or terminal this will need to be rerun.
+
 
 Running Tests
 -------------
@@ -24,6 +57,7 @@ Once this is done you may run the quick test, taking approximately 30 seconds.
 Running with omitting the `--skip-slow` flag runs the entire test suite,
 taking approximately 26 minutes.
 
+    $ ulimit -c unlimited   # Some tests need a deeper recursing depth
     $ ./test
 
 Since flags to `test` are forwarded to `pytest`, we may view progress by
