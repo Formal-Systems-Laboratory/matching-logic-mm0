@@ -17,6 +17,9 @@ axiom nonempty_domain (s: Pattern): $ (is_sort s) -> (dom s != bot) $;
 def s_exists (s: Pattern) {x: EVar} (phi: Pattern x): Pattern = $ exists x ((eVar x C= dom s) /\ phi) $;
 def s_forall (s: Pattern) {x: EVar} (phi: Pattern x): Pattern = $ forall x ((eVar x C= dom s) -> phi) $;
 
+def is_sorted_pred (s: Pattern) (phi: Pattern): Pattern = $ (phi == bot) \/ (phi == dom s) $;
+
+-- Singleton sort
 term pred_sym: Symbol;
 def pred: Pattern = $ sym pred_sym $;
 

@@ -167,6 +167,9 @@ theorem appCtxRVar {box: SVar} (phi1 phi2: Pattern):
 theorem appCtxLRVar {box: SVar} (phi1 phi2 phi3: Pattern):
   $ Norm (app[ phi1 / box ] (app (app phi3 (sVar box)) phi2)) (app (app phi3 phi1) phi2) $ =
   '(norm_trans appCtxL_disjoint @ norm_app appCtxRVar norm_refl);
+theorem appCtxRLRVar {box: SVar} (phi1 phi2 phi3 phi4: Pattern):
+  $ Norm (app[ phi1 / box ] (app phi4 (app (app phi3 (sVar box)) phi2))) (app phi4 (app (app phi3 phi1) phi2)) $ =
+  '(norm_trans appCtxR_disjoint @ norm_app norm_refl appCtxLRVar);
 
 theorem app_framing_l (h: $phi1 -> phi2$): $(app phi1 psi) -> (app phi2 psi)$ =
   '(norm (norm_imp appCtxLVar appCtxLVar) (! framing box _ _ _ h));
@@ -1119,3 +1122,11 @@ theorem ceil_idempotency_for_pred (phi: Pattern): $ ((phi == bot) \/ (phi == top
       (mp ,(func_subst_imp_to_var 'x $eVar x == |^ eVar x ^| $) @ lemma_46_floor @ ibii absurdum @ norm (norm_imp_l defNorm) propag_bot)
       (mp ,(func_subst_imp_to_var 'x $eVar x == |^ eVar x ^| $) @ lemma_46_floor @ bicom @ taut_equiv_top @ framing_def imp_top definedness))
     (mp ,(func_subst_imp_to_var 'x $(eVar x == bot) \/ (eVar x == top)$) ceil_is_pred)));
+
+theorem pointwise_decomposition {box: SVar} {x: EVar} (ctx: Pattern box) (phi psi: Pattern)
+  (hyp: $ (x in phi) -> (app[ eVar x / box ] ctx C= psi) $):
+  $ app[ phi / box ] ctx C= psi $ =
+  '(imp_to_subset @ rsyl (anl appCtx_pointwise) @
+    exists_generalization_disjoint @
+    impcom @
+    rsyl hyp subset_to_imp);
