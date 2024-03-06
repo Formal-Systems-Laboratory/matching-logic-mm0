@@ -44,7 +44,13 @@ axiom pred_freshness:
   $ is_nominal_sort tau $ >
   $ ,(is_multi_function '(sym freshness_sym) '[alpha] 'tau) $;
 
-
+axiom EV_abstraction {a b: EVar} (alpha tau: Pattern) (phi psi: Pattern a b):
+  $ is_atom_sort alpha $ >
+  $ is_nominal_sort tau $ >
+  $ is_of_sort phi alpha $ >
+  $ is_of_sort psi tau $ >
+  $ s_forall alpha a (s_forall alpha b ((swap a b (abstraction phi psi)) == abstraction (swap a b phi) (swap a b psi))) $;
+  
 
 axiom EV_pred (alpha tau: Pattern):
   $ is_atom_sort alpha $ >
