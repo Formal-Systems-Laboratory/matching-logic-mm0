@@ -82,9 +82,6 @@ theorem freshness_irrelevance (exp_pred exp_suff_fresh: Pattern)
     rsyl (anl eVar_in_subset) @
     lc_lemma_3 exp_suff_fresh_sorting exp_suff_fresh_nonempty exp_pred_ev h_abs));
 
-
-
-
 theorem prototype_induction_principle (exp_pred exp_suff_fresh: Pattern)
   (exp_suff_fresh_sorting: $ is_of_sort exp_suff_fresh Var $)
   (exp_suff_fresh_nonempty: $ |^ exp_suff_fresh ^| $)
@@ -93,4 +90,13 @@ theorem prototype_induction_principle (exp_pred exp_suff_fresh: Pattern)
   (h_var: $ (lc_var Vars) C= exp_pred $)
   (h_app: $ (lc_app exp_pred exp_pred) C= exp_pred $)
   (h_abs: $ (lc_lam (abstraction exp_suff_fresh exp_pred)) C= exp_pred $):
-  $ Exps == exp_pred $ = '();
+  $ Exps == exp_pred $ = (named '(subset_to_eq (imp_to_subset @
+    rsyl (corollary_57_floor @ eq_imp_subset no_junk) @
+    KT_subst
+      (positive_in_or (positive_in_or positive_disjoint @ positive_in_app (positive_in_app positive_disjoint positive_in_same_sVar) positive_in_same_sVar) @ positive_in_app positive_disjoint @ positive_in_app positive_disjoint positive_in_same_sVar)
+      ,(propag_s_subst_adv 'X $a \/ (app (app a (sVar X)) (sVar X)) \/ (app a (app a (sVar X)))$ (atom-map! '[a #t])) @
+      eori (eori
+        (corollary_57_floor h_var)
+        (corollary_57_floor h_app))
+        @ corollary_57_floor @ freshness_irrelevance exp_suff_fresh_sorting exp_suff_fresh_nonempty exp_pred_ev h_abs
+  ) exp_pred_sorting));

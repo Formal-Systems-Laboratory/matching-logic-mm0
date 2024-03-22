@@ -74,6 +74,13 @@ axiom S3 (alpha: Pattern) {a b: EVar}:
   $ is_atom a alpha $ >
   $ is_atom b alpha $ >
   $ (swap a b (eVar a)) == eVar b $;
+axiom S4 (alpha tau: Pattern) {a b: EVar} (phi: Pattern a b):
+  $ is_atom_sort alpha $ >
+  $ is_nominal_sort tau $ >
+  $ is_atom a alpha $ >
+  $ is_atom b alpha $ >
+  $ is_of_sort phi tau $ >
+  $ (swap a b phi) == (swap b a phi) $;
 axiom F1 (alpha tau: Pattern) {a b: EVar} (phi: Pattern a b):
   $ is_atom_sort alpha $ >
   $ is_nominal_sort tau $ >
