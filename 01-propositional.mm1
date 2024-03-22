@@ -701,7 +701,7 @@ theorem appl: $ (aa /\ (aa -> bb)) -> bb $ = '(con1 @ anl com12b @ con3d mpcom);
 
 --- analogs to anl and anr; Would prefer: $~(aa -> bb) <-> (aa /\ ~bb)$
 theorem neg_imp_left: $ ~(aa -> bb) -> aa $ = '(con1 absurd);
-theorem neg_imp_right: $~(aa -> bb) -> ~bb $ = '(con1 (rsyl dne (a1d id)));
+theorem neg_imp_right: $ ~(aa -> bb) -> ~bb $ = '(con3 prop_1);
 theorem neg_imp_wl(h: $ aa -> c $): $ ~(aa -> bb) -> c $ = '(syl h neg_imp_left);
 theorem neg_imp_wr(h: $ ~bb -> c $): $ ~(aa -> bb) -> c $ = '(syl h neg_imp_right);
 
