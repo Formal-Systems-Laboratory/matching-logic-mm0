@@ -148,7 +148,7 @@ theorem freshness_irrelevance (exp_pred exp_suff_fresh: Pattern)
     rsyl (anl eVar_in_subset) @
     lc_lemma_3 exp_pred_sorting exp_suff_fresh_sorting exp_suff_fresh_nonempty exp_pred_ev h_abs));
 
-theorem prototype_induction_principle (exp_pred exp_suff_fresh: Pattern)
+theorem induction_principle (exp_pred exp_suff_fresh: Pattern)
   (exp_suff_fresh_sorting: $ is_of_sort exp_suff_fresh Var $)
   (exp_suff_fresh_nonempty: $ |^ exp_suff_fresh ^| $)
   (exp_pred_sorting: $ is_of_sort exp_pred Exp $)
