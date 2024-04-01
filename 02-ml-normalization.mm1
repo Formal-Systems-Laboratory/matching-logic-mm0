@@ -97,6 +97,11 @@ theorem norm_and_r (phi psi psi2: Pattern)
   $ Norm (phi /\ psi) (phi /\ psi2) $ =
   '(norm_and norm_refl h);
 
+theorem norm_forall {x: EVar} (phi psi: Pattern x)
+  (h: $ Norm phi psi $):
+  $ Norm (forall x phi) (forall x psi) $ =
+  '(norm_not @ norm_exists @ norm_not h);
+
 theorem eFresh_and {x: EVar} (phi1 phi2: Pattern x)
   (h1: $ _eFresh x phi1 $)
   (h2: $ _eFresh x phi2 $):
@@ -172,6 +177,11 @@ theorem exists_framing {x: EVar} (phi1 phi2: Pattern x)
   (h: $ phi1 -> phi2 $):
   $ (exists x phi1) -> exists x phi2 $ =
   '(exists_generalization eFresh_exists_same_var @ syl exists_intro_same_var h);
+
+theorem forall_framing {x: EVar} (phi1 phi2: Pattern x)
+  (h: $ phi1 -> phi2 $):
+  $ (forall x phi1) -> forall x phi2 $ =
+  '(con3 @ exists_framing @ con3 h);
 
 theorem or_exists_disjoint {x: EVar} (phi1: Pattern) (phi2: Pattern x):
   $ (phi1 \/ exists x phi2) <-> exists x (phi1 \/ phi2) $ =

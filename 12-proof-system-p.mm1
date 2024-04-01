@@ -258,6 +258,8 @@ theorem equiv_to_eq  (h: $ phi <-> psi $): $ phi == psi $ = '(lemma_46_floor h);
 theorem eq_imp_subset: $ (phi == psi) -> (phi C= psi) $ = '(framing_floor anl);
 theorem subset_to_eq: $ (phi C= psi) -> (psi C= phi) -> (phi == psi) $ = '(exp @ anr propag_and_floor);
 
+theorem subset_refl: $ phi C= phi $ = '(imp_to_subset id);
+
 theorem eq_refl: $ phi == phi $ = '(equiv_to_eq biid);
 theorem functional_same_var: $ exists x (eVar x == eVar x) $ = '(exists_intro_same_var eq_refl);
 theorem functional_var: $ is_func (eVar x) $ =
@@ -272,6 +274,13 @@ theorem subset_imp_subset_or_l:
 theorem subset_imp_subset_or_r:
   $(phi C= psi) -> (phi C= (rho \/ psi))$ =
   '(framing_floor @ imim2i orr);
+
+theorem subset_imp_or_subset_l:
+  $(phi C= psi) -> ((psi \/ phi) C= psi)$ =
+  '(framing_floor @ eor id);
+theorem subset_imp_or_subset_r:
+  $(phi C= psi) -> ((phi \/ psi) C= psi)$ =
+  '(framing_floor @ com12 eor id);
 
 theorem subset_and: $ (phi C= (psi1 /\ psi2)) -> (phi C= psi1) /\ (phi C= psi2) $ =
   '(iand (framing_subset id anl) (framing_subset id anr));
@@ -1123,6 +1132,62 @@ theorem ceil_idempotency_for_pred (phi: Pattern): $ ((phi == bot) \/ (phi == top
       (mp ,(func_subst_imp_to_var 'x $eVar x == |^ eVar x ^| $) @ lemma_46_floor @ bicom @ taut_equiv_top @ framing_def imp_top definedness))
     (mp ,(func_subst_imp_to_var 'x $(eVar x == bot) \/ (eVar x == top)$) ceil_is_pred)));
 
+theorem framing_imp {box: SVar} (ctx: Pattern box) (phi psi: Pattern):
+  $ (phi C= psi) -> ((app[ phi / box ] ctx) C= (app[ psi / box ] ctx)) $ =
+  '(rsyl subset_imp_or_subset_r @
+    rsyl (com12 subset_to_eq @ subset_imp_subset_or_r subset_refl) @
+    rsyl (eq_to_subset_bi eq_to_id_bi (eq_to_appCtx_bi eq_to_intro_bi)) @
+    rsyl anl @
+    mpcom @
+    imp_to_subset @
+    framing orl);
+
+do {
+  (def (framing_imp_subst subst) '(norm (norm_imp_r @ norm_subset ,subst ,subst) framing_imp))
+};
+
+theorem under_domain_forall {x: EVar} (phi_a phi_b phi_c phi_d: Pattern x)
+  (h: $ phi_b -> phi_c $):
+  $ ((forall x (phi_a -> phi_c)) -> phi_d) -> (forall x (phi_a -> phi_b)) -> phi_d $ =
+  '(imim1 @ forall_framing @ imim2 h);
+
+theorem domain_func_sorting {x: EVar} (phi psi: Pattern):
+  $ (exists x ((eVar x C= psi) /\ (eVar x == phi))) -> (phi C= psi) $ =
+  '(exists_generalization_disjoint @
+    rsyl (anim2 @ rsyl eq_sym eq_imp_subset) @
+    impcom subset_trans);
+
+theorem forall_exists_lemma {box: SVar} {x: EVar} (ctx: Pattern box) (phi: Pattern):
+  $ ( forall x ((app[ (eVar x) / box ] ctx)  C= phi)) ->
+    ((exists x  (app[ (eVar x) / box ] ctx)) C= phi ) $ =
+  '(con3 @
+    rsyl (framing_def @ con3 @ imim2 dne) @
+    rsyl (framing_def and_exists_disjoint_r_reverse) @
+    rsyl propag_exists_def @
+    exists_framing @
+    syl notnot1 @
+    framing_def @
+    con3 @
+    imim2 notnot1);
+
+theorem forall_exists_lemma_domain {box: SVar} {x: EVar} (ctx: Pattern box) (phi psi: Pattern):
+  $ ( forall x (((eVar x) C= psi) -> ((app[ (eVar x) / box ] ctx)   C= phi))) ->
+    ((exists x (((eVar x) C= psi) /\  (app[ (eVar x) / box ] ctx))) C= phi  ) $ =
+  '(con3 @
+    rsyl (framing_def @ con3 @ imim2 dne) @
+    rsyl (framing_def and_exists_disjoint_r_reverse) @
+    rsyl propag_exists_def @
+    exists_framing @
+    rsyl (framing_def @ anl anass) @
+    rsyl (iand (framing_def anl) (framing_def anr)) @
+    syl (con3 @ imim2 notnot1) @
+    anim (anl ceil_floor_floor) @
+    syl notnot1 @
+    framing_def @
+    con3 @
+    imim2 notnot1);
+
+
 theorem pointwise_decomposition {box: SVar} {x: EVar} (ctx: Pattern box) (phi psi: Pattern)
   (hyp: $ (x in phi) -> (app[ eVar x / box ] ctx C= psi) $):
   $ app[ phi / box ] ctx C= psi $ =
@@ -1130,3 +1195,17 @@ theorem pointwise_decomposition {box: SVar} {x: EVar} (ctx: Pattern box) (phi ps
     exists_generalization_disjoint @
     impcom @
     rsyl hyp subset_to_imp);
+
+theorem pointwise_decomposition_imp {box: SVar} {x: EVar} (ctx: Pattern box) (phi psi: Pattern):
+  $ (forall x (((eVar x) C= phi) -> (app[ eVar x / box ] ctx C= psi))) ->
+    (app[ phi / box ] ctx C= psi) $ =
+  '(rsyl forall_exists_lemma_domain @
+    anl (mp ,(func_subst_explicit_helper 'y $ (eVar y) C= _ $) (
+      equiv_to_eq @
+      bitr
+        (cong_of_equiv_exists @ bitr (aneq1i eVar_in_subset_rev) ancomb)
+        (bicom appCtx_pointwise))));
+
+do {
+  (def (pointwise_decomposition_imp_subst subst) '(norm (norm_imp (norm_forall @ norm_imp_r @ norm_subset ,subst norm_refl) @ norm_subset ,subst norm_refl) pointwise_decomposition_imp))
+};
