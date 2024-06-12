@@ -22,6 +22,7 @@ axiom function_lc_app: $ ,(is_function '(sym lc_var_app) '[Exp Exp] 'Exp) $;
 
 term lc_lam_sym: Symbol;
 def lc_lam (phi: Pattern): Pattern = $ (sym lc_lam_sym) @@ phi $;
+def lc_lam_a {a: EVar} (p: Pattern a): Pattern a = $ lc_lam (abstraction (eVar a) p) $;
 axiom function_lc_lam: $ ,(is_function '(sym lc_lam_sym) '[(sort_abstraction Var Exp)] 'Exp) $;
 axiom EV_lc_lam {a b: EVar} (phi: Pattern a b):
   $ (is_of_sort phi (sort_abstraction Var Exp)) ->
@@ -56,7 +57,7 @@ theorem abstraction_sorting (phi rho: Pattern):
 theorem EV_lc_lam_abstraction {a b: EVar} (phi: Pattern a b):
   $ is_exp phi ->
     ((is_var (eVar a)) /\ (is_var (eVar b))) ->
-    ((swap a b (lc_lam (abstraction (eVar a) phi))) == lc_lam (abstraction (eVar b) (swap a b phi))) $ =
+    ((swap a b (lc_lam_a a phi)) == lc_lam_a b (swap a b phi)) $ =
   (named '(exp @
     sylc eq_trans (
       rsyl (anr anass) @
@@ -98,7 +99,7 @@ theorem lc_lemma_1 {x: EVar} (exp_pred exp_suff_fresh: Pattern)
   (exp_suff_fresh_sorting: $ is_var exp_suff_fresh $)
   (exp_suff_fresh_nonempty: $ |^ exp_suff_fresh ^| $)
   (h_abs: $ (lc_lam (abstraction exp_suff_fresh exp_pred)) C= exp_pred $):
-  $ s_exists Var x ((lc_lam (abstraction (eVar x) exp_pred)) C= exp_pred) $ =
+  $ s_exists Var x ((lc_lam_a x exp_pred) C= exp_pred) $ =
   (named '(exists_framing (rsyl (anl eVar_in_subset) @ iand
     (com12 subset_trans exp_suff_fresh_sorting)
     (rsyl (syl
@@ -110,7 +111,7 @@ theorem lc_lemma_1 {x: EVar} (exp_pred exp_suff_fresh: Pattern)
 theorem lc_lemma_2 {x y: EVar} (exp_pred: Pattern)
   (exp_pred_sorting: $ is_exp exp_pred $)
   (exp_pred_ev: $ EV_pattern Var exp_pred $):
-  $ (((is_var (eVar x)) /\ (is_var (eVar y))) /\ ((lc_lam (abstraction (eVar y) exp_pred)) C= exp_pred)) -> ((lc_lam (abstraction (eVar x) exp_pred)) C= exp_pred) $ =
+  $ (((is_var (eVar x)) /\ (is_var (eVar y))) /\ ((lc_lam_a y exp_pred) C= exp_pred)) -> ((lc_lam_a x exp_pred) C= exp_pred) $ =
   (named '(
     rsyl (anim2 ,(subset_imp_subset_framing_subst 'appCtxRVar)) @
     rsyl (iand anl @ 
@@ -129,7 +130,7 @@ theorem lc_lemma_3 {y: EVar} (exp_pred: Pattern)
   (exp_suff_fresh_nonempty: $ |^ exp_suff_fresh ^| $)
   (exp_pred_ev: $ EV_pattern Var exp_pred $)
   (h_abs: $ (lc_lam (abstraction exp_suff_fresh exp_pred)) C= exp_pred $):
-  $ is_var (eVar y) -> ((lc_lam (abstraction (eVar y) exp_pred)) C= exp_pred) $ =
+  $ is_var (eVar y) -> ((lc_lam_a y exp_pred) C= exp_pred) $ =
   (named '(
     rsyl (ian2 @ lc_lemma_1 exp_suff_fresh_sorting exp_suff_fresh_nonempty h_abs) @
     rsyl and_exists_disjoint_reverse @
@@ -168,3 +169,31 @@ theorem induction_principle (exp_pred exp_suff_fresh: Pattern)
         (corollary_57_floor h_app))
         @ corollary_57_floor @ freshness_irrelevance exp_pred_sorting exp_suff_fresh_sorting exp_suff_fresh_nonempty exp_pred_ev h_abs
   ) exp_pred_sorting));
+
+
+term subst_sym: Symbol;
+def subst (phi1 phi2 phi3: Pattern): Pattern = $ (sym subst_sym) @@ phi1 @@ phi2 @@ phi3 $;
+
+axiom function_subst: $ ,(is_function '(sym subst_sym) '[Exp Var Exp] 'Exp) $;
+axiom subst_same_var {a: EVar} (plug: Pattern a):
+  $ (is_var (eVar a)) ->
+    (is_exp plug) ->
+    ((subst (lc_var (eVar a)) (eVar a) plug) == plug) $;
+axiom subst_diff_var {a b: EVar} (plug: Pattern a b):
+  $ (is_var (eVar a)) ->
+    (is_var (eVar b)) ->
+    (is_exp plug) ->
+    ((subst (lc_var (eVar a)) (eVar b) plug) == (lc_var (eVar a))) $;
+axiom subst_app {a: EVar} (plug phi1 phi2: Pattern a):
+  $ (is_var (eVar a)) ->
+    (is_exp plug) ->
+    (is_exp phi1) ->
+    (is_exp phi2) ->
+    ((subst (lc_app phi1 phi2) (eVar a) plug) == (lc_app (subst phi1 (eVar a) plug) (subst phi2 (eVar a) plug))) $;
+axiom subst_lam {a b: EVar} (plug phi: Pattern a b):
+  $ (is_var (eVar a)) ->
+    (is_var (eVar b)) ->
+    (is_exp plug) ->
+    (is_exp phi) ->
+    (plug C= freshness a) ->
+    ((subst (lc_lam_a a phi) (eVar b) plug) == (lc_lam_a a (subst phi (eVar b) plug))) $;
