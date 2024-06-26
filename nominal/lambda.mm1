@@ -172,28 +172,41 @@ theorem induction_principle (exp_pred exp_suff_fresh: Pattern)
 
 
 term subst_sym: Symbol;
-def subst (phi1 phi2 phi3: Pattern): Pattern = $ (sym subst_sym) @@ phi1 @@ phi2 @@ phi3 $;
+def subst {a: EVar} (phi1 phi2: Pattern a): Pattern a = $ (sym subst_sym) @@ (eVar a) @@ phi1 @@ phi2 $;
 
-axiom function_subst: $ ,(is_function '(sym subst_sym) '[Exp Var Exp] 'Exp) $;
+axiom function_subst: $ ,(is_function '(sym subst_sym) '[Var Exp Exp] 'Exp) $;
 axiom subst_same_var {a: EVar} (plug: Pattern a):
   $ (is_var (eVar a)) ->
     (is_exp plug) ->
-    ((subst (lc_var (eVar a)) (eVar a) plug) == plug) $;
+    ((subst a (lc_var (eVar a)) plug) == plug) $;
 axiom subst_diff_var {a b: EVar} (plug: Pattern a b):
   $ (is_var (eVar a)) ->
     (is_var (eVar b)) ->
     (is_exp plug) ->
-    ((subst (lc_var (eVar a)) (eVar b) plug) == (lc_var (eVar a))) $;
+    ((subst b (lc_var (eVar a)) plug) == (lc_var (eVar a))) $;
 axiom subst_app {a: EVar} (plug phi1 phi2: Pattern a):
   $ (is_var (eVar a)) ->
     (is_exp plug) ->
     (is_exp phi1) ->
     (is_exp phi2) ->
-    ((subst (lc_app phi1 phi2) (eVar a) plug) == (lc_app (subst phi1 (eVar a) plug) (subst phi2 (eVar a) plug))) $;
+    ((subst a (lc_app phi1 phi2) plug) == (lc_app (subst a phi1 plug) (subst a phi2 plug))) $;
 axiom subst_lam {a b: EVar} (plug phi: Pattern a b):
   $ (is_var (eVar a)) ->
     (is_var (eVar b)) ->
     (is_exp plug) ->
     (is_exp phi) ->
-    (plug C= freshness a) ->
-    ((subst (lc_lam_a a phi) (eVar b) plug) == (lc_lam_a a (subst phi (eVar b) plug))) $;
+    (fresh_for a plug) ->
+    ((subst b (lc_lam_a a phi) plug) == (lc_lam_a a (subst b phi plug))) $;
+
+
+
+
+theorem subst_induction {a b: EVar} (phi1 phi2 phi3: Pattern):
+  $ (is_var (eVar a)) ->
+    (is_var (eVar b)) ->
+    (is_exp phi1) ->
+    (is_exp phi2) ->
+    (is_exp phi3) ->
+    (fresh_for a phi3) ->
+    ((subst b (subst a phi1 phi2) phi3) == (subst a (subst b phi1 phi3) (subst b phi2 phi3))) $ =
+    '();
