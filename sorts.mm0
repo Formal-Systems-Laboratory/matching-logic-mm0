@@ -19,6 +19,8 @@ def s_forall (s: Pattern) {x: EVar} (phi: Pattern x): Pattern = $ forall x ((eVa
 
 def is_sorted_pred (s: Pattern) (phi: Pattern): Pattern = $ (phi == bot) \/ (phi == dom s) $;
 
+def is_sorted_func {.x: EVar} (s: Pattern) (phi: Pattern): Pattern = $ s_exists s x (eVar x == phi) $;
+
 -- Singleton sort
 term pred_sym: Symbol;
 def pred: Pattern = $ sym pred_sym $;

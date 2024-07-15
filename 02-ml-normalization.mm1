@@ -183,19 +183,29 @@ theorem forall_framing {x: EVar} (phi1 phi2: Pattern x)
   $ (forall x phi1) -> forall x phi2 $ =
   '(con3 @ exists_framing @ con3 h);
 
-theorem or_exists_disjoint {x: EVar} (phi1: Pattern) (phi2: Pattern x):
+theorem disjoint_forall: $ phi -> forall x phi $ = '(con2 @ exists_generalization_disjoint id);
+
+theorem or_exists_fresh {x: EVar} (phi1 phi2: Pattern x) (freshness_phi1: $ _eFresh x phi1 $):
   $ (phi1 \/ exists x phi2) <-> exists x (phi1 \/ phi2) $ =
   '(ibii
     (eori
       (syl exists_intro_same_var orl)
       (exists_generalization eFresh_exists_same_var @ syl exists_intro_same_var orr))
-    (exists_generalization (eFresh_or eFresh_disjoint eFresh_exists_same_var) @ eori orl @ orrd exists_intro_same_var));
+    (exists_generalization (eFresh_or freshness_phi1 eFresh_exists_same_var) @ eori orl @ orrd exists_intro_same_var));
+
+theorem or_exists_disjoint {x: EVar} (phi1: Pattern) (phi2: Pattern x):
+  $ (phi1 \/ exists x phi2) <-> exists x (phi1 \/ phi2) $ =
+  '(or_exists_fresh eFresh_disjoint);
+
+theorem imp_exists_fresh {x: EVar} (phi1 phi2: Pattern x) (freshness_phi1: $ _eFresh x phi1 $):
+  $ (phi1 -> exists x phi2) <-> exists x (phi1 -> phi2) $ =
+  '(ibii
+    (rsyl (imim1 dne) @ rsyl (anl @ or_exists_fresh @ eFresh_not freshness_phi1) @ exists_framing @ imim1 notnot1)
+    (rsyl (exists_framing @ imim1 dne) @ rsyl (anr @ or_exists_fresh @ eFresh_not freshness_phi1) @ imim1 notnot1));
 
 theorem imp_exists_disjoint {x: EVar} (phi1: Pattern) (phi2: Pattern x):
   $ (phi1 -> exists x phi2) <-> exists x (phi1 -> phi2) $ =
-  '(ibii
-    (rsyl (imim1 dne) @ rsyl (anl or_exists_disjoint) @ exists_framing @ imim1 notnot1)
-    (rsyl (exists_framing @ imim1 dne) @ rsyl (anr or_exists_disjoint) @ imim1 notnot1));
+  '(imp_exists_fresh eFresh_disjoint);
 
 theorem and_exists {x: EVar} (phi1 phi2: Pattern x):
   $ (exists x (phi1 /\ phi2)) -> ((exists x phi1) /\ (exists x phi2)) $ =
@@ -212,14 +222,23 @@ theorem or_exists_bi {x: EVar} (phi1 phi2: Pattern x):
   $ (exists x (phi1 \/ phi2)) <-> ((exists x phi1) \/ (exists x phi2)) $ =
   '(ibii or_exists_forwards or_exists_reverse);
 
-theorem and_exists_disjoint_forwards {x: EVar} (phi1: Pattern) (phi2: Pattern x):
+theorem and_exists_fresh_forwards {x: EVar} (phi1 phi2: Pattern x) (freshness_phi1: $ _eFresh x phi1 $):
   $ (exists x (phi1 /\ phi2)) -> (phi1 /\ exists x phi2) $ =
   '(iand
-    (rsyl (exists_framing anl) (exists_generalization_disjoint id))
+    (rsyl (exists_framing anl) (exists_generalization freshness_phi1 id))
     (exists_framing anr));
+theorem and_exists_disjoint_forwards {x: EVar} (phi1: Pattern) (phi2: Pattern x):
+  $ (exists x (phi1 /\ phi2)) -> (phi1 /\ exists x phi2) $ =
+  '(and_exists_fresh_forwards eFresh_disjoint);
+theorem and_exists_fresh_reverse {x: EVar} (phi1 phi2: Pattern x) (freshness_phi1: $ _eFresh x phi1 $):
+  $ (phi1 /\ exists x phi2) -> (exists x (phi1 /\ phi2)) $ =
+  '(impcom @ syl (anr @ imp_exists_fresh freshness_phi1) (exists_framing ian2));
 theorem and_exists_disjoint_reverse {x: EVar} (phi1: Pattern) (phi2: Pattern x):
   $ (phi1 /\ exists x phi2) -> (exists x (phi1 /\ phi2)) $ =
-  '(impcom @ syl (anr imp_exists_disjoint) (exists_framing ian2));
+  '(and_exists_fresh_reverse eFresh_disjoint);
+theorem and_exists_fresh {x: EVar} (phi1 phi2: Pattern x) (freshness_phi1: $ _eFresh x phi1 $):
+  $ (exists x (phi1 /\ phi2)) <-> (phi1 /\ exists x phi2) $ =
+  '(ibii (and_exists_fresh_forwards freshness_phi1) (and_exists_fresh_reverse freshness_phi1));
 theorem and_exists_disjoint {x: EVar} (phi1: Pattern) (phi2: Pattern x):
   $ (exists x (phi1 /\ phi2)) <-> (phi1 /\ exists x phi2) $ =
   '(ibii and_exists_disjoint_forwards and_exists_disjoint_reverse);

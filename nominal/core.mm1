@@ -27,7 +27,7 @@ term abstraction_sym: Symbol;
 def abstraction (phi rho: Pattern): Pattern = $ (sym abstraction_sym) @@ phi @@ rho $;
 term supp_sym: Symbol;
 def supp (phi: Pattern): Pattern = $ (sym supp_sym) @@ phi $;
-def fresh_for {a: EVar} (phi: Pattern a): Pattern a = $ ~ (a in supp phi) $;
+def fresh_for (phi psi: Pattern): Pattern = $ ~ (phi C= supp psi) $;
 
 def EV_pattern {.a .b: EVar} (alpha phi: Pattern): Pattern =
 $ s_forall alpha a (s_forall alpha b ((swap a b phi) == phi)) $;
@@ -88,25 +88,24 @@ axiom F1 (alpha tau: Pattern) {a b: EVar} (phi: Pattern a b):
   $ (is_atom a alpha) ->
     (is_atom b alpha) ->
     (is_of_sort phi tau) ->
-    ((fresh_for a phi) /\ (fresh_for b phi) -> ((swap a b phi) == phi)) $;
-axiom F23 (alpha1 alpha2: Pattern) {a b: EVar}:
+    ((fresh_for (eVar a) phi) /\ (fresh_for (eVar b) phi) -> ((swap a b phi) == phi)) $;
+axiom F2 (alpha: Pattern) {a b: EVar}:
+  $ is_atom_sort alpha $ >
+  $ (is_atom a alpha) ->
+    (is_atom b alpha) ->
+    (((eVar a) != (eVar b)) <-> (fresh_for (eVar a) (eVar b))) $;
+axiom F3 (alpha1 alpha2: Pattern) {a b: EVar}:
   $ is_atom_sort alpha1 $ >
   $ is_atom_sort alpha2 $ >
   $ (is_atom a alpha1) ->
     (is_atom b alpha2) ->
-    (fresh_for a (eVar b)) $;
+    (alpha1 != alpha2) ->
+    ((eVar a) != (eVar b)) $;
 axiom F4 (alpha tau phi: Pattern) {a: EVar}:
   $ is_atom_sort alpha $ >
   $ is_nominal_sort tau $ >
   $ (is_of_sort phi tau) ->
-    (s_exists alpha a (fresh_for a phi)) $;
-axiom A1_same (alpha tau: Pattern) {a: EVar} (phi rho: Pattern a):
-  $ is_atom_sort alpha $ >
-  $ is_nominal_sort tau $ >
-  $ (is_atom a alpha) ->
-    (is_of_sort phi tau) ->
-    (is_of_sort rho tau) ->
-    (((abstraction (eVar a) phi) == (abstraction (eVar a) rho)) <-> (phi == rho)) $;
+    (s_exists alpha a (fresh_for (eVar a) phi)) $;
 axiom A1 (alpha tau: Pattern) {a b: EVar} (phi rho: Pattern a b):
   $ is_atom_sort alpha $ >
   $ is_nominal_sort tau $ >
@@ -115,7 +114,8 @@ axiom A1 (alpha tau: Pattern) {a b: EVar} (phi rho: Pattern a b):
     (is_of_sort phi tau) ->
     (is_of_sort rho tau) ->
     (((abstraction (eVar a) phi) == (abstraction (eVar b) rho)) <->
-    ((fresh_for a rho) /\ ((swap a b phi) == rho))) $;
+    ((eVar a == eVar b) /\ (phi == rho)) \/
+    ((fresh_for (eVar a) rho) /\ ((swap a b phi) == rho))) $;
 axiom A2 (alpha tau: Pattern) {x a y: EVar}:
   $ is_atom_sort alpha $ >
   $ is_nominal_sort tau $ >
