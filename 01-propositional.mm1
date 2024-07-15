@@ -390,6 +390,7 @@ theorem con2: $ (aa -> ~bb) -> (bb -> ~aa) $ = '(a3d (syl5 dne id));
 theorem notnot1: $ aa -> ~~aa $ = '(con2 id);
 theorem con3: $ (aa -> bb) -> (~bb -> ~aa) $ = '(syl con2 (imim2i notnot1));
 theorem con1: $ (~aa -> bb) -> (~bb -> aa) $ = '(a3d (imim2i notnot1));
+theorem con4: $ (~aa -> ~bb) -> (bb -> aa) $ = '(syl (imim1 notnot1) con1);
 theorem cases (h1: $ aa -> bb $) (h2: $ ~aa -> bb $): $ bb $ = '(contra @ syl h1 @ con1 h2);
 theorem casesd (h1: $ aa -> bb -> c $) (h2: $ aa -> ~bb -> c $): $ aa -> c $ =
 '(cases (com12 h1) (com12 h2));

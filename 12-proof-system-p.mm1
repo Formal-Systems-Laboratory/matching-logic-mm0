@@ -145,6 +145,13 @@ theorem prop_43_exists_def {x: EVar} (phi: Pattern x):
   $ (exists x (|^ phi ^|)) -> |^ exists x phi ^| $ =
   '(exists_generalization (eFresh_app eFresh_disjoint eFresh_exists_same_var) (framing_def exists_intro_same_var));
 
+
+theorem forall_floor {x: EVar} (phi: Pattern x):
+  $ |_ forall x phi _| <-> forall x (|_ phi _|) $ =
+  '(ian
+    (con3 @ rsyl (exists_framing dne) @ rsyl prop_43_exists_def @ framing_def notnot1)
+    (con3 @ rsyl (framing_def dne) @ rsyl propag_exists_def @ exists_framing notnot1));
+
 do {
   (def (ex_appCtx_subst subst) '(norm (norm_equiv ,subst @ norm_exists ,subst) exists_appCtx))
   (def (or_appCtx_subst subst) '(norm (norm_equiv ,subst @ norm_or ,subst ,subst) or_appCtx))
@@ -165,6 +172,10 @@ theorem propag_and_floor: $|_ phi /\ psi _| <-> |_ phi _| /\ |_ psi _|$ =
     (iand (framing_floor anl) (framing_floor anr))
     (rsyl (anr notor) @ rsyl (con3 propag_or_def) @ con3 @ framing_def @ anl notan)
   );
+
+theorem prop_43_or_def_rev (phi1 phi2: Pattern):
+  $ |^ phi1 \/ phi2 ^| -> (|^ phi1 ^| \/ |^ phi2 ^|) $ =
+  '(syl (orim (framing_def dne) (framing_def dne)) @ rsyl (framing_def @ orim notnot1 notnot1) @ con4 @ rsyl (anl notor) @ rsyl (anr propag_and_floor) @ con3 @ framing_def (anr notan));
 
 theorem appCtxLR {box: SVar} (phi2 phi3: Pattern) (phi1 phi4: Pattern box):
   $ Norm (app[ phi1 / box ] (app (app phi3 phi4) phi2)) (app (app phi3 (app[ phi1 / box ] phi4)) phi2) $ =
@@ -242,11 +253,6 @@ theorem cong_of_equiv_mem {x: EVar} (phi1 phi2: Pattern x)
   $ (x in phi1) <-> (x in phi2) $ = '(cong_of_equiv_def @ cong_of_equiv_and_r h);
 theorem cong_of_equiv_eq (h1: $phi1 <-> phi2$) (h2: $psi1 <-> psi2$): $(phi1 == psi1) <-> (phi2 == psi2)$ =
   '(cong_of_equiv_not @ cong_of_equiv_def @ cong_of_equiv_not @ cong_of_equiv_equiv h1 h2);
-
-do {
-  (def (cong_eq_lift pf to_eq) '(equiv_to_eq @ ,pf (corollary_57_floor ,to_eq)))
-  (def (cong_eq_lift2 pf to_eq1 to_eq2) '(equiv_to_eq @ ,pf (corollary_57_floor ,to_eq1) (corollary_57_floor ,to_eq2)))
-};
 
 theorem univ_gene {x: EVar} (phi: Pattern x)
   (p: $ phi $):
@@ -589,6 +595,15 @@ do {
 
 -- Equality reasoning
 
+do {
+  (def (cong_eq_lift pf to_eq) '(equiv_to_eq @ ,pf (corollary_57_floor ,to_eq)))
+  (def (cong_eq_lift2 pf to_eq1 to_eq2) '(equiv_to_eq @ ,pf (corollary_57_floor ,to_eq1) (corollary_57_floor ,to_eq2)))
+};
+
+theorem cong_of_eq_exists {x: EVar} (phi1 phi2: Pattern x)
+  (h: $ phi1 == phi2 $): $ (exists x phi1) == (exists x phi2) $ =
+  (cong_eq_lift 'cong_of_equiv_exists 'h);
+
 theorem in_refl: $ x in eVar x $ =
   '(framing_def (iand id id) definedness);
 
@@ -688,10 +703,15 @@ theorem eq_to_app
   $ (phi1 == phi2) -> ((app psi1 rho1) -> (app psi2 rho2)) $ =
   '(syld (eq_to_app_l h1) (eq_to_app_r h2));
 
-theorem eq_to_exists {x: EVar} (phi1 phi2: Pattern) (psi1 psi2: Pattern x)
-  (h: $ (phi1 == phi2) -> (psi1 -> psi2) $):
-  $ (phi1 == phi2) -> ((exists x psi1) -> (exists x psi2)) $ =
-  '(exp @ rsyl and_exists_disjoint_reverse @ exists_framing @ curry h);
+theorem eq_to_exists_fresh {x: EVar} (phi psi1 psi2: Pattern x)
+  (freshness: $_eFresh x phi$)
+  (h: $ phi -> (psi1 -> psi2) $):
+  $ phi -> ((exists x psi1) -> (exists x psi2)) $ =
+  '(exp @ rsyl (and_exists_fresh_reverse freshness) @ exists_framing @ curry h);
+theorem eq_to_exists {x: EVar} (phi: Pattern) (psi1 psi2: Pattern x)
+  (h: $ phi -> (psi1 -> psi2) $):
+  $ phi -> ((exists x psi1) -> (exists x psi2)) $ =
+  '(eq_to_exists_fresh eFresh_disjoint h);
 
 do {
   (def (bi_lift pf to_equiv) '(iand (,pf @ syl anl ,to_equiv) (,pf @ syl anr ,to_equiv)))
@@ -793,9 +813,13 @@ theorem eq_to_eq_r_bi
   (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
   $ (phi1 == phi2) -> ((rho == psi1) <-> (rho == psi2)) $ = '(eq_to_eq_bi eq_to_id_bi h);
 
-theorem eq_to_exists_bi {x: EVar} (phi1 phi2: Pattern) (psi1 psi2: Pattern x)
-  (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
-  $ (phi1 == phi2) -> ((exists x psi1) <-> (exists x psi2)) $ = (bi_lift 'eq_to_exists 'h);
+theorem eq_to_exists_bi_fresh {x: EVar} (phi psi1 psi2: Pattern x)
+  (freshness: $ _eFresh x phi $)
+  (h: $ phi -> (psi1 <-> psi2) $):
+  $ phi -> ((exists x psi1) <-> (exists x psi2)) $ = '(iand (eq_to_exists_fresh freshness @ syl anl h) (eq_to_exists_fresh freshness @ syl anr h));
+theorem eq_to_exists_bi {x: EVar} (phi: Pattern) (psi1 psi2: Pattern x)
+  (h: $ phi -> (psi1 <-> psi2) $):
+  $ phi -> ((exists x psi1) <-> (exists x psi2)) $ = '(eq_to_exists_bi_fresh eFresh_disjoint h);
 theorem eq_to_forall_bi {x: EVar} (phi1 phi2: Pattern) (psi1 psi2: Pattern x)
   (h: $ (phi1 == phi2) -> (psi1 <-> psi2) $):
   $ (phi1 == phi2) -> ((forall x psi1) <-> (forall x psi2)) $ =
@@ -986,12 +1010,16 @@ theorem eq_imp_eq_framing {box: SVar} (ctx phi psi: Pattern box):
   '(rsyl (iand eq_imp_subset @ rsyl eq_sym eq_imp_subset) @ rsyl (anim subset_imp_subset_framing subset_imp_subset_framing) @ curry subset_to_eq);
 
 do {
-  (def (subset_imp_subset_framing_subst subst) '(norm (norm_imp_r @ norm_subset ,subst ,subst) subset_imp_subset_framing))
+  (def (subset_imp_subset_framing_subst subst) '(norm (norm_imp_r @ norm_subset ,subst ,subst) (!! subset_imp_subset_framing box)))
   (def (eq_imp_eq_framing_subst subst) '(norm (norm_imp_r @ norm_eq ,subst ,subst) eq_imp_eq_framing))
 };
 
-
 do {
+  (def (appCtx_constructor path) @ if (null? path) 'appCtxVar @ if {(hd path) = 0}
+    '(norm_trans appCtxL_disjoint @ norm_app ,(appCtx_constructor (tl path)) norm_refl)
+    '(norm_trans appCtxR_disjoint @ norm_app norm_refl ,(appCtx_constructor (tl path)))
+  )
+
   (def (cong_of_equiv_propag x equiv_pf ctx) @ match ctx
     [$eVar ,y$ (if (== x y) equiv_pf 'biid)]
     [$exists ,y ,psi$ (if (== x y) 'biid '(cong_of_equiv_exists ,(cong_of_equiv_propag x equiv_pf psi)))]
@@ -1255,3 +1283,13 @@ do {
     '(rsyl (rsyl ,(inst_foralls {n - 1}) ,(forall_imp_climb {n - 1})) var_subst_same_var)
   ))
 };
+
+theorem imp_eq_to_conj_in_eq:
+  $ (|^ phi1 ^| -> (phi2 == phi3)) -> ((phi2 /\ |^ phi1 ^|) == (phi3 /\ |^ phi1 ^|)) $ =
+  '(rsyl (imim1 dne) @ eori
+    (rsyl (anl not_ceil_floor_bi) @ rsyl (anr floor_idem) @
+    framing_floor @ rsyl (anr not_ceil_floor_bi) @ iand
+      (com12 @ rsyl anr @ com12 absurd)
+      (com12 @ rsyl anr @ com12 absurd)
+    ) @
+    eq_equiv_to_eq_eq @ eq_to_and_l_bi eq_to_intro_bi);

@@ -33,6 +33,10 @@ theorem eFresh_not {x: EVar} (phi: Pattern x)
   $ _eFresh x (~ phi) $ =
   '(eFresh_imp h eFresh_disjoint);
 
+theorem eFresh_forall_same_var {x: EVar} (phi: Pattern x):
+  $ _eFresh x (forall x phi) $ =
+  '(eFresh_not eFresh_exists_same_var);
+
 theorem sFresh_not {X: SVar} (phi: Pattern X)
   (h: $ _sFresh X phi $):
   $ _sFresh X (~ phi) $ =
