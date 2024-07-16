@@ -190,20 +190,40 @@ axiom subst_diff_var {a b: EVar} (plug: Pattern a b):
     ((eVar a) != (eVar b)) -> 
     (is_exp plug) ->
     ((subst (eVar b) (lc_var (eVar a)) plug) == (lc_var (eVar a))) $;
+axiom subst_var {a b: EVar} (plug: Pattern a b):
+  $ (is_var (eVar a)) ->
+    (is_var (eVar b)) ->
+    ((eVar a) == (eVar b)) -> 
+    (is_exp plug) ->
+    ((subst (eVar b) (lc_var (eVar a)) plug) == plug) $;
 axiom subst_app (a phi1 phi2 plug: Pattern):
   $ (is_sorted_func Var a) ->
     (is_exp plug) ->
     (is_exp phi1) ->
     (is_exp phi2) ->
     ((subst a (lc_app phi1 phi2) plug) == (lc_app (subst a phi1 plug) (subst a phi2 plug))) $;
+axiom subst_lam_same_var {a: EVar} (plug phi: Pattern a):
+  $ (is_var (eVar a)) ->
+    (is_exp plug) ->
+    (is_exp phi) ->
+    (fresh_for (eVar a) plug) ->
+    ((subst (eVar a) (lc_lam_a a phi) plug) == (lc_lam_a a phi)) $;
+axiom subst_lam_diff_var (a b plug phi: Pattern):
+  $ (a != b) ->
+    (fresh_for a plug) ->
+    (is_sorted_func Var a) ->
+    (is_sorted_func Var b) ->
+    (is_exp plug) ->
+    (is_exp phi) ->
+    ((subst b (lc_lam (abstraction a phi)) plug) == (lc_lam (abstraction a (subst b phi plug)))) $;
 axiom subst_lam {a b: EVar} (plug phi: Pattern a b):
-  $ ((eVar a) != (eVar b)) ->
+  $ ((eVar a) == (eVar b)) ->
     (is_var (eVar a)) ->
     (is_var (eVar b)) ->
     (is_exp plug) ->
     (is_exp phi) ->
     (fresh_for (eVar a) plug) ->
-    ((subst (eVar b) (lc_lam_a a phi) plug) == (lc_lam_a a (subst (eVar b) phi plug))) $;
+    ((subst (eVar b) (lc_lam_a a phi) plug) == (lc_lam_a a phi)) $;
 
 
 -- induction proof
@@ -277,7 +297,49 @@ theorem subst_induction_app (a b plug1 plug2: Pattern)
     rsyl (anim2 @ anim1 lemma) @
     rsyl (anim2 @ ancom) @
     rsyl (anim1 @ curry @ mp ,(inst_foralls 2) function_lc_app) @
-    curry ,(func_subst_alt_thm_sorted 'x $(eVar x) /\ ((app (app _ (app (app _ (eVar x)) _)) _) == (app (app _ (app (app _ (eVar x)) _)) _))$)));
+    curry ,(func_subst_alt_thm_sorted 'x $(eVar x) /\ ((app (app _ (app (app _ (eVar x)) _)) _) == (app (app _ (app (app _ (eVar x)) _)) _))$)
+    ));
+
+-- (lam c phi)[a / plug1][b / plug2] == lam
+
+theorem subst_induction_lam_lemma (a b c plug1 plug2: Pattern)
+  (diff_atoms_ab: $ a != b $)
+  (diff_atoms_bc: $ b != c $)
+  (diff_atoms_ca: $ c != a $)
+  (a_var: $ is_sorted_func Var a $)
+  (b_var: $ is_sorted_func Var b $)
+  (c_var: $ is_sorted_func Var c $)
+  (c_fresh_in_plug1: $ fresh_for c plug1 $)
+  (phi_exp: $ is_exp phi $)
+  (plug1_exp: $ is_exp plug1 $)
+  (plug2_exp: $ is_exp plug2 $)
+  (a_fresh: $ fresh_for a plug2 $):
+  $ is_exp (eVar x) /\ subst_induction_pred a b (eVar x) plug1 plug2 -> subst_induction_pred a b (lc_lam (abstraction c (eVar x))) plug1 plug2 $ =
+  '(rsyl (anim1 @ iand id id) @
+    rsyl (anl anass) @
+    rsyl (anim2 @ anim1 @ syl (subst_lam_diff_var diff_atoms_ca c_fresh_in_plug1 c_var a_var plug1_exp) @ rsyl (mp ,(function_sorting 2 '(function_abstraction Var_atom Exp_sort)) (domain_func_sorting c_var)) ,(function_sorting 1 'function_lc_lam)) @
+    rsyl (anim2 @ _)
+    _);
+
+theorem subst_induction_lam (a b c plug1 plug2: Pattern)
+  (c_sorting: $ is_sorted_func Var c $)
+  (lemma: $ is_exp (eVar x) /\ subst_induction_pred a b (eVar x) plug1 plug2 -> subst_induction_pred a b (lc_lam (abstraction c (eVar x))) plug1 plug2 $):
+  $ (lc_lam (abstraction c (satisfying_exps a b plug1 plug2))) C= (satisfying_exps a b plug1 plug2) $ =
+  (named '(imp_to_subset @
+    rsyl (anl ,(ex_appCtx_subst @ appCtx_constructor '[1 1])) @
+    exists_generalization_disjoint @
+    rsyl ,(appCtx_floor_commute_b_subst @ appCtx_constructor '[1 1]) @
+    rsyl (anim2 ,(appCtx_floor_commute_subst @ appCtx_constructor '[1 1])) @
+    rsyl (anim1 @ iand id id) @
+    rsyl (anl anass) @
+    rsyl (anim2 @ rsyl (anl anlass) @ anim2 lemma) @
+    rsyl (anim1 @ rsyl (mp ,(inst_foralls 1) (swap_sorted_forall @ function_abstraction Var_atom Exp_sort))
+      (rsyl (con1 @ anr imp_exists_disjoint (exists_framing (syl con3 @ syl anl ,(func_subst_explicit_helper 'x $((eVar x) C= _) -> exists _ (_ /\ (_ == (_ @@ (eVar x) @@ _)))$)) (exists_framing anr c_sorting))) @ rsyl (mpcom @ domain_func_sorting c_sorting) @
+        exists_generalization_disjoint @ rsyl (anim1 @ var_subst_same_var function_lc_lam) @ impcom @ syl anl ,(func_subst_explicit_helper 'x $exists _ (_ /\ (_ == (_ @@ (eVar x))))$))
+      ) @
+    curry ,(func_subst_alt_thm_sorted 'x $(eVar x) /\ ((app (app _ (app (app _ (eVar x)) _)) _) == (app (app _ (app (app _ (eVar x)) _)) _))$)
+    ));
+  
 
 theorem subst_induction_lemma (a b phi plug1 plug2: Pattern)
   (diff_atoms: $ a != b $)
@@ -310,47 +372,3 @@ theorem subst_induction (a b phi plug1 plug2: Pattern)
       (eq_trans @ equiv_to_eq ,(appCtx_pointwise_subst @ appCtx_constructor '[0 1 0 1])) @
       com12 eq_trans @ eq_sym @ equiv_to_eq ,(appCtx_pointwise_subst @ appCtx_constructor '[0 1 0 1])) @
     framing_floor @ eq_to_exists_bi_fresh eFresh_forall_same_var @ syl corollary_57_floor @ rsyl var_subst_same_var imp_eq_to_conj_in_eq) phi_exp));
-
-
-
-term reduce_sym: Symbol;
-def reduce (phi: Pattern): Pattern = $ (sym reduce_sym) @@ phi $;
-
--- axiom reduce_subst {a: EVar} (phi1 phi2: Pattern a):
---   $ 
---     (reduce (lc_app (lc_lam_a a phi1) phi2)) == () $;
-
-
-
-
--- term red_sym: Symbol;
--- def red (phi: Pattern) : Pattern = $ (sym red_sym) @@ phi $;
-
--- axiom red_app (phi rho: Pattern)
---   (phi_sorting: $ is_of_sort phi Exp $)
---   (rho_sorting: $ is_of_sort rho Exp $):
---   $ (red (app phi rho)) == (app (red phi) rho) \/ (app phi (red rho)) \/ (s_exists )$;
-
-
--- def double (phi: Pattern) = exists x (a(a(x)) /\ a(x) in phi)
-
-
-
-
---- term Type_sym: Symbol;
---- def Type: Pattern = $ sym Type_sym $;
---- def Types: Pattern = $ dom Type $;
---- 
---- term fn_type_sym: Symbol;
---- def fn_type (phi rho: Pattern): Pattern = $ (sym fn_type_sym) @@ phi @@ rho $;
---- axiom function_fn_type: $ ,(is_function '(sym fn_type_symfn_type_sym) '[Type] 'Type) $;
---- 
---- 
---- def is_typing_context (phi: Pattern): Pattern = $ ,(is_function '(phi) '[Var] 'Type) $;
---- 
---- def wf (c t: Pattern) {a u t1 t2: EVar} {X: SVar}: Pattern =
---- $ mu X (
----      (s_exists Var a ((lc_var a) /\ t == (c @@ a)))
----   \/ (s_exists Type u (lc_app () ()))
----   \/ ()
----   ) $;

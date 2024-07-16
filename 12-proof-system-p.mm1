@@ -111,6 +111,13 @@ theorem swap_exists {x y: EVar} (phi: Pattern x y): $ exists x (exists y phi) ->
 theorem swap_exists_bi {x y: EVar} (phi: Pattern x y): $ exists x (exists y phi) <-> exists y (exists x phi) $ =
   '(ibii swap_exists swap_exists);
 
+
+theorem swap_forall {x y: EVar} (phi: Pattern x y): $ forall x (forall y phi) -> forall y (forall x phi) $ =
+  '(con3 @ rsyl (exists_framing dne) @ rsyl swap_exists @ exists_framing notnot1);
+
+theorem swap_forall_bi {x y: EVar} (phi: Pattern x y): $ forall x (forall y phi) <-> forall y (forall x phi) $ =
+  '(ibii swap_forall swap_forall);
+
 theorem prop_43_bot (rho: Pattern): $ bot -> rho $ = 'absurdum;
 theorem prop_43_or {box: SVar} (ctx: Pattern box) (phi1 phi2: Pattern):
   $ (app[ phi1 / box ] ctx \/ app[ phi2 / box ] ctx) -> app[ phi1 \/ phi2 / box ] ctx $ =
@@ -1218,9 +1225,9 @@ theorem domain_func_sorting {x: EVar} (phi psi: Pattern):
     rsyl (anim2 @ rsyl eq_sym eq_imp_subset) @
     impcom subset_trans);
 
-theorem forall_exists_lemma {box: SVar} {x: EVar} (ctx: Pattern box) (phi: Pattern):
-  $ ( forall x ((app[ (eVar x) / box ] ctx)  C= phi)) ->
-    ((exists x  (app[ (eVar x) / box ] ctx)) C= phi ) $ =
+theorem forall_exists_lemma (phi psi: Pattern):
+  $ ( forall x (phi  C= psi)) ->
+    ((exists x  phi) C= psi ) $ =
   '(con3 @
     rsyl (framing_def @ con3 @ imim2 dne) @
     rsyl (framing_def and_exists_disjoint_r_reverse) @
@@ -1231,9 +1238,21 @@ theorem forall_exists_lemma {box: SVar} {x: EVar} (ctx: Pattern box) (phi: Patte
     con3 @
     imim2 notnot1);
 
-theorem forall_exists_lemma_domain {box: SVar} {x: EVar} (ctx: Pattern box) (phi psi: Pattern):
-  $ ( forall x (((eVar x) C= psi) -> ((app[ (eVar x) / box ] ctx)   C= phi))) ->
-    ((exists x (((eVar x) C= psi) /\  (app[ (eVar x) / box ] ctx))) C= phi  ) $ =
+theorem forall_exists_lemma_rev (phi psi: Pattern):
+  $ ((exists x  phi) C= psi ) ->
+    ( forall x (phi  C= psi)) $ =
+  '(con3 @
+    syl (framing_def @ con3 @ imim2 notnot1) @
+    syl (framing_def @ and_exists_disjoint_r_forwards) @
+    syl prop_43_exists_def @
+    exists_framing @
+    con1 @
+    framing_floor @
+    imim2 dne);
+
+theorem forall_exists_lemma_domain {x: EVar} (phi rho: Pattern x) (psi: Pattern):
+  $ ( forall x (((eVar x) C= rho) -> (phi   C= psi))) ->
+    ((exists x (((eVar x) C= rho) /\  phi)) C= psi  ) $ =
   '(con3 @
     rsyl (framing_def @ con3 @ imim2 dne) @
     rsyl (framing_def and_exists_disjoint_r_reverse) @
@@ -1293,3 +1312,12 @@ theorem imp_eq_to_conj_in_eq:
       (com12 @ rsyl anr @ com12 absurd)
     ) @
     eq_equiv_to_eq_eq @ eq_to_and_l_bi eq_to_intro_bi);
+
+theorem swap_sorted_forall {x y: EVar} (phi: Pattern x y) (phi_x: Pattern x) (phi_y: Pattern y):
+  $ forall x (phi_x -> (forall y (phi_y -> phi))) -> forall y (phi_y -> (forall x (phi_x -> phi))) $ =
+  '(
+  rsyl (forall_framing @ anl imp_forall) @
+  rsyl swap_forall @
+  forall_framing @
+  rsyl (forall_framing @ anl com12b) @
+  anr imp_forall);
