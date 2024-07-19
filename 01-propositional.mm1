@@ -751,3 +751,6 @@ theorem or_or_not_an: $ aa \/ bb <-> aa \/ (~aa /\ bb) $ =
 
 theorem absurd_an: $~aa /\ aa <-> bot$ = '(ibii (impcom mpcom) absurdum);
 theorem absurd_an_r: $aa /\ ~aa <-> bot$ = '(ibii (curry mpcom) absurdum);
+
+theorem imp_or_split: $ (aa -> bb \/ c) -> (aa -> bb) \/ (aa -> c) $ =
+  '(rsyl (anr impexp) @ orim (imim2 dne) prop_1);
