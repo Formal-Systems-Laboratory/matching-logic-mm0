@@ -35,6 +35,9 @@ axiom function_swap:
   $ is_atom_sort alpha $ >
   $ is_nominal_sort tau $ >
   $ ,(is_function '(sym swap_sym) '[alpha alpha tau] 'tau) $;
+axiom function_swap_atom:
+  $ is_atom_sort alpha $ >
+  $ ,(is_function '(sym swap_sym) '[alpha alpha alpha] 'alpha) $;
 axiom function_abstraction:
   $ is_atom_sort alpha $ >
   $ is_nominal_sort tau $ >
@@ -64,13 +67,13 @@ axiom S1 (alpha tau a phi: Pattern):
   $ (is_atom a alpha) ->
     (is_of_sort phi tau) ->
     ((swap a a phi) == phi) $;
-axiom S2 (alpha tau a b phi: Pattern):
+axiom S2 {a b: EVar} (alpha tau phi: Pattern a b):
   $ is_atom_sort alpha $ >
   $ is_nominal_sort tau $ >
-  $ (is_atom a alpha) ->
-    (is_atom b alpha) ->
+  $ s_forall alpha a (
+    s_forall alpha b (
     (is_of_sort phi tau) ->
-    (swap a b (swap a b phi)) == phi $;
+    ((swap (eVar a) (eVar b) (swap (eVar a) (eVar b) phi)) == phi))) $;
 axiom S3 {a b: EVar} (alpha: Pattern a b):
   $ is_atom_sort alpha $ >
   $ s_forall alpha a (
