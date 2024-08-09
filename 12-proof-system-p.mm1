@@ -1040,16 +1040,16 @@ theorem alpha_exists_disjoint {x y: EVar} (phi: Pattern x):
   $ (exists x phi) <-> exists y (e[ eVar y / x ] phi) $ =
   '(alpha_exists eFresh_disjoint);
 
-theorem subset_imp_subset_framing {box: SVar} (ctx phi psi: Pattern box):
+theorem imp_subset_framing {box: SVar} (ctx phi psi: Pattern box):
   $ (phi C= psi) -> ((app[ phi / box ] ctx) C= (app[ psi / box ] ctx)) $ =
   '(rsyl (anr floor_idem) @ framing_floor @ lemma_14 subset_to_imp);
-theorem eq_imp_eq_framing {box: SVar} (ctx phi psi: Pattern box):
+theorem imp_eq_framing {box: SVar} (ctx phi psi: Pattern box):
   $ (phi == psi) -> ((app[ phi / box ] ctx) == (app[ psi / box ] ctx)) $ =
-  '(rsyl (iand eq_imp_subset @ rsyl eq_sym eq_imp_subset) @ rsyl (anim subset_imp_subset_framing subset_imp_subset_framing) @ curry subset_to_eq);
+  '(rsyl (iand eq_imp_subset @ rsyl eq_sym eq_imp_subset) @ rsyl (anim imp_subset_framing imp_subset_framing) @ curry subset_to_eq);
 
 do {
-  (def (subset_imp_subset_framing_subst subst) '(norm (norm_imp_r @ norm_subset ,subst ,subst) (!! subset_imp_subset_framing box)))
-  (def (eq_imp_eq_framing_subst subst) '(norm (norm_imp_r @ norm_eq ,subst ,subst) eq_imp_eq_framing))
+  (def (imp_subset_framing_subst subst) '(norm (norm_imp_r @ norm_subset ,subst ,subst) (!! imp_subset_framing box)))
+  (def (imp_eq_framing_subst subst) '(norm (norm_imp_r @ norm_eq ,subst ,subst) imp_eq_framing))
 };
 
 do {
@@ -1257,7 +1257,7 @@ theorem ceil_idempotency_for_pred (phi: Pattern): $ ((phi == bot) \/ (phi == top
       (mp ,(func_subst_imp_to_var 'x $eVar x == |^ eVar x ^| $) @ lemma_46_floor @ bicom @ taut_equiv_top @ framing_def imp_top definedness))
     (mp ,(func_subst_imp_to_var 'x $(eVar x == bot) \/ (eVar x == top)$) ceil_is_pred)));
 
-theorem framing_imp {box: SVar} (ctx: Pattern box) (phi psi: Pattern):
+theorem subset_framing_imp {box: SVar} (ctx: Pattern box) (phi psi: Pattern):
   $ (phi C= psi) -> ((app[ phi / box ] ctx) C= (app[ psi / box ] ctx)) $ =
   '(rsyl subset_imp_or_subset_r @
     rsyl (com12 subset_to_eq @ subset_imp_subset_or_r subset_refl) @
@@ -1267,8 +1267,13 @@ theorem framing_imp {box: SVar} (ctx: Pattern box) (phi psi: Pattern):
     imp_to_subset @
     framing orl);
 
+theorem eq_framing_imp {box: SVar} (ctx: Pattern box) (phi psi: Pattern):
+  $ (phi == psi) -> ((app[ phi / box ] ctx) == (app[ psi / box ] ctx)) $ =
+  '(syl (curry subset_to_eq) @ iand (rsyl eq_imp_subset subset_framing_imp) @ rsyl eq_sym @ rsyl eq_imp_subset subset_framing_imp);
+
 do {
-  (def (framing_imp_subst subst) '(norm (norm_imp_r @ norm_subset ,subst ,subst) framing_imp))
+  (def (subset_framing_imp_subst subst) '(norm (norm_imp_r @ norm_subset ,subst ,subst) subset_framing_imp))
+  (def (eq_framing_imp_subst subst) '(norm (norm_imp_r @ norm_eq ,subst ,subst) eq_framing_imp))
 };
 
 theorem under_domain_forall {x: EVar} (phi_a phi_b phi_c phi_d: Pattern x)

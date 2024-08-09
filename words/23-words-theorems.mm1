@@ -78,8 +78,8 @@ theorem regex_eq_eps_concat_r: $ Alpha . epsilon <-> Alpha $ = 'id_concat_r;
 theorem concat_subset:
 $ (phi1 C= psi1) -> (phi2 C= psi2) -> (phi1 . phi2 C= psi1 . psi2) $ =
   (named '(Fprop
-    ,(subset_imp_subset_framing_subst 'appCtxLRVar)
-    ,(subset_imp_subset_framing_subst 'appCtxRVar)
+    ,(imp_subset_framing_subst 'appCtxLRVar)
+    ,(imp_subset_framing_subst 'appCtxRVar)
     subset_trans));
 
 theorem epsilon_and_concat: $ ((epsilon /\ phi) . psi) <-> |^ epsilon /\ phi ^| /\ psi $ =
@@ -433,7 +433,7 @@ theorem der_l1_l2_phi (l1 l2 phi: Pattern)
               mp (mp ,(func_subst 'x $(x in top_letter) -> |^ l2 /\ top_letter ^| -> (eVar x . eVar u == l2 . eVar v) -> (eVar x == l2) /\ (eVar u == eVar v)$
                 (func_subst 'y $(x in top_letter) -> (y in top_letter) -> (eVar x . eVar u == eVar y . eVar v) -> (eVar x == eVar y) /\ (eVar u == eVar v)$ 'no_confusion_cc_e 'l2_func)
                 'l1_func) h1) h2
-            ) (rsyl (anim ,(eq_imp_eq_framing_subst 'appctx_concat_l) ,(eq_imp_eq_framing_subst 'appctx_concat_r)) @ curry eq_trans))
+            ) (rsyl (anim ,(imp_eq_framing_subst 'appctx_concat_l) ,(imp_eq_framing_subst 'appctx_concat_r)) @ curry eq_trans))
           (cong_of_equiv_and_r @ bicom membership_var_bi)) anlass) @
       bitr and_exists_disjoint @
       bicom @ cong_of_equiv_and_r ,(membership_appCtx_subst 'appCtxVar)
@@ -461,7 +461,7 @@ theorem der_l1_l2_phi_and (l1 l2 phi: Pattern)
               curry (mp ,(func_subst 'x $(x in top_letter) -> |^ l2 /\ top_letter ^| -> (eVar x . eVar u == l2 . eVar v) -> (eVar x == l2) /\ (eVar u == eVar v)$
                 (func_subst 'y $(x in top_letter) -> (y in top_letter) -> (eVar x . eVar u == eVar y . eVar v) -> (eVar x == eVar y) /\ (eVar u == eVar v)$ 'no_confusion_cc_e 'l2_func)
                 'l1_func) h1)
-            ) (iand (rsyl anl (com12 (syl anl ,(func_subst_explicit_helper 'x $x in top_letter$)) h1)) (rsyl (anim ,(eq_imp_eq_framing_subst 'appctx_concat_l) ,(eq_imp_eq_framing_subst 'appctx_concat_r)) @ curry eq_trans))) (cong_of_equiv_and_r @ bicom membership_var_bi))
+            ) (iand (rsyl anl (com12 (syl anl ,(func_subst_explicit_helper 'x $x in top_letter$)) h1)) (rsyl (anim ,(imp_eq_framing_subst 'appctx_concat_l) ,(imp_eq_framing_subst 'appctx_concat_r)) @ curry eq_trans))) (cong_of_equiv_and_r @ bicom membership_var_bi))
         anlass) @
       bitr and_exists_disjoint @
       bicom @ cong_of_equiv_and_r ,(membership_appCtx_subst 'appCtxVar)

@@ -760,3 +760,6 @@ theorem absurd_an_r: $aa /\ ~aa <-> bot$ = '(ibii (curry mpcom) absurdum);
 
 theorem imp_or_split: $ (aa -> bb \/ c) -> (aa -> bb) \/ (aa -> c) $ =
   '(rsyl (anr impexp) @ orim (imim2 dne) prop_1);
+
+theorem iand4 (h1: $ aa -> bb $) (h2: $ aa -> c $) (h3: $ aa -> d $) (h4: $ aa -> e $): $ aa -> bb /\ c /\ d /\ e $ =
+  '(iand (iand (iand h1 h2) h3) h4);

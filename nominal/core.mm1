@@ -55,7 +55,12 @@ axiom EV_abstraction {a b: EVar} (alpha tau: Pattern) (phi psi: Pattern a b):
     (is_of_sort psi tau) ->
     ((swap (eVar a) (eVar b) (abstraction phi psi)) == abstraction (swap (eVar a) (eVar b) phi) (swap (eVar a) (eVar b) psi)))) $;
 -- add EV axiom for swap
--- add EV axiom for freshness
+axiom EV_supp {a b: EVar}  (tau: Pattern) (phi: Pattern a b):
+  $ is_atom_sort alpha $ >
+  $ is_nominal_sort tau $ >
+  $ s_forall alpha a (s_forall alpha b (
+    (is_of_sort phi tau) ->
+    ((swap (eVar a) (eVar b) (supp phi)) == supp (swap (eVar a) (eVar b) phi)))) $;
 
 axiom EV_pred (alpha tau: Pattern):
   $ is_atom_sort alpha $ >
