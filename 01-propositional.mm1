@@ -58,6 +58,10 @@ do {
     [_ (error "not a theorem")])
   (def (pp-proof x) (display @ pp @ get-proof x))
 
+  (def (get-def exp) @ match (get-decl exp)
+    [('def _ _ _ _ _ val) val]
+    [_ (error "not a definition")])
+
   --| This utility will take a verbatim proof and "unelaborate" it into a refine script
   --| using ! on every step. This is useful to get `refine` to re-typecheck a term when
   --| testing tactics which produce verbatim proofs.
@@ -761,5 +765,11 @@ theorem absurd_an_r: $aa /\ ~aa <-> bot$ = '(ibii (curry mpcom) absurdum);
 theorem imp_or_split: $ (aa -> bb \/ c) -> (aa -> bb) \/ (aa -> c) $ =
   '(rsyl (anr impexp) @ orim (imim2 dne) prop_1);
 
+theorem iand3 (h1: $ aa -> bb $) (h2: $ aa -> c $) (h3: $ aa -> d $): $ aa -> bb /\ c /\ d $ =
+  '(iand (iand h1 h2) h3);
+
 theorem iand4 (h1: $ aa -> bb $) (h2: $ aa -> c $) (h3: $ aa -> d $) (h4: $ aa -> e $): $ aa -> bb /\ c /\ d /\ e $ =
   '(iand (iand (iand h1 h2) h3) h4);
+
+theorem iand5 (h1: $ aa -> bb $) (h2: $ aa -> c $) (h3: $ aa -> d $) (h4: $ aa -> e $) (h5: $ aa -> f $): $ aa -> bb /\ c /\ d /\ e /\ f $ =
+  '(iand (iand (iand (iand h1 h2) h3) h4) h5);

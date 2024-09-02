@@ -48,6 +48,10 @@ theorem _eSubst_floor {x: EVar} (phi psi rho: Pattern x)
   (h: $ Norm (e[ phi / x ] psi) rho $):
   $ Norm (e[ phi / x ] (|_ psi _|)) (|_ rho _|) $ =
   '(_eSubst_not @ _eSubst_ceil @ _eSubst_not h);
+theorem _eSubst_mem {x y: EVar} (phi phi2 psi2: Pattern x y)
+  (h: $ Norm (e[ phi / x ] phi2) psi2 $):
+  $ Norm (e[ phi / x ] (y in phi2)) (y in psi2) $ =
+  '(_eSubst_ceil @ _eSubst_and eSubstitution_disjoint h);
 theorem _eSubst_mem_same_var {x: EVar} (phi phi2 psi2: Pattern x)
   (h: $ Norm (e[ phi / x ] phi2) psi2 $):
   $ Norm (e[ phi / x ] (x in phi2)) (|^ phi /\ psi2 ^|) $ =
@@ -130,6 +134,10 @@ theorem prop_43_exists {box: SVar} {x: EVar} (ctx: Pattern box) (phi: Pattern bo
   $ (exists x (app[ phi / box ] ctx)) -> app[ exists x phi / box ] ctx $ =
   '(exists_generalization (eFresh_appCtx eFresh_disjoint eFresh_exists_same_var) (framing exists_intro_same_var));
 
+theorem prop_43_exists_var_in_ctx {box: SVar} {x: EVar} (ctx phi: Pattern box x):
+  $ (exists x (app[ phi / box ] ctx)) -> exists x (app[ exists x phi / box ] ctx) $ =
+  '(exists_framing @ framing exists_intro_same_var);
+
 theorem prop_43_exists_fresh {box: SVar} {x: EVar} (ctx phi: Pattern box x)
   (ctx_fresh: $ _eFresh x ctx $):
   $ (exists x (app[ phi / box ] ctx)) -> app[ exists x phi / box ] ctx $ =
@@ -169,6 +177,10 @@ do {
   (def (or_appCtx2_subst subst) '(norm (norm_equiv ,subst @ norm_or (norm_or ,subst ,subst) ,subst) or_appCtx2))
   (def (or_appCtx2_r_subst subst) '(norm (norm_equiv ,subst @ norm_or ,subst (norm_or ,subst ,subst)) or_appCtx2_r))
   (def (framing_subst hyp subst) '(norm (norm_imp ,subst ,subst) @ framing ,hyp))
+};
+
+do {
+  (def (exists_intro_subst subst) '(norm (norm_imp_l ,subst) exists_intro))
 };
 
 theorem exists_intro_l_bi_disjoint {x: EVar} (phi: Pattern x) (psi: Pattern)
@@ -282,17 +294,37 @@ theorem imp_forall_fresh {x: EVar} (phi1 phi2: Pattern x) (freshness_phi1: $ _eF
   $ (phi1 -> forall x phi2) <-> forall x (phi1 -> phi2) $ =
   '(con2b @ bitr (cong_of_equiv_exists @ con3b @ imeq2i notnot) @ and_exists_fresh freshness_phi1);
 
-theorem imp_forall {x: EVar} (phi1: Pattern) (phi2: Pattern x):
+theorem imp_r_forall_disjoint {x: EVar} (phi1: Pattern) (phi2: Pattern x):
   $ (phi1 -> forall x phi2) <-> forall x (phi1 -> phi2) $ =
   '(imp_forall_fresh eFresh_disjoint);
 
-theorem or_forall {x: EVar} (phi1: Pattern) (phi2: Pattern x):
-  $ (phi1 \/ forall x phi2) <-> forall x (phi1 \/ phi2) $ = 'imp_forall;
+theorem or_r_forall_disjoint {x: EVar} (phi1: Pattern) (phi2: Pattern x):
+  $ (phi1 \/ forall x phi2) <-> forall x (phi1 \/ phi2) $ = 'imp_r_forall_disjoint;
 
-theorem and_forall {x: EVar} (phi1: Pattern) (phi2: Pattern x):
+theorem and_r_forall_disjoint {x: EVar} (phi1: Pattern) (phi2: Pattern x):
   $ (phi1 /\ forall x phi2) <-> forall x (phi1 /\ phi2) $ =
   '(con3b @ bitr (cong_of_equiv_imp_r @ bicom notnot) @ bitr imp_exists_disjoint @ cong_of_equiv_exists notnot);
 
+theorem forall_ceil {x: EVar} (phi: Pattern x):
+  $ |^ forall x phi ^| -> forall x (|^ phi ^|) $ =
+  '(anr (imp_forall_fresh @ eFresh_ceil eFresh_forall_same_var) @ univ_gene @ framing_def var_subst_same_var);
+
+
+theorem and_forall {x: EVar} (phi psi: Pattern x):
+  $ (forall x (phi /\ psi)) <-> (forall x phi) /\ (forall x psi) $ =
+  '(ibii
+    (iand (forall_framing anl) (forall_framing anr)) @
+    anr (imp_forall_fresh @ eFresh_and eFresh_forall_same_var eFresh_forall_same_var) @
+    univ_gene @
+    anim var_subst_same_var var_subst_same_var);
+
+theorem forall_imp_distr {x: EVar} (phi psi: Pattern x):
+  $ (forall x (phi -> psi)) -> (forall x phi) -> (forall x psi) $ =
+  '(exp @ rsyl (anr and_forall) (forall_framing (rsyl ancom appl)));
+
+theorem s_forall_imp_distr {x: EVar} (phi psi rho: Pattern x):
+  $ (forall x (rho -> (phi -> psi))) -> (forall x (rho -> phi)) -> (forall x (rho -> psi)) $ =
+  '(rsyl (forall_framing prop_2) forall_imp_distr);
 
 theorem lemma_46 (phi: Pattern) {box: SVar} (ctx: Pattern box)
   (p : $ phi $):
@@ -341,16 +373,6 @@ theorem taut_is_top (h: $ phi $): $ phi == top $ =
   '(equiv_to_eq @ taut_equiv_top h);
 theorem absurd_and_equiv_bot (h: $ ~ phi $): $ phi /\ psi <-> bot $ =
   '(ibii (syl h anl) absurdum);
-
-theorem membership_intro_implicit {x: EVar} (phi: Pattern x)
-  (h: $ phi $):
-  $ x in phi $ =
-  '(framing_def (iand id (a1i h)) definedness);
-
-theorem membership_intro {x: EVar} (phi: Pattern x)
-  (h: $ phi $):
-  $ forall x (x in phi) $ =
-  '(univ_gene @ membership_intro_implicit h);
 
 theorem membership_elim {x: EVar} (phi: Pattern)
   (h: $ forall x (x in phi) $):
@@ -478,6 +500,20 @@ theorem eVars_subset_eq_reverse {x y: EVar}:
 theorem eVars_subset_eq {x y: EVar}:
   $ (eVar x C= eVar y) <-> (eVar x == eVar y) $ =
   '(ibii eVars_subset_eq_forward eVars_subset_eq_reverse);
+
+theorem membership_intro_implicit_imp {x: EVar} (phi: Pattern x):
+  $ |_ phi _| -> x in phi $ =
+  '(syl eVar_in_subset_reverse @ framing_floor prop_1);
+
+theorem membership_intro_implicit {x: EVar} (phi: Pattern x)
+  (h: $ phi $):
+  $ x in phi $ =
+  '(membership_intro_implicit_imp @ lemma_46_floor h);
+
+theorem membership_intro {x: EVar} (phi: Pattern x)
+  (h: $ phi $):
+  $ forall x (x in phi) $ =
+  '(univ_gene @ membership_intro_implicit h);
 
 theorem lemma_exists_and: $ phi <-> exists x (eVar x /\ phi) $ =
   '(ibii
@@ -1111,6 +1147,9 @@ do {
 -- C[phi] -> x = phi -> C[x]
   (def (func_subst_imp_to_var x ctx) '(com12 @ syl anr ,(func_subst_explicit_helper x ctx)))
 
+-- x = phi /\ C[phi] -> C[x]
+  (def (func_subst_imp_to_var_variant x ctx) '(curry @ syl anr ,(func_subst_explicit_helper x ctx)))
+
 -- forall x . phi1[x]
 -- exists y . y = phi2
 ----------------------
@@ -1164,6 +1203,7 @@ do {
     exists_generalization ,fre (mp (com12 @ syl anl ,(func_subst_explicit_helper x phi1)) ,phi1_pf) ,func_phi2
   ))
 
+  -- x in (...) <-> ...
   (def (propag_mem_w_fun x ctx fun_patterns) @ if (not (== (lookup fun_patterns ctx) #undef)) (func_subst_thm (lookup fun_patterns ctx) 'y 'membership_var_bi) @ match ctx
     -- special case for top and bottom?
     [$eVar ,y$ (if (== x y) '(taut_equiv_top membership_same_var) 'membership_var_bi)]
@@ -1180,6 +1220,7 @@ do {
     [$_floor ,psi$         'mem_floor]
     [$_subset ,phi1 ,phi2$ 'mem_floor]
     [$_eq ,phi1 ,phi2$     'mem_floor]
+    [$_neq ,phi1 ,phi2$    '(bitr membership_not_bi @ cong_of_equiv_not mem_floor)]
 
     -- [$nnimp ,phi1 ,phi2$   '(membership_nnimp  ,(propag_mem_w_fun x phi1 fun_patterns) ,(propag_mem_w_fun X phi2 fun_patterns))]
     [$epsilon$ (func_subst_thm 'functional_epsilon 'y 'membership_var_bi)]
@@ -1287,7 +1328,7 @@ theorem domain_func_sorting {x: EVar} (phi psi: Pattern):
     rsyl (anim2 @ rsyl eq_sym eq_imp_subset) @
     impcom subset_trans);
 
-theorem forall_exists_lemma (phi psi: Pattern):
+theorem forall_exists_lemma {x: EVar} (phi: Pattern x) (psi: Pattern):
   $ ( forall x (phi  C= psi)) ->
     ((exists x  phi) C= psi ) $ =
   '(con3 @
@@ -1300,7 +1341,7 @@ theorem forall_exists_lemma (phi psi: Pattern):
     con3 @
     imim2 notnot1);
 
-theorem forall_exists_lemma_rev (phi psi: Pattern):
+theorem forall_exists_lemma_rev {x: EVar} (phi: Pattern x) (psi: Pattern):
   $ ((exists x  phi) C= psi ) ->
     ( forall x (phi  C= psi)) $ =
   '(con3 @
@@ -1329,6 +1370,17 @@ theorem forall_exists_lemma_domain {x: EVar} (phi rho: Pattern x) (psi: Pattern)
     con3 @
     imim2 notnot1);
 
+theorem forall_imp_to_imp_exists {x: EVar} (phi psi: Pattern x):
+  $ (forall x (phi -> psi)) -> (exists x phi) -> (exists x psi) $ =
+  '(exp @ rsyl (and_exists_fresh_reverse eFresh_forall_same_var) @ exists_framing @ curry var_subst_same_var);
+
+theorem forall_eq_to_eq_exists {x: EVar} (phi psi: Pattern x):
+  $ (forall x (phi == psi)) -> ((exists x phi) == (exists x psi)) $ =
+  '(rsyl (forall_framing @ iand eq_imp_subset @ rsyl eq_sym eq_imp_subset) @
+    rsyl (iand (forall_framing anl) (forall_framing anr)) @
+    rsyl (anim (anr forall_floor) (anr forall_floor)) @
+    rsyl (anim (framing_floor forall_imp_to_imp_exists) (framing_floor forall_imp_to_imp_exists)) @
+    curry subset_to_eq);
 
 theorem pointwise_decomposition {box: SVar} {x: EVar} (ctx: Pattern box) (phi psi: Pattern)
   (hyp: $ (x in phi) -> (app[ eVar x / box ] ctx C= psi) $):
@@ -1362,16 +1414,16 @@ theorem subset_mem_lemma {x: EVar} (phi psi: Pattern):
   '(subset_mem_lemma_fresh eFresh_disjoint);
 
 do {
-  (def (forall_imp_climb n) (iterate n (fn (pf) '(syl (anl imp_forall) @ imim2 ,pf)) 'id))
+  (def (forall_imp_climb n) (iterate n (fn (pf) '(syl (anl imp_r_forall_disjoint) @ imim2 ,pf)) 'id))
 
-  (def (forall_imp_push n) (iterate n (fn (pf) '(rsyl (anr imp_forall) @ imim2 ,pf)) 'id))
+  (def (forall_imp_push n) (iterate n (fn (pf) '(rsyl (anr imp_r_forall_disjoint) @ imim2 ,pf)) 'id))
 
   (def (inst_foralls n) (if {n = 0} 'id
     '(rsyl (rsyl ,(inst_foralls {n - 1}) ,(forall_imp_climb {n - 1})) var_subst_same_var)
   ))
 };
 
-theorem imp_eq_to_conj_in_eq:
+theorem imp_eq_to_conj_ceil_in_eq:
   $ (|^ phi1 ^| -> (phi2 == phi3)) -> ((phi2 /\ |^ phi1 ^|) == (phi3 /\ |^ phi1 ^|)) $ =
   '(rsyl (imim1 dne) @ eori
     (rsyl (anl not_ceil_floor_bi) @ rsyl (anr floor_idem) @
@@ -1381,14 +1433,34 @@ theorem imp_eq_to_conj_in_eq:
     ) @
     eq_equiv_to_eq_eq @ eq_to_and_l_bi eq_to_intro_bi);
 
+theorem s_forall_eq_lemma {x: EVar} {box: SVar} (phi1 phi2: Pattern box) (S: Pattern):
+  $ (forall x (((eVar x) C= S) -> ((app[ eVar x / box ] phi1) == (app[ eVar x / box ] phi2)))) -> ((app[ S / box ] phi1) == (app[ S / box ] phi2)) $ =
+  '(rsyl (forall_framing (rsyl (imim1 eVar_in_subset_forward) imp_eq_to_conj_ceil_in_eq)) @
+    rsyl forall_eq_to_eq_exists @
+    anl @ cong_of_equiv_eq (bicom appCtx_pointwise) (bicom appCtx_pointwise));
+
+do {
+  (def (s_forall_eq_lemma_subst subst1 subst2) '(norm (norm_imp (norm_forall @ norm_imp_r @ norm_eq ,subst1 ,subst2) @ norm_eq ,subst1 ,subst2) s_forall_eq_lemma))
+};
+
+theorem imp_var_nin_lemma:
+  $ (forall x (((eVar x) C= S) -> ~ ((eVar y) C= (app[ eVar x / box ] ctx)))) -> ~ ((eVar y) C= (app[ S / box ] ctx)) $ =
+  '(con2 @ syl notnot1 @ rsyl eVar_in_subset_reverse @ syl (exists_framing @ anim2 eVar_in_subset_forward) @
+    anl ,(propag_mem 'y $_ -> exists x ((_ C= _) /\ _)$) @ membership_intro_implicit @
+    rsyl (anl appCtx_pointwise) @ exists_framing @ rsyl ancom @ anim1 eVar_in_subset_forward);
+
+do {
+  (def (imp_var_nin_lemma_subst subst) '(norm (norm_imp (norm_forall @ norm_imp_r @ norm_not @ norm_subset norm_refl ,subst) @ norm_not @ norm_subset norm_refl ,subst) imp_var_nin_lemma))
+};
+
 theorem swap_sorted_forall {x y: EVar} (phi: Pattern x y) (phi_x: Pattern x) (phi_y: Pattern y):
   $ forall x (phi_x -> (forall y (phi_y -> phi))) -> forall y (phi_y -> (forall x (phi_x -> phi))) $ =
   '(
-  rsyl (forall_framing @ anl imp_forall) @
+  rsyl (forall_framing @ anl imp_r_forall_disjoint) @
   rsyl swap_forall @
   forall_framing @
   rsyl (forall_framing @ anl com12b) @
-  anr imp_forall);
+  anr imp_r_forall_disjoint);
 
 theorem ceil_imp_lemma:
   $ (|^ phi ^| -> |_ psi _|) -> |_ |^ phi ^| -> psi _| $ =
@@ -1457,4 +1529,17 @@ do {
   )
 
   (def (extract_pred_from_appCtx_r pred subst) '(norm (norm_imp ,subst @ norm_and_l ,subst) @ rsyl (anl @ cong_of_equiv_appCtx @ cong_of_equiv_and_r ,(floor_wrap_equiv pred)) @ rsyl appCtx_floor_commute @ anr @ cong_of_equiv_and_r ,(floor_wrap_equiv pred)))
+};
+
+do {
+  (def (forall_extract ctx) @ match ctx
+    [$imp    _ ,phi$ '(bitr (imeq2i ,(forall_extract phi)) imp_r_forall_disjoint)]
+    [$or     _ ,phi$ '(bitr (oreq2i ,(forall_extract phi)) or_r_forall_disjoint)]
+    [$and    _ ,phi$ '(bitr (aneq2i ,(forall_extract phi)) and_r_forall_disjoint)]
+    [$forall _ ,phi$ '(bitr (cong_of_equiv_forall ,(forall_extract phi)) swap_forall_bi)]
+    [$_in    _ ,phi$ '(bitr (cong_of_equiv_mem ,(forall_extract phi)) membership_forall_bi)]
+    [$_floor   ,phi$ '(bitr (cong_of_equiv_floor ,(forall_extract phi)) forall_floor)]
+
+    [_ 'biid]
+  )
 };

@@ -71,7 +71,7 @@ theorem EV_lc_lam_abstraction {a b: EVar} (phi: Pattern a b):
   $ s_forall Var a (s_forall Var b (is_exp phi -> ((swap (eVar a) (eVar b) (lc_lam_a (eVar a) phi)) == lc_lam_a (eVar b) (swap (eVar a) (eVar b) phi)))) $ =
   (named '(
     univ_gene @
-    anr imp_forall @
+    anr imp_r_forall_disjoint @
     univ_gene @
     syl (anl impexp) @
     exp @
@@ -86,7 +86,7 @@ theorem EV_lc_lam_abstraction {a b: EVar} (phi: Pattern a b):
       imim2 (anl com12b) @
       -- unquantification of EV_lc_lam
       var_subst_same_var @
-      anl imp_forall @
+      anl imp_r_forall_disjoint @
       var_subst_same_var EV_lc_lam
     )
     ( sylc eq_trans (
@@ -98,7 +98,7 @@ theorem EV_lc_lam_abstraction {a b: EVar} (phi: Pattern a b):
       curry @
       curry @
       --- unquantification of EV_abstraction
-      rsyl (var_subst_same_var @ anl imp_forall @ var_subst_same_var @ EV_abstraction Var_atom Exp_sort) @
+      rsyl (var_subst_same_var @ anl imp_r_forall_disjoint @ var_subst_same_var @ EV_abstraction Var_atom Exp_sort) @
       rsyl (imim2 @ anl com12b) @
       rsyl (anl com12b) @
       imim2 @
@@ -108,7 +108,7 @@ theorem EV_lc_lam_abstraction {a b: EVar} (phi: Pattern a b):
       syl ,(imp_eq_framing_subst 'appCtxRLRVar) @
       curry @
       var_subst_same_var @
-      anl imp_forall @
+      anl imp_r_forall_disjoint @
       var_subst_same_var @
       S3 Var_atom
     ))
@@ -118,7 +118,7 @@ theorem EV_lc_var_lemma {a b: EVar} (phi: Pattern a b):
   $ s_forall Var a (s_forall Var b (is_var phi -> ((swap (eVar a) (eVar b) (lc_var phi)) == lc_var (swap (eVar a) (eVar b) phi)))) $ =
   '(
     univ_gene @
-    anr imp_forall @
+    anr imp_r_forall_disjoint @
     univ_gene @
     syl (anl impexp) @
     exp @
@@ -131,7 +131,7 @@ theorem EV_lc_var_lemma {a b: EVar} (phi: Pattern a b):
     imim2 (anl com12b) @
     -- unquantification of EV_lc_var
     var_subst_same_var @
-    anl imp_forall @
+    anl imp_r_forall_disjoint @
     var_subst_same_var EV_lc_var
     );
   
@@ -194,7 +194,7 @@ theorem lc_lemma_2 {x y: EVar} (exp_pred: Pattern):
       rsyl (anr anass) @
       anim1 @
       rsyl (anim2 ancom) @
-      rsyl (curry @ com12 @ curry @ var_subst_same_var @ anl imp_forall @ var_subst_same_var EV_lc_lam_abstraction) @
+      rsyl (curry @ com12 @ curry @ var_subst_same_var @ anl imp_r_forall_disjoint @ var_subst_same_var EV_lc_lam_abstraction) @
       rsyl eq_sym
       eq_imp_subset) @
     rsyl (anr anass) @
@@ -212,7 +212,7 @@ theorem lc_lemma_2_var {x y: EVar} (exp_pred: Pattern):
     rsyl (anl anass) @
     rsyl (anim2 @ rsyl ancom @ anr anass) @
     rsyl (anim2 @ anim2 ,(imp_subset_framing_subst 'appCtxRVar)) @
-    rsyl (anim2 @ anim1 @ iand id @ rsyl (anim2 @ iand id id) @ rsyl (anr anass) @ rsyl (anim1 ancom) @ curry @ curry @ var_subst_same_var @ anl imp_forall @ var_subst_same_var EV_lc_var_lemma) @
+    rsyl (anim2 @ anim1 @ iand id @ rsyl (anim2 @ iand id id) @ rsyl (anr anass) @ rsyl (anim1 ancom) @ curry @ curry @ var_subst_same_var @ anl imp_r_forall_disjoint @ var_subst_same_var EV_lc_var_lemma) @
     rsyl (anim2 @ anl anass) @
     rsyl (anim2 @ anim2 @ anim1 @ rsyl eq_sym eq_imp_subset) @
     rsyl (anim2 @ anim2 @ curry subset_trans) @
@@ -220,9 +220,9 @@ theorem lc_lemma_2_var {x y: EVar} (exp_pred: Pattern):
     rsyl (anim1 ancom) @
     rsyl (iand anl id) @
     rsyl (anim2 @ anim1 @ anim1 ancom) @
-    rsyl (anim2 @ anim1 @ syl eq_imp_subset @ rsyl (anim2 @ rsyl (syl var_subst_same_var @ syl (anl imp_forall) var_subst_same_var) @ anr impexp) appl) @
+    rsyl (anim2 @ anim1 @ syl eq_imp_subset @ rsyl (anim2 @ rsyl (syl var_subst_same_var @ syl (anl imp_r_forall_disjoint) var_subst_same_var) @ anr impexp) appl) @
     rsyl (anim2 @ impcom subset_trans) @
-    rsyl (anim1 @ rsyl anl @ rsyl ancom @ curry @ var_subst_same_var @ anl imp_forall @ var_subst_same_var @ S3 Var_atom) @
+    rsyl (anim1 @ rsyl anl @ rsyl ancom @ curry @ var_subst_same_var @ anl imp_r_forall_disjoint @ var_subst_same_var @ S3 Var_atom) @
     rsyl (anim1 @ rsyl eq_sym eq_imp_subset) @
     rsyl (anim1 ,(imp_subset_framing_subst 'appCtxRVar)) @
     curry subset_trans
@@ -258,12 +258,12 @@ theorem freshness_irrelevance_lam (exp_pred exp_suff_fresh: Pattern):
     EV_pattern Var exp_pred ->
     ((lc_lam (abstraction Vars exp_pred)) C= exp_pred) $ = (named
   '(imim2 (
-    rsyl (anr imp_forall) @ imim2 @
-    rsyl (anr imp_forall) @ imim2 @
-    rsyl (anr imp_forall) @ imim2 @
-    rsyl (anr imp_forall) @ imim2
+    rsyl (anr imp_r_forall_disjoint) @ imim2 @
+    rsyl (anr imp_r_forall_disjoint) @ imim2 @
+    rsyl (anr imp_r_forall_disjoint) @ imim2 @
+    rsyl (anr imp_r_forall_disjoint) @ imim2
     ,(pointwise_decomposition_imp_subst 'appCtxRLRVar)
-    ) @ anr imp_forall @ univ_gene lc_lemma_3));
+    ) @ anr imp_r_forall_disjoint @ univ_gene lc_lemma_3));
 
 theorem freshness_irrelevance_var (exp_pred exp_suff_fresh: Pattern):
   $ is_var exp_suff_fresh ->
@@ -273,7 +273,7 @@ theorem freshness_irrelevance_var (exp_pred exp_suff_fresh: Pattern):
     ((lc_var Vars) C= exp_pred) $ =
     (named '(imim2 (imim2 @ imim2 @
       exists_generalization_disjoint @
-      imim2 (rsyl (anr imp_forall) @ imim2 ,(pointwise_decomposition_imp_subst 'appCtxRVar)) @ anr imp_forall @ univ_gene lc_lemma_2_var
+      imim2 (rsyl (anr imp_r_forall_disjoint) @ imim2 ,(pointwise_decomposition_imp_subst 'appCtxRVar)) @ anr imp_r_forall_disjoint @ univ_gene lc_lemma_2_var
       ) lc_lmma_1_var));
 
 theorem induction_principle (exp_pred exp_suff_fresh_var exp_suff_fresh_lam: Pattern):
@@ -342,56 +342,56 @@ axiom EV_subst {a b: EVar} (c phi plug: Pattern a b):
     (is_exp phi) ->
     (is_exp plug) ->
     ((swap (eVar a) (eVar b) (subst c phi plug)) == subst (swap (eVar a) (eVar b) c) (swap (eVar a) (eVar b) phi) (swap (eVar a) (eVar b) plug)))) $;
-axiom subst_fresh(a phi plug: Pattern):
-  $ (is_sorted_func Var a) ->
+axiom subst_fresh {a: EVar} (phi plug: Pattern a):
+  $ s_forall Var a (
     (is_exp phi) ->
     (is_exp plug) ->
-    (fresh_for a phi) ->
-    ((subst a phi plug) == phi) $;
-axiom subst_same_var (a plug: Pattern):
-  $ (is_sorted_func Var a) ->
+    (fresh_for (eVar a) phi) ->
+    ((subst (eVar a) phi plug) == phi)) $;
+axiom subst_same_var {a: EVar} (plug: Pattern a):
+  $ s_forall Var a (
     (is_exp plug) ->
-    ((subst a (lc_var a) plug) == plug) $;
-axiom subst_diff_var (a b plug: Pattern):
-  $ (is_sorted_func Var a) ->
-    (is_sorted_func Var b) ->
-    (a != b) -> 
+    ((subst (eVar a) (lc_var (eVar a)) plug) == plug)) $;
+axiom subst_diff_var {a b: EVar} (plug: Pattern a b):
+  $ s_forall Var a (
+    s_forall Var b (
+    ((eVar a) != (eVar b)) -> 
     (is_exp plug) ->
-    ((subst b (lc_var a) plug) == (lc_var a)) $;
-axiom subst_var (a b plug: Pattern):
-  $ (is_sorted_func Var a) ->
-    (is_sorted_func Var b) ->
-    (a == b) -> 
+    ((subst (eVar b) (lc_var (eVar a)) plug) == (lc_var (eVar a))))) $;
+axiom subst_var {a b: EVar} (plug: Pattern a b):
+  $ s_forall Var a (
+    s_forall Var b (
+    ((eVar a) == (eVar b)) -> 
     (is_exp plug) ->
-    ((subst b (lc_var a) plug) == plug) $;
-axiom subst_app (a phi1 phi2 plug: Pattern):
-  $ (is_sorted_func Var a) ->
+    ((subst (eVar b) (lc_var (eVar a)) plug) == plug))) $;
+axiom subst_app {a: EVar} (phi1 phi2 plug: Pattern a):
+  $ s_forall Var a (
     (is_exp plug) ->
     (is_exp phi1) ->
     (is_exp phi2) ->
-    ((subst a (lc_app phi1 phi2) plug) == (lc_app (subst a phi1 plug) (subst a phi2 plug))) $;
+    ((subst (eVar a) (lc_app phi1 phi2) plug) == (lc_app (subst (eVar a) phi1 plug) (subst (eVar a) phi2 plug)))) $;
 -- axiom subst_lam_same_var (a plug phi: Pattern):
 --   $ (is_sorted_func Var a) ->
 --     (is_exp plug) ->
 --     (is_exp phi) ->
 --     ((subst a (lc_lam (abstraction a phi)) plug) == (lc_lam (abstraction a phi))) $;
-axiom subst_lam (a b plug phi: Pattern):
-  $ (a == b) ->
-    (is_sorted_func Var a) ->
-    (is_sorted_func Var b) ->
+axiom subst_lam {a b: EVar} (plug phi: Pattern a b):
+  $ s_forall Var a (
+    s_forall Var b (
+    ((eVar a) == (eVar b)) ->
     (is_exp plug) ->
     (is_exp phi) ->
-    ((subst b (lc_lam (abstraction a phi)) plug) == (lc_lam (abstraction a phi))) $;
-axiom subst_lam_diff_var (a b plug phi: Pattern):
-  $ (a != b) ->
-    (fresh_for a plug) ->
-    (is_sorted_func Var a) ->
-    (is_sorted_func Var b) ->
+    ((subst (eVar b) (lc_lam (abstraction (eVar a) phi)) plug) == (lc_lam (abstraction (eVar a) phi))))) $;
+axiom subst_lam_diff_var {a b: EVar} (plug phi: Pattern a b):
+  $ s_forall Var a (
+    s_forall Var b (
+    ((eVar a) != (eVar b)) ->
+    (fresh_for (eVar a) plug) ->
     (is_exp plug) ->
     (is_exp phi) ->
-    ((subst b (lc_lam (abstraction a phi)) plug) == (lc_lam (abstraction a (subst b phi plug)))) $;
+    ((subst (eVar b) (lc_lam (abstraction (eVar a) phi)) plug) == (lc_lam (abstraction (eVar a) (subst (eVar b) phi plug)))))) $;
 
-theorem Var_sort: $ is_nominal_sort Var $ =
+theorem Var_nominal_sort: $ is_nominal_sort Var $ =
   '(anim2 (com12 subset_trans atoms_nominal_sorts) Var_atom);
 
 theorem S2_lam {a b: EVar} (phi: Pattern a b):
@@ -406,7 +406,7 @@ theorem S2_lam_var {a b: EVar} (phi: Pattern a b):
     (is_var (eVar b)) ->
     (is_var phi) ->
     ((swap (eVar a) (eVar b) (swap (eVar a) (eVar b) phi)) == phi) $ =
-  '(mp ,(inst_foralls 2) @ S2 Var_atom Var_sort);
+  '(mp ,(inst_foralls 2) @ S2 Var_atom Var_nominal_sort);
 
 theorem EV_supp_lam {a b: EVar} (phi: Pattern a b):
   $ (is_var (eVar a)) ->
@@ -449,8 +449,13 @@ theorem curried_function_swap_atom {a b c: EVar}:
   $ is_var (eVar a) /\ is_var (eVar b) /\ is_var (eVar c) -> is_sorted_func Var (swap (eVar a) (eVar b) (eVar c))$ =
   (named '(curry @ curry @ mp ,(inst_foralls 3) @ function_swap_atom Var_atom));
 
+
+
+theorem satisfying_exps2_is_exp: $ is_exp satisfying_exps2 $ =
+  (named '(imp_to_subset @ exists_generalization_disjoint @ rsyl (anim2 anl) @ curry subset_to_imp));
+
 theorem EV_set: $ EV_pattern Var satisfying_exps2 $ =
-  (named '(univ_gene @ anr imp_forall @ univ_gene @ exp @ syl (curry subset_to_eq) @ syl
+  (named '(univ_gene @ anr imp_r_forall_disjoint @ univ_gene @ exp @ syl (curry subset_to_eq) @ syl
     (iand anr @ rsyl (anim
         (syl eq_imp_subset @ syl eq_sym @ com12 (curry S2_lam) satisfying_exps2_sorting)
         ,(imp_subset_framing_subst 'appCtxRVar)) @
@@ -571,48 +576,113 @@ theorem func_var_atom
   $ is_sorted_func Exp (lc_var a) $ =
   (named '(mp ,(func_subst 'x $(eVar x C= _) -> exists _ (_ /\ (_ == (_ @@ (eVar x))))$ '(var_subst_same_var function_lc_var) '(exists_framing anr a_var)) @ domain_func_sorting a_var));
 
-theorem subst_induction_var
-  (diff_atoms_ab: $ a != b $)
-  (a_var: $ is_sorted_func Var a $)
-  (b_var: $ is_sorted_func Var b $)
-  (plug1_exp: $ is_exp plug1 $)
-  (plug2_exp: $ is_exp plug2 $)
-  (a_fresh: $ fresh_for a plug2 $):
-  $ (lc_var Vars) C= (satisfying_exps a b plug1 plug2) $ =
-  '(imp_to_subset @ membership_elim @ forall_framing membership_imp_reverse @
-    univ_gene @
-    rsyl (! case_analysis_var _ (lc_var a) (lc_var b)) @ eori
-      (rsyl ,(func_subst 'x $(_ in (eVar x)) -> (_ == eVar x)$ 'membership_var_forward '(exists_framing anr @ func_var_atom a_var)) @
-        syl (anr ,(propag_mem 'x $exists _ ((_ C= _) /\ ((eVar _) /\ (_ == _)))$)) @
-        mp ,(func_subst_imp_to_var 'x $exists _ ((_ C= _) /\ ((eVar x == _) /\ (_ == _)))$) @
-        mp ,(func_subst_alt 'x $(eVar x C= _) /\ ((_ == eVar x) /\ ((app (app _ (app (app _ (eVar x)) _)) _) == (app (app _ (app (app _ (eVar x)) _)) _)))$ '(exists_framing anr @ func_var_atom a_var)) @
-        iani (domain_func_sorting @ func_var_atom a_var) @
-        iani eq_refl @
-        eq_trans (mp ,(imp_eq_framing_subst 'appCtxLRVar) @ subst_same_var a_var plug1_exp) @
-        eq_sym @
-        eq_trans (mp ,(imp_eq_framing_subst 'appCtxLRVar) @ subst_diff_var a_var b_var diff_atoms_ab plug2_exp) @
-        subst_same_var a_var (mp ,(function_sorting 3 'function_subst) (domain_func_sorting b_var) plug1_exp plug2_exp)
-      )
-      @ eori
-      (rsyl ,(func_subst 'x $(_ in (eVar x)) -> (_ == eVar x)$ 'membership_var_forward '(exists_framing anr @ func_var_atom b_var)) @
-        syl (anr ,(propag_mem 'x $exists _ ((_ C= _) /\ ((eVar _) /\ (_ == _)))$)) @
-        mp ,(func_subst_imp_to_var 'x $exists _ ((_ C= _) /\ ((eVar x == _) /\ (_ == _)))$) @
-        mp ,(func_subst_alt 'x $(eVar x C= _) /\ ((_ == eVar x) /\ ((app (app _ (app (app _ (eVar x)) _)) _) == (app (app _ (app (app _ (eVar x)) _)) _)))$ '(exists_framing anr @ func_var_atom b_var)) @
-        iani (domain_func_sorting @ func_var_atom b_var) @
-        iani eq_refl @
-        eq_trans (mp ,(imp_eq_framing_subst 'appCtxLRVar) @ subst_diff_var b_var a_var (con3 eq_sym diff_atoms_ab) plug1_exp) @
-        eq_trans (subst_same_var b_var plug2_exp) @
-        eq_sym @
-        eq_trans (mp ,(imp_eq_framing_subst 'appCtxLRVar) @ subst_same_var b_var plug2_exp) @
-        subst_fresh a_var plug2_exp (mp ,(function_sorting 3 'function_subst) (domain_func_sorting b_var) plug1_exp plug2_exp) a_fresh
-      )
-      (rsyl eVar_in_subset_forward @
-        rsyl (framing_floor @ anl imandi) @
-        rsyl (anl propag_and_floor) @
-        rsyl (anim1 @ framing_floor @ anl imandi) @
-        rsyl (anim1 @ anl propag_and_floor)
-        _)
-    );
+
+theorem mem_func_lemma:
+  $ (is_func phi) -> (x in phi) -> ((eVar x) == phi) $ =
+  (named '(com12 ,(func_subst_explicit_thm 'y2 $(z in (eVar y2)) -> ((eVar z) == (eVar y2))$) @ univ_gene membership_var_forward));
+
+theorem mem_func_lemma_neg:
+  $ (is_func phi) -> ~(x in phi) -> ((eVar x) != phi) $ =
+  (named '(com12 ,(func_subst_explicit_thm 'y2 $~(z in (eVar y2)) -> ~((eVar z) == (eVar y2))$) @ univ_gene @ con3 membership_var_reverse));
+
+theorem subst_induction_var2: $ (lc_var Vars) C= satisfying_exps2 $ =
+  (named '(imp_to_subset @ membership_elim @ forall_framing membership_imp_reverse @ univ_gene @
+    syl (anr ,(propag_mem 'x $exists y (|_ _ _| /\ (eVar y /\ (forall _ (|_ _ _| -> forall _ (|_ _ _| -> forall _ (|_ _ _| -> forall _ (|_ _ _| -> ((~(|_ _ _|)) /\ ~(|_ _ _|)) -> |_ _ _|)))))))$)) @
+    syl ,(exists_intro_subst @ propag_e_subst 'x $((eVar x) C= bot) /\ ((bot == (eVar x)) /\ (forall _ (bot -> (forall _ (bot -> (forall _ (bot -> (forall _ (bot -> bot -> ((app (app bot (app (app bot (eVar x)) bot)) bot) == (app (app bot (app (app bot (eVar x)) bot)) bot)))))))))))$) @
+    iand (rsyl eVar_in_subset_forward @ com12 subset_trans @ mp ,(function_sorting_full 1) function_lc_var) @
+    iand (a1i eq_refl) @
+    anr ,(forall_extract $_ -> _$) @ univ_gene @
+    anr ,(forall_extract $_ -> _ -> _$) @ univ_gene @
+    anr ,(forall_extract $_ -> _ -> _ -> _$) @ univ_gene @
+    anr ,(forall_extract $_ -> _ -> _ -> _ -> _$) @ univ_gene @
+    rsyl case_analysis_var @
+    eori
+      (exp @ rsyl (iand (rsyl (anim2 @
+        rsyl (var_subst_same_var function_lc_var) @
+        rsyl (exists_framing anr) mem_func_lemma) appl) anr) @
+      curry @
+      mp ,(func_subst_imp_to_var 'y $bot -> bot -> bot -> bot -> bot -> ((bot @@ bot @@ (bot @@ bot @@ (eVar y) @@ bot) @@ bot) == (bot @@ bot @@ (bot @@ bot @@ (eVar y) @@ bot) @@ bot))$) @
+      exp @ exp @ exp @ exp @
+      sylc eq_trans (
+        syl ,(imp_eq_framing_subst @ appCtx_constructor '[0 1]) @
+        syl (curry @ var_subst_same_var subst_same_var) @
+        iand an4l anllr) @
+      syl eq_sym @
+      sylc eq_trans (
+        syl ,(imp_eq_framing_subst @ appCtx_constructor '[0 1]) @
+        syl (curry @ curry @ curry @ mp ,(inst_foralls 2) @ subst_diff_var) @
+        iand4 an4l an3lr anrr anlr) @
+      syl (curry @ var_subst_same_var subst_same_var) @
+      iand an4l @
+      syl (curry @ curry subst_sorting) @
+      iand3 an3lr anllr anlr)
+    @ eori
+      (exp @ exp @
+      rsyl (iand4
+        anll
+          (rsyl anr @
+          rsyl (var_subst_same_var function_lc_var) @
+          rsyl (exists_framing anr) mem_func_lemma)
+        anlr
+        anr) @
+      curry @ curry @
+      rsyl appl @
+      mp ,(func_subst_imp_to_var 'y $bot -> bot -> bot -> bot -> bot -> ((bot @@ bot @@ (bot @@ bot @@ (eVar y) @@ bot) @@ bot) == (bot @@ bot @@ (bot @@ bot @@ (eVar y) @@ bot) @@ bot))$) @
+      exp @ exp @ exp @ exp @
+      sylc eq_trans (
+        syl ,(imp_eq_framing_subst @ appCtx_constructor '[0 1]) @
+        syl (curry @ curry @ curry @ mp ,(inst_foralls 2) @ subst_diff_var) @
+        iand4 an3lr an4l (rsyl anrr @ con3 eq_sym) anllr) @
+      sylc eq_trans (
+        syl (curry @ var_subst_same_var subst_same_var) @
+        iand an3lr anlr) @
+      syl eq_sym @
+      sylc eq_trans (
+        syl ,(imp_eq_framing_subst @ appCtx_constructor '[0 1]) @
+        syl (curry @ var_subst_same_var subst_same_var) @
+        iand an3lr anlr) @
+      syl (curry @ curry @ curry @ var_subst_same_var @ subst_fresh) @
+      iand4 an4l anlr
+        (syl (curry @ curry subst_sorting) @ iand3 an3lr anllr anlr)
+        anrl) @
+
+        rsyl (anl ,(propag_mem _ $_ /\ (~ _) /\ (~ _)$)) @
+        exp @ exp @
+        rsyl (iand5 an4l (iand an3lr anlr) (iand anllr anr) anlr anr) @
+        curry @ curry @
+        rsyl (anim (anim2 @
+          syl appl @ anim2 @ syl mem_func_lemma_neg @ rsyl (var_subst_same_var function_lc_var) @ exists_framing anr) @
+          syl appl @ anim2 @ syl mem_func_lemma_neg @ rsyl (var_subst_same_var function_lc_var) @ exists_framing anr) @
+        rsyl (anim1 @ anim1 @ anl ,(membership_appCtx_subst 'appCtxRVar)) @
+        curry @ curry @
+        exists_generalization_disjoint @
+        rsyl (anim1 eVar_in_subset_forward) @
+        rsyl (iand anl (iand anr anl)) @
+        rsyl (anim2 @ syl appl @ anim2 @ syl mem_func_lemma @ rsyl (var_subst_same_var function_lc_var) @ exists_framing anr) @
+        impcom @
+        mp ,(func_subst_imp_to_var 'y3 $_ -> ~ (eVar y3 == bot) -> ~ (eVar y3 == bot) -> bot -> bot -> bot -> bot -> bot -> ((bot @@ bot @@ (bot @@ bot @@ (eVar y3) @@ bot) @@ bot) == (bot @@ bot @@ (bot @@ bot @@ (eVar y3) @@ bot) @@ bot))$) @
+        syl (imim1 @ con3 ,(imp_eq_framing_subst 'appCtxRVar)) @
+        syl (imim2 @ imim1 @ con3 ,(imp_eq_framing_subst 'appCtxRVar)) @
+        exp @ exp @ exp @ exp @ exp @ exp @ exp @
+        sylc eq_trans (
+          syl ,(imp_eq_framing_subst @ appCtx_constructor '[0 1]) @
+          syl (curry @ curry @ curry @ mp ,(inst_foralls 2) @ subst_diff_var) @
+          iand4 an7l an4lr an6lr anllr) @
+        sylc eq_trans (
+          syl (curry @ curry @ curry @ mp ,(inst_foralls 2) @ subst_diff_var) @
+          iand4 an7l an3lr an5lr anlr) @
+        syl eq_sym @
+        sylc eq_trans (
+          syl ,(imp_eq_framing_subst @ appCtx_constructor '[0 1]) @
+          syl (curry @ curry @ curry @ mp ,(inst_foralls 2) @ subst_diff_var) @
+          iand4 an7l an3lr an5lr anlr) @
+        sylc eq_trans (
+          syl (curry @ curry @ curry @ mp ,(inst_foralls 2) @ subst_diff_var) @
+          iand4 an7l an4lr an6lr @ syl (curry @ curry subst_sorting) @ iand3 an3lr anllr anlr) @
+        a1i eq_refl));
+
+theorem subst_induction_app2: $ (lc_app satisfying_exps2 satisfying_exps2) C= satisfying_exps2 $ =
+  '(imp_to_subset _);
 
 theorem subst_induction_app_lemma
   (a_var: $ is_sorted_func Var a $)
@@ -743,53 +813,90 @@ theorem subst_induction_lam (a b c plug1 plug2: Pattern)
     ));
   
 
-theorem subst_induction_lemma (a b c phi plug1 plug2: Pattern)
-  (diff_atoms_ab: $ a != b $)
-  (diff_atoms_cb: $ c != b $)
-  (diff_atoms_ca: $ c != a $)
-  (a_var: $ is_sorted_func Var a $)
-  (b_var: $ is_sorted_func Var b $)
-  (c_var: $ is_sorted_func Var c $)
-  (c_nonempty: $ |^ c ^| $)
-  (phi_exp: $ is_exp phi $)
-  (plug1_exp: $ is_exp plug1 $)
-  (plug2_exp: $ is_exp plug2 $)
-  (a_fresh: $ fresh_for a plug2 $)
-  (c_fresh_in_plug1: $ fresh_for c plug1 $)
-  (c_fresh_in_plug2: $ fresh_for c plug2 $):
-  $ Exps == (satisfying_exps a b plug1 plug2) $ =
+theorem subst_induction_lemma:
+  $ Exps == satisfying_exps2 $ =
   '(induction_principle
-    (domain_func_sorting c_var)
-    c_nonempty
-    (imp_to_subset @ exists_generalization_disjoint @ rsyl (anim corollary_57_floor anl) @ curry id)
+    subset_refl
+    (nonempty_domain @ nominal_sorts_are_sorts Var_nominal_sort)
     _
-    (subst_induction_var diff_atoms_ab a_var b_var plug1_exp plug2_exp a_fresh)
-    (subst_induction_app @ subst_induction_app_lemma a_var b_var plug1_exp plug2_exp)
-    (subst_induction_lam c_var @ subst_induction_lam_lemma diff_atoms_ab diff_atoms_cb diff_atoms_ca a_var b_var c_var a_fresh c_fresh_in_plug1 c_fresh_in_plug2 phi_exp plug1_exp plug2_exp));
+    _
+    satisfying_exps2_is_exp
+    EV_set
+    subst_induction_var2
+    _
+    _);
+
+do {
+  (def (satisfying_exps2_expanded) $((exists x (((eVar x) C= Exps) /\ (and (eVar x) (forall a (((eVar a) C= Vars) -> (forall b (((eVar b) C= Vars) -> (forall plug1 (((eVar plug1) C= Exps) -> (forall plug2 (((eVar plug2) C= Exps) -> (imp (and (~ ((eVar a) C= ((sym supp_sym) @@ (eVar plug2)))) (_neq (eVar a) (eVar b))) ((subst (eVar b) (subst (eVar a) (eVar x) (eVar plug1)) (eVar plug2)) == (subst (eVar a) (subst (eVar b) (eVar x) (eVar plug2)) (subst (eVar b) (eVar plug1) (eVar plug2)))))))))))))))))$)
+};
 
 theorem subst_induction (a b phi plug1 plug2: Pattern)
   (diff_atoms_ab: $ a != b $)
-  (diff_atoms_cb: $ c != b $)
-  (diff_atoms_ca: $ c != a $)
   (a_var: $ is_sorted_func Var a $)
   (b_var: $ is_sorted_func Var b $)
-  (c_var: $ is_sorted_func Var c $)
-  (c_nonempty: $ |^ c ^| $)
   (phi_exp: $ is_exp phi $)
   (plug1_exp: $ is_exp plug1 $)
-  (plug2_exp: $ is_exp plug2 $)
-  (a_fresh: $ fresh_for a plug2 $)
-  (c_fresh_in_plug1: $ fresh_for c plug1 $)
-  (c_fresh_in_plug2: $ fresh_for c plug2 $):
+  (plug2_exp: $ is_sorted_func Exp plug2 $)
+  (a_fresh: $ fresh_for a plug2 $):
   $ (subst b (subst a phi plug1) plug2) == (subst a (subst b phi plug2) (subst b plug1 plug2)) $ =
-  (named '(mp (
-    rsyl (com12 subset_trans @ eq_imp_subset @ subst_induction_lemma diff_atoms_ab diff_atoms_cb diff_atoms_ca a_var b_var c_var c_nonempty phi_exp plug1_exp plug2_exp a_fresh c_fresh_in_plug1 c_fresh_in_plug2) @
-    rsyl subset_mem_lemma @
-    rsyl (forall_framing (rsyl
-      (imim2 @ rsyl membership_exists_forward @ exists_generalization_disjoint @ rsyl (anl ,(propag_mem 'x $(_ C= _) /\ ((eVar _) /\ (_ == _))$)) @ rsyl anr (curry @ syl anr ,(func_subst_explicit_helper 'x $(app (app _ (app (app _ (eVar x)) _)) _) == (app (app _ (app (app _ (eVar x)) _)) _)$)))
-      (rsyl (imim (anl floor_ceil_ceil) (anr ceil_floor_floor)) @ rsyl prop_43_or_def @ rsyl (anr floor_ceil_ceil) @ framing_floor @ rsyl prop_43_or_def_rev @ imim (anr floor_ceil_ceil) (anl ceil_floor_floor)))) @
-    rsyl (anr forall_floor) @
-    syl (rsyl
-      (eq_trans @ equiv_to_eq ,(appCtx_pointwise_subst @ appCtx_constructor '[0 1 0 1])) @
-      com12 eq_trans @ eq_sym @ equiv_to_eq ,(appCtx_pointwise_subst @ appCtx_constructor '[0 1 0 1])) @
-    framing_floor @ eq_to_exists_bi_fresh eFresh_forall_same_var @ syl corollary_57_floor @ rsyl var_subst_same_var imp_eq_to_conj_in_eq) phi_exp));
+  (named '(mp ,(s_forall_eq_lemma_subst (appCtx_constructor '[0 1 0 1]) (appCtx_constructor '[0 1 0 1])) @ univ_gene @
+    mp (mp (exp @ com12 @
+    imim2 (
+      mp ,(func_subst_explicit_thm_sorted 'y1 $((eVar y1) C= bot) -> ((~ ((eVar y1) C= bot)) /\ ~ ((eVar y1) == bot)) ->
+      ((bot @@
+          bot @@
+          (bot @@ (eVar y1) @@ bot @@ bot) @@
+          bot) ==
+        (bot @@
+          (eVar y1) @@
+          (bot @@ bot @@ bot @@ bot) @@
+          (bot @@ bot @@ bot @@ bot)))$) a_var) @
+    imim2 (forall_framing @ imim2 @
+      mp ,(func_subst_explicit_thm_sorted 'y2 $((eVar y2) C= bot) -> (bot /\ ~ (bot == (eVar y2))) ->
+      ((bot @@
+          (eVar y2) @@
+          bot @@
+          bot) ==
+        (bot @@
+          bot @@
+          (bot @@ (eVar y2) @@ bot @@ bot) @@
+          (bot @@ (eVar y2) @@ bot @@ bot)))$) b_var) @
+    imim2 (forall_framing @ imim2 @ forall_framing @ imim2 @
+      rsyl (forall_framing @ rsyl (imim1 @ com12 subset_trans plug1_exp) @ anl com12b) @ rsyl (anr imp_r_forall_disjoint) @ imim2
+      ,(s_forall_eq_lemma_subst (appCtx_constructor '[0 1 1]) (appCtx_constructor '[1 0 1]))) @
+    imim2 (forall_framing @ imim2 @ forall_framing @ imim2 @ forall_framing @ imim2 @
+      mp ,(func_subst_explicit_thm_sorted 'y $((eVar y) C= bot) -> ((~(bot C= (bot @@ eVar y))) /\ bot) ->
+      ((bot @@
+          bot @@
+          bot @@
+          eVar y) ==
+        (bot @@
+          bot @@
+          (bot @@ bot @@ bot @@ eVar y) @@
+          (bot @@ bot @@ bot @@ eVar y)))$) plug2_exp) @
+    anrd @ syl exists_irrelevance @
+    syl (exists_framing @ rsyl (anl anlass) ,(func_subst_imp_to_var_variant 'x
+      $|_ eVar x -> dom Exp _| /\
+      forall _
+        (|_ eVar _ -> dom Var _| ->
+          forall _
+            (|_ eVar _ -> dom Var _| ->
+              forall _
+                (|_ eVar _ -> dom Exp _| ->
+                  forall _
+                    (|_ eVar _ -> dom Exp _| ->
+                      ~|_ eVar _ -> (_ @@ (eVar _)) _| /\
+                        (eVar _ != eVar _) ->
+                      |_ (_ @@
+                          (eVar _) @@
+                          (_ @@ (eVar _) @@ (eVar x) @@ (eVar _)) @@
+                          (eVar _)) <->
+                        (_ @@
+                          (eVar _) @@
+                          (_ @@ (eVar _) @@ (eVar x) @@ (eVar _)) @@
+                          (_ (eVar _) @@ (eVar _) @@ (eVar _))) _|))))$
+      )) @ mp (anl @ bitr membership_imp_bi @ cong_of_equiv_imp eVar_in_subset ,(propag_mem 'y
+      $((exists x (((eVar x) C= Exps) /\ (and (eVar x) (forall a (((eVar a) C= Vars) -> (forall b (((eVar b) C= Vars) -> (forall plug1 (((eVar plug1) C= Exps) -> (forall plug2 (((eVar plug2) C= Exps) -> (imp (and (~ ((eVar a) C= ((sym supp_sym) @@ (eVar plug2)))) (_neq (eVar a) (eVar b))) ((subst (eVar b) (subst (eVar a) (eVar x) (eVar plug1)) (eVar plug2)) == (subst (eVar a) (subst (eVar b) (eVar x) (eVar plug2)) (subst (eVar b) (eVar plug1) (eVar plug2)))))))))))))))))$
+    )) @ membership_intro_implicit @ rsyl (subset_to_imp phi_exp) @ eq_to_intro subst_induction_lemma)
+    a_fresh) diff_atoms_ab
+    ));

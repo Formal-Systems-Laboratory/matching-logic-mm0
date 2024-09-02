@@ -20,6 +20,8 @@ def is_atom_sort (alpha: Pattern): Pattern = $ (is_func alpha) /\ (alpha C= dom 
 def is_nominal_sort (tau: Pattern): Pattern = $ (is_func tau) /\ (tau C= dom nominal_sorts) $;
 def is_atom (a alpha: Pattern): Pattern = $ is_sorted_func alpha a $;
 
+axiom nominal_sorts_are_sorts: $ (is_nominal_sort phi) -> (is_sort phi) $;
+
 term swap_sym: Symbol;
 def swap (a b phi: Pattern): Pattern = $ (sym swap_sym) @@ a @@ b @@ phi $;
 term abstraction_sym: Symbol;
@@ -84,32 +86,25 @@ axiom S3 {a b: EVar} (alpha: Pattern a b):
   $ s_forall alpha a (
     s_forall alpha b (
     ((swap (eVar a) (eVar b) (eVar a)) == (eVar b)))) $;
-axiom S4 (alpha tau a b phi: Pattern):
+axiom F1 {a b: EVar} (alpha tau phi: Pattern a b):
   $ is_atom_sort alpha $ >
   $ is_nominal_sort tau $ >
-  $ (is_atom a alpha) ->
-    (is_atom b alpha) ->
+  $ s_forall alpha a (
+    s_forall alpha b (
     (is_of_sort phi tau) ->
-    ((swap a b phi) == (swap b a phi)) $;
-axiom F1 (alpha tau a b phi: Pattern):
+    ((fresh_for (eVar a) phi) /\ (fresh_for (eVar b) phi) ->
+    ((swap (eVar a) (eVar b) phi) == phi)))) $;
+axiom F2 {a b: EVar} (alpha: Pattern a b):
   $ is_atom_sort alpha $ >
-  $ is_nominal_sort tau $ >
-  $ (is_atom a alpha) ->
-    (is_atom b alpha) ->
-    (is_of_sort phi tau) ->
-    ((fresh_for a phi) /\ (fresh_for b phi) -> ((swap a b phi) == phi)) $;
-axiom F2 (alpha a b: Pattern):
-  $ is_atom_sort alpha $ >
-  $ (is_atom a alpha) ->
-    (is_atom b alpha) ->
-    ((a != b) <-> (fresh_for a b)) $;
-axiom F3 (alpha1 alpha2 a b: Pattern):
+  $ s_forall alpha a (
+    s_forall alpha b (
+    (((eVar a) != (eVar b)) <-> (fresh_for (eVar a) (eVar b))))) $;
+axiom F3 {a b: EVar} (alpha1 alpha2: Pattern a b):
   $ is_atom_sort alpha1 $ >
   $ is_atom_sort alpha2 $ >
-  $ (is_atom a alpha1) ->
-    (is_atom b alpha2) ->
-    (alpha1 != alpha2) ->
-    (a != b) $;
+  $ s_forall alpha a (
+    s_forall alpha b (
+    (alpha1 != alpha2) -> ((eVar a) != (eVar b)))) $;
 -- We restrict F4 to only accept singleton phi's to avoid inconsistencies
 -- caused by using the full set of atoms in place of phi
 axiom F4 {a: EVar} (alpha tau phi: Pattern):
@@ -117,16 +112,16 @@ axiom F4 {a: EVar} (alpha tau phi: Pattern):
   $ is_nominal_sort tau $ >
   $ (is_sorted_func tau phi) ->
     (s_exists alpha a (fresh_for (eVar a) phi)) $;
-axiom A1 (alpha tau a b phi rho: Pattern):
+axiom A1 {a b: EVar} (alpha tau phi rho: Pattern a b):
   $ is_atom_sort alpha $ >
   $ is_nominal_sort tau $ >
-  $ (is_atom a alpha) ->
-    (is_atom b alpha) ->
+  $ s_forall alpha a (
+    s_forall alpha b (
     (is_of_sort phi tau) ->
     (is_of_sort rho tau) ->
-    (((abstraction a phi) == (abstraction b rho)) <->
-    ((a == b) /\ (phi == rho)) \/
-    ((fresh_for a rho) /\ ((swap a b phi) == rho))) $;
+    (((abstraction (eVar a) phi) == (abstraction (eVar b) rho)) <->
+    (((eVar a) == (eVar b)) /\ (phi == rho)) \/
+    ((fresh_for (eVar a) rho) /\ ((swap (eVar a) (eVar b) phi) == rho))))) $;
 axiom A2 (alpha tau: Pattern) {x a y: EVar}:
   $ is_atom_sort alpha $ >
   $ is_nominal_sort tau $ >

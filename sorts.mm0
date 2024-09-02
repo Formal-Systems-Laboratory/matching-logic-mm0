@@ -12,7 +12,7 @@ def is_of_sort (phi s: Pattern): Pattern = $ phi C= dom s $;
 
 axiom sorts_is_sort: $ is_sort sorts $;
 
-axiom nonempty_domain (s: Pattern): $ (is_sort s) -> (dom s != bot) $;
+axiom nonempty_domain (s: Pattern): $ (is_sort s) -> |^ dom s ^| $;
 
 def s_exists (s: Pattern) {x: EVar} (phi: Pattern x): Pattern = $ exists x ((eVar x C= dom s) /\ phi) $;
 def s_forall (s: Pattern) {x: EVar} (phi: Pattern x): Pattern = $ forall x ((eVar x C= dom s) -> phi) $;

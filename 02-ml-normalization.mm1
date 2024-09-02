@@ -201,6 +201,8 @@ theorem or_exists_disjoint {x: EVar} (phi1: Pattern) (phi2: Pattern x):
   $ (phi1 \/ exists x phi2) <-> exists x (phi1 \/ phi2) $ =
   '(or_exists_fresh eFresh_disjoint);
 
+theorem exists_irrelevance: $ (exists x phi) -> phi $ = '(exists_generalization_disjoint id);
+
 theorem imp_exists_fresh {x: EVar} (phi1 phi2: Pattern x) (freshness_phi1: $ _eFresh x phi1 $):
   $ (phi1 -> exists x phi2) <-> exists x (phi1 -> phi2) $ =
   '(ibii
@@ -291,6 +293,7 @@ do {
     [$and ,phi1 ,phi2$       '(_eSubst_and             ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
     [$_ceil  ,phi$           '(_eSubst_ceil            ,(propag_e_subst_adv x phi wo_x))]
     [$_floor ,phi$           '(_eSubst_floor           ,(propag_e_subst_adv x phi wo_x))]
+    [$_in ,y ,phi$ (if (== x y) '(_eSubst_mem_same_var ,(propag_e_subst_adv x phi wo_x)) '(_eSubst_mem ,(propag_e_subst_adv x phi wo_x)))]
     [$_subset ,phi1 ,phi2$   '(_eSubst_subset          ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
     [$equiv ,phi1 ,phi2$     '(_eSubst_equiv           ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
     [$_eq ,phi1 ,phi2$       '(_eSubst_eq              ,(propag_e_subst_adv x phi1 wo_x) ,(propag_e_subst_adv x phi2 wo_x))]
