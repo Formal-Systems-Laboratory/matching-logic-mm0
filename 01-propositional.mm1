@@ -773,3 +773,12 @@ theorem iand4 (h1: $ aa -> bb $) (h2: $ aa -> c $) (h3: $ aa -> d $) (h4: $ aa -
 
 theorem iand5 (h1: $ aa -> bb $) (h2: $ aa -> c $) (h3: $ aa -> d $) (h4: $ aa -> e $) (h5: $ aa -> f $): $ aa -> bb /\ c /\ d /\ e /\ f $ =
   '(iand (iand (iand (iand h1 h2) h3) h4) h5);
+
+theorem iand6 (h1: $ aa -> bb $) (h2: $ aa -> c $) (h3: $ aa -> d $) (h4: $ aa -> e $) (h5: $ aa -> f $) (h6: $ aa -> g $): $ aa -> bb /\ c /\ d /\ e /\ f /\ g $ =
+  '(iand (iand (iand (iand (iand h1 h2) h3) h4) h5) h6);
+
+theorem iand7 (h1: $ aa -> bb $) (h2: $ aa -> c $) (h3: $ aa -> d $) (h4: $ aa -> e $) (h5: $ aa -> f $) (h6: $ aa -> g $) (h7: $ aa -> h $): $ aa -> bb /\ c /\ d /\ e /\ f /\ g /\ h $ =
+  '(iand (iand (iand (iand (iand (iand h1 h2) h3) h4) h5) h6) h7);
+
+theorem imp_or_extract: $ (aa -> bb) \/ (aa -> c) <-> (aa -> (bb \/ c)) $ =
+  '(ibii (eori (imim2 orl) (imim2 orr)) imp_or_split);

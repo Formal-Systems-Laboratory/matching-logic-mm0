@@ -365,6 +365,10 @@ theorem subset_imp_or_subset_r:
 theorem subset_and: $ (phi C= (psi1 /\ psi2)) -> (phi C= psi1) /\ (phi C= psi2) $ =
   '(iand (framing_subset id anl) (framing_subset id anr));
 
+theorem and_subset: $ (phi1 C= psi) /\ (phi2 C= psi) <-> (phi1 \/ phi2 C= psi) $ =
+  '(ibii (rsyl (anr propag_and_floor) @ framing_floor @ curry eor) @
+  iand (framing_floor @ imim1 orl) (framing_floor @ imim1 orr));
+
 theorem taut_equiv_top (h: $ phi $): $ phi <-> top $ =
   '(ibii imp_top @ a1i h);
 theorem taut_and_equiv (h: $ phi $): $ phi /\ psi <-> psi $ =
@@ -1052,12 +1056,12 @@ theorem ceil_appCtx_dual (phi: Pattern) {box: SVar} (ctx: Pattern box):
   $ |^ phi ^| -> ~ (app[ (~ (|^ phi ^|)) / box ] ctx) $ =
   '(rsyl (anr floor_ceil_ceil) @ rsyl floor_appCtx_dual @ con3 @ framing @ con3 @ anl floor_ceil_ceil);
 
-theorem ceil_imp_in_appCtx (phi psi: Pattern) {box: SVar} (ctx: Pattern box):
+theorem floor_imp_in_appCtx (phi psi: Pattern) {box: SVar} (ctx: Pattern box):
   $ (app[ |_ phi _| -> psi / box ] ctx) -> |_ phi _| -> app[ psi / box ] ctx $ =
   '(exp @ rsyl (anim propag_or floor_appCtx_dual) @ rsyl (anl andir) @ eori (syl absurdum @ rsyl (anim1 @ framing notnot1) @ notnot1 notnot1) anl);
 
 do {
-  (def (ceil_imp_in_appCtx_subst subst) '(norm (norm_imp ,subst @ norm_imp_r ,subst) ceil_imp_in_appCtx))
+  (def (floor_imp_in_appCtx_subst subst) '(norm (norm_imp ,subst @ norm_imp_r ,subst) floor_imp_in_appCtx))
 };
 
 theorem alpha_exists {x y: EVar} (phi: Pattern x y)
@@ -1286,6 +1290,21 @@ theorem ceil_is_pred: $ (|^ phi ^| == bot) \/ (|^ phi ^| == top) $ =
     anl)
     (anl
     @ bitr (bicom floor_ceil_ceil)
+    @ cong_of_equiv_floor
+    @ ibii (iand (a1i imp_top) @ com12 @ a1i id)
+    @ rsyl anr @ mpcom taut)
+    emr);
+
+theorem floor_is_pred: $ (|_ phi _| == bot) \/ (|_ phi _| == top) $ =
+  '(orim
+    (anl
+    @ bitr (bicom @ cong_of_equiv_not @ ceil_floor_floor)
+    @ bitr not_ceil_floor_bi
+    @ cong_of_equiv_floor
+    @ ibii (iand id @ a1i absurdum)
+    anl)
+    (anl
+    @ bitr (bicom floor_idem)
     @ cong_of_equiv_floor
     @ ibii (iand (a1i imp_top) @ com12 @ a1i id)
     @ rsyl anr @ mpcom taut)
@@ -1541,5 +1560,49 @@ do {
     [$_floor   ,phi$ '(bitr (cong_of_equiv_floor ,(forall_extract phi)) forall_floor)]
 
     [_ 'biid]
+  )
+};
+
+theorem is_pred_floor: $ (is_pred phi) <-> (phi == |_ phi _|) $ =
+  '(ibii
+    (rsyl (anl floor_of_floor_or) @ framing_floor @ eori (rsyl (rsyl corollary_57_floor anl) @ iand (imim2 absurdum) @ a1i corollary_57_floor) @ iand (rsyl ,(func_subst_explicit_helper 'x $ (eVar x) -> |_ eVar x _| $) @ rsyl anr @ mpcom @ a1i @ lemma_46_floor taut) @ a1i corollary_57_floor)
+    (rsyl ,(func_subst_explicit_helper 'x $((eVar x) == bot) \/ ((eVar x) == top)$) @ rsyl anr @ mpcom floor_is_pred));
+
+theorem KT_imp {X: SVar} (ctx ante phi: Pattern X)
+  (pos: $ _Positive X ctx $)
+  (propag: $ (s[ ante -> phi / X ] ctx) -> ante -> s[ phi / X ] ctx $)
+  (h: $ ante -> (s[ phi / X ] ctx) -> phi $):
+  $ ante -> (mu X ctx) -> phi $ =
+  '(com12 @ KT pos @ rsyl propag (prop_2 h));
+
+theorem KT_subset {X: SVar} (ctx phi: Pattern X)
+  (pos: $ _Positive X ctx $)
+  (propag: $ (s[ ((s[ phi / X ] ctx) C= phi) -> phi / X ] ctx) -> ((s[ phi / X ] ctx) C= phi) -> s[ phi / X ] ctx $):
+  $ ((s[ phi / X ] ctx) C= phi) -> ((mu X ctx) C= phi) $ =
+  '(rsyl (anr floor_idem) @ framing_floor @ KT_imp pos propag corollary_57_floor);
+
+do {
+  (def (KT_subset_subst subst pos propag) '(norm (norm_imp_l @ norm_subset ,subst norm_refl) @ KT_subset ,pos @ norm (norm_sym @ norm_imp (norm_trans (norm_svSubst_pt norm_refl @ norm_imp_l @ norm_subset ,subst norm_refl) ,subst) @ norm_imp (norm_subset ,subst norm_refl) ,subst) ,propag))
+};
+
+
+theorem floor_extract_app
+  (h1: $ phi1 -> |_ psi _| -> rho1 $)
+  (h2: $ phi2 -> |_ psi _| -> rho2 $):
+  $ (app phi1 phi2) -> |_ psi _| -> app rho1 rho2 $ =
+  (named '(rsyl ,(framing_subst 'h1 'appCtxLVar) @ rsyl ,(floor_imp_in_appCtx_subst 'appCtxLVar) @ rsyl (imim2 (rsyl ,(framing_subst 'h2 'appCtxRVar) ,(floor_imp_in_appCtx_subst 'appCtxRVar))) imidm));
+
+theorem floor_extract_or
+  (h1: $ phi1 -> |_ psi _| -> rho1 $)
+  (h2: $ phi2 -> |_ psi _| -> rho2 $):
+  $ phi1 \/ phi2 -> |_ psi _| -> rho1 \/ rho2 $ =
+  '(rsyl (orim h1 h2) @ anl imp_or_extract);
+
+do {
+  (def (floor_extract x ctx) @ match ctx
+    [$eVar ,y$ (if (== x y) 'id 'prop_1)]
+    [$app ,phi1 ,phi2$  '(floor_extract_app ,(floor_extract x phi1) ,(floor_extract x phi2))]
+    [$or  ,phi1 ,phi2$  '(floor_extract_or  ,(floor_extract x phi1) ,(floor_extract x phi2))]
+    [_                  'prop_1]
   )
 };

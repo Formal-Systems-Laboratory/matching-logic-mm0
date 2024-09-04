@@ -23,7 +23,7 @@ do {
   (def (is_rel symbol input_sorts output_sort) @ foldri
     0
     input_sorts
-    '(is_sorted_pred output_sort ,(foldli 0 input_sorts symbol (fn (i phi s) '(app ,phi (eVar ,(string->atom @ string-append "x" i))))))
+    '(is_sorted_pred ,(dom 'output_sort) ,(foldli 0 input_sorts symbol (fn (i phi s) '(app ,phi (eVar ,(string->atom @ string-append "x" i))))))
     (fn (i s phi) '(s_forall ,s ,(string->atom @ string-append "x" i) ,phi)))
 };
 
