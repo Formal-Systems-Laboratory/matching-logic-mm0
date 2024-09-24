@@ -20,6 +20,30 @@ infixl _in: $in$ prec 35;
 
 axiom definedness {x: EVar}: $ |^ eVar x ^| $;
 
+--- Functional Patterns
+-----------------------
+
+def is_func {.x: EVar} (phi: Pattern): Pattern = $ exists x (eVar x == phi) $;
+
+--- Predicates
+
+def is_pred (phi: Pattern): Pattern = $ (phi == bot) \/ (phi == top) $;
+
+--- Domain Quantifiers
+----------------------
+
+def exists_in {x: EVar} (phi psi: Pattern x): Pattern = $ exists x ((eVar x C= phi) /\ psi) $;
+notation exists_in {x: EVar} (phi psi: Pattern x): Pattern = ($EXI$:0) x ($:$:0) phi ($.$:0) psi;
+
+def forall_in {x: EVar} (phi psi: Pattern x): Pattern = $ forall x ((eVar x C= phi) -> psi) $;
+notation forall_in {x: EVar} (phi psi: Pattern x): Pattern = ($ALL$:0) x ($:$:0) phi ($.$:0) psi;
+
+
+def is_sorted_pred (phi psi: Pattern): Pattern = $ (psi == bot) \/ (psi == phi) $;
+
+def is_sorted_func {.x: EVar} (phi psi: Pattern): Pattern = $ EXI x : phi . eVar x == psi $;
+
+
 --- Contextual Implications
 ---------------------------
 

@@ -40,6 +40,7 @@ theorem con2: $ (a -> ~b) -> (b -> ~a) $ = '(a3d (syl5 dne id));
 theorem notnot1: $ a -> ~~a $ = '(con2 id);
 theorem con3: $ (a -> b) -> (~b -> ~a) $ = '(syl con2 (imim2i notnot1));
 theorem con1: $ (~a -> b) -> (~b -> a) $ = '(a3d (imim2i notnot1));
+theorem con4: $ (~a -> ~b) -> (b -> a) $ = '(syl (imim1 notnot1) con1);
 theorem cases (h1: $ a -> b $) (h2: $ ~a -> b $): $ b $ = '(contra @ syl h1 @ con1 h2);
 theorem casesd (h1: $ a -> b -> c $) (h2: $ a -> ~b -> c $): $ a -> c $ =
 '(cases (com12 h1) (com12 h2));
@@ -83,6 +84,12 @@ theorem an5l: $ a /\ b /\ c /\ d /\ e /\ f -> a $ = '(anwl an4l);
 theorem an5lr: $ a /\ b /\ c /\ d /\ e /\ f /\ g -> b $ = '(anwl an4lr);
 theorem an6l: $ a /\ b /\ c /\ d /\ e /\ f /\ g -> a $ = '(anwl an5l);
 theorem an6lr: $ a /\ b /\ c /\ d /\ e /\ f /\ g /\ h -> b $ = '(anwl an5lr);
+theorem an7l: $ a /\ b /\ c /\ d /\ e /\ f /\ g /\ h -> a $ = '(anwl an6l);
+theorem an7lr: $ a /\ b /\ c /\ d /\ e /\ f /\ g /\ h /\ i -> b $ = '(anwl an6lr);
+theorem an8l: $ a /\ b /\ c /\ d /\ e /\ f /\ g /\ h /\ i -> a $ = '(anwl an7l);
+theorem an8lr: $ a /\ b /\ c /\ d /\ e /\ f /\ g /\ h /\ i /\ j -> b $ = '(anwl an7lr);
+theorem an9l: $ a /\ b /\ c /\ d /\ e /\ f /\ g /\ h /\ i /\ j -> a $ = '(anwl an8l);
+theorem an9lr: $ a /\ b /\ c /\ d /\ e /\ f /\ g /\ h /\ i /\ j /\ k -> b $ = '(anwl an8lr);
 theorem curry (h: $ a -> b -> c $): $ a /\ b -> c $ = '(sylc h anl anr);
 theorem exp (h: $ a /\ b -> c $): $ a -> b -> c $ = '(syl6 h ian);
 theorem impcom (h: $ a -> b -> c $): $ b /\ a -> c $ = '(curry (com12 h));
@@ -351,7 +358,7 @@ theorem appl: $ (a /\ (a -> b)) -> b $ = '(con1 @ anl com12b @ con3d mpcom);
 
 --- analogs to anl and anr; Would prefer: $~(a -> b) <-> (a /\ ~b)$
 theorem neg_imp_left: $ ~(a -> b) -> a $ = '(con1 absurd);
-theorem neg_imp_right: $~(a -> b) -> ~b $ = '(con1 (rsyl dne (a1d id)));
+theorem neg_imp_right: $ ~(a -> b) -> ~b $ = '(con3 prop_1);
 theorem neg_imp_wl(h: $ a -> c $): $ ~(a -> b) -> c $ = '(syl h neg_imp_left);
 theorem neg_imp_wr(h: $ ~b -> c $): $ ~(a -> b) -> c $ = '(syl h neg_imp_right);
 
@@ -398,7 +405,26 @@ theorem or_bot_bi_r: $ bot \/ phi <-> phi $ = '(ibii (eori absurdum id) orr);
 theorem or_or_not_an: $ a \/ b <-> a \/ (~a /\ b) $ =
   '(bitr (bitr (bicom an_top_bi_r) @ aneq1i @ ibii (a1i em) imp_top) @ bicom ordi);
 
-theorem absurd_an:  $~a /\  a <-> bot$ = '(ibii (impcom mpcom) absurdum);
-theorem absurd_an_r:$ a /\ ~a <-> bot$ = '(ibii (curry  mpcom) absurdum);
+theorem absurd_an: $ ~a /\ a <-> bot $ = '(ibii (impcom mpcom) absurdum);
+theorem absurd_an_r: $ a /\ ~a <-> bot $ = '(ibii (curry mpcom) absurdum);
 
-theorem bitri (h1: $ a <-> b $) (h2: $ b <-> c $): $ a <-> c $ = '(bitr h1 h2);
+theorem imp_or_split: $ (a -> b \/ c) -> (a -> b) \/ (a -> c) $ =
+  '(rsyl (anr impexp) @ orim (imim2 dne) prop_1);
+
+theorem iand3 (h1: $ a -> b $) (h2: $ a -> c $) (h3: $ a -> d $): $ a -> b /\ c /\ d $ =
+  '(iand (iand h1 h2) h3);
+
+theorem iand4 (h1: $ a -> b $) (h2: $ a -> c $) (h3: $ a -> d $) (h4: $ a -> e $): $ a -> b /\ c /\ d /\ e $ =
+  '(iand (iand (iand h1 h2) h3) h4);
+
+theorem iand5 (h1: $ a -> b $) (h2: $ a -> c $) (h3: $ a -> d $) (h4: $ a -> e $) (h5: $ a -> f $): $ a -> b /\ c /\ d /\ e /\ f $ =
+  '(iand (iand (iand (iand h1 h2) h3) h4) h5);
+
+theorem iand6 (h1: $ a -> b $) (h2: $ a -> c $) (h3: $ a -> d $) (h4: $ a -> e $) (h5: $ a -> f $) (h6: $ a -> g $): $ a -> b /\ c /\ d /\ e /\ f /\ g $ =
+  '(iand (iand (iand (iand (iand h1 h2) h3) h4) h5) h6);
+
+theorem iand7 (h1: $ a -> b $) (h2: $ a -> c $) (h3: $ a -> d $) (h4: $ a -> e $) (h5: $ a -> f $) (h6: $ a -> g $) (h7: $ a -> h $): $ a -> b /\ c /\ d /\ e /\ f /\ g /\ h $ =
+  '(iand (iand (iand (iand (iand (iand h1 h2) h3) h4) h5) h6) h7);
+
+theorem imp_or_extract: $ (a -> b) \/ (a -> c) <-> (a -> (b \/ c)) $ =
+  '(ibii (eori (imim2 orl) (imim2 orr)) imp_or_split);

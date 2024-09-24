@@ -25,7 +25,7 @@ theorem propag_floor (phi psi ctx: Pattern box):
 
 theorem ctximp_in_ctx_forward {box: SVar} (ctx psi: Pattern box)
 : $app[ (ctximp_app box ctx psi) / box ] ctx -> psi$
- = (named '(rsyl (propag_exists eFresh_disjoint) @ exists_generalization eFresh_disjoint @ rsyl propag_floor @ impcom @ rsyl corollary_57_floor id));
+ = (named '(rsyl (propag_exists eFresh_disjoint) @ exists_generalization eFresh_disjoint @ rsyl propag_floor @ impcom @ rsyl floor_imp id));
 
 theorem wrap_lemma {x: EVar} (phi psi: Pattern x)
   (h: $ (x in phi) -> psi $):
@@ -46,7 +46,7 @@ theorem unwrap {box: SVar} (ctx phi psi: Pattern box)
   $ (app[ phi / box ] ctx) -> psi $ =
   (named '( imim1 (syl (rsyl propag_exists_disjoint @ exists_framing lemma_60_forward)
                @ framing lemma_62_b_reverse)
-          @ exists_generalization_disjoint @ impcom (imim2 corollary_57_floor (
+          @ exists_generalization_disjoint @ impcom (imim2 floor_imp (
     rsyl (membership_imp_forward @ con1 exists_intro_same_var @ membership_intro h)
   @ rsyl membership_exists_forward
   @ rsyl (exists_framing membership_and_forward)

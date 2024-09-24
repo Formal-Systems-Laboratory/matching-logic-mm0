@@ -1,0 +1,25 @@
+import "10-theory-definedness.mm0";
+
+term sorts_sym: Symbol;
+def sorts: Pattern = $ sym sorts_sym $;
+
+term domain_sym: Symbol;
+def dom (s: Pattern): Pattern = $ (sym domain_sym) @@ s $;
+
+def is_sort (s: Pattern): Pattern = $ (is_func s) /\ (s C= dom sorts) $;
+
+def is_of_sort (phi s: Pattern): Pattern = $ phi C= dom s $;
+
+axiom sorts_is_sort: $ is_sort sorts $;
+
+axiom nonempty_domain (s: Pattern): $ (is_sort s) -> |^ dom s ^| $;
+
+def s_exists (s: Pattern) {x: EVar} (phi: Pattern x): Pattern = $ EXI x : dom s . phi $;
+def s_forall (s: Pattern) {x: EVar} (phi: Pattern x): Pattern = $ ALL x : dom s . phi $;
+
+-- Singleton sort
+term pred_sym: Symbol;
+def pred: Pattern = $ sym pred_sym $;
+
+axiom pred_is_sort: $ is_sort pred $;
+axiom pred_dom: $ is_func (dom pred) $;
