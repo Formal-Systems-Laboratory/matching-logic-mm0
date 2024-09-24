@@ -4,7 +4,9 @@ do {
   (def dbg @ match-fn* [(x) (print x) x]
     [(x y) (display @ string-append (->string x) ": " (->string y)) y])
   (def (foldl l z s) (if (null? l) z (foldl (tl l) (s z (hd l)) s)))
+  (def (foldli i l z s) (if (null? l) z (foldli {i + 1} (tl l) (s i z (hd l)) s)))
   (def (foldr l z s) (if (null? l) z (s (hd l) (foldr (tl l) z s))))
+  (def (foldri i l z s) (if (null? l) z (s i (hd l) (foldri {i + 1} (tl l) z s))))
   (def (range a b) (if {a = b} () (cons a (range {a + 1} b))))
   (def (for a b f) (if {a = b} #undef (begin (f a) (for {a + 1} b f))))
   (def last (match-fn [(a) a] [(_ . l) (last l)]))
@@ -53,6 +55,10 @@ do {
     [('theorem _ _ _ _ _ pf) (hd @ tl @ pf)]
     [_ (error "not a theorem")])
   (def (pp-proof x) (display @ pp @ get-proof x))
+
+  (def (get-def exp) @ match (get-decl exp)
+    [('def _ _ _ _ _ val) val]
+    [_ (error "not a definition")])
 
   --| This utility will take a verbatim proof and "unelaborate" it into a refine script
   --| using ! on every step. This is useful to get `refine` to re-typecheck a term when

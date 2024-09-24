@@ -12,10 +12,10 @@ def epsilon : Pattern = $sym epsilon_symbol$ ;
 
 term concat_symbol : Symbol ;
 def concat (phi psi: Pattern) : Pattern = $(app (app (sym concat_symbol) phi) psi)$;
-infixl concat: $.$ prec 39;
+infixl concat: $..$ prec 39;
 
-def kleene_l {X: SVar} (alpha: Pattern X) : Pattern = $mu X (epsilon \/ sVar X . alpha)$;
-def kleene_r {X: SVar} (alpha: Pattern X) : Pattern = $mu X (epsilon \/ alpha . sVar X)$;
+def kleene_l {X: SVar} (alpha: Pattern X) : Pattern = $mu X (epsilon \/ sVar X .. alpha)$;
+def kleene_r {X: SVar} (alpha: Pattern X) : Pattern = $mu X (epsilon \/ alpha .. sVar X)$;
 def kleene   {X: SVar} (alpha: Pattern X) : Pattern = $(kleene_r X alpha)$;
 
 --- We assume that the alphabet has only two letters.
@@ -33,17 +33,17 @@ axiom domain_words {X: SVar} : $ top_word X $;
 axiom functional_epsilon {x : EVar} : $exists x (eVar x == epsilon)$;
 axiom functional_a       {x : EVar} : $exists x (eVar x == a)$;
 axiom functional_b       {x : EVar} : $exists x (eVar x == b)$;
-axiom functional_concat  {w v x: EVar} : $exists x (eVar x == (eVar w . eVar v))$;
+axiom functional_concat  {w v x: EVar} : $exists x (eVar x == (eVar w .. eVar v))$;
 
 axiom no_confusion_ab_e  : $a != b$;
 axiom no_confusion_ae_e  : $~(epsilon C= top_letter)$;
-axiom no_confusion_ec_e  {u v: EVar} : $(epsilon == eVar u . eVar v) -> (epsilon == eVar u) /\ (epsilon == eVar v)$;
+axiom no_confusion_ec_e  {u v: EVar} : $(epsilon == eVar u .. eVar v) -> (epsilon == eVar u) /\ (epsilon == eVar v)$;
 axiom no_confusion_cc_e  {u v x y: EVar} : $(x in top_letter) -> (y in top_letter)
-                            -> (eVar x . eVar u == eVar y . eVar v) -> (eVar x == eVar y) /\ (eVar u == eVar v)$;
+                            -> (eVar x .. eVar u == eVar y .. eVar v) -> (eVar x == eVar y) /\ (eVar u == eVar v)$;
 
-axiom assoc_concat_e     {u v w: EVar} : $(eVar u . eVar v) . eVar w == eVar u . (eVar v . eVar w)$;
-axiom identity_left_e    {u : EVar} : $epsilon . (eVar u) == (eVar u)$;
-axiom identity_right_e   {u : EVar} : $(eVar u) . epsilon == (eVar u)$;
+axiom assoc_concat_e     {u v w: EVar} : $(eVar u .. eVar v) .. eVar w == eVar u .. (eVar v .. eVar w)$;
+axiom identity_left_e    {u : EVar} : $epsilon .. (eVar u) == (eVar u)$;
+axiom identity_right_e   {u : EVar} : $(eVar u) .. epsilon == (eVar u)$;
 
 --- Secondary sugar
 
@@ -56,4 +56,4 @@ def replus (phi1 phi2: Pattern): Pattern = $ phi1 \/ phi2 $;
 infixl replus: $+$ prec 29;
 
 def derivative (l: Pattern) (phi: Pattern) {.box : SVar}: Pattern
-= $ctximp_app box (l . sVar box) phi $;
+= $ctximp_app box (l .. sVar box) phi $;

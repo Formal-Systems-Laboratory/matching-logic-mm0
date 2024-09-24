@@ -65,5 +65,5 @@ theorem propag_bot {box: SVar} (ctx: Pattern box):
   '(syl (! singleton_same_var _ x _ _ (eVar x)) @ iand (framing absurdum) (framing absurdum));
 
 theorem propag_or_def (phi1 phi2: Pattern):
-  $ |^ phi1 \/ phi2 ^| -> |^ phi1 ^| \/ |^ phi2 ^| $ =
-  '(norm (norm_imp defNorm (norm_or defNorm defNorm)) (! propag_or x));
+  $ |^ phi1 \/ phi2 ^| <-> |^ phi1 ^| \/ |^ phi2 ^| $ =
+  '(ibii (norm (norm_imp defNorm (norm_or defNorm defNorm)) (! propag_or x)) @ eori (framing_def orl) (framing_def orr));
