@@ -32,7 +32,7 @@ notation ctxApp {box: SVar} (ctx: Pattern box) (psi: Pattern): Pattern =
   ($app[$:41) psi ($/$:0) box ($]$:0) ctx;
 
 -- Definitions of common logical connectives
-infixl app: $@@$ prec 24;
+infixl app: $@@$ prec 25;
 infixr imp: $->$ prec 24;
 def not (phi: Pattern): Pattern = $ phi -> bot $;
 prefix not: $~$ prec 41;

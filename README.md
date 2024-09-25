@@ -35,7 +35,7 @@ The easiest way to install all the tools and requirements of the project is by r
 
     ./install.sh
 
-If installing on a Mac, run instead `./install macOS`
+If installing on a Mac, run instead `./install.sh macOS`
 
 This includes building the Metamath Zero toolchain under this repository, installing required Python
 modules in a virtual environment via Poetry and selecting an appropriate Maude binary to use.

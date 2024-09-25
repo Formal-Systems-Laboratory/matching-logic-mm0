@@ -71,15 +71,15 @@ fmod PATTERN-METAMATH is
     op top-letter   :                 -> Notation [ctor] .
     op kleene _ _   : Qid Pattern     -> Notation [ctor prec 25] .
     op top-word _   : Qid             -> Notation [ctor] .
-    op _ . _        : Pattern Pattern -> Notation [ctor prec 28] .
+    op _ .. _        : Pattern Pattern -> Notation [ctor prec 28] .
 
     eq desugar(epsilon) = sym 'epsilon-symbol .
     eq desugar(a) = sym 'a-symbol .
     eq desugar(b) = sym 'b-symbol .
     eq desugar(top-letter) = a \/ b .
-    eq desugar([[ kleene X phi ]]) = mu X (epsilon \/ (phi . sVar X)) .
+    eq desugar([[ kleene X phi ]]) = mu X (epsilon \/ (phi .. sVar X)) .
     eq desugar(top-word X) = [[ kleene X top-letter ]] .
-    eq desugar(phi . psi) = ( app ( app ( sym 'concat-symbol ) phi ) psi ) .
+    eq desugar(phi .. psi) = ( app ( app ( sym 'concat-symbol ) phi ) psi ) .
 
     op (derivative _ _) : Pattern Pattern -> Pattern [ctor] .
 
@@ -105,18 +105,18 @@ fmod PATTERN-METAMATH is
     --- n-fold concatenation (right).
     op _ ^r _ : Pattern Nat -> Pattern .
     eq (Alpha ^r 0) = epsilon .
-    eq (Alpha ^r (s N)) = (Alpha . (Alpha ^r N)) .
+    eq (Alpha ^r (s N)) = (Alpha .. (Alpha ^r N)) .
 
     --- n-fold concatenation (left).
     op _ ^l _ : Pattern Nat -> Pattern .
     eq (Alpha ^l 0) = epsilon .
-    eq (Alpha ^l (s N)) = ((Alpha ^l N) . Alpha) .
+    eq (Alpha ^l (s N)) = ((Alpha ^l N) .. Alpha) .
 
     op match-l : Nat -> Pattern .
-    eq match-l(N) = (a ^l N) ->> ((a + epsilon) ^l N) . (a ^l N) .
+    eq match-l(N) = (a ^l N) ->> ((a + epsilon) ^l N) .. (a ^l N) .
 
     op match-r : Nat -> Pattern .
-    eq match-r(N) = (a ^r N) ->> ((a + epsilon) ^r N) . (a ^r N) .
+    eq match-r(N) = (a ^r N) ->> ((a + epsilon) ^r N) .. (a ^r N) .
 
     op as-of-len-l : Nat -> Pattern .
     eq as-of-len-l(0) = epsilon .
@@ -127,13 +127,13 @@ fmod PATTERN-METAMATH is
     eq as-of-len-r(s(N)) = (a ^r s(N)) + as-of-len-r(N) .
 
     op eq-l : Nat -> Pattern .
-    eq eq-l(N) = [[ kleene 'X a ]] ->> as-of-len-l(N) . [[ kleene 'X (a ^l N) ]] .
+    eq eq-l(N) = [[ kleene 'X a ]] ->> as-of-len-l(N) .. [[ kleene 'X (a ^l N) ]] .
 
     op eq-r : Nat -> Pattern .
-    eq eq-r(N) = [[ kleene 'X a ]] ->> as-of-len-r(N) . [[ kleene 'X (a ^r N) ]] .
+    eq eq-r(N) = [[ kleene 'X a ]] ->> as-of-len-r(N) .. [[ kleene 'X (a ^r N) ]] .
 
     op eq-lr : Nat -> Pattern .
-    eq eq-lr(N) = (((a + epsilon) ^l N) . [[ kleene 'X (a ^l N) ]] ) ->> ((a + epsilon) ^r N) . [[ kleene 'X (a ^r N) ]] .
+    eq eq-lr(N) = (((a + epsilon) ^l N) .. [[ kleene 'X (a ^l N) ]] ) ->> ((a + epsilon) ^r N) .. [[ kleene 'X (a ^r N) ]] .
 
     *** Helpers ***************************************************
 
@@ -155,8 +155,8 @@ fmod PATTERN-METAMATH is
     eq substitute [ phi / X ] in a = a .
     eq substitute [ phi / X ] in b = b .
     eq substitute [ phi / X ] in top-letter = top-letter .
-    eq substitute [ phi / X ] in (psi1 . psi2)
-     = (substitute [ phi / X ] in psi1) . (substitute [ phi / X ] in psi2) .
+    eq substitute [ phi / X ] in (psi1 .. psi2)
+     = (substitute [ phi / X ] in psi1) .. (substitute [ phi / X ] in psi2) .
     eq substitute [ phi / X ] in [[ ctximp-app Y psi1 psi2 ]]
      = [[ ctximp-app Y (substitute [ phi / X ] in psi1) (substitute [ phi / X ] in psi2) ]] .
 
@@ -198,7 +198,7 @@ fmod PATTERN-METAMATH is
     eq hasEWP(L:Letter) = false .
     eq hasEWP(epsilon) = true .
     eq hasEWP(phi /\ psi) = hasEWP(phi) and hasEWP(psi) .
-    eq hasEWP(phi . psi) = hasEWP(phi) and hasEWP(psi) .
+    eq hasEWP(phi .. psi) = hasEWP(phi) and hasEWP(psi) .
     eq hasEWP(phi \/ psi) = hasEWP(phi) or hasEWP(psi) .
     eq hasEWP([[ kleene X phi ]]) = true .
     eq hasEWP(~ phi) = not hasEWP(phi) .
@@ -231,7 +231,7 @@ fmod PATTERN-METAMATH-COMPARE is
     eq rank(top) = 4 .
     eq rank([[ kleene X phi ]]) = 5 .
     eq rank(~ phi) = 6 .
-    eq rank(phi1 . phi2) = 7 .
+    eq rank(phi1 .. phi2) = 7 .
     eq rank(phi1 /\ phi2) = 8 .
     eq rank(phi1 \/ phi2) = 9 .
     eq rank(phi1 -> phi2) = 10 .
@@ -250,7 +250,7 @@ fmod PATTERN-METAMATH-COMPARE is
    ceq compare(phi, psi) = GT if rank(phi) > rank(psi) .
     eq compare([[ kleene X phi ]], [[kleene X psi ]]) = compare(phi, psi) .
     eq compare(~ phi, ~ psi) = compare(phi, psi) .
-    eq compare(phi1 . phi2, psi1 . psi2) = compare(pair(phi1, phi2), pair(psi1, psi2)) .
+    eq compare(phi1 .. phi2, psi1 .. psi2) = compare(pair(phi1, phi2), pair(psi1, psi2)) .
     eq compare(phi1 /\ phi2, psi1 /\ psi2) = compare(pair(phi1, phi2), pair(psi1, psi2)) .
     eq compare(phi1 \/ phi2, psi1 \/ psi2) = compare(pair(phi1, phi2), pair(psi1, psi2)) .
     eq compare(phi1 -> phi2, psi1 -> psi2) = compare(pair(phi1, phi2), pair(psi1, psi2)) .
@@ -275,8 +275,8 @@ mod ERE-THEOREMS-EQS is
    ceq [regex_eq_der_diff_a]  : (derivative A B)            = bot if A =/= B .
 
     eq [regex_eq_der_kleene]  : (derivative A [[kleene X Alpha]])
-                                                               = (derivative A Alpha) . [[kleene X Alpha]] .
-    eq [regex_eq_der_concat]  : (derivative A (Alpha . Beta))  = ((derivative A Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative A Beta)) .
+                                                               = (derivative A Alpha) .. [[kleene X Alpha]] .
+    eq [regex_eq_der_concat]  : (derivative A (Alpha .. Beta))  = ((derivative A Alpha) .. Beta) \/  ((epsilon /\ Alpha) .. (derivative A Beta)) .
     eq [regex_eq_der_choice]  : (derivative A (Alpha \/ Beta)) = (derivative A Alpha) \/ (derivative A Beta) .
     eq [regex_eq_der_conj]    : (derivative A (Alpha /\ Beta)) = (derivative A Alpha) /\ (derivative A Beta) .
     eq [regex_eq_der_neg]     : (derivative A ~ Alpha)         = ~ (derivative A Alpha) .
@@ -285,7 +285,7 @@ mod ERE-THEOREMS-EQS is
     eq [regex_eq_ewp_epsilon] : epsilon /\ epsilon         = epsilon .
     eq [regex_eq_ewp_a]       : epsilon /\ a               = bot .
     eq [regex_eq_ewp_b]       : epsilon /\ b               = bot .
-    eq [regex_eq_ewp_concat]  : epsilon /\ (Alpha . Beta)  = (epsilon /\ Alpha) /\ (epsilon /\ Beta) .
+    eq [regex_eq_ewp_concat]  : epsilon /\ (Alpha .. Beta)  = (epsilon /\ Alpha) /\ (epsilon /\ Beta) .
     eq [regex_eq_ewp_choice]  : epsilon /\ (Alpha \/ Beta) = (epsilon /\ Alpha) \/ (epsilon /\ Beta) .
     eq [regex_eq_ewp_kleene]  : epsilon /\ [[kleene X Alpha]]      = epsilon .
 
@@ -293,7 +293,7 @@ mod ERE-THEOREMS-EQS is
     eq [regex_eq_ewp_not_eps]     : epsilon /\ ~(epsilon)       = bot .
     eq [regex_eq_ewp_not_a]       : epsilon /\ ~(a)             = epsilon .
     eq [regex_eq_ewp_not_b]       : epsilon /\ ~(b)             = epsilon .
-    eq [regex_eq_ewp_not_concat]  : epsilon /\ ~(Alpha . Beta)  = (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta) .
+    eq [regex_eq_ewp_not_concat]  : epsilon /\ ~(Alpha .. Beta)  = (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta) .
     eq [regex_eq_ewp_not_and]     : epsilon /\ ~(Alpha /\ Beta) = (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta) .
     eq [regex_eq_ewp_not_choice]  : epsilon /\ ~(Alpha \/ Beta) = (epsilon /\ ~ Alpha) /\ (epsilon /\ ~ Beta) .
     eq [regex_eq_ewp_not_kleene]  : epsilon /\ ~ ([[ kleene X Alpha ]]) = bot .
@@ -318,11 +318,11 @@ mod ERE-THEOREMS-EQS is
    ceq [regex_eq_and_choice_comm_leaf] : Alpha /\ Beta = Beta /\ Alpha if compare(Alpha, Beta) == GT and not isConjunction(Beta) .
 
     ---- Optional simplifications
-    eq [regex_eq_bot_concat_l] : bot . Alpha = bot .
-    eq [regex_eq_bot_concat_r] : Alpha . bot = bot .
+    eq [regex_eq_bot_concat_l] : bot .. Alpha = bot .
+    eq [regex_eq_bot_concat_r] : Alpha .. bot = bot .
 
-    eq [regex_eq_eps_concat_l] : epsilon . Alpha = Alpha .
-    eq [regex_eq_eps_concat_r] : Alpha . epsilon = Alpha .
+    eq [regex_eq_eps_concat_l] : epsilon .. Alpha = Alpha .
+    eq [regex_eq_eps_concat_r] : Alpha .. epsilon = Alpha .
 
     eq [regex_eq_double_neg] : ~ ~ Alpha = Alpha .
     eq [regex_eq_double_kleene] : [[ kleene X [[ kleene Y Alpha ]] ]] = [[ kleene X Alpha ]] .
@@ -360,8 +360,8 @@ mod ERE-THEOREMS is
    crl [regex_eq_der_diff_a]  : (derivative A B)            => bot if A =/= B .
 
     rl [regex_eq_der_kleene]  : (derivative A [[kleene X Alpha]])
-                                                               => (derivative A Alpha) . [[kleene X Alpha]] .
-    rl [regex_eq_der_concat]  : (derivative A (Alpha . Beta))  => ((derivative A Alpha) . Beta) \/  ((epsilon /\ Alpha) . (derivative A Beta)) .
+                                                               => (derivative A Alpha) .. [[kleene X Alpha]] .
+    rl [regex_eq_der_concat]  : (derivative A (Alpha .. Beta))  => ((derivative A Alpha) .. Beta) \/  ((epsilon /\ Alpha) .. (derivative A Beta)) .
     rl [regex_eq_der_choice]  : (derivative A (Alpha \/ Beta)) => (derivative A Alpha) \/ (derivative A Beta) .
     rl [regex_eq_der_conj]    : (derivative A (Alpha /\ Beta)) => (derivative A Alpha) /\ (derivative A Beta) .
     rl [regex_eq_der_neg]     : (derivative A ~ Alpha)         => ~ (derivative A Alpha) .
@@ -370,7 +370,7 @@ mod ERE-THEOREMS is
     rl [regex_eq_ewp_epsilon] : epsilon /\ epsilon         => epsilon .
     rl [regex_eq_ewp_a]       : epsilon /\ a               => bot .
     rl [regex_eq_ewp_b]       : epsilon /\ b               => bot .
-    rl [regex_eq_ewp_concat]  : epsilon /\ (Alpha . Beta)  => (epsilon /\ Alpha) /\ (epsilon /\ Beta) .
+    rl [regex_eq_ewp_concat]  : epsilon /\ (Alpha .. Beta)  => (epsilon /\ Alpha) /\ (epsilon /\ Beta) .
     rl [regex_eq_ewp_choice]  : epsilon /\ (Alpha \/ Beta) => (epsilon /\ Alpha) \/ (epsilon /\ Beta) .
     rl [regex_eq_ewp_kleene]  : epsilon /\ [[kleene X Alpha]]      => epsilon .
 
@@ -378,7 +378,7 @@ mod ERE-THEOREMS is
     rl [regex_eq_ewp_not_eps]     : epsilon /\ ~(epsilon)       => bot .
     rl [regex_eq_ewp_not_a]       : epsilon /\ ~(a)             => epsilon .
     rl [regex_eq_ewp_not_b]       : epsilon /\ ~(b)             => epsilon .
-    rl [regex_eq_ewp_not_concat]  : epsilon /\ ~(Alpha . Beta)  => (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta) .
+    rl [regex_eq_ewp_not_concat]  : epsilon /\ ~(Alpha .. Beta)  => (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta) .
     rl [regex_eq_ewp_not_and]     : epsilon /\ ~(Alpha /\ Beta) => (epsilon /\ ~ Alpha) \/ (epsilon /\ ~ Beta) .
     rl [regex_eq_ewp_not_choice]  : epsilon /\ ~(Alpha \/ Beta) => (epsilon /\ ~ Alpha) /\ (epsilon /\ ~ Beta) .
     rl [regex_eq_ewp_not_kleene]  : epsilon /\ ~ ([[ kleene X Alpha ]]) => bot .
@@ -403,11 +403,11 @@ mod ERE-THEOREMS is
    crl [regex_eq_and_choice_comm_leaf] : Alpha /\ Beta => Beta /\ Alpha if compare(Alpha, Beta) == GT and not isConjunction(Beta) .
 
     ---- Optional simplifications
-    rl [regex_eq_bot_concat_l] : bot . Alpha => bot .
-    rl [regex_eq_bot_concat_r] : Alpha . bot => bot .
+    rl [regex_eq_bot_concat_l] : bot .. Alpha => bot .
+    rl [regex_eq_bot_concat_r] : Alpha .. bot => bot .
 
-    rl [regex_eq_eps_concat_l] : epsilon . Alpha => Alpha .
-    rl [regex_eq_eps_concat_r] : Alpha . epsilon => Alpha .
+    rl [regex_eq_eps_concat_l] : epsilon .. Alpha => Alpha .
+    rl [regex_eq_eps_concat_r] : Alpha .. epsilon => Alpha .
 
     rl [regex_eq_double_neg] : ~ ~ Alpha => Alpha .
     rl [regex_eq_double_kleene] : [[ kleene X [[ kleene Y Alpha ]] ]] => [[ kleene X Alpha ]] .
@@ -632,7 +632,7 @@ mod PROOF-GEN is
     eq str(a) = "a" .
     eq str(b) = "b" .
     eq str(epsilon) = "e" .
-    eq str(Alpha . Beta) = "C" + str(Alpha) + str(Beta) + "D" .
+    eq str(Alpha .. Beta) = "C" + str(Alpha) + str(Beta) + "D" .
     eq str(Alpha \/ Beta) = "C" + str(Alpha) + "p" + str(Beta) + "D" .
     eq str(Alpha /\ Beta) = "C" + str(Alpha) + "q" + str(Beta) + "D" .
     eq str(Alpha -> Beta) = "C" + str(Alpha) + "i" + str(Beta) + "D" .
@@ -648,7 +648,7 @@ mod PROOF-GEN is
     eq fp(node(< Alpha >, rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
                           rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
          )    )
-     = mu qid(str(Alpha)) (epsilon \/ ((a . fp(N_A)) \/ (b . fp(N_B)))) [owise] .
+     = mu qid(str(Alpha)) (epsilon \/ ((a .. fp(N_A)) \/ (b .. fp(N_B)))) [owise] .
 
 
     *** der-tree *************************************************************
@@ -798,15 +798,15 @@ mod PROOF-GEN is
     op epsilon-implies-ewp : Pattern -> MM0SExpr .
     eq epsilon-implies-ewp(epsilon) = 'id .
     eq epsilon-implies-ewp(Phi /\ Psi) = [[ 'iand                   epsilon-implies-ewp(Phi) epsilon-implies-ewp(Psi) ]] .
-    eq epsilon-implies-ewp(Phi .  Psi) = [[ 'epsilon-implies-concat epsilon-implies-ewp(Phi) epsilon-implies-ewp(Psi) ]] .
+    eq epsilon-implies-ewp(Phi ..  Psi) = [[ 'epsilon-implies-concat epsilon-implies-ewp(Phi) epsilon-implies-ewp(Psi) ]] .
    ceq epsilon-implies-ewp(Phi \/ Psi) = [[ 'orld                   epsilon-implies-ewp(Phi) ]] if hasEWP(Phi) .
    ceq epsilon-implies-ewp(Phi \/ Psi) = [[ 'orrd                   epsilon-implies-ewp(Psi) ]] if not hasEWP(Phi) /\ hasEWP(Psi) .
     eq epsilon-implies-ewp([[kleene X Alpha]]) = [[ 'epsilon-implies-kleene positivity(X, Alpha) ]] .
 
     eq epsilon-implies-ewp(~ bot)          = 'epsilon-implies-top .
     eq epsilon-implies-ewp(~ L:Letter)     = [[ 'epsilon-implies-not-letter is-letter(L:Letter) ]] .
-   ceq epsilon-implies-ewp(~ (Phi .  Psi)) = [[ 'epsilon-implies-not-concat-l epsilon-implies-ewp(~ Phi) ]] if not hasEWP(Phi) .
-   ceq epsilon-implies-ewp(~ (Phi .  Psi)) = [[ 'epsilon-implies-not-concat-r epsilon-implies-ewp(~ Psi) ]] if hasEWP(Phi) /\ not hasEWP(Psi).
+   ceq epsilon-implies-ewp(~ (Phi ..  Psi)) = [[ 'epsilon-implies-not-concat-l epsilon-implies-ewp(~ Phi) ]] if not hasEWP(Phi) .
+   ceq epsilon-implies-ewp(~ (Phi ..  Psi)) = [[ 'epsilon-implies-not-concat-r epsilon-implies-ewp(~ Psi) ]] if hasEWP(Phi) /\ not hasEWP(Psi).
    ceq epsilon-implies-ewp(~ (Phi /\ Psi)) = [[ 'epsilon-implies-not-and-l    epsilon-implies-ewp(~ Phi) ]] if not hasEWP(Phi) .
    ceq epsilon-implies-ewp(~ (Phi /\ Psi)) = [[ 'epsilon-implies-not-and-r    epsilon-implies-ewp(~ Psi) ]] if hasEWP(Phi) /\ not hasEWP(Psi).
     eq epsilon-implies-ewp(~ (Phi \/ Psi)) = [[ 'epsilon-implies-not-or       epsilon-implies-ewp(~ Phi) epsilon-implies-ewp(~ Psi) ]] .
@@ -852,7 +852,7 @@ mod PROOF-GEN is
     eq proof-top-implies-fp(N) =
        [[ 'top-implies-fp-init
             unfold-r(fp(N), 'orl )
-            proof-top-implies-fp((fp(N) . top-letter) -> fp(N), N)
+            proof-top-implies-fp((fp(N) .. top-letter) -> fp(N), N)
        ]] .
 
     op proof-top-implies-fp : Pattern Node -> MM0SExpr .
@@ -861,7 +861,7 @@ mod PROOF-GEN is
     eq proof-top-implies-fp(Phi, backlink(< Alpha >))
      = 'top-implies-fp-leaf .
 
-   ceq proof-top-implies-fp( ( FpCtximp . top-letter ) -> FpUnf
+   ceq proof-top-implies-fp( ( FpCtximp .. top-letter ) -> FpUnf
                            , node(< Phi >, rlEdge(applResult('der-a,     Ctx_A, Subst_A), N_A) ;
                                            rlEdge(applResult('der-b,     Ctx_B, Subst_B), N_B)
                            ) )
@@ -873,16 +873,16 @@ mod PROOF-GEN is
          [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfA) unfold-r(substitute[ FpUnf / X ] in FpUnfA, 'orl) ]]
          [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfB) unfold-r(substitute[ FpUnf / X ] in FpUnfB, 'orl) ]]
          [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfA)
-            [[ 'norm-lemma [[ 'norm-concat-l propag-sSubst([[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) ]], X, FpCtximpA) ]]
-                         proof-top-implies-fp((substitute[ [[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) ]] / X ] in (FpCtximpA . top-letter)) -> substitute[ FpUnf / X ] in FpUnfA , N_A)
+            [[ 'norm-lemma [[ 'norm-concat-l propag-sSubst([[ctximp-app 'box (sVar 'box .. top-letter) (FpUnf) ]], X, FpCtximpA) ]]
+                         proof-top-implies-fp((substitute[ [[ctximp-app 'box (sVar 'box .. top-letter) (FpUnf) ]] / X ] in (FpCtximpA .. top-letter)) -> substitute[ FpUnf / X ] in FpUnfA , N_A)
          ]] ]]
          [[ 'norm-lemma-r propag-sSubst(FpUnf, X, FpUnfB)
-            [[ 'norm-lemma [[ 'norm-concat-l propag-sSubst([[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) ]], X, FpCtximpB ) ]]
-                         proof-top-implies-fp((substitute[ [[ctximp-app 'box (sVar 'box . top-letter) (FpUnf) ]] / X ] in (FpCtximpB . top-letter)) -> substitute[ FpUnf / X ] in FpUnfB , N_B)
+            [[ 'norm-lemma [[ 'norm-concat-l propag-sSubst([[ctximp-app 'box (sVar 'box .. top-letter) (FpUnf) ]], X, FpCtximpB ) ]]
+                         proof-top-implies-fp((substitute[ [[ctximp-app 'box (sVar 'box .. top-letter) (FpUnf) ]] / X ] in (FpCtximpB .. top-letter)) -> substitute[ FpUnf / X ] in FpUnfB , N_B)
          ]] ]]
        ]]
-    if mu X (epsilon \/ ((a . FpCtximpA) \/ (b . FpCtximpB))) := FpCtximp
-    /\ mu X (epsilon \/ ((a . FpUnfA)    \/ (b . FpUnfB)))   := FpUnf
+    if mu X (epsilon \/ ((a .. FpCtximpA) \/ (b .. FpCtximpB))) := FpCtximp
+    /\ mu X (epsilon \/ ((a .. FpUnfA)    \/ (b .. FpUnfB)))   := FpUnf
      .
 
 

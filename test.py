@@ -94,10 +94,10 @@ def test_mm(mm0_file: str, mm1_file: str) -> None:
 @pytest.mark.parametrize('theorem,test_name,regex',
 [   ('main-goal',            'a-or-b-star',                '(a + b)*'),
     ('main-goal',            'kleene-star-star',           '(a *) * ->> (a *)'),
-    ('main-goal',            'example-in-paper',           '(a . a)* ->> (((a *) . a) + epsilon) '),
-    ('main-goal',            'alternate-top',              '((a *) . b) * + (((b *) . a) *)'),
-    ('main-goal',            'even-or-odd',                '((((a . a) + (a . b)) + (b . a)) + (b . b)) * + ((a + b) . (((((a . a) + (a . b)) + (b . a)) + (b . b)) *))'),
-    ('main-goal',            'no-contains-a-or-no-only-b', '(~ (top . (a . top))) + ~ (b *)'),
+    ('main-goal',            'example-in-paper',           '(a .. a)* ->> (((a *) .. a) + epsilon) '),
+    ('main-goal',            'alternate-top',              '((a *) .. b) * + (((b *) .. a) *)'),
+    ('main-goal',            'even-or-odd',                '((((a .. a) + (a .. b)) + (b .. a)) + (b .. b)) * + ((a + b) .. (((((a .. a) + (a .. b)) + (b .. a)) + (b .. b)) *))'),
+    ('main-goal',            'no-contains-a-or-no-only-b', '(~ (top .. (a .. top))) + ~ (b *)'),
 ])
 def test_regex(theorem: str, test_name: str, regex: str) -> None:
     output_mm0_file = path.join(test_dir, test_name + '.mm0')
@@ -136,11 +136,11 @@ def test_regex_eq_lr(n: int) -> None:
 
 @pytest.mark.parametrize('exp', [
     'a',
-    '(a . a) . (a . a)',
+    '(a .. a) .. (a .. a)',
     '(a + b)',
-    '(( (b . b) * ) . ( b * ))',
+    '(( (b .. b) * ) .. ( b * ))',
     '( a  /\\ ( a /\\ b ) )',
-    '(bot . bot)*',
+    '(bot .. bot)*',
 ])
 def test_regex_implies_self(exp: str) -> None:
     id = regex_to_id(exp)
@@ -175,7 +175,7 @@ def regex() -> SearchStrategy[str]:
 
     @composite
     def concat(draw: DrawFn, arg: SearchStrategy[str]) -> str:
-        return '(' + draw(arg) + ' . ' + draw(arg) + ')'
+        return '(' + draw(arg) + ' .. ' + draw(arg) + ')'
 
     @composite
     def plus(draw: DrawFn, arg: SearchStrategy[str]) -> str:
